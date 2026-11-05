@@ -3310,6 +3310,51 @@ function initShopCarousel() {
   startShopTimer();
 }
 
+function checkAndShowAnnouncementModal() {
+  const seenKey = 'paxta_notice_seen_v5k_stars';
+  if (localStorage.getItem(seenKey)) return;
+
+  openSubModal('🛠 Texnik Yangilanish & Kompensatsiya', `
+    <div class="announcement-modal-body">
+      <div class="announcement-badge">
+        <span class="announcement-icon">💎</span>
+        <span>Rasmiy Xabarnoma</span>
+      </div>
+      <h3 class="announcement-title">Hurmatli foydalanuvchilar!</h3>
+      <p class="announcement-desc">
+        Ilovada maʼlumotlar xavfsizligini taʼminlash uchun keng koʻlamli texnik ishlar olib borildi va barcha xatoliklar bartaraf etildi. Maʼlumotlar bazasi mustaqil <b>Turso Cloud</b> tizimiga ulandi.
+      </p>
+      <div class="announcement-alert">
+        <p>Keltirilgan noqulayliklar uchun <b>uzr soʻraymiz!</b></p>
+        <p>Barcha sovgʻalar qayta tartibga solindi va kompensatsiya sifatida barcha top foydalanuvchilar hisobiga toʻliq <b style="color:var(--saffron);">5,000 ⭐ Stars</b> taqdim etildi!</p>
+      </div>
+      <div class="announcement-perks">
+        <div class="aperk-item">
+          <span>👑</span>
+          <div><b>Durov's Cap (Genesis)</b> — 30 dona tiraj toʻliq tiklandi</div>
+        </div>
+        <div class="aperk-item">
+          <span>👑</span>
+          <div><b>Imperial Crown VIP</b> — Doʻkonda mavjud</div>
+        </div>
+        <div class="aperk-item">
+          <span>🍦</span>
+          <div><b>Ice Cream Classic</b> — 25 ⭐ bilan ochiq</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary announcement-btn" id="btnCloseNoticeModal">
+        🚀 Tushunarli, rahmat! (5,000 ⭐ bilan boshlash)
+      </button>
+    </div>
+  `, (body) => {
+    body.querySelector('#btnCloseNoticeModal')?.addEventListener('click', () => {
+      localStorage.setItem(seenKey, 'true');
+      closeSubModal();
+      launchEdgeConfetti();
+    });
+  });
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.main-tab, .ios-tab-item').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3483,6 +3528,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   notifyPaxtaMiniApp('web_app_expand');
   initShopCarousel();
   await Promise.all([loginUser(), loadCollections(), loadMarket()]);
+  setTimeout(checkAndShowAnnouncementModal, 700);
 
   // Support deep-linking to any user's profile via ?profile=username
   const urlParams = new URLSearchParams(window.location.search);

@@ -109,36 +109,8 @@ export async function initTursoSync(dataDir) {
     const remoteEntry = remoteMap.get(k);
 
     if (remoteEntry && remoteEntry.val) {
-      // Remote has data! If local is empty or missing, or remote has data, merge/load remote
       try {
         const parsedRemote = JSON.parse(remoteEntry.val);
-        // If it's inventory or users, ensure we don't accidentally lose any items
-        if (k === 'inventory' && Array.isArray(parsedRemote)) {
-          // If local has items not in remote (e.g. from local update), merge them
-          const remoteIds = new Set(parsedRemote.map(x => x.id));
-          const localItems = Array.isArray(localData) ? localData : [];
-          const merged = [...parsedRemote];
-          for (const item of localItems) {
-            if (!remoteIds.has(item.id)) {
-              merged.push(item);
-            }
-          }
-          fs.writeFileSync(localFile, JSON.stringify(merged, null, 2), 'utf8');
-          console.log(`[Turso] Synced ${k} from Turso (${merged.length} items).`);
-          // Save merged back to Turso
-          await saveToTurso(k, merged, false);
-          continue;
-        }
-
-        if (k === 'users' && parsedRemote && typeof parsedRemote === 'object') {
-          const merged = { ...parsedRemote, ...(localData || {}) };
-          fs.writeFileSync(localFile, JSON.stringify(merged, null, 2), 'utf8');
-          console.log(`[Turso] Synced ${k} from Turso (${Object.keys(merged).length} users).`);
-          await saveToTurso(k, merged, false);
-          continue;
-        }
-
-        // Default write remote to local
         fs.writeFileSync(localFile, JSON.stringify(parsedRemote, null, 2), 'utf8');
         console.log(`[Turso] Synced ${k} from Turso to local disk.`);
       } catch (err) {
