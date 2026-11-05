@@ -1,0 +1,15 @@
+{
+  "name": "paxta-gift-upgrade",
+  "version": "1.0.0",
+  "description": "Telegram & PaxtaGram NFT Gift Upgrade Platform",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "fetch-gifts": "node scripts/fetch-telegram-gifts.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  }
+}

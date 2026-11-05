@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: paxta-gift-upgrade
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: PAXTA_BOT_TOKEN
+        value: 682:OSWsBqK5LZHWlGJmzeONb9iIjE-UV7QBQY_
+      - key: RENDER_EXTERNAL_URL
+        value: https://paxta-gift-upgrade.onrender.com

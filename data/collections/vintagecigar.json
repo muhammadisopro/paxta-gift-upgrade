@@ -1,0 +1,3824 @@
+{
+  "slug": "vintagecigar",
+  "name": "Vintage Cigar",
+  "plural": "Vintage Cigars",
+  "supply": 31024,
+  "minted": 9161,
+  "circulating": 9161,
+  "price": 100,
+  "upgradePrice": 25,
+  "thumb": "/file/gifts/vintagecigar/thumb.webp",
+  "baseTgs": "/file/gifts/vintagecigar/model.I3pz5KfwJYVHvYrk8m-z49tvekCqK7BmsdO10emh21M6ZJR8h03zNBYJXl8i0Gas.tgs",
+  "models": [
+    {
+      "name": "Premium Blend",
+      "count": 327,
+      "permille": 36,
+      "rarity": 36,
+      "pct": 3.6,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.I3pz5KfwJYVHvYrk8m-z49tvekCqK7BmsdO10emh21M6ZJR8h03zNBYJXl8i0Gas.webp",
+      "tgs": "/file/gifts/vintagecigar/model.I3pz5KfwJYVHvYrk8m-z49tvekCqK7BmsdO10emh21M6ZJR8h03zNBYJXl8i0Gas.tgs"
+    },
+    {
+      "name": "Red Devil",
+      "count": 316,
+      "permille": 35,
+      "rarity": 35,
+      "pct": 3.5,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.eb_89GUMOCkLyocVvhN1XIS4iQp9VoLMQRL2y2iBToXJoRhwhmscPo1ONh90Sos4.webp",
+      "tgs": "/file/gifts/vintagecigar/model.eb_89GUMOCkLyocVvhN1XIS4iQp9VoLMQRL2y2iBToXJoRhwhmscPo1ONh90Sos4.tgs"
+    },
+    {
+      "name": "Mirror Finish",
+      "count": 272,
+      "permille": 30,
+      "rarity": 30,
+      "pct": 3,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.YAf7cZ4LgdjbCsDk6Osz8-SwQn9OSPgPKTT-O_USqKd8D1PWJj8NleFoqIGBu42Y.webp",
+      "tgs": "/file/gifts/vintagecigar/model.YAf7cZ4LgdjbCsDk6Osz8-SwQn9OSPgPKTT-O_USqKd8D1PWJj8NleFoqIGBu42Y.tgs"
+    },
+    {
+      "name": "Vaporwave",
+      "count": 267,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.nqHSUV5BJwkWQKY2MZoC-aRP5eb7G877zRgIWDC6P--OBPZEPDkAU9nDTATWMG-Z.webp",
+      "tgs": "/file/gifts/vintagecigar/model.nqHSUV5BJwkWQKY2MZoC-aRP5eb7G877zRgIWDC6P--OBPZEPDkAU9nDTATWMG-Z.tgs"
+    },
+    {
+      "name": "Blue Ghoul",
+      "count": 265,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.X3niZ8BcF_BjB7K7pqBPm5BrLIQm9YKIzGlVe2XhLBEkHJz2ED-n2Mb88UMkNcGh.webp",
+      "tgs": "/file/gifts/vintagecigar/model.X3niZ8BcF_BjB7K7pqBPm5BrLIQm9YKIzGlVe2XhLBEkHJz2ED-n2Mb88UMkNcGh.tgs"
+    },
+    {
+      "name": "Rudolph",
+      "count": 265,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.AdP83BJ3rbrjjjmZQyMXmoDJfAdpuqMr3rDYifk5LaWzidjXmXyQwSQ55c5GN1MA.webp",
+      "tgs": "/file/gifts/vintagecigar/model.AdP83BJ3rbrjjjmZQyMXmoDJfAdpuqMr3rDYifk5LaWzidjXmXyQwSQ55c5GN1MA.tgs"
+    },
+    {
+      "name": "Aquaviolet",
+      "count": 263,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.JaT-AiBio9VkP5c_k7db4H7MDbzQ6spFWFDr9NZcl33rebJJddXnJW2veXKWcIOr.webp",
+      "tgs": "/file/gifts/vintagecigar/model.JaT-AiBio9VkP5c_k7db4H7MDbzQ6spFWFDr9NZcl33rebJJddXnJW2veXKWcIOr.tgs"
+    },
+    {
+      "name": "Rose Wrapper",
+      "count": 262,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.38vbAie0RyWPAbRAg5ErEUCE_KNZHsZZ45DepnQX0SoK1DurtbRh1sKvdU_Chwjy.webp",
+      "tgs": "/file/gifts/vintagecigar/model.38vbAie0RyWPAbRAg5ErEUCE_KNZHsZZ45DepnQX0SoK1DurtbRh1sKvdU_Chwjy.tgs"
+    },
+    {
+      "name": "Blue Hue",
+      "count": 261,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.FtxBWJcCdxIAu3eMnMZegG6mtCw8R-yjNRwjjOnwNe2ThnX1YcmKzYKnqtxM1xef.webp",
+      "tgs": "/file/gifts/vintagecigar/model.FtxBWJcCdxIAu3eMnMZegG6mtCw8R-yjNRwjjOnwNe2ThnX1YcmKzYKnqtxM1xef.tgs"
+    },
+    {
+      "name": "Saturation",
+      "count": 259,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.G7920FavO5dUmRqfdqTtQ0i9dfvGGBd0ZOWwbQ_r806WyOv2UUo9UUYjaJEvBrw1.webp",
+      "tgs": "/file/gifts/vintagecigar/model.G7920FavO5dUmRqfdqTtQ0i9dfvGGBd0ZOWwbQ_r806WyOv2UUo9UUYjaJEvBrw1.tgs"
+    },
+    {
+      "name": "Desert Night",
+      "count": 258,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.qHu6deYbz-RurbljZfW2c-oXivFwBEv3m57zwGn0A-ThWu-GkFv6v_7fxft-CVBy.webp",
+      "tgs": "/file/gifts/vintagecigar/model.qHu6deYbz-RurbljZfW2c-oXivFwBEv3m57zwGn0A-ThWu-GkFv6v_7fxft-CVBy.tgs"
+    },
+    {
+      "name": "Pink Ghost",
+      "count": 254,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.NbspRLKhJDqiVDyI7kTuj74x5Nagv-HXZXkBcJYNuLPGU5crLNJF0o4Vz3Blqh_Y.webp",
+      "tgs": "/file/gifts/vintagecigar/model.NbspRLKhJDqiVDyI7kTuj74x5Nagv-HXZXkBcJYNuLPGU5crLNJF0o4Vz3Blqh_Y.tgs"
+    },
+    {
+      "name": "Purple Patron",
+      "count": 254,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.mI_bDVVq2SvPT7C5mikV48xoI7KKvoIybdlROIxA0f-sOYOGsFwshmQuSMQ4o9Qc.webp",
+      "tgs": "/file/gifts/vintagecigar/model.mI_bDVVq2SvPT7C5mikV48xoI7KKvoIybdlROIxA0f-sOYOGsFwshmQuSMQ4o9Qc.tgs"
+    },
+    {
+      "name": "Pink Tint",
+      "count": 243,
+      "permille": 27,
+      "rarity": 27,
+      "pct": 2.7,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.bTON6BB2ppEXlhZXdFci6RuMQzXILI_yMfNPSxAPqpKoqdOt20cNQJrDUZp3xqJN.webp",
+      "tgs": "/file/gifts/vintagecigar/model.bTON6BB2ppEXlhZXdFci6RuMQzXILI_yMfNPSxAPqpKoqdOt20cNQJrDUZp3xqJN.tgs"
+    },
+    {
+      "name": "Stained Glass",
+      "count": 239,
+      "permille": 26,
+      "rarity": 26,
+      "pct": 2.6,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.RtPXRKH8JbjwMUtcP_ZhJosOYOY2y9EtjmpLBuDkmQeXOWJz32BbnT1xhWsx6YML.webp",
+      "tgs": "/file/gifts/vintagecigar/model.RtPXRKH8JbjwMUtcP_ZhJosOYOY2y9EtjmpLBuDkmQeXOWJz32BbnT1xhWsx6YML.tgs"
+    },
+    {
+      "name": "Subtle Purple",
+      "count": 231,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.ZVu835H8fJ5ENlcgo1qczP17AxFzv4Bot7His2emhHBE3hfYTFXQX-M89njuevCm.webp",
+      "tgs": "/file/gifts/vintagecigar/model.ZVu835H8fJ5ENlcgo1qczP17AxFzv4Bot7His2emhHBE3hfYTFXQX-M89njuevCm.tgs"
+    },
+    {
+      "name": "Silver Bullet",
+      "count": 210,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.MxxiX5U15QCMdQ73aSdC7SnrhwcOge4rhHE_Go1pILekuCIPRg13AcLIDmcWjfRL.webp",
+      "tgs": "/file/gifts/vintagecigar/model.MxxiX5U15QCMdQ73aSdC7SnrhwcOge4rhHE_Go1pILekuCIPRg13AcLIDmcWjfRL.tgs"
+    },
+    {
+      "name": "Green Gas",
+      "count": 202,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.ljpYaTWdmVrRjGZRkRhkStzL2Mb7JnMTtVKejk4v7TEYPlXIBysZQ-O2aw16QTbu.webp",
+      "tgs": "/file/gifts/vintagecigar/model.ljpYaTWdmVrRjGZRkRhkStzL2Mb7JnMTtVKejk4v7TEYPlXIBysZQ-O2aw16QTbu.tgs"
+    },
+    {
+      "name": "Purple Haze",
+      "count": 202,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.y21s0u5frDtWcuzyJ_dTXFEuGnFYEMYxko2doE57Zi5WaG1kahSoa6fujR7MCauc.webp",
+      "tgs": "/file/gifts/vintagecigar/model.y21s0u5frDtWcuzyJ_dTXFEuGnFYEMYxko2doE57Zi5WaG1kahSoa6fujR7MCauc.tgs"
+    },
+    {
+      "name": "Pickle Rick",
+      "count": 199,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.NlE7CVX-fG88dToWjFLuX6_5BRQnmWwVxZXsEAluSSFCq-wngHNgdpW1fSYBttqe.webp",
+      "tgs": "/file/gifts/vintagecigar/model.NlE7CVX-fG88dToWjFLuX6_5BRQnmWwVxZXsEAluSSFCq-wngHNgdpW1fSYBttqe.tgs"
+    },
+    {
+      "name": "Long Draw",
+      "count": 198,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.-w4vqZIvgnBUWZhDTsE9FWn8l--SasVd8iXT0DO3GkNpm3ZQGgHJl8OZKpJys4cT.webp",
+      "tgs": "/file/gifts/vintagecigar/model.-w4vqZIvgnBUWZhDTsE9FWn8l--SasVd8iXT0DO3GkNpm3ZQGgHJl8OZKpJys4cT.tgs"
+    },
+    {
+      "name": "Black Plume",
+      "count": 196,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.5Cx3b1J0QAgsf5682B-cJs_a5prOLVRZo1GtE6VxCkvvo2KGSdgSxFnv68XFGf1B.webp",
+      "tgs": "/file/gifts/vintagecigar/model.5Cx3b1J0QAgsf5682B-cJs_a5prOLVRZo1GtE6VxCkvvo2KGSdgSxFnv68XFGf1B.tgs"
+    },
+    {
+      "name": "Seeing Red",
+      "count": 196,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.VYjxxCl9O_mw3VmdJ0ZF_IkAwrjPdgCaAbdeMheN5caAS9-CoO05_MYa-woFdUFd.webp",
+      "tgs": "/file/gifts/vintagecigar/model.VYjxxCl9O_mw3VmdJ0ZF_IkAwrjPdgCaAbdeMheN5caAS9-CoO05_MYa-woFdUFd.tgs"
+    },
+    {
+      "name": "Cool Blue",
+      "count": 193,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.W7trPH3Y6UYG0iSTHoFrIfEtbEjq-otjAKrm-caVjpmlEFnZRjCneOW5CkkVbTyt.webp",
+      "tgs": "/file/gifts/vintagecigar/model.W7trPH3Y6UYG0iSTHoFrIfEtbEjq-otjAKrm-caVjpmlEFnZRjCneOW5CkkVbTyt.tgs"
+    },
+    {
+      "name": "Sunset Orange",
+      "count": 191,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.Mn76n0-2WyMsGPx9aQ-m2TKS0Yy-Urc7tDvV02Teu3mJ-8JeLhMITym3IkjA2FfL.webp",
+      "tgs": "/file/gifts/vintagecigar/model.Mn76n0-2WyMsGPx9aQ-m2TKS0Yy-Urc7tDvV02Teu3mJ-8JeLhMITym3IkjA2FfL.tgs"
+    },
+    {
+      "name": "Foundry",
+      "count": 184,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.aZAoqgcYojtQB69ftCHZtNmKgCbBdMa2c434Qfy5cLNZ4EgTYxi9zngyq0QpbDpQ.webp",
+      "tgs": "/file/gifts/vintagecigar/model.aZAoqgcYojtQB69ftCHZtNmKgCbBdMa2c434Qfy5cLNZ4EgTYxi9zngyq0QpbDpQ.tgs"
+    },
+    {
+      "name": "Cobalt",
+      "count": 183,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.buLgxqziyTmlBcDiLpMw_ggcOqf10eQwe-cj-pHHVNdeO75KVqkRZHbHtRkZZFtG.webp",
+      "tgs": "/file/gifts/vintagecigar/model.buLgxqziyTmlBcDiLpMw_ggcOqf10eQwe-cj-pHHVNdeO75KVqkRZHbHtRkZZFtG.tgs"
+    },
+    {
+      "name": "Pearl Puff",
+      "count": 180,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.Vf8_F7VK7HSEZdozv598p8hvXbQOLSfHINVwcqsHdbpSDRneva1qlieCsf3mlnD9.webp",
+      "tgs": "/file/gifts/vintagecigar/model.Vf8_F7VK7HSEZdozv598p8hvXbQOLSfHINVwcqsHdbpSDRneva1qlieCsf3mlnD9.tgs"
+    },
+    {
+      "name": "Secret Santa",
+      "count": 178,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.tgHwEe2p4yMx_buap5yX5TOWhXyqZKeP6s2I81OQvnppludjinQtm5LiN4XcpFJg.webp",
+      "tgs": "/file/gifts/vintagecigar/model.tgHwEe2p4yMx_buap5yX5TOWhXyqZKeP6s2I81OQvnppludjinQtm5LiN4XcpFJg.tgs"
+    },
+    {
+      "name": "Golden Hour",
+      "count": 176,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.k-5pj0QlAHxZTj0RNDc6aKCic7gOZgNIiNGbAAqhS-45VeU5nuqdmiHXERJnq9px.webp",
+      "tgs": "/file/gifts/vintagecigar/model.k-5pj0QlAHxZTj0RNDc6aKCic7gOZgNIiNGbAAqhS-45VeU5nuqdmiHXERJnq9px.tgs"
+    },
+    {
+      "name": "Pink Panther",
+      "count": 172,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.VTU1KRrLT3capzWBtfYcCP-aLIKH8Hf_9pQProOijP2qCmlpJFIKa0xKqIEG3obO.webp",
+      "tgs": "/file/gifts/vintagecigar/model.VTU1KRrLT3capzWBtfYcCP-aLIKH8Hf_9pQProOijP2qCmlpJFIKa0xKqIEG3obO.tgs"
+    },
+    {
+      "name": "Green Goblin",
+      "count": 169,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.zsMxeEetiL0gs6ot8gR9NwUixFB5Nqg3irZpExP9aFErti77f4rduJGmj9MwSHMK.webp",
+      "tgs": "/file/gifts/vintagecigar/model.zsMxeEetiL0gs6ot8gR9NwUixFB5Nqg3irZpExP9aFErti77f4rduJGmj9MwSHMK.tgs"
+    },
+    {
+      "name": "Warm Glow",
+      "count": 166,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.zlMew_5XlZ8r2yt4HPWd49Q-OQBWRow7jNuJn6PWH7Y6SkXEiNXYsCgBL67ExvlE.webp",
+      "tgs": "/file/gifts/vintagecigar/model.zlMew_5XlZ8r2yt4HPWd49Q-OQBWRow7jNuJn6PWH7Y6SkXEiNXYsCgBL67ExvlE.tgs"
+    },
+    {
+      "name": "Mellow Yellow",
+      "count": 164,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.68o0j4N5wZoM3oawK93fNq-6ndam4RONIrPZWOU5BxFLbxtPTEhvVuQMZqIV69MS.webp",
+      "tgs": "/file/gifts/vintagecigar/model.68o0j4N5wZoM3oawK93fNq-6ndam4RONIrPZWOU5BxFLbxtPTEhvVuQMZqIV69MS.tgs"
+    },
+    {
+      "name": "High Tide",
+      "count": 148,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.BVzdBbb-oIVeELQiVFar4qCl5AzUDoSOgoky2rA3XbaMhIIdkapelKTSdMfzsLLW.webp",
+      "tgs": "/file/gifts/vintagecigar/model.BVzdBbb-oIVeELQiVFar4qCl5AzUDoSOgoky2rA3XbaMhIIdkapelKTSdMfzsLLW.tgs"
+    },
+    {
+      "name": "The Gentleman",
+      "count": 131,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.QNigit96KYcGqRIvTLxIt1UX1FPwiG2aVMBjBQz2HKLZGHV6BOCcmmYqMc95-7NG.webp",
+      "tgs": "/file/gifts/vintagecigar/model.QNigit96KYcGqRIvTLxIt1UX1FPwiG2aVMBjBQz2HKLZGHV6BOCcmmYqMc95-7NG.tgs"
+    },
+    {
+      "name": "Rainbow Road",
+      "count": 120,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "crafted": false,
+      "img": "/file/gifts/vintagecigar/model.a4d4wqcl4fCT4DxRGjjlbTqDfI5ZS8CRs4UgAAuJ57j5oLvOpFxmp0rgaVbw1qsj.webp",
+      "tgs": "/file/gifts/vintagecigar/model.a4d4wqcl4fCT4DxRGjjlbTqDfI5ZS8CRs4UgAAuJ57j5oLvOpFxmp0rgaVbw1qsj.tgs"
+    }
+  ],
+  "craftModels": [
+    {
+      "name": "Ashtray",
+      "count": 114,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.kVcYI5NRbKO3PHmTvYCCYWWUnc2fyigI5sds4daj_5soV_6tPIi6nOJUzCjdI8B6.webp",
+      "tgs": "/file/gifts/vintagecigar/model.kVcYI5NRbKO3PHmTvYCCYWWUnc2fyigI5sds4daj_5soV_6tPIi6nOJUzCjdI8B6.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Centurion",
+      "count": 105,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.LZNrZpa7boP2cDRXWllH90CrQWz87ZsbTYVhemMMnM6AlhAtXpke6LfnPBq6zRbi.webp",
+      "tgs": "/file/gifts/vintagecigar/model.LZNrZpa7boP2cDRXWllH90CrQWz87ZsbTYVhemMMnM6AlhAtXpke6LfnPBq6zRbi.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Dark Clouds",
+      "count": 100,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.n2_EcIPrXDCrG_iXAc4j5dKj10M4e46y2h2DQDHwXbYp7zc0OK1dJc-H2fJ4G06m.webp",
+      "tgs": "/file/gifts/vintagecigar/model.n2_EcIPrXDCrG_iXAc4j5dKj10M4e46y2h2DQDHwXbYp7zc0OK1dJc-H2fJ4G06m.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Silver Fox",
+      "count": 98,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.cBVxuiuVrWGnZ5iifDJKhGU4PKaX0iY-auhbgAieCllae211LsFx69ku2D98eA-Y.webp",
+      "tgs": "/file/gifts/vintagecigar/model.cBVxuiuVrWGnZ5iifDJKhGU4PKaX0iY-auhbgAieCllae211LsFx69ku2D98eA-Y.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Gray Matter",
+      "count": 90,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.hLMtIsdzt8KUHi7Whj6YWKVgp3XSyVu_7fHm9e1b4dYadDqObINTSjXf8x6pHxO0.webp",
+      "tgs": "/file/gifts/vintagecigar/model.hLMtIsdzt8KUHi7Whj6YWKVgp3XSyVu_7fHm9e1b4dYadDqObINTSjXf8x6pHxO0.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Thermal",
+      "count": 83,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.9q0K2kspuljihXkb0UX4VmbA5CB9yRgK3KcjpqF2LmIgJpGd2zcQHGxEzDtJOpPx.webp",
+      "tgs": "/file/gifts/vintagecigar/model.9q0K2kspuljihXkb0UX4VmbA5CB9yRgK3KcjpqF2LmIgJpGd2zcQHGxEzDtJOpPx.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Oil Baron",
+      "count": 81,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.OWd2FJTcQWIFZMvK2_Jo7ruTPkeq1Gh3TW2G6VMe9CjjfDX45norSthk4v5E9Lke.webp",
+      "tgs": "/file/gifts/vintagecigar/model.OWd2FJTcQWIFZMvK2_Jo7ruTPkeq1Gh3TW2G6VMe9CjjfDX45norSthk4v5E9Lke.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Psychonaut",
+      "count": 72,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.0d1CbbIIqTUZjJcB26rjNjt6zck6X1IDI0DTiatFhP1oxFoc_Ie4DYRlVNN6mOXC.webp",
+      "tgs": "/file/gifts/vintagecigar/model.0d1CbbIIqTUZjJcB26rjNjt6zck6X1IDI0DTiatFhP1oxFoc_Ie4DYRlVNN6mOXC.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Jazz Cigarette",
+      "count": 65,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.dNBQaNF07-8lTuLYM0BEeNWywz9AR0ICgT6iEYpSM7E0rDQ9N9aA668pohT87r7A.webp",
+      "tgs": "/file/gifts/vintagecigar/model.dNBQaNF07-8lTuLYM0BEeNWywz9AR0ICgT6iEYpSM7E0rDQ9N9aA668pohT87r7A.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Short Fuse",
+      "count": 45,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.kNgK5B-B3I91X79YoQ0bYVrVwAXS44dw1WW0pwoeKOYzOHN2dY9xpF3rRglkPXTq.webp",
+      "tgs": "/file/gifts/vintagecigar/model.kNgK5B-B3I91X79YoQ0bYVrVwAXS44dw1WW0pwoeKOYzOHN2dY9xpF3rRglkPXTq.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Super Swirls",
+      "count": 45,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.6F5QZRuia8iqaGJeTqSJyWuFYiasloEKs1GSUZOeqCs1IRiGMGPmM9DrmoWS2ArO.webp",
+      "tgs": "/file/gifts/vintagecigar/model.6F5QZRuia8iqaGJeTqSJyWuFYiasloEKs1GSUZOeqCs1IRiGMGPmM9DrmoWS2ArO.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Pink Plume",
+      "count": 42,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.5t_qXTm-S2rIM8Op5HlfZ0InqnJL30XSjbeeaLiodbMpyk7UmafCsu35c1shUuk1.webp",
+      "tgs": "/file/gifts/vintagecigar/model.5t_qXTm-S2rIM8Op5HlfZ0InqnJL30XSjbeeaLiodbMpyk7UmafCsu35c1shUuk1.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Saturn V",
+      "count": 41,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.k5ehSEdrnhRpDUk9MUR6oASF-aV4AzblKSNt1eS83MwzqvpC_jOuHYWlHS4Odz_w.webp",
+      "tgs": "/file/gifts/vintagecigar/model.k5ehSEdrnhRpDUk9MUR6oASF-aV4AzblKSNt1eS83MwzqvpC_jOuHYWlHS4Odz_w.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Spectral Smoke",
+      "count": 40,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.CqVKjKX0rrBS_T6X7OoV1hGp4TiySYyTKkC0lCG4uMYgCFkOKveITr9eI7l2cH9Q.webp",
+      "tgs": "/file/gifts/vintagecigar/model.CqVKjKX0rrBS_T6X7OoV1hGp4TiySYyTKkC0lCG4uMYgCFkOKveITr9eI7l2cH9Q.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "El Classico",
+      "count": 37,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.o-v1HY-Tlwh-9vWzGy_UhhbwLtWUOdIWzf0WazqUlfrJHinf1WSEAeiqDLivquqC.webp",
+      "tgs": "/file/gifts/vintagecigar/model.o-v1HY-Tlwh-9vWzGy_UhhbwLtWUOdIWzf0WazqUlfrJHinf1WSEAeiqDLivquqC.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "The Shocker",
+      "count": 37,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.JSIRqL1jcBu2OyDyj9qjXdvc524ovD8-5UmslW4rfNOYgDxy1luvK1cyp0VBhBNG.webp",
+      "tgs": "/file/gifts/vintagecigar/model.JSIRqL1jcBu2OyDyj9qjXdvc524ovD8-5UmslW4rfNOYgDxy1luvK1cyp0VBhBNG.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Ice Cold",
+      "count": 36,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.nfQI73TulYjmOOkz0XYXNgtfsiouttKiRO_T3dgPOqLZzsaERAjbqWaxEcLL3X8v.webp",
+      "tgs": "/file/gifts/vintagecigar/model.nfQI73TulYjmOOkz0XYXNgtfsiouttKiRO_T3dgPOqLZzsaERAjbqWaxEcLL3X8v.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Far Out",
+      "count": 34,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "crafted": true,
+      "img": "/file/gifts/vintagecigar/model.0TnxcwZ604KPc_eOLT0bXn8Vs3Hn_-x9DfHWiJa2wG2PuqfMexwxJyN_OfsoBank.webp",
+      "tgs": "/file/gifts/vintagecigar/model.0TnxcwZ604KPc_eOLT0bXn8Vs3Hn_-x9DfHWiJa2wG2PuqfMexwxJyN_OfsoBank.tgs",
+      "tier": "uncommon"
+    }
+  ],
+  "backdrops": [
+    {
+      "name": "Black",
+      "count": 305,
+      "permille": 33,
+      "rarity": 33,
+      "pct": 3.3,
+      "center": "#363738",
+      "edge": "#0e0f0f",
+      "pattern": "#6c6868",
+      "text": "#8c8f91"
+    },
+    {
+      "name": "Roman Silver",
+      "count": 215,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "center": "#a3a8b5",
+      "edge": "#7c808a",
+      "pattern": "#3f4550",
+      "text": "#dadfe2"
+    },
+    {
+      "name": "Steel Grey",
+      "count": 211,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "center": "#97a2ac",
+      "edge": "#63727c",
+      "pattern": "#334552",
+      "text": "#dfe4e8"
+    },
+    {
+      "name": "Electric Purple",
+      "count": 205,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "center": "#ca70c6",
+      "edge": "#9662d4",
+      "pattern": "#620fb4",
+      "text": "#ebceff"
+    },
+    {
+      "name": "Battleship Grey",
+      "count": 202,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "center": "#8c8c85",
+      "edge": "#6c6c66",
+      "pattern": "#2b2a20",
+      "text": "#cfcec4"
+    },
+    {
+      "name": "Moonstone",
+      "count": 190,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#7eb1b4",
+      "edge": "#588390",
+      "pattern": "#164552",
+      "text": "#daf5fd"
+    },
+    {
+      "name": "Caramel",
+      "count": 189,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#d09932",
+      "edge": "#b77431",
+      "pattern": "#7d3600",
+      "text": "#ffd9b3"
+    },
+    {
+      "name": "Aquamarine",
+      "count": 188,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#60b195",
+      "edge": "#46abb4",
+      "pattern": "#035f67",
+      "text": "#c7fdfe"
+    },
+    {
+      "name": "Rosewood",
+      "count": 188,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#b77a77",
+      "edge": "#814c52",
+      "pattern": "#551c22",
+      "text": "#edcacd"
+    },
+    {
+      "name": "Sky Blue",
+      "count": 185,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#58b4c8",
+      "edge": "#538bc2",
+      "pattern": "#07609b",
+      "text": "#cde8fd"
+    },
+    {
+      "name": "Lemongrass",
+      "count": 184,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#aeb85a",
+      "edge": "#559345",
+      "pattern": "#466a07",
+      "text": "#d8f2c2"
+    },
+    {
+      "name": "Persimmon",
+      "count": 184,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#e7a75a",
+      "edge": "#c5675f",
+      "pattern": "#ad0e00",
+      "text": "#ffe4d7"
+    },
+    {
+      "name": "Chocolate",
+      "count": 182,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#a46e58",
+      "edge": "#74443b",
+      "pattern": "#3e0a02",
+      "text": "#e4b6ac"
+    },
+    {
+      "name": "Amber",
+      "count": 181,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#dab345",
+      "edge": "#b1802a",
+      "pattern": "#7a3100",
+      "text": "#ffedc7"
+    },
+    {
+      "name": "Pistachio",
+      "count": 180,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#97b07c",
+      "edge": "#5c814c",
+      "pattern": "#28471b",
+      "text": "#d9f2c9"
+    },
+    {
+      "name": "Neon Blue",
+      "count": 176,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#7596f9",
+      "edge": "#6862e4",
+      "pattern": "#2828bc",
+      "text": "#cfddff"
+    },
+    {
+      "name": "Pine Green",
+      "count": 176,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#6ba97c",
+      "edge": "#3e7970",
+      "pattern": "#0b4833",
+      "text": "#d8f5e5"
+    },
+    {
+      "name": "Cobalt Blue",
+      "count": 175,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#6088cf",
+      "edge": "#5162b8",
+      "pattern": "#13247c",
+      "text": "#c2d3f5"
+    },
+    {
+      "name": "Jade Green",
+      "count": 175,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#55c49c",
+      "edge": "#3b9977",
+      "pattern": "#044931",
+      "text": "#befee7"
+    },
+    {
+      "name": "Orange",
+      "count": 174,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#d19a3a",
+      "edge": "#c06f47",
+      "pattern": "#9d3907",
+      "text": "#ffe1c3"
+    },
+    {
+      "name": "Pure Gold",
+      "count": 172,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#ccab41",
+      "edge": "#987b32",
+      "pattern": "#703c00",
+      "text": "#ffe5ab"
+    },
+    {
+      "name": "Coral Red",
+      "count": 170,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#da896b",
+      "edge": "#c4654f",
+      "pattern": "#891200",
+      "text": "#ffd9d2"
+    },
+    {
+      "name": "Ivory White",
+      "count": 170,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#bab6b1",
+      "edge": "#a19d97",
+      "pattern": "#665f52",
+      "text": "#f5f4f2"
+    },
+    {
+      "name": "Lavender",
+      "count": 167,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#b789e4",
+      "edge": "#8a5abc",
+      "pattern": "#5b10ab",
+      "text": "#e8d1ff"
+    },
+    {
+      "name": "Mint Green",
+      "count": 167,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#7ecb82",
+      "edge": "#459e5a",
+      "pattern": "#026b22",
+      "text": "#bdffcc"
+    },
+    {
+      "name": "Cappuccino",
+      "count": 166,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#b1907e",
+      "edge": "#7c6356",
+      "pattern": "#4a3226",
+      "text": "#ebd4c8"
+    },
+    {
+      "name": "Raspberry",
+      "count": 165,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#e07b85",
+      "edge": "#b65980",
+      "pattern": "#890638",
+      "text": "#ffd6e6"
+    },
+    {
+      "name": "Khaki Green",
+      "count": 160,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#adb070",
+      "edge": "#6b7d54",
+      "pattern": "#39501b",
+      "text": "#d3e6bb"
+    },
+    {
+      "name": "Dark Lilac",
+      "count": 155,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#b17da5",
+      "edge": "#8c577a",
+      "pattern": "#652852",
+      "text": "#f0c4e2"
+    },
+    {
+      "name": "Midnight Blue",
+      "count": 155,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#5c6985",
+      "edge": "#354057",
+      "pattern": "#030a18",
+      "text": "#bfcce0"
+    },
+    {
+      "name": "Platinum",
+      "count": 154,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#b2aea7",
+      "edge": "#88847e",
+      "pattern": "#3d382d",
+      "text": "#e9e7e2"
+    },
+    {
+      "name": "Strawberry",
+      "count": 152,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#dd8e6f",
+      "edge": "#b75a60",
+      "pattern": "#a90c0c",
+      "text": "#ffd3d3"
+    },
+    {
+      "name": "French Blue",
+      "count": 151,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#5c9bc4",
+      "edge": "#37739a",
+      "pattern": "#073b5c",
+      "text": "#c1e3f9"
+    },
+    {
+      "name": "Turquoise",
+      "count": 151,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#5ec0b8",
+      "edge": "#3d928e",
+      "pattern": "#11534c",
+      "text": "#bdf8f2"
+    },
+    {
+      "name": "Purple",
+      "count": 150,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#ae6cae",
+      "edge": "#844784",
+      "pattern": "#470c47",
+      "text": "#f3cbf3"
+    },
+    {
+      "name": "Desert Sand",
+      "count": 147,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#b39f82",
+      "edge": "#7e735b",
+      "pattern": "#504429",
+      "text": "#f2e5cd"
+    },
+    {
+      "name": "Pacific Cyan",
+      "count": 144,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#5abea6",
+      "edge": "#3d95ba",
+      "pattern": "#02648d",
+      "text": "#b6efff"
+    },
+    {
+      "name": "Malachite",
+      "count": 140,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#95b457",
+      "edge": "#3d9755",
+      "pattern": "#046b06",
+      "text": "#c2efbe"
+    },
+    {
+      "name": "Electric Indigo",
+      "count": 138,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#a980f3",
+      "edge": "#5b62d8",
+      "pattern": "#3722ab",
+      "text": "#d8d8ff"
+    },
+    {
+      "name": "Indigo Dye",
+      "count": 138,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#537991",
+      "edge": "#416479",
+      "pattern": "#031b29",
+      "text": "#c2dcee"
+    },
+    {
+      "name": "Carrot Juice",
+      "count": 137,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#db9867",
+      "edge": "#c76f4f",
+      "pattern": "#8e2100",
+      "text": "#ffd7ca"
+    },
+    {
+      "name": "Cyberpunk",
+      "count": 137,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#858ff3",
+      "edge": "#865fd3",
+      "pattern": "#4318a6",
+      "text": "#e0d9ff"
+    },
+    {
+      "name": "Satin Gold",
+      "count": 136,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#bf9b47",
+      "edge": "#8d7739",
+      "pattern": "#5d3b00",
+      "text": "#fee4a9"
+    },
+    {
+      "name": "Copper",
+      "count": 134,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#d08656",
+      "edge": "#9d6531",
+      "pattern": "#602901",
+      "text": "#f4d8be"
+    },
+    {
+      "name": "Shamrock Green",
+      "count": 132,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#8ab163",
+      "edge": "#559345",
+      "pattern": "#126b00",
+      "text": "#d5fbc8"
+    },
+    {
+      "name": "Grape",
+      "count": 130,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#9d74c1",
+      "edge": "#794da0",
+      "pattern": "#3e0a6b",
+      "text": "#e0bdfe"
+    },
+    {
+      "name": "Hunter Green",
+      "count": 127,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#8fae78",
+      "edge": "#4b825b",
+      "pattern": "#1c491f",
+      "text": "#d8f5de"
+    },
+    {
+      "name": "Chestnut",
+      "count": 120,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#be6f54",
+      "edge": "#994838",
+      "pattern": "#601508",
+      "text": "#fec6b9"
+    },
+    {
+      "name": "Light Olive",
+      "count": 119,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#c2af64",
+      "edge": "#887e45",
+      "pattern": "#594c04",
+      "text": "#f5ebbc"
+    },
+    {
+      "name": "Emerald",
+      "count": 113,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#78c585",
+      "edge": "#42a171",
+      "pattern": "#006532",
+      "text": "#b9f9d9"
+    },
+    {
+      "name": "Azure Blue",
+      "count": 106,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#5db1cb",
+      "edge": "#448bab",
+      "pattern": "#025074",
+      "text": "#b5ecff"
+    },
+    {
+      "name": "Mystic Pearl",
+      "count": 100,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#d08b6d",
+      "edge": "#b05770",
+      "pattern": "#9b0526",
+      "text": "#fedde0"
+    },
+    {
+      "name": "English Violet",
+      "count": 95,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#b186bb",
+      "edge": "#875a91",
+      "pattern": "#54225f",
+      "text": "#e6c7ed"
+    },
+    {
+      "name": "Pacific Green",
+      "count": 92,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#6fc793",
+      "edge": "#3b9c84",
+      "pattern": "#006149",
+      "text": "#c6fff0"
+    },
+    {
+      "name": "Fandango",
+      "count": 91,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#e28ab6",
+      "edge": "#a4588b",
+      "pattern": "#8e054e",
+      "text": "#ffc7eb"
+    },
+    {
+      "name": "Onyx Black",
+      "count": 90,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#4d5254",
+      "edge": "#313638",
+      "pattern": "#000000",
+      "text": "#a9abad"
+    },
+    {
+      "name": "Silver Blue",
+      "count": 88,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#80a4b8",
+      "edge": "#607c91",
+      "pattern": "#15374b",
+      "text": "#c9e4f4"
+    },
+    {
+      "name": "Sapphire",
+      "count": 85,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#58a3c8",
+      "edge": "#5379c2",
+      "pattern": "#0d45b6",
+      "text": "#c1deff"
+    },
+    {
+      "name": "Navy Blue",
+      "count": 76,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "center": "#6c9edd",
+      "edge": "#5c6ec9",
+      "pattern": "#1239a2",
+      "text": "#d3e1ff"
+    },
+    {
+      "name": "Burgundy",
+      "count": 74,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "center": "#a35e66",
+      "edge": "#6d414a",
+      "pattern": "#340307",
+      "text": "#e7bcc0"
+    }
+  ],
+  "symbols": [
+    {
+      "name": "Gold",
+      "count": 108,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.q9mAw_f7UFxl6t3m8EjlSJaSbeCouJyuC7vl75bKAdCXAtlIE4Tp7aIvIAyi01kL.webp"
+    },
+    {
+      "name": "Celtic Wolf",
+      "count": 107,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.femfjW9iQam-OlwrFFk_m8izibiuq1ofxlbm9uiGwaQpVMTrYxXfs7bpYx8_XQU2.webp"
+    },
+    {
+      "name": "Hand of God",
+      "count": 105,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.m70gOlvoNdBMsowTFzOAKr4e4HjyPm3Q9xrCzqRAnS6llgknCRyM9qGKrTeOlbw8.webp"
+    },
+    {
+      "name": "Spirit Impala",
+      "count": 105,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.GmcOAPoVO6-3zSsSgr49PI4m6FD2NjiH-MqnYkxPOmho7eMjXb2qtZ9iVCGhNtMl.webp"
+    },
+    {
+      "name": "Fehu Rune",
+      "count": 103,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.sV4Lb5a8jWrN3rSBgEDVh4ehBMoO16wtReVjt8xn8pc2A7eBCIkbtA2j6_QiDiWK.webp"
+    },
+    {
+      "name": "Cocktail",
+      "count": 102,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.8W0tWQbpUZS6F8Q7rxiBx9MSKsh3a_IZh_0O-YWAFRq7VvrXqDVQHmrAL8zSjhPz.webp"
+    },
+    {
+      "name": "Cicada",
+      "count": 101,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.BHl5F6OVJhw1oJ8pi8NzDOpjTWrIyaRcLoaYLqlSVXEoUkf66U3uhchkKMUEgmJo.webp"
+    },
+    {
+      "name": "Mountain Lion",
+      "count": 98,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.0HIP47aAbTGbdzPUtkXqyv3plP2KopgOgnF_p8RcerlkuBMEmChb70AvPvW5rBvK.webp"
+    },
+    {
+      "name": "Moon Cross",
+      "count": 95,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.7GNm-UKdXOqhnmrZk_iPwvpM0_OyXt7gVCvNaO3H_147VSbbhwSV8FdX09qPcPwB.webp"
+    },
+    {
+      "name": "Doberman",
+      "count": 94,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.icaY-HSo6D5gZGsSy6pSRVY5TyqT1XXu3wJpN9ylWS0O3bYQbVAu8Zu6eqnTgkXd.webp"
+    },
+    {
+      "name": "The Eye",
+      "count": 93,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.615eyidMxX8FbjoYqTcSM4R2AjO_HG9OQ3ub2Yt8Sd7Es2EFmWBNOs76jYEUmpH5.webp"
+    },
+    {
+      "name": "Baphomet",
+      "count": 92,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.-W2seE19wer95JXWF-Te8Vp383mah-K6_Ce2sDXPE_j-MX9Q6YxuSgURfqS3hZCJ.webp"
+    },
+    {
+      "name": "Chest",
+      "count": 92,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.TJFnZlJiE5qTpnCCMShdF9PABPcuCxIe3BCKYxmXuMRCDI7DocojjuMBSThDhDC8.webp"
+    },
+    {
+      "name": "Totem Bear",
+      "count": 92,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.uxXsszRHkkuVpoeRJATcC2R9UJg0f_6kI9YJUA6SHGzsMBmEhSudKSZAOAbpcayl.webp"
+    },
+    {
+      "name": "White Deer",
+      "count": 92,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mnXhrQRS2xZKNrc74yVramoh4djHWa4HYKIKWmZ1gCBcNOiHVvq9r2_-EQ6ASm1t.webp"
+    },
+    {
+      "name": "Coconut",
+      "count": 91,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.0_G6SRD42NOrVFxNnxWCKqm07DS3floEH26BtamZrUu-P6J7pqkEUdODv4IFnCPF.webp"
+    },
+    {
+      "name": "Lion King",
+      "count": 91,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Rqow3NqZYdXvctrOPpIkm6FD6eW5WLdFUFWMjqezkQE194A1CUDoFMPBgiIV7qbi.webp"
+    },
+    {
+      "name": "Mayan Moth",
+      "count": 91,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.APtsYQ55F5oIi3vzfMlKeq6wM7U5d-En7ahziQ1nU7pkJNf3BSUOBhH57A5i0H2g.webp"
+    },
+    {
+      "name": "Firebird",
+      "count": 90,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.muvvTvFYoRDm6qIEEFJStn40QhJi6ZYCK7ElRWOEZMOoD6tJW7VVSYPCvVaf5g2b.webp"
+    },
+    {
+      "name": "Lion Head",
+      "count": 90,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.YgsaWXuOE9-amPck38_cbwXorbVguhYkEIR5ZM7EMOuw8eDletB2ncDecNLjf_63.webp"
+    },
+    {
+      "name": "Owl",
+      "count": 90,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.vN9j78KzwG9W22QykPfZcbsmqrVYrb-2D1jYHwMZ0xlV8cAr_JDwyoKOcZXzxMmm.webp"
+    },
+    {
+      "name": "Anchor",
+      "count": 89,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.X3o6wNYcNjKj9tqTobdummnqFQrC354raXXLDnJGkVAHkeqBmUynAAOCRIdEHo4Z.webp"
+    },
+    {
+      "name": "Okami Wolf",
+      "count": 89,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.z_vI_1_nytZLE6c6VoxnqToOYSM7hHUVFF9-uNlHhMTb8CMOXp7MKpJnT55Bxqec.webp"
+    },
+    {
+      "name": "Pearl",
+      "count": 89,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.8EUCI3LLyXGuJqCfbh_8ln9IwVgzpKuGC2L7MSrncOPSbWsluoqcMj7s-grwE5-n.webp"
+    },
+    {
+      "name": "Phoenix",
+      "count": 89,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Mls3Z0MDOWkL7DVTvsq3xGmymTZfc-tnAhIzvev28RtMT452KNAeTCWxmgq2qw1c.webp"
+    },
+    {
+      "name": "Sun Mountain",
+      "count": 89,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FNa5CGRDTXOU5e-_9nornNRLt0aER5VGCRcImY2KclVCFNsmagfYq6ldNomlr10C.webp"
+    },
+    {
+      "name": "Trophy",
+      "count": 89,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.v9p9koF3S4r6tYwiesN9kS1p-SqKOnUMgNa3FI8BAr-Yo7qUSZYfnt3IfswQGlC_.webp"
+    },
+    {
+      "name": "Crusader",
+      "count": 88,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.e6LHjC7hjuesUiau-mRfhdSzCD9BaUNLJYo6az4cTOnuFp30PnkpGl8LzFeFF7gf.webp"
+    },
+    {
+      "name": "Mask",
+      "count": 88,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.GWtXLAwK8kVmvCndK60ODG8CcpDJR_03siBoD0PZaPkS-u_D7Ni7gIR8M48jRLUs.webp"
+    },
+    {
+      "name": "Coin Purse",
+      "count": 87,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Yl33ZhmNxdNy9afqwq1nBnOdmP4OgIR_l36OQdHS5iAzU53RJuJq4MdkCsqDUQ0X.webp"
+    },
+    {
+      "name": "Rook",
+      "count": 86,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.pHvUpBoATLLJEyCxxfzcgefZNU6m2Yp2AVc8FP7Ly65GJyLUcMLBdT-mCUMEtZV2.webp"
+    },
+    {
+      "name": "Sun Lion",
+      "count": 86,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.8bOZEkiROSJ8wu260t6mbQAgZatlVALaf4tclRB8AYMNOu1gNxK_Ua7xhCuQftpD.webp"
+    },
+    {
+      "name": "Cash",
+      "count": 85,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mmEzvFRRRpxdm06DisEihYy04Fa6P3IsaSmQhSK9CpKcDuUe5ECj7Q2wiQHYYNBp.webp"
+    },
+    {
+      "name": "Mafdet",
+      "count": 85,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.55a6EQ9w-wr_eQ2UvjYzchVfL6WboVPb4KB5mQcPbULkb_hKDbuzO7oxV1H7SUoP.webp"
+    },
+    {
+      "name": "Sparks",
+      "count": 85,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mxxNiLLi-hZNd-feVTAv1g2yIHHOP4JKjQHmUsyOJePSfODvOd9gcGamzg6czkPW.webp"
+    },
+    {
+      "name": "Diamond",
+      "count": 84,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FDCI8OSarB02Bf1VI3NLe5nxt32UDH0su6XITa01S1FKancUTTMYmqVlfDRQZCyr.webp"
+    },
+    {
+      "name": "Celtic Cross",
+      "count": 83,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.X5UROHYv15Z8MXj16f8cclb6vclIkiUWD2LvFUZiRichAFP923T_jigySHAcWU4A.webp"
+    },
+    {
+      "name": "Crown",
+      "count": 83,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Mz_9AnOH85bqNmYCwwkHJD0pshonYVd-bFb2fUPcKsZTYI5Oy9BY5KQUUZNdBSaV.webp"
+    },
+    {
+      "name": "Wolf Rage",
+      "count": 83,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mtyTp7LRipSJbl-sK2r0H7sMNUilJz4qh-PxnYRq9TmNUkoUDw3-77iCbYnOLj53.webp"
+    },
+    {
+      "name": "Genie Lamp",
+      "count": 82,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.TSK2MGSWqbT5G3YfyO-l9QpfdxEgXDEMgWoFqVNEEMyq2RnBF56PLEHhPwGnQQRW.webp"
+    },
+    {
+      "name": "Sakura",
+      "count": 82,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.O53HVLBTV9DFA3lZ4xFMdxyKM_qcapN0CKFQYItRSpwiK1PJ5oAflboc9XeWNbcA.webp"
+    },
+    {
+      "name": "Arabian Horse",
+      "count": 80,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.ARa9JlqIRouULK-igWN4wqhx3lQ2C7MXX-ECU0ieudlpijdxUjLxKwSib9Gt3EuO.webp"
+    },
+    {
+      "name": "Bastet",
+      "count": 80,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.CJfAaSS_S2ayTGr9fCfUBadK_kCYsgXd7Q_FR9MKKjA-u3IcSNZC24GsFQyYIEFz.webp"
+    },
+    {
+      "name": "Bull of Heaven",
+      "count": 80,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.OWQAD_Q6mRlaaeXcIxf-5mkfRq9poa5wJtnPEmsQGSU5SmDwy-mhprAxxC21FQ9I.webp"
+    },
+    {
+      "name": "Pyramid",
+      "count": 80,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.do74P15Yct5BJ65oEe65nxYKqdm2RXb5JYQw3Pvx3QObj8whePCwcpVbq-6OoV6M.webp"
+    },
+    {
+      "name": "Royal Crown",
+      "count": 80,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.qR5l-IlfPoN1kk5GeCg7UhZ__AxTMRVFfmGFrGIs3bfpkh3wr-763pZL8oM_sccV.webp"
+    },
+    {
+      "name": "Coin",
+      "count": 79,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.PXBwax8KBiOnpPj9WEJoeithE8PfvoE_7d5ZOOwVtBmUK0CUqbVIwlFPyV9KCnz1.webp"
+    },
+    {
+      "name": "Wreath",
+      "count": 79,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.DUxxnXfWyD_kskJUqGT2DWW7G3cya7Xj6wOrTPD7-CYTutJihFArDGgaLr3Eqcxf.webp"
+    },
+    {
+      "name": "Moon Eagle",
+      "count": 76,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.xWHugf0Cm-if24J5gK44YF7vXLxCOkZBTCtYbaDcO5Ud9KOzvJXY7vi4tRYWOkxg.webp"
+    },
+    {
+      "name": "Mountain Goat",
+      "count": 76,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.jYYu41zqBIG0a42M6m8MLOTt0UXMwdzo_8XYQMsp34ybGVblLD515MFuUdAVj6mX.webp"
+    },
+    {
+      "name": "Oxen of Fire",
+      "count": 76,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.XHjjahmSQ3CEifvjH3VUDP7ZySbpYCAm_IpN8uhLpgB4BFnECsL3smz4kmlknWrz.webp"
+    },
+    {
+      "name": "Ram of Amun",
+      "count": 76,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.BfqT_6zpaiT0INpikakfDaWNspQcy1YS-dSkeY1RGyc_sGgU2huouKhCWbrqhzvy.webp"
+    },
+    {
+      "name": "Sumerian Bird",
+      "count": 76,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol._sY-_w6wHufIv_u-_TZd0xQARclBUM_5LpR6pGo7mX-sph2yPBb4htclextwQKro.webp"
+    },
+    {
+      "name": "Shield",
+      "count": 75,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.jDoFCUiPbWd-xjw3MRTeCfcdDV2Vw6QOEBB6khSffiL68YmYfRslnIv0QQPCpxFj.webp"
+    },
+    {
+      "name": "Golden Scarab",
+      "count": 73,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.L_LYTD83CT5zJDPALnkgK4Slq6VSGXcuup2nqxAN5ErYHBfNFFxOUnur8gw5x2oy.webp"
+    },
+    {
+      "name": "Kitsune",
+      "count": 73,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FTEad_LwgTZvtD_U07EPsEmAJafIn0g7JfqkwLlybJNAXKyzDgZdoKIH-hnzDQzz.webp"
+    },
+    {
+      "name": "Nordic Wolf",
+      "count": 73,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.7yAxbiK17nPIB55hLeya-EPfoKDYG0OjeBtHanWqXjDqWcRzgneuLZSVKqjlC1b_.webp"
+    },
+    {
+      "name": "Rhino Warrior",
+      "count": 73,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Cg7qh8CAa0i8nfx7FjKFvIpUVCfols-y1fr_YFxjSlyqgf8TsPaO41NDDrAGZYxp.webp"
+    },
+    {
+      "name": "Sauron",
+      "count": 73,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.gav-Pm_uxiAVUAUtRYo4Mvo4Geqc3bF5MFLVYZD2O7wctAoP1vHuraPRZ3twQOu0.webp"
+    },
+    {
+      "name": "Ink Pen",
+      "count": 71,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.0hGef0PdaAaXKDeRxiU8XPaz6z--rtrgjYKs3t_HOyqJPpT-ZnihEZHhTBtloaiQ.webp"
+    },
+    {
+      "name": "Pegasus",
+      "count": 71,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.am3cy06vCnXXbbuGV8b0WEiBngsnx8dI8Zoslm7VfZWQus47SO_rUbZvkqWXSN-b.webp"
+    },
+    {
+      "name": "Calm Wolf",
+      "count": 70,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.eZVcc30S5dgCkxmDihzKjHjK4_5LveDIQRo9ec72d9q04bLtfkDl-2bM7VlOMK4Z.webp"
+    },
+    {
+      "name": "Knight",
+      "count": 70,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.8oIdGQALipxZ-oU2uB0jryjleLagM9DwVQVc44gpacFkZ69zHU1r3sH6-1MB5JKi.webp"
+    },
+    {
+      "name": "Coat of Arms",
+      "count": 69,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.hhJVG8Ytm0w9maAeYl8vubsVdfVniT3VU0uMNLo9YfQ7eSoMouYH1zulTbDz-HOD.webp"
+    },
+    {
+      "name": "Gem",
+      "count": 69,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.54A3C5LMYA8wTNq-l4Br8vTcQmocIidHDFo7XwKMMCanEXGPLvgdEQBZO33Zk2PS.webp"
+    },
+    {
+      "name": "Scarab",
+      "count": 68,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.7Y6B395U8gJndXmD2JF3Q-VIbYmn1wXDuLcjpXGm7aBsV7Ay-8I1KwlHcrKqF79W.webp"
+    },
+    {
+      "name": "Mannaz Rune",
+      "count": 67,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.6cSCeu_hallepclrNtaLFHA5Iz7H6K0j7PgAnfu17VVcnKp-ccXipZ2ulUdS1I4S.webp"
+    },
+    {
+      "name": "Alkonost",
+      "count": 66,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.kZ3lGay0ADT1oi27WWhBj7Re2WPMqlfDbJetuD-vLdIBJ3iYUaR7XRNn5FsspjPs.webp"
+    },
+    {
+      "name": "Tribal Shield",
+      "count": 66,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FmPZuIr_-poOEmd2vUBeEanpKq9AU-SyXfz7az-9rz_aGTmOg8o7We31JoXXrWNI.webp"
+    },
+    {
+      "name": "High Heels",
+      "count": 65,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.4xjrktCCiaXT0RyQctwZ-FRhJ3nHnQLVmDd-OH5TiFMLKn3LhquY7Fmcks2REzzn.webp"
+    },
+    {
+      "name": "Eikthyrnir",
+      "count": 64,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.VOv5zxy1woodRcTUryKTGA8SXsY3WNlX0pYV9sqTV-l-73VJaSsHryIp1T0td3WT.webp"
+    },
+    {
+      "name": "Tree of Life",
+      "count": 64,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.5jd3xeHqjC9XQKws0GSXgrES-PNkEVv2otM7yS_7Bjiw_tnfXhCYAYoRLJGImoji.webp"
+    },
+    {
+      "name": "Yogi Shaman",
+      "count": 63,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.9NB8chBIqmZvW0AWYKOhgYFSDg4T8J-xzgEuY632pnii1mm4y5O2r7zF45F51S1m.webp"
+    },
+    {
+      "name": "Venetian Mask",
+      "count": 62,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.ZnYD5KzzBmUu-eecHIX9Uhs6culqVUGNRG9IYV1H2-dLtJF--ChUxj6O8LWvasye.webp"
+    },
+    {
+      "name": "Car",
+      "count": 61,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Szo6puvqMQpyiAx1NBqamyfHqvWLIloAgymhYU3oQkY4j7QJdI5vzCcMYSFE3g0V.webp"
+    },
+    {
+      "name": "Ring",
+      "count": 61,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.NBUAhMbiy32V52ZkQdvEcv0LYXfuTnZLaj9PVYuRZpaHuvpaCy5xKv9XgZZH-CA8.webp"
+    },
+    {
+      "name": "Star",
+      "count": 60,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.EaxdaTFbvJla35KFDBZ4wKVWY4DlOhTdx04czKQPrYW3yxkKdFDv5G4Fxzk-u2eN.webp"
+    },
+    {
+      "name": "Moon",
+      "count": 57,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.zvRyucwlkSKWYlLOzka0_GFHpKiMT9oEKqJ4h7RtsXsoN6mlTk5_wImnfYJ-0-rR.webp"
+    },
+    {
+      "name": "Ouroboros",
+      "count": 54,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.tp31ZJ6tZYMlZhOkH0HUjxyIXRz5L7uIUPL_bJyPd1fKecQ3_5GMUJaAErL-5HZZ.webp"
+    },
+    {
+      "name": "Dice",
+      "count": 53,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.m0hbM-VXJIRnmn8UnHz_GDvLofzfLz0iA2VIm5KrtDWTxZxgn78wSCWXEZaEmX3l.webp"
+    },
+    {
+      "name": "Piggy Bank",
+      "count": 53,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.lyRYiMrqcBxcW8swbIvMqaTfvL-fZCuXbcinjTETR5ryH-6V2F_aMLrx0D9s0bY5.webp"
+    },
+    {
+      "name": "Inguz Rune",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.iRqphfYHYdb-G6_VfW-ZFwuXUnya9Suv7fZiVXcaVILy63PKTCMph9tfdRocBnUH.webp"
+    },
+    {
+      "name": "Inca Sun",
+      "count": 51,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.XvioOLpF0xJfJuho55RTFRISua_5BkJWfnMQYDTxIHTMIuW2CWyzz_MYyTZ-mcvq.webp"
+    },
+    {
+      "name": "Fleur-de-lis",
+      "count": 50,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.UhmCpt0xoWIsX18PCeOH2RsBJg7ukZsv3K4uTGZFdGuxLuj_ZSvTMrZt6HT7kZfb.webp"
+    },
+    {
+      "name": "Illuminati",
+      "count": 50,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.2gOQaKcOMX_49IMs9S4UxgS_RJCO9_L0bnmyzhKivQ7p5qO03A_2JAJvnajc_tqW.webp"
+    },
+    {
+      "name": "Bishop",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.C_392xbCJ-hjz7iQxzjHGW-7TyLlLZskUhLFEaq73cKclawpe48zuGonbbcXfsi0.webp"
+    },
+    {
+      "name": "Champagne",
+      "count": 48,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.tdR7Ay1gRBFU1x6jNDk2gXbjvEElijlT3ToeVFiuWE5r8NmIdS6JaT4ZhraSegNr.webp"
+    },
+    {
+      "name": "Tie",
+      "count": 48,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.hxOK7hsMEcDnH00HzbgoHH_LOW3eCEvFjnMqhZ6-3wzO7tZh6Qpx833DAaGq9Hz6.webp"
+    },
+    {
+      "name": "Top Hat",
+      "count": 48,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mlP5hERxeZ6pKrQZA1zP3RRcJG9CncXpbwhPw8ud6MEdgJVTRsszolmQzR1ZkVGt.webp"
+    },
+    {
+      "name": "Cobra",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.ezMpP5bcp1LtfKKzpqqcjQui3ewaoeW0IC8yFzxfvEsCH25wLn_iYsl0A3VYpkej.webp"
+    },
+    {
+      "name": "Flower Cross",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.VhcXy-kkE0ElvziQ0O0HquT5qUwM2BozXPN93R5wpEw6NqS6eZoLCL262I1OjKxM.webp"
+    },
+    {
+      "name": "Cap",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.wBDc3WE3BVLTt99f9HW-Gu0zaTlfEG7-2v2RwHw7aJymhpmaggEnPWHt_sRWvcqi.webp"
+    },
+    {
+      "name": "Scorpion",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.z0rYeB0JXMDwoGRAc-TcMs_4Iz4G5mrmc_PzHdH3FcaNL0y9FwUNGHu9dZuR_GAJ.webp"
+    },
+    {
+      "name": "Fenrir",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Lc1Q2K07EgvLsQ6gik44MNOCBGcFXX91XwTcZslhk83uN92FgfgGjR6mUVTKSbZ0.webp"
+    },
+    {
+      "name": "Money Bag",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.-UqnFr2vZSYRvGX73RqOvDYHVnrbtFV2fAQ2F5VFIvnAGuxgGiiJDZxdNp_av40Q.webp"
+    },
+    {
+      "name": "Glasses",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.ROmznVaHT2EUUpAjHFhC4vVfs50QlVF-kOMjAaRKjPpAuf5A69f2YE19eEpfN-M9.webp"
+    },
+    {
+      "name": "Eagle",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.S9Hku6F5_j80J3F_HXrp7O6IJIYhMQrDXmGoeGbMyOcQH4BEEbkUAg_xTS22YcBs.webp"
+    },
+    {
+      "name": "Unicorn Head",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mGX_RWKqCi7q75UkC_3zJsj6gdK8lCqAVUDNjJbAsfCsolkErtFkzmbeZc0YFTUO.webp"
+    },
+    {
+      "name": "Cat Mask",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.1gfBgBPe8TtHj8wzphEJLsjqQPV8h0itpW7vrHEYHn5L7Zx0NnjaKJ0VkVJxa5Zm.webp"
+    },
+    {
+      "name": "Lightning",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.s0VDMgALn4vxOhzqKjJRkxnXxTy2z945LOhpChnrZlOCKXuxwf9AHUZlmlKuVhbF.webp"
+    },
+    {
+      "name": "Paw",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.d61Yr0EDxzKeOeRgtrYIbJAXgPFqQhY-qfZ_zjxFkOoTgt33IJjdyKHRsv1CAXxC.webp"
+    },
+    {
+      "name": "Pawn",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.7w9nxRrQe0vmdDB7dt-ec1ABizc6kUKrqZMdY0lkSYgZu2RJ1IQj151G8YbN03Af.webp"
+    },
+    {
+      "name": "Like",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.DOyHS-Pwg5C6McuYt6CC-PDv49IUoTYS7lzOyAbXVMePl_lLdBlDyFQt-5csaxp7.webp"
+    },
+    {
+      "name": "Musical Note",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.194IXMH974Ku7Hy8VVbZ8_PDcjm4t4Bcgp5kFfYk8pbU66_b8tSqPopHoCh94B2l.webp"
+    },
+    {
+      "name": "Sun",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.16I3ZHHeOH9UEMiS1KeCxpnmAx47yU9VYa2_jNgjTyvLwU4Z364uD6c0hf7hV5-d.webp"
+    },
+    {
+      "name": "Toilet",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FQh-faVtb_IxBJdOx8bp9LXGS8A8KcbvJ2vT52jSeysN6G3q41znnkZ5oWZgfMtQ.webp"
+    },
+    {
+      "name": "Turtle",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.IGnKEhvOcDPGbPvSjB57tRJnnb0JyX11lCpWhfSRi4o51NvLo212aAmCVlt9xCIr.webp"
+    },
+    {
+      "name": "Kite",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mgJ7DnT8PHfNncHCZZJtWVLXIhPIOs30DJ-1csDUBRi28GPzt7Pqtx5jk4Ozk44m.webp"
+    },
+    {
+      "name": "Melon",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.ucpWlKGb66yUrO8W0kcPiFceqJH9gGmZlqONgAwcE24lYF53BK5d4el2vXQTecxo.webp"
+    },
+    {
+      "name": "Narcissus",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.0qhnVG0XEsc4yKX6ly24SXUYR4tluFaSVq3L-PSNSN9fEzINaYI7fMDYLpxDC2lC.webp"
+    },
+    {
+      "name": "Rain Drop",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.NDev3G1cR7oPM4Mvuh4irS58_1tgQJe2Gtg3Cxv1Yh1vQiWEHDGTSf6vSkRuBFIV.webp"
+    },
+    {
+      "name": "Watermelon",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.eEtJWl65Y9zpxRFEkb137hlLUonFq9Qvwyfv1wIDigBX_jmRBPu_21DSsTCEFGuo.webp"
+    },
+    {
+      "name": "Alarm",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.3f75JDyqfwROqER_Iaw0_fKBqDpE1NtEGNBJ6_f9R5MClXhFC8mPRPq7qUyUhMPA.webp"
+    },
+    {
+      "name": "Ball",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.l-xYtFeVWbpKcUb5f5vmqHPnGXtFKqgZTQEzoVyrCxd7vGNPWzKdZsi-lf1ozvFK.webp"
+    },
+    {
+      "name": "Bone",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.7vA6mNP2iTT1hL6sMPTtg1ybaFXClF7dCScpvyznOc38xESwvAPwB59BVN0qYU0M.webp"
+    },
+    {
+      "name": "Burger",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.IQuDbWS1AT64om-VYbkVKCznQrOJKvM3KSfSty-KL0ti4Z1kc7rcJCWsTJvPFRpB.webp"
+    },
+    {
+      "name": "Cactus",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.pKXDEsob9_gpwsu_QOq4Jlj3LY9smI2ut065i6D2juF4kUk9SVYjOXSZWfhfryfO.webp"
+    },
+    {
+      "name": "Beetle",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.eFLsRzOtwmkRO0SUCz68s6UaVY801M4Ek1CU7H5YbXu_VNaGnSIQF5tH5TfzK9fM.webp"
+    },
+    {
+      "name": "Crab",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.cQs-exf8W-3oEOiHieF0KHaRibeBn3w0nvBGqS79n1vVfo_VFyPVt6fIdEkcxY4I.webp"
+    },
+    {
+      "name": "Key",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.17LZczwBBaQgrPYGu84GX8U9CanWlc7XqmgHygz4bto1vHiYeNmwJIFG_rBfHWYW.webp"
+    },
+    {
+      "name": "Pickaxe",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.u_6iIhhXGRY7_s3lLq9cxg9v-zYMy9OEO9t0kqoJrerkUVCwNxgkb7vEu09u_Sd3.webp"
+    },
+    {
+      "name": "Piñata",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.DrsqdiM5sQqqQuc2L1MNXOhbl8aa26BTTrpAdV4NRGecHqlq1Z0IeHjguk8JdpfN.webp"
+    },
+    {
+      "name": "Polar Bear",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.1cg2sRzyVhycfYHXE984Tuxz0viWZ_Bqjcrd6IHfju-u6HD3lw6WkRhvPzibnHGh.webp"
+    },
+    {
+      "name": "Potion",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.anaoiqxFfP76EaYjfsETXQKupfCAwM-T4Z3S6HNZsDPqkWM_WGQSlqOKj34druLo.webp"
+    },
+    {
+      "name": "Spanner",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.R95bQGNTyZsMskvQ-NoVXZ5ZjDK8vn9xEkZWC-t2fWjw2dvl4ZS5IaDQ3eRZ2a0K.webp"
+    },
+    {
+      "name": "Apple",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.nIP4L9qP9nK_ADwIoYL6aa_IbpqZX4rIJToYehsMX7-qa1ZJLGr8ZrzeBP-Y_VH_.webp"
+    },
+    {
+      "name": "Axe",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.GBsk-cDm9WPT8gg_Fa6L_TXwUwDZfIW7I-eaWq_OnESvHdO6CJmvffU0u563xIQo.webp"
+    },
+    {
+      "name": "Bunny",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.JMZVHhlEhpFGmSmBV_sMk5NMfMXxRTrww5KHbsxb33sZa9OJWWHvtkab9_vjsAtr.webp"
+    },
+    {
+      "name": "Candle",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.8D1Q7X1YeBLg_aRvBbzOMZ_uz7F_o5IOkr8SpwjNg5gCDBvu2Td48DnvShgrE2DX.webp"
+    },
+    {
+      "name": "Hedgehog",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.NRsxqui4MlQx_drrxJsTAJeCuZeskDY5HSQNmtpbAB42SvaLCw_84rFvPWNGlSQ8.webp"
+    },
+    {
+      "name": "Jumbo Pencil",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.pAeuK0e4_STV2hXJhIfuLoqhEUoYHjeVH5r1uoa9kbICdp7k45BEGz1MPeqBdipl.webp"
+    },
+    {
+      "name": "Leaf",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.vUWCdqDjyiyGQNfGktEoUvRQ74FiQn6W6imPD8_2c5-_33cM8XQkv5YRzfEC4DwR.webp"
+    },
+    {
+      "name": "Planet",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.rQqdFqKZakxfPR2h7kNnu1T4sshH6fCbXnd_CgxCWE_ZUTBJC2Rvg1O6q3LLe72F.webp"
+    },
+    {
+      "name": "Rocket",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.3YO7hWfUmGyh4WzbVl6Pw4SgmRF0xpvnHG_eGD2BxgUo_MlSWKdt2UjBUvAq0YTq.webp"
+    },
+    {
+      "name": "Sea Jelly",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.7ZjNbFvuk1f3IYoRl5PF0Fxwuf59Rz4NUXlW0ayRrxrwEwOovdNqPxkg7-Zwno_t.webp"
+    },
+    {
+      "name": "Sword",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.p8ByF0uvfv9EITSgU6G6fvuTGn9o8gDpEDkLXdIWx-4GgLeE08-xM1IhYJbSIOra.webp"
+    },
+    {
+      "name": "Boat",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.g6icmNzgPaJfrA6PoQLdtAnZQNfNDdvuCNiYz2Tsz0QGi3olVTmDs3q2Yl-fhXoP.webp"
+    },
+    {
+      "name": "Book",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.oFlu8e9RQLZNXA-xzJFl2YizJPvnabK6lC7SPJiP1GToUYzSsA5zoh22QlfJOKbi.webp"
+    },
+    {
+      "name": "Brain",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.TO3QsD913tklNk5f-z_K1R5gG6QmQsvIjTwKfiNq0h2JtIOaORKtvmQLvGLBboS_.webp"
+    },
+    {
+      "name": "Bubble Tea",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.6LwVZX2W9RQUkdBGwHiWlRUAZqjbrQIiRHFuXIKeCk02KsAcen7fK1yOhfXcqX7f.webp"
+    },
+    {
+      "name": "Chili Pepper",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.k_SDaR3hKCEjC7a_8Yxh8waa55buRJ9aytFlo83D0f_aHuXze2FlCFAXSWDIewQt.webp"
+    },
+    {
+      "name": "Love Letter",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.W5tDS6OC3wBTPyZZSEMADFsKYVuQdEd9LI5-5R_72IsCURasT1aiI9JzJN1eyLbv.webp"
+    },
+    {
+      "name": "Pizza Slice",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.aNHooZCW3YIWE7mTkxPaDcT4pmeSSxGnDTKG8Yez32eQ_082opPUwTA4g72OGl5i.webp"
+    },
+    {
+      "name": "Carrot",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Yl04q1hpNoNX1Ztx5N5yGIGkgUgWaKiDnsaljOSJsxavLcC4xRyFqL51-3cM7r3A.webp"
+    },
+    {
+      "name": "Grenade",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.gLKfHK1mjULrs8aJ_mPy78cbAOK4P76NcWCdkYYDZKhAhXDSs34ZmEb4DKnoJk-8.webp"
+    },
+    {
+      "name": "Ice Pop",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.WTz6jSlfrDy-x4uxXrLGPUp4njpyrOG23qKKhMVlvT3LRcmnLevdtUkCa9fw-TEi.webp"
+    },
+    {
+      "name": "Oak Leaf",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.SRWoJ5r43gogIHIPxDMajTcXtCfCIqOhvNEafQxKpSZ6fgOmtd-rsChbl1Lshffr.webp"
+    },
+    {
+      "name": "Toilet Paper",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.kLBybfyaBiiJRLv57vtmmiVxwP3jA7MmnSPBPMbnwlSTv0WnAf3Ur3wm9YDpkAJG.webp"
+    },
+    {
+      "name": "Unicorn",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.PzXUU4PH9l43FLPzHK53oyy6P7ghvq23zglHh1lA4OaJXQdKTWLIvieURv85eYzz.webp"
+    },
+    {
+      "name": "Bubbles",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.X_gm8VhU1PG9dEmQjfr_pUuBLViylFYdb-tQ-R67pNhCgEOFED9TBNHD2piP61JG.webp"
+    },
+    {
+      "name": "Cherry",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.yl7ImJFLBZPu2M0aonfIkqDNjgKLgjf7FblobR6O0C6VVMz_jBeDTiocmvyRAVkQ.webp"
+    },
+    {
+      "name": "Maple",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.sVxCUbJ9-FEXD6A-lKGcuWiQuZYzBD8OL1WpG3R_VgelYAM-ULr8o3jziPfI7sQZ.webp"
+    },
+    {
+      "name": "Plum",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.XPVsFnbbv4-Qi05Jp_M72ITfnEThC4rwP9FFI9tt0rpq8GkNWz3CNU5b2UWGGR9L.webp"
+    },
+    {
+      "name": "Spades",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.XFleyc9d7khck-PsqdI4cO3yGWfbw05aN2qkWhwFZ6Q-m3NwsjqHXWAM5ZnoU9M7.webp"
+    },
+    {
+      "name": "Spider Web",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.zqiYDU2I5rF0o0nUPC38lYn-oPgi9kqb3O0aXkxPiRegZubULItw34A2uYLW6i14.webp"
+    },
+    {
+      "name": "Bottlenose",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.CNib2C15Z6p52HSTJucZjcq8yBJqBcLa1QhNbE3jCGKfvyV7-QEPoqEN3kbQihgj.webp"
+    },
+    {
+      "name": "Dessert",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.VGRnkjYR_U3sCmvkt27yaC7K0BzBD-2Y04OqR0cAXN4-rTKr4sY8bGFfoxPbpF6S.webp"
+    },
+    {
+      "name": "Gift Box",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.18tzHD8siI5Mjs9a9o23yAcNkkvj_HQp_eSv4YF54nukf0O3yn-ZvDF54-jxSuty.webp"
+    },
+    {
+      "name": "Grape",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.v4RQmSytouBrgByXuTqihp1RI7KKIt-GjUkrn0TZXIyMTSm5dQ9riTR2kSvt8_bK.webp"
+    },
+    {
+      "name": "Lemon",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.01A6XqH3tzaUIqBBKuuSNaY4ELaR6DxKrP9P34WkOn7bNkX4RCnfqqRFSP56g7-g.webp"
+    },
+    {
+      "name": "Light Bulb",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.0G2RTwGwJ_PMYAwLNHa_nqabAQ6lB3GtYMaw6YobEbhU9qYVvTOmwimFp-dW2fv1.webp"
+    },
+    {
+      "name": "Smartphone",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.tPg4cOe3RyVkbs6fKNBBulQ8Iw_o2kEczR7VUDAuWA5MP5IiC8E_jb6PzoWJSxfV.webp"
+    },
+    {
+      "name": "Flipper",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mscF3-ZyGKKrJXs21xZDjHo50ohYtXYGprLgNstOvbye2pTQYeKNGvsFxUYWY6fM.webp"
+    },
+    {
+      "name": "Koala",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FPtg5nqH0KbCTLJqFx5ZLhle0grkxp0C3yphKdGkjnUEldWarHQsIUnBoFX7NrKl.webp"
+    },
+    {
+      "name": "Moose Head",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.gpxCP7x6y-nxN75W4_7dl2JxOyOZvhtBxblvLsQMG2nC-YdJJ0wqPmL7ntLG65w8.webp"
+    },
+    {
+      "name": "Plume",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.uQFRjSCV3iNh5BG5UQGW6FPzwFRsbKuNjYd-LXVNEG5iOxK8zkLZoAiwbRsqQ5sg.webp"
+    },
+    {
+      "name": "Pomegranate",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.C3Ingn8GX_rBiVYVKvA6o3VquoLsDeahvB3DkuYS4YgLyhwnVKPXJfCTFaMqd-EZ.webp"
+    },
+    {
+      "name": "Shark Knife",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.FqoKM7ZbKkdlGEAZdQgtAdwjgAYmPp2P24QIRoFvcpzSVVhykTbpqTXKLTGr1fJo.webp"
+    },
+    {
+      "name": "Sunflower",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.rm6LZSIjZti4qhREzxXNe02Oo6JfFOGhdmGCejY02wwukirEITOii8NrD-d9gaCs.webp"
+    },
+    {
+      "name": "Bandage",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.pJPe_MvOKIWFGQjPH9dq-DyIq4d-MunB8HXRKsv9Njjdr1I6WScopudXQr6-GBig.webp"
+    },
+    {
+      "name": "Bell Pepper",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.sWlOjCVoQHBBOlmH8V1CJeNUv150bYmLFAb_vZaqUouXCzi8Nk7AGGDR_GdU5Jed.webp"
+    },
+    {
+      "name": "Birthday Cake",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.yBLBwZEAXbrieBIIXId1zkxUiwm_5a-w8HHTRhcaGlVx5qPlBhYovpXZR0i4K5T0.webp"
+    },
+    {
+      "name": "Cone",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.tcHUWk0KMcmD7fLQ1eG4BOoEabnulUkpomKVewjgKaIwAQrRILvSzUl4MrY5uo7v.webp"
+    },
+    {
+      "name": "Diamonds",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.u36OWegQmHpwn9Uu0fpxmoFiyRhPOHuVfm1n_Vxcyy-XU-6Rlc2MSKM337CVoK_4.webp"
+    },
+    {
+      "name": "Elephant",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.9wat0AkLZydTdgzBZjb_DPaVhGXn-EIkCT4SbnNYkPiTq6c20WbB79zj4q0Ckhy0.webp"
+    },
+    {
+      "name": "Flashlight",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.r_KcU7J3_hhJTYU1pBo7M2L880fGuNcguSsD-P5Mk5SgfmO49GKYp7rf_h-l4KqZ.webp"
+    },
+    {
+      "name": "Jellyfish",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.ffpBYx23dTuKNUz_B4siMgpnSFHng24DZQtXN5GyExakwHz-7Z9dHoY56SiGuaNt.webp"
+    },
+    {
+      "name": "Lily",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.vUwzZHH48xAgQ8kGr386YfR95Cw-XbSwHXR-SuyRsZ4wbTSNpGzen1jTGPG-_-WF.webp"
+    },
+    {
+      "name": "Monstera",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.VPHwLrevm-3y0srZAYBhZn991rZxiJ7H4t626g0o5RZ6etThuqf1-h5O1vlVqi36.webp"
+    },
+    {
+      "name": "Sharp Sword",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.TR1KDglAFUAHhobz3OdIYtYLUMWcXR7qYbPi7ZubR6MNH9O-Cy06sDb88xBy97lj.webp"
+    },
+    {
+      "name": "Shooting Star",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.vSyk_CCNfzbR5MjKK6rm2L315f2E7vfe8_m32WWuP2XqtwKfO2r2-XwZZbKBLyzD.webp"
+    },
+    {
+      "name": "Strawberry",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.3ctdhH53pOoeo3CY2ntcS-2LWEACUUJhwBCpopQ4w0J75X-swmbHDWKJS_JX8c3_.webp"
+    },
+    {
+      "name": "Thief",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.kfIxIsj3cZ2I6CpYxTXS-d-g_qYmtWGYX-QvDdCtcQLFITqEdfeExSFdmRVB0tIF.webp"
+    },
+    {
+      "name": "Twin Peaks",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Y-tfmP6xKtcAd5w5-km7sgHOYgJua8fnATqx4FaQoYv4eNSkZiSsMZ3HdtLbM8lJ.webp"
+    },
+    {
+      "name": "Viking",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.QEfTQCiHQoHQWOQ3mGp3aAC8g57LdGqp-K_Ex2uAxLjPh6Tld7taR6ahyNnqmURU.webp"
+    },
+    {
+      "name": "Dolphin",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.vJKoq6OfGB-EnSstufh7APhMKF9_4pSzr4eSQYlsL1arqo37G0p3br85ZJwCHZUT.webp"
+    },
+    {
+      "name": "Garden Pot",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.IN6GmAFZm4LSi4czTAQTskTb2bAFDYWEbYJIoMi_tNlunarAFUYZEgXRWcDsyR4j.webp"
+    },
+    {
+      "name": "Love Lock",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.TL_a91AQingEGzFzl0Ak3BWmZVXo5gLdtfDRptYfsWzFFWfIN5B4ekRiG__mQYS4.webp"
+    },
+    {
+      "name": "Bow Tie",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.KZfFsFEdAZ-_RVtquP4amCdsIxPRR0uslNEHCFI9KGsr9nzqVryzzvGZIRevNBFO.webp"
+    },
+    {
+      "name": "Corn",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.OxcibL5s4Hg6jImPAkdR66szmP3czcfp445WZD9SKPxoc7kfw37mSxzeowoLxc_U.webp"
+    },
+    {
+      "name": "Croissant",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol._Iixlw4jRJ5FcccqtXrUXkA08gMSfXyaN_3cr__-BT3TdbNm5jkgrL49n7s8qT4F.webp"
+    },
+    {
+      "name": "Crystal Ball",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.b6a3zxyP_WNm2oRyHuQF_b_EK4yjgCAiIK-5RCtML8hVL-egCJ2J5XFrUCc3ud3k.webp"
+    },
+    {
+      "name": "Gear",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.KPAdon5n_nVY8Ois3Bki_qtlUStHpxz0ppd54YBdNC0OzVrAWTxuVbEV_kzms5qS.webp"
+    },
+    {
+      "name": "Acorn",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.mohgkG_baMSNYCMtCs_yOOXl3xDniM119SAX3UYhEvv6blnr5VWGIEAGtYP0XOX2.webp"
+    },
+    {
+      "name": "Pencil",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.Lu3dQRZa3NZUDuVYmJ3c58U_0w3N0_ZE8wnKPSUvMx7Cl4PwLdsvpse9eH1jIOWh.webp"
+    },
+    {
+      "name": "Maple Leaf",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.IK8st-DeGkQF3e9ubdeYGcKIVkIm7trTP65lD9pjPE6dRKudgDMYpbV4J9DidW_J.webp"
+    },
+    {
+      "name": "Ladybug",
+      "count": 10,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.EfnH87L8O9lOLZKwa9IDTh5OA1vwdQfQk7kw_1jfTgreBwi7x5ZOsE6-wGUExgTx.webp"
+    },
+    {
+      "name": "Sea Horse",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/vintagecigar/symbol.WkmfBshJsv9TCe30QZdvnf3L4wOBSPtQLtThyo3m2UPVYcf4j08uyvrjRWLmkCqP.webp"
+    },
+    {
+      "name": "",
+      "count": 1123,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "https://nft.fragment.com/gift/vintagecigar-15623.medium.jpg"
+    },
+    {
+      "name": "Algorithm Cup",
+      "count": 60,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/algorithmcup/thumb.webp"
+    },
+    {
+      "name": "Artisan Brick",
+      "count": 3058,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/artisanbrick/thumb.webp"
+    },
+    {
+      "name": "Astral Shard",
+      "count": 3009,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/astralshard/thumb.webp"
+    },
+    {
+      "name": "B-Day Candle",
+      "count": 25113,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "img": "/file/gifts/bdaycandle/thumb.webp"
+    },
+    {
+      "name": "Berry Box",
+      "count": 9217,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/berrybox/thumb.webp"
+    },
+    {
+      "name": "Big Year",
+      "count": 13147,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/bigyear/thumb.webp"
+    },
+    {
+      "name": "Bling Binkie",
+      "count": 2211,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/blingbinky/thumb.webp"
+    },
+    {
+      "name": "Bonded Ring",
+      "count": 3004,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/bondedring/thumb.webp"
+    },
+    {
+      "name": "Bow Tie",
+      "count": 9113,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/bowtie/thumb.webp"
+    },
+    {
+      "name": "Bunny Muffin",
+      "count": 6980,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/bunnymuffin/thumb.webp"
+    },
+    {
+      "name": "Candy Cane",
+      "count": 17592,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/candycane/thumb.webp"
+    },
+    {
+      "name": "Chill Flame",
+      "count": 47698,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "img": "/file/gifts/chillflame/thumb.webp"
+    },
+    {
+      "name": "Clover Pin",
+      "count": 19949,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/cloverpin/thumb.webp"
+    },
+    {
+      "name": "Cookie Heart",
+      "count": 14038,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/cookieheart/thumb.webp"
+    },
+    {
+      "name": "Crystal Ball",
+      "count": 8615,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/crystalball/thumb.webp"
+    },
+    {
+      "name": "Cupid Charm",
+      "count": 6072,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/cupidcharm/thumb.webp"
+    },
+    {
+      "name": "Desk Calendar",
+      "count": 34815,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "img": "/file/gifts/deskcalendar/thumb.webp"
+    },
+    {
+      "name": "Diamond Ring",
+      "count": 8723,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/diamondring/thumb.webp"
+    },
+    {
+      "name": "Durov’s Cap",
+      "count": 3271,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/durovscap/thumb.webp"
+    },
+    {
+      "name": "Durov’s Glass",
+      "count": 718,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/durovsglasses/thumb.webp"
+    },
+    {
+      "name": "Easter Egg",
+      "count": 28130,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "img": "/file/gifts/easteregg/thumb.webp"
+    },
+    {
+      "name": "Electric Skull",
+      "count": 4431,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/electricskull/thumb.webp"
+    },
+    {
+      "name": "Eternal Candle",
+      "count": 12871,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/eternalcandle/thumb.webp"
+    },
+    {
+      "name": "Eternal Rose",
+      "count": 5899,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/eternalrose/thumb.webp"
+    },
+    {
+      "name": "Evil Eye",
+      "count": 18884,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/evileye/thumb.webp"
+    },
+    {
+      "name": "Faith Amulet",
+      "count": 12630,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/faithamulet/thumb.webp"
+    },
+    {
+      "name": "Fine Pen",
+      "count": 3807,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/finepen/thumb.webp"
+    },
+    {
+      "name": "Flying Broom",
+      "count": 6884,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/flyingbroom/thumb.webp"
+    },
+    {
+      "name": "Fresh Sock",
+      "count": 12833,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/freshsocks/thumb.webp"
+    },
+    {
+      "name": "Gem Signet",
+      "count": 2205,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/gemsignet/thumb.webp"
+    },
+    {
+      "name": "Genie Lamp",
+      "count": 2790,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/genielamp/thumb.webp"
+    },
+    {
+      "name": "Ginger Cookie",
+      "count": 19058,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/gingercookie/thumb.webp"
+    },
+    {
+      "name": "Hanging Star",
+      "count": 7300,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/hangingstar/thumb.webp"
+    },
+    {
+      "name": "Happy Brownie",
+      "count": 12168,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/happybrownie/thumb.webp"
+    },
+    {
+      "name": "Heart Locket",
+      "count": 1333,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/heartlocket/thumb.webp"
+    },
+    {
+      "name": "Heroic Helmet",
+      "count": 1354,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/heroichelmet/thumb.webp"
+    },
+    {
+      "name": "Hex Pot",
+      "count": 14937,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/hexpot/thumb.webp"
+    },
+    {
+      "name": "Holiday Drink",
+      "count": 6770,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/holidaydrink/thumb.webp"
+    },
+    {
+      "name": "Homemade Cake",
+      "count": 33727,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "img": "/file/gifts/homemadecake/thumb.webp"
+    },
+    {
+      "name": "Hypno Lollipop",
+      "count": 9299,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/hypnolollipop/thumb.webp"
+    },
+    {
+      "name": "Ice Cream",
+      "count": 37532,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "img": "/file/gifts/icecream/thumb.webp"
+    },
+    {
+      "name": "Input Key",
+      "count": 15623,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/inputkey/thumb.webp"
+    },
+    {
+      "name": "Instant Ramen",
+      "count": 26303,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "img": "/file/gifts/instantramen/thumb.webp"
+    },
+    {
+      "name": "Intelligence Cup",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/intelligencecup/thumb.webp"
+    },
+    {
+      "name": "Ion Gem",
+      "count": 2740,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/iongem/thumb.webp"
+    },
+    {
+      "name": "Ionic Dryer",
+      "count": 2830,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/ionicdryer/thumb.webp"
+    },
+    {
+      "name": "Jacks-in-the-Box",
+      "count": 16960,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/jackinthebox/thumb.webp"
+    },
+    {
+      "name": "Jelly Bunnie",
+      "count": 14424,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/jellybunny/thumb.webp"
+    },
+    {
+      "name": "Jester Hat",
+      "count": 13796,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/jesterhat/thumb.webp"
+    },
+    {
+      "name": "Jingle Bell",
+      "count": 9203,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/jinglebells/thumb.webp"
+    },
+    {
+      "name": "Jolly Chimp",
+      "count": 15869,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/jollychimp/thumb.webp"
+    },
+    {
+      "name": "Joyful Bundle",
+      "count": 4365,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/joyfulbundle/thumb.webp"
+    },
+    {
+      "name": "Khabib’s Papakha",
+      "count": 3691,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/khabibspapakha/thumb.webp"
+    },
+    {
+      "name": "Kissed Frog",
+      "count": 7736,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/kissedfrog/thumb.webp"
+    },
+    {
+      "name": "Liberty Figure",
+      "count": 25587,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "img": "/file/gifts/libertyfigure/thumb.webp"
+    },
+    {
+      "name": "Light Sword",
+      "count": 17832,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/lightsword/thumb.webp"
+    },
+    {
+      "name": "Lol Pop",
+      "count": 69802,
+      "permille": 47,
+      "rarity": 47,
+      "pct": 4.7,
+      "img": "/file/gifts/lolpop/thumb.webp"
+    },
+    {
+      "name": "Loot Bag",
+      "count": 6685,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/lootbag/thumb.webp"
+    },
+    {
+      "name": "Love Candle",
+      "count": 3408,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/lovecandle/thumb.webp"
+    },
+    {
+      "name": "Love Potion",
+      "count": 6923,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lovepotion/thumb.webp"
+    },
+    {
+      "name": "Low Rider",
+      "count": 6905,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lowrider/thumb.webp"
+    },
+    {
+      "name": "Lucky Locket",
+      "count": 556,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/luckylocket/thumb.webp"
+    },
+    {
+      "name": "Lunar Snake",
+      "count": 20211,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "img": "/file/gifts/lunarsnake/thumb.webp"
+    },
+    {
+      "name": "Lush Bouquet",
+      "count": 6953,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lushbouquet/thumb.webp"
+    },
+    {
+      "name": "Mad Pumpkin",
+      "count": 6842,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/madpumpkin/thumb.webp"
+    },
+    {
+      "name": "Magic Potion",
+      "count": 3330,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/magicpotion/thumb.webp"
+    },
+    {
+      "name": "Mighty Arm",
+      "count": 1859,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/mightyarm/thumb.webp"
+    },
+    {
+      "name": "Mini Oscar",
+      "count": 2194,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/minioscar/thumb.webp"
+    },
+    {
+      "name": "Mirage Lamp",
+      "count": 1556,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/miragelamp/thumb.webp"
+    },
+    {
+      "name": "Money Pot",
+      "count": 9861,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/moneypot/thumb.webp"
+    },
+    {
+      "name": "Mood Pack",
+      "count": 16740,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/moodpack/thumb.webp"
+    },
+    {
+      "name": "Moon Pendant",
+      "count": 13802,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/moonpendant/thumb.webp"
+    },
+    {
+      "name": "Mousse Cake",
+      "count": 8410,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/moussecake/thumb.webp"
+    },
+    {
+      "name": "Nail Bracelet",
+      "count": 1956,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/nailbracelet/thumb.webp"
+    },
+    {
+      "name": "Neko Helmet",
+      "count": 4301,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/nekohelmet/thumb.webp"
+    },
+    {
+      "name": "Party Sparkler",
+      "count": 22201,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "img": "/file/gifts/partysparkler/thumb.webp"
+    },
+    {
+      "name": "Perfume Bottle",
+      "count": 2191,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/perfumebottle/thumb.webp"
+    },
+    {
+      "name": "Pet Snake",
+      "count": 12277,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/petsnake/thumb.webp"
+    },
+    {
+      "name": "Plush Pepe",
+      "count": 2484,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/plushpepe/thumb.webp"
+    },
+    {
+      "name": "Pool Float",
+      "count": 16859,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/poolfloat/thumb.webp"
+    },
+    {
+      "name": "Precious Peach",
+      "count": 2167,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/preciouspeach/thumb.webp"
+    },
+    {
+      "name": "Pretty Posie",
+      "count": 6137,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/prettyposy/thumb.webp"
+    },
+    {
+      "name": "Rare Bird",
+      "count": 3848,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/rarebird/thumb.webp"
+    },
+    {
+      "name": "Record Player",
+      "count": 5680,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/recordplayer/thumb.webp"
+    },
+    {
+      "name": "Resistance Dog",
+      "count": 843,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/resistancedog/thumb.webp"
+    },
+    {
+      "name": "Restless Jar",
+      "count": 10103,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/restlessjar/thumb.webp"
+    },
+    {
+      "name": "Sakura Flower",
+      "count": 14629,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/sakuraflower/thumb.webp"
+    },
+    {
+      "name": "Santa Hat",
+      "count": 13110,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/santahat/thumb.webp"
+    },
+    {
+      "name": "Scared Cat",
+      "count": 14525,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/scaredcat/thumb.webp"
+    },
+    {
+      "name": "Sharp Tongue",
+      "count": 3956,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/sharptongue/thumb.webp"
+    },
+    {
+      "name": "Signet Ring",
+      "count": 7393,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/signetring/thumb.webp"
+    },
+    {
+      "name": "Skull Flower",
+      "count": 7172,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/skullflower/thumb.webp"
+    },
+    {
+      "name": "Sky Stiletto",
+      "count": 6346,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/skystilettos/thumb.webp"
+    },
+    {
+      "name": "Sleigh Bell",
+      "count": 4421,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/sleighbell/thumb.webp"
+    },
+    {
+      "name": "Snake Box",
+      "count": 10677,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/snakebox/thumb.webp"
+    },
+    {
+      "name": "Snoop Cigar",
+      "count": 19240,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/snoopcigar/thumb.webp"
+    },
+    {
+      "name": "Snoop Dogg",
+      "count": 58529,
+      "permille": 39,
+      "rarity": 39,
+      "pct": 3.9,
+      "img": "/file/gifts/snoopdogg/thumb.webp"
+    },
+    {
+      "name": "Snow Globe",
+      "count": 6806,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/snowglobe/thumb.webp"
+    },
+    {
+      "name": "Snow Mitten",
+      "count": 5296,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/snowmittens/thumb.webp"
+    },
+    {
+      "name": "Spiced Wine",
+      "count": 12750,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/spicedwine/thumb.webp"
+    },
+    {
+      "name": "Spring Basket",
+      "count": 13947,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/springbasket/thumb.webp"
+    },
+    {
+      "name": "Spy Agaric",
+      "count": 29394,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "img": "/file/gifts/spyagaric/thumb.webp"
+    },
+    {
+      "name": "Star Notepad",
+      "count": 9598,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/starnotepad/thumb.webp"
+    },
+    {
+      "name": "Stellar Rocket",
+      "count": 17492,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/stellarrocket/thumb.webp"
+    },
+    {
+      "name": "Surge Board",
+      "count": 3597,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/surgeboard/thumb.webp"
+    },
+    {
+      "name": "Swag Bag",
+      "count": 21898,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "img": "/file/gifts/swagbag/thumb.webp"
+    },
+    {
+      "name": "Swiss Watch",
+      "count": 11082,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/swisswatch/thumb.webp"
+    },
+    {
+      "name": "Tama Gadget",
+      "count": 11683,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/tamagadget/thumb.webp"
+    },
+    {
+      "name": "Timeless Book",
+      "count": 9799,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/timelessbook/thumb.webp"
+    },
+    {
+      "name": "Top Hat",
+      "count": 9257,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/tophat/thumb.webp"
+    },
+    {
+      "name": "Toy Bear",
+      "count": 30025,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "img": "/file/gifts/toybear/thumb.webp"
+    },
+    {
+      "name": "Trapped Heart",
+      "count": 9896,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/trappedheart/thumb.webp"
+    },
+    {
+      "name": "UFC Strike",
+      "count": 7060,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/ufcstrike/thumb.webp"
+    },
+    {
+      "name": "Valentine Box",
+      "count": 4106,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/valentinebox/thumb.webp"
+    },
+    {
+      "name": "Vice Cream",
+      "count": 48021,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "img": "/file/gifts/vicecream/thumb.webp"
+    },
+    {
+      "name": "Victory Medal",
+      "count": 16481,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/victorymedal/thumb.webp"
+    },
+    {
+      "name": "Vintage Cigar",
+      "count": 9161,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/vintagecigar/thumb.webp"
+    },
+    {
+      "name": "Voodoo Doll",
+      "count": 11177,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/voodoodoll/thumb.webp"
+    },
+    {
+      "name": "Westside Sign",
+      "count": 5339,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/westsidesign/thumb.webp"
+    },
+    {
+      "name": "Whip Cupcake",
+      "count": 16235,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/whipcupcake/thumb.webp"
+    },
+    {
+      "name": "Winter Wreath",
+      "count": 10298,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/winterwreath/thumb.webp"
+    },
+    {
+      "name": "Witch Hat",
+      "count": 31553,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "img": "/file/gifts/witchhat/thumb.webp"
+    },
+    {
+      "name": "Xmas Stocking",
+      "count": 16968,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/xmasstocking/thumb.webp"
+    }
+  ]
+}

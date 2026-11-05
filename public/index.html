@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Paxta Gifts — Doʻkon, Profil, Upgrade va Craft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand" id="brandHome">
+          <div class="brand-logo">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/>
+              <rect x="2" y="7" width="20" height="5" rx="1"/>
+              <path d="M12 22V7"/>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <strong>Paxta Gifts</strong>
+            <span>PaxtaGram Kolleksiyaviy Sovgʻalar</span>
+          </div>
+        </div>
+
+        <nav class="main-tabs" role="tablist">
+          <button class="main-tab active" data-tab="shop" id="tabShop">
+            <span>Doʻkon</span>
+            <b class="tab-badge" id="shopCountBadge">1</b>
+          </button>
+          <button class="main-tab" data-tab="inventory" id="tabInventory">
+            <span>Profil</span>
+            <b class="tab-badge" id="invCountBadge">0</b>
+          </button>
+          <button class="main-tab" data-tab="admin" id="tabAdmin">
+            <span>⚙️ Admin</span>
+          </button>
+        </nav>
+
+        <div class="user-bar">
+          <button class="balance-pill" id="btnAddStars" title="Yulduzlar qoʻshish">
+            <svg class="star-svg" viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor" d="M12 1.8l2.9 6.2 6.8.8-5 4.6 1.4 6.7L12 16.7 5.9 20.1l1.4-6.7-5-4.6 6.8-.8z"/>
+            </svg>
+            <span id="userStars">5 000</span>
+            <span class="balance-plus">+</span>
+          </button>
+          <button class="user-pill" id="btnSwitchUser" title="PaxtaGram profilni almashtirish">
+            <span class="avatar avatar-sm" id="userAvatar">M</span>
+            <span id="userDisplayName">Muhammadiso</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- TAB 1: Do'kon (Shop — Only enabled collections, currently Coin Flip 500 supply) -->
+      <section class="tab-pane active" id="paneShop">
+        <div class="profile-banner">
+          <div class="profile-banner-left">
+            <div class="brand-logo" style="width:48px;height:48px;border-radius:15px;">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10.5h5M9.5 13.5h5"/></svg>
+            </div>
+            <div class="profile-meta">
+              <div class="profile-name-row">
+                <h1>Sovgʻalar doʻkoni</h1>
+              </div>
+              <p class="profile-sub">Doʻkondan sovgʻa sotib oling, soʻngra <b>Profil</b> boʻlimiga oʻtib uni <b>Upgrade (yaxshilash)</b> va <b>Craft (tayyorlash)</b> qiling</p>
+            </div>
+          </div>
+        </div>
+        <div class="catalog-grid" id="catalogGrid"></div>
+      </section>
+
+      <!-- TAB 2: Profil (User's Inventory — Upgrade & Craft here) -->
+      <section class="tab-pane" id="paneInventory" hidden>
+        <div class="profile-banner">
+          <div class="profile-banner-left">
+            <div class="avatar avatar-lg" id="profileAvatar">M</div>
+            <div class="profile-meta">
+              <div class="profile-name-row">
+                <h1 id="profileName">Muhammadiso</h1>
+                <span class="profile-worn-badge" id="profileWornBadge" hidden></span>
+              </div>
+              <p class="profile-sub">Sovgʻani bosing — oddiy sovgʻani <b>Upgrade</b> qilish yoki yaxshilangan sovgʻalardan <b>Craft</b> qilish uchun</p>
+            </div>
+          </div>
+          <div class="profile-filters">
+            <button class="filter-chip active" data-filter="all">Barchasi</button>
+            <button class="filter-chip" data-filter="regular">Oddiy (Upgrade uchun)</button>
+            <button class="filter-chip" data-filter="upgraded">Noyob (Upgraded)</button>
+            <button class="filter-chip" data-filter="crafted">✨ Tayyorlangan (Craft)</button>
+          </div>
+        </div>
+
+        <div class="gift-grid" id="inventoryGrid"></div>
+      </section>
+
+      <!-- TAB 3: Admin Panel (Manage all 125 collections: toggle active, edit price, upgradePrice, supply) -->
+      <section class="tab-pane" id="paneAdmin" hidden>
+        <div class="profile-banner">
+          <div class="profile-banner-left">
+            <div class="profile-meta">
+              <div class="profile-name-row">
+                <h1>⚙️ Admin Boshqaruv Paneli</h1>
+              </div>
+              <p class="profile-sub">Istalgan sovgʻani doʻkonda yoqish/oʻchirish, narxini, upgrade narxini va tirajini oʻzgartirish (barcha oʻzgarishlar bazada saqlanadi)</p>
+            </div>
+          </div>
+          <div class="profile-filters">
+            <button class="btn btn-tonal btn-sm" id="adminBtnOnlyCoinflip">Faqat Coin Flip qoldirish</button>
+            <button class="btn btn-primary btn-sm" id="adminBtnEnableAll">Barcha 125 ta giftni yoqish</button>
+          </div>
+        </div>
+
+        <div class="admin-stats" id="adminStatsRow"></div>
+
+        <div class="shop-toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="text" id="adminSearch" placeholder="Admin qidiruv (Coin Flip, Mask, Durov's Cap, Plush Pepe...)" />
+          </div>
+          <div class="shop-sort">
+            <button class="filter-chip active" data-afilter="all">Barchasi (125)</button>
+            <button class="filter-chip" data-afilter="enabled">Yoqilganlar</button>
+            <button class="filter-chip" data-afilter="disabled">Oʻchirilganlar</button>
+          </div>
+        </div>
+
+        <div class="admin-list" id="adminList"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 1:1 paxta.online GiftViewDialog / GiftUpgradePanel / GiftCraftPanel Modal -->
+  <div class="modal-backdrop" id="giftModalBackdrop" hidden>
+    <div class="modal-panel gv-modal" id="giftModalPanel" role="dialog" aria-modal="true">
+      <div class="modal-head modal-head-float" id="giftModalHead"></div>
+      <div class="modal-body" id="giftModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Secondary Action Prompt Modal (Shop Buy / Transfer / Sell / Login / Stars) -->
+  <div class="modal-backdrop" id="subModalBackdrop" hidden>
+    <div class="modal-panel sub-modal-panel" id="subModalPanel" role="dialog" aria-modal="true">
+      <div class="modal-head" id="subModalHead">
+        <h3 class="modal-title" id="subModalTitle"></h3>
+        <button class="icon-btn" id="subModalClose" aria-label="Yopish">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="subModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Edge Confetti Canvas -->
+  <canvas class="confetti" id="confettiCanvas" hidden></canvas>
+
+  <!-- Toast Notification Container -->
+  <div class="toasts" id="toastContainer"></div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

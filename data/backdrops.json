@@ -1,0 +1,562 @@
+{
+  "Celtic Blue": {
+    "center": "#45b8ed",
+    "edge": "#3886d9",
+    "pattern": "#003e85",
+    "text": "#c2e7ff",
+    "rarity": 12
+  },
+  "Midnight Blue": {
+    "center": "#5c6985",
+    "edge": "#354057",
+    "pattern": "#030a18",
+    "text": "#bfcce0",
+    "rarity": 12
+  },
+  "Carrot Juice": {
+    "center": "#db9867",
+    "edge": "#c76f4f",
+    "pattern": "#8e2100",
+    "text": "#ffd7ca",
+    "rarity": 12
+  },
+  "Silver Blue": {
+    "center": "#80a4b8",
+    "edge": "#607c91",
+    "pattern": "#15374b",
+    "text": "#c9e4f4",
+    "rarity": 10
+  },
+  "Black": {
+    "center": "#363738",
+    "edge": "#0e0f0f",
+    "pattern": "#6c6868",
+    "text": "#8c8f91",
+    "rarity": 10
+  },
+  "Orange": {
+    "center": "#d19a3a",
+    "edge": "#c06f47",
+    "pattern": "#9d3907",
+    "text": "#ffe1c3",
+    "rarity": 15
+  },
+  "Persimmon": {
+    "center": "#e7a75a",
+    "edge": "#c5675f",
+    "pattern": "#ad0e00",
+    "text": "#ffe4d7",
+    "rarity": 12
+  },
+  "Marine Blue": {
+    "center": "#4e689c",
+    "edge": "#3b4b7a",
+    "pattern": "#010821",
+    "text": "#bbcbf2",
+    "rarity": 12
+  },
+  "Onyx Black": {
+    "center": "#4d5254",
+    "edge": "#313638",
+    "pattern": "#000000",
+    "text": "#a9abad",
+    "rarity": 10
+  },
+  "Gunmetal": {
+    "center": "#4c5d63",
+    "edge": "#2f3b42",
+    "pattern": "#04080a",
+    "text": "#b6c5cc",
+    "rarity": 15
+  },
+  "Fandango": {
+    "center": "#e28ab6",
+    "edge": "#a4588b",
+    "pattern": "#8e054e",
+    "text": "#ffc7eb",
+    "rarity": 15
+  },
+  "Sky Blue": {
+    "center": "#58b4c8",
+    "edge": "#538bc2",
+    "pattern": "#07609b",
+    "text": "#cde8fd",
+    "rarity": 12
+  },
+  "Ivory White": {
+    "center": "#bab6b1",
+    "edge": "#a19d97",
+    "pattern": "#665f52",
+    "text": "#f5f4f2",
+    "rarity": 15
+  },
+  "Satin Gold": {
+    "center": "#bf9b47",
+    "edge": "#8d7739",
+    "pattern": "#5d3b00",
+    "text": "#fee4a9",
+    "rarity": 10
+  },
+  "Aquamarine": {
+    "center": "#60b195",
+    "edge": "#46abb4",
+    "pattern": "#035f67",
+    "text": "#c7fdfe",
+    "rarity": 10
+  },
+  "Caramel": {
+    "center": "#d09932",
+    "edge": "#b77431",
+    "pattern": "#7d3600",
+    "text": "#ffd9b3",
+    "rarity": 10
+  },
+  "Pure Gold": {
+    "center": "#ccab41",
+    "edge": "#987b32",
+    "pattern": "#703c00",
+    "text": "#ffe5ab",
+    "rarity": 10
+  },
+  "Platinum": {
+    "center": "#b2aea7",
+    "edge": "#88847e",
+    "pattern": "#3d382d",
+    "text": "#e9e7e2",
+    "rarity": 12
+  },
+  "Sapphire": {
+    "center": "#58a3c8",
+    "edge": "#5379c2",
+    "pattern": "#0d45b6",
+    "text": "#c1deff",
+    "rarity": 12
+  },
+  "Cappuccino": {
+    "center": "#b1907e",
+    "edge": "#7c6356",
+    "pattern": "#4a3226",
+    "text": "#ebd4c8",
+    "rarity": 15
+  },
+  "Steel Grey": {
+    "center": "#97a2ac",
+    "edge": "#63727c",
+    "pattern": "#334552",
+    "text": "#dfe4e8",
+    "rarity": 15
+  },
+  "Copper": {
+    "center": "#d08656",
+    "edge": "#9d6531",
+    "pattern": "#602901",
+    "text": "#f4d8be",
+    "rarity": 12
+  },
+  "Emerald": {
+    "center": "#78c585",
+    "edge": "#42a171",
+    "pattern": "#006532",
+    "text": "#b9f9d9",
+    "rarity": 10
+  },
+  "Navy Blue": {
+    "center": "#6c9edd",
+    "edge": "#5c6ec9",
+    "pattern": "#1239a2",
+    "text": "#d3e1ff",
+    "rarity": 12
+  },
+  "Amber": {
+    "center": "#dab345",
+    "edge": "#b1802a",
+    "pattern": "#7a3100",
+    "text": "#ffedc7",
+    "rarity": 12
+  },
+  "Mint Green": {
+    "center": "#7ecb82",
+    "edge": "#459e5a",
+    "pattern": "#026b22",
+    "text": "#bdffcc",
+    "rarity": 15
+  },
+  "Roman Silver": {
+    "center": "#a3a8b5",
+    "edge": "#7c808a",
+    "pattern": "#3f4550",
+    "text": "#dadfe2",
+    "rarity": 10
+  },
+  "Desert Sand": {
+    "center": "#b39f82",
+    "edge": "#7e735b",
+    "pattern": "#504429",
+    "text": "#f2e5cd",
+    "rarity": 15
+  },
+  "Light Olive": {
+    "center": "#c2af64",
+    "edge": "#887e45",
+    "pattern": "#594c04",
+    "text": "#f5ebbc",
+    "rarity": 15
+  },
+  "Tomato": {
+    "center": "#e6793e",
+    "edge": "#d44e3f",
+    "pattern": "#800b00",
+    "text": "#ffccbd",
+    "rarity": 15
+  },
+  "Coral Red": {
+    "center": "#da896b",
+    "edge": "#c4654f",
+    "pattern": "#891200",
+    "text": "#ffd9d2",
+    "rarity": 15
+  },
+  "Turquoise": {
+    "center": "#5ec0b8",
+    "edge": "#3d928e",
+    "pattern": "#11534c",
+    "text": "#bdf8f2",
+    "rarity": 15
+  },
+  "Battleship Grey": {
+    "center": "#8c8c85",
+    "edge": "#6c6c66",
+    "pattern": "#2b2a20",
+    "text": "#cfcec4",
+    "rarity": 12
+  },
+  "Azure Blue": {
+    "center": "#5db1cb",
+    "edge": "#448bab",
+    "pattern": "#025074",
+    "text": "#b5ecff",
+    "rarity": 10
+  },
+  "Grape": {
+    "center": "#9d74c1",
+    "edge": "#794da0",
+    "pattern": "#3e0a6b",
+    "text": "#e0bdfe",
+    "rarity": 15
+  },
+  "Pacific Cyan": {
+    "center": "#5abea6",
+    "edge": "#3d95ba",
+    "pattern": "#02648d",
+    "text": "#b6efff",
+    "rarity": 12
+  },
+  "Dark Lilac": {
+    "center": "#b17da5",
+    "edge": "#8c577a",
+    "pattern": "#652852",
+    "text": "#f0c4e2",
+    "rarity": 15
+  },
+  "English Violet": {
+    "center": "#b186bb",
+    "edge": "#875a91",
+    "pattern": "#54225f",
+    "text": "#e6c7ed",
+    "rarity": 12
+  },
+  "Moonstone": {
+    "center": "#7eb1b4",
+    "edge": "#588390",
+    "pattern": "#164552",
+    "text": "#daf5fd",
+    "rarity": 10
+  },
+  "Electric Indigo": {
+    "center": "#a980f3",
+    "edge": "#5b62d8",
+    "pattern": "#3722ab",
+    "text": "#d8d8ff",
+    "rarity": 12
+  },
+  "Electric Purple": {
+    "center": "#ca70c6",
+    "edge": "#9662d4",
+    "pattern": "#620fb4",
+    "text": "#ebceff",
+    "rarity": 15
+  },
+  "Raspberry": {
+    "center": "#e07b85",
+    "edge": "#b65980",
+    "pattern": "#890638",
+    "text": "#ffd6e6",
+    "rarity": 10
+  },
+  "Pacific Green": {
+    "center": "#6fc793",
+    "edge": "#3b9c84",
+    "pattern": "#006149",
+    "text": "#c6fff0",
+    "rarity": 12
+  },
+  "Jade Green": {
+    "center": "#55c49c",
+    "edge": "#3b9977",
+    "pattern": "#044931",
+    "text": "#befee7",
+    "rarity": 10
+  },
+  "Shamrock Green": {
+    "center": "#8ab163",
+    "edge": "#559345",
+    "pattern": "#126b00",
+    "text": "#d5fbc8",
+    "rarity": 15
+  },
+  "Malachite": {
+    "center": "#95b457",
+    "edge": "#3d9755",
+    "pattern": "#046b06",
+    "text": "#c2efbe",
+    "rarity": 10
+  },
+  "Burgundy": {
+    "center": "#a35e66",
+    "edge": "#6d414a",
+    "pattern": "#340307",
+    "text": "#e7bcc0",
+    "rarity": 15
+  },
+  "Mystic Pearl": {
+    "center": "#d08b6d",
+    "edge": "#b05770",
+    "pattern": "#9b0526",
+    "text": "#fedde0",
+    "rarity": 15
+  },
+  "Mustard": {
+    "center": "#d4980d",
+    "edge": "#c47712",
+    "pattern": "#7a2500",
+    "text": "#ffde9c",
+    "rarity": 12
+  },
+  "French Blue": {
+    "center": "#5c9bc4",
+    "edge": "#37739a",
+    "pattern": "#073b5c",
+    "text": "#c1e3f9",
+    "rarity": 12
+  },
+  "Neon Blue": {
+    "center": "#7596f9",
+    "edge": "#6862e4",
+    "pattern": "#2828bc",
+    "text": "#cfddff",
+    "rarity": 12
+  },
+  "Indigo Dye": {
+    "center": "#537991",
+    "edge": "#416479",
+    "pattern": "#031b29",
+    "text": "#c2dcee",
+    "rarity": 12
+  },
+  "Pistachio": {
+    "center": "#97b07c",
+    "edge": "#5c814c",
+    "pattern": "#28471b",
+    "text": "#d9f2c9",
+    "rarity": 15
+  },
+  "Pine Green": {
+    "center": "#6ba97c",
+    "edge": "#3e7970",
+    "pattern": "#0b4833",
+    "text": "#d8f5e5",
+    "rarity": 15
+  },
+  "Purple": {
+    "center": "#ae6cae",
+    "edge": "#844784",
+    "pattern": "#470c47",
+    "text": "#f3cbf3",
+    "rarity": 10
+  },
+  "Lavender": {
+    "center": "#b789e4",
+    "edge": "#8a5abc",
+    "pattern": "#5b10ab",
+    "text": "#e8d1ff",
+    "rarity": 12
+  },
+  "Rifle Green": {
+    "center": "#64695c",
+    "edge": "#4b5241",
+    "pattern": "#0f120b",
+    "text": "#c3c7bd",
+    "rarity": 12
+  },
+  "Strawberry": {
+    "center": "#dd8e6f",
+    "edge": "#b75a60",
+    "pattern": "#a90c0c",
+    "text": "#ffd3d3",
+    "rarity": 10
+  },
+  "Rosewood": {
+    "center": "#b77a77",
+    "edge": "#814c52",
+    "pattern": "#551c22",
+    "text": "#edcacd",
+    "rarity": 12
+  },
+  "Hunter Green": {
+    "center": "#8fae78",
+    "edge": "#4b825b",
+    "pattern": "#1c491f",
+    "text": "#d8f5de",
+    "rarity": 12
+  },
+  "Lemongrass": {
+    "center": "#aeb85a",
+    "edge": "#559345",
+    "pattern": "#466a07",
+    "text": "#d8f2c2",
+    "rarity": 15
+  },
+  "Cyberpunk": {
+    "center": "#858ff3",
+    "edge": "#865fd3",
+    "pattern": "#4318a6",
+    "text": "#e0d9ff",
+    "rarity": 12
+  },
+  "Feldgrau": {
+    "center": "#899288",
+    "edge": "#5e6b63",
+    "pattern": "#1c261f",
+    "text": "#dee9e1",
+    "rarity": 15
+  },
+  "Chestnut": {
+    "center": "#be6f54",
+    "edge": "#994838",
+    "pattern": "#601508",
+    "text": "#fec6b9",
+    "rarity": 10
+  },
+  "Khaki Green": {
+    "center": "#adb070",
+    "edge": "#6b7d54",
+    "pattern": "#39501b",
+    "text": "#d3e6bb",
+    "rarity": 15
+  },
+  "Chocolate": {
+    "center": "#a46e58",
+    "edge": "#74443b",
+    "pattern": "#3e0a02",
+    "text": "#e4b6ac",
+    "rarity": 12
+  },
+  "Cobalt Blue": {
+    "center": "#6088cf",
+    "edge": "#5162b8",
+    "pattern": "#13247c",
+    "text": "#c2d3f5",
+    "rarity": 15
+  },
+  "French Violet": {
+    "center": "#c260e6",
+    "edge": "#914ed9",
+    "pattern": "#4a018a",
+    "text": "#ebc7ff",
+    "rarity": 10
+  },
+  "Tactical Pine": {
+    "center": "#44826b",
+    "edge": "#2f6369",
+    "pattern": "#002624",
+    "text": "#b7e6d3",
+    "rarity": 15
+  },
+  "Seal Brown": {
+    "center": "#664d45",
+    "edge": "#47362e",
+    "pattern": "#0a0605",
+    "text": "#d4bcb5",
+    "rarity": 12
+  },
+  "Camo Green": {
+    "center": "#75944d",
+    "edge": "#547341",
+    "pattern": "#163701",
+    "text": "#cfe8b9",
+    "rarity": 15
+  },
+  "Fire Engine": {
+    "center": "#f05f4f",
+    "edge": "#c43949",
+    "pattern": "#690009",
+    "text": "#ffb7a6",
+    "rarity": 10
+  },
+  "Carmine": {
+    "center": "#e0574a",
+    "edge": "#a8383b",
+    "pattern": "#4f0100",
+    "text": "#ffb7ad",
+    "rarity": 15
+  },
+  "Mexican Pink": {
+    "center": "#e36692",
+    "edge": "#c9497c",
+    "pattern": "#750230",
+    "text": "#ffd6e6",
+    "rarity": 12
+  },
+  "Burnt Sienna": {
+    "center": "#d66f3c",
+    "edge": "#b54b2d",
+    "pattern": "#6b0902",
+    "text": "#ffccb0",
+    "rarity": 10
+  },
+  "Gunship Green": {
+    "center": "#558a65",
+    "edge": "#3d6657",
+    "pattern": "#07261d",
+    "text": "#b5e0d4",
+    "rarity": 12
+  },
+  "Old Gold": {
+    "center": "#b58d38",
+    "edge": "#946925",
+    "pattern": "#4f3302",
+    "text": "#ffdd8c",
+    "rarity": 10
+  },
+  "Dark Green": {
+    "center": "#516341",
+    "edge": "#2b452f",
+    "pattern": "#000501",
+    "text": "#bfd1a9",
+    "rarity": 12
+  },
+  "Ranger Green": {
+    "center": "#5f7849",
+    "edge": "#3c4f3b",
+    "pattern": "#102209",
+    "text": "#b7c4b5",
+    "rarity": 15
+  },
+  "Deep Cyan": {
+    "center": "#31b5aa",
+    "edge": "#189599",
+    "pattern": "#004f4f",
+    "text": "#d1fffd",
+    "rarity": 10
+  }
+}

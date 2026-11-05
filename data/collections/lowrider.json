@@ -1,0 +1,3808 @@
+{
+  "slug": "lowrider",
+  "name": "Low Rider",
+  "plural": "Low Riders",
+  "supply": 6905,
+  "minted": 6905,
+  "circulating": 6905,
+  "price": 250,
+  "upgradePrice": 63,
+  "thumb": "/file/gifts/lowrider/thumb.webp",
+  "baseTgs": "/file/gifts/lowrider/model.FYlh6HzC9c75TGqjnldAFnUfLThVbymT-KBTw8Z5tn2iDzHiXbJJXYSz-HDURNoP.tgs",
+  "models": [
+    {
+      "name": "Money Rider",
+      "count": 240,
+      "permille": 35,
+      "rarity": 35,
+      "pct": 3.5,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.FYlh6HzC9c75TGqjnldAFnUfLThVbymT-KBTw8Z5tn2iDzHiXbJJXYSz-HDURNoP.webp",
+      "tgs": "/file/gifts/lowrider/model.FYlh6HzC9c75TGqjnldAFnUfLThVbymT-KBTw8Z5tn2iDzHiXbJJXYSz-HDURNoP.tgs"
+    },
+    {
+      "name": "Silver Angel",
+      "count": 227,
+      "permille": 33,
+      "rarity": 33,
+      "pct": 3.3,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.Hvwrs5qAvVh_MyVMbZUBbSZQOSqkVLtQbp7YW3tVRVZzk-3H_T0SBls_XhgtDE8w.webp",
+      "tgs": "/file/gifts/lowrider/model.Hvwrs5qAvVh_MyVMbZUBbSZQOSqkVLtQbp7YW3tVRVZzk-3H_T0SBls_XhgtDE8w.tgs"
+    },
+    {
+      "name": "Lovemobile",
+      "count": 224,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.0-NNAcIUmK-OulxpamXl6l2HCykFkzC7lGGTM5HeHRt8L78Svb8ovPP3VdlffAHB.webp",
+      "tgs": "/file/gifts/lowrider/model.0-NNAcIUmK-OulxpamXl6l2HCykFkzC7lGGTM5HeHRt8L78Svb8ovPP3VdlffAHB.tgs"
+    },
+    {
+      "name": "Malibu",
+      "count": 205,
+      "permille": 30,
+      "rarity": 30,
+      "pct": 3,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.ToTa-_u_gr_yR79haX_kPhBOkezt4KEFgjE5IGaGI_M2y6V4m4ksLev8boQe0j6r.webp",
+      "tgs": "/file/gifts/lowrider/model.ToTa-_u_gr_yR79haX_kPhBOkezt4KEFgjE5IGaGI_M2y6V4m4ksLev8boQe0j6r.tgs"
+    },
+    {
+      "name": "Let Me Ride",
+      "count": 204,
+      "permille": 30,
+      "rarity": 30,
+      "pct": 3,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.8XSg6wr0VRSBqVNIfwY7dhN8sBuVO0atvUespkYZBB14fKE_HUYIGGW65k7V6sgS.webp",
+      "tgs": "/file/gifts/lowrider/model.8XSg6wr0VRSBqVNIfwY7dhN8sBuVO0atvUespkYZBB14fKE_HUYIGGW65k7V6sgS.tgs"
+    },
+    {
+      "name": "Chevy 1964",
+      "count": 200,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.XhqK5bw5DRP0FJBe9YXCNi9X6RR-ghc78OdfwjH7Oq8ReLRy92BWQCVLcnUYtK-d.webp",
+      "tgs": "/file/gifts/lowrider/model.XhqK5bw5DRP0FJBe9YXCNi9X6RR-ghc78OdfwjH7Oq8ReLRy92BWQCVLcnUYtK-d.tgs"
+    },
+    {
+      "name": "DeVille 1968",
+      "count": 200,
+      "permille": 29,
+      "rarity": 29,
+      "pct": 2.9,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.PVYsO35Wi_Rjw3_u6h_eGTOSzUJfa7b3ysm1Z1TkZRcyX7tLfcaSJUyQew5t5m_n.webp",
+      "tgs": "/file/gifts/lowrider/model.PVYsO35Wi_Rjw3_u6h_eGTOSzUJfa7b3ysm1Z1TkZRcyX7tLfcaSJUyQew5t5m_n.tgs"
+    },
+    {
+      "name": "Neon Phantom",
+      "count": 192,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.7cUB3RucR4-7rerBHmsUoV0SZRhEN8NrQnPJxFKXtuGVL4PUi2b-CChSPyTwqYZD.webp",
+      "tgs": "/file/gifts/lowrider/model.7cUB3RucR4-7rerBHmsUoV0SZRhEN8NrQnPJxFKXtuGVL4PUi2b-CChSPyTwqYZD.tgs"
+    },
+    {
+      "name": "Drop It&#33;",
+      "count": 191,
+      "permille": 28,
+      "rarity": 28,
+      "pct": 2.8,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.I7eaoYxVauteWTKYr_odLmpXSbXXAA7eYjeca4smL3OE8_obPL2Cf16URXXxF9Z4.webp",
+      "tgs": "/file/gifts/lowrider/model.I7eaoYxVauteWTKYr_odLmpXSbXXAA7eYjeca4smL3OE8_obPL2Cf16URXXxF9Z4.tgs"
+    },
+    {
+      "name": "Disco Rider",
+      "count": 189,
+      "permille": 27,
+      "rarity": 27,
+      "pct": 2.7,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.chVZPV_kYzmXDK-r_6P2tI8LKy_Dy0PuM0t27Rorr9jDRGMXMhQqPeI_ZeVlWxwu.webp",
+      "tgs": "/file/gifts/lowrider/model.chVZPV_kYzmXDK-r_6P2tI8LKy_Dy0PuM0t27Rorr9jDRGMXMhQqPeI_ZeVlWxwu.tgs"
+    },
+    {
+      "name": "Blizzard",
+      "count": 173,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.tV5Sw_sfesNzhz3baIP5XNeJe3HyVkqI4uUEIl3muxUi82WYmQ_rJJxpo1ecPlIK.webp",
+      "tgs": "/file/gifts/lowrider/model.tV5Sw_sfesNzhz3baIP5XNeJe3HyVkqI4uUEIl3muxUi82WYmQ_rJJxpo1ecPlIK.tgs"
+    },
+    {
+      "name": "Flamingo",
+      "count": 173,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.aOwilpTrw8DaTUs1mvo0n1JMnqg1FmpaFbuh146d_Em620XvuIkTZOJa6DSgj0Wu.webp",
+      "tgs": "/file/gifts/lowrider/model.aOwilpTrw8DaTUs1mvo0n1JMnqg1FmpaFbuh146d_Em620XvuIkTZOJa6DSgj0Wu.tgs"
+    },
+    {
+      "name": "Ultramarine",
+      "count": 173,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.4mO4m2tNaVnWvUQEi-A4lCnpjM0uJE9VPvlMquS9QYSd2PmEEGLSSq_Mz-C-T94O.webp",
+      "tgs": "/file/gifts/lowrider/model.4mO4m2tNaVnWvUQEi-A4lCnpjM0uJE9VPvlMquS9QYSd2PmEEGLSSq_Mz-C-T94O.tgs"
+    },
+    {
+      "name": "Speedboat",
+      "count": 172,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.qQcGNejjIxIYj0xDpI4oTM0HNGp8KabhfyENhllNsUAOTtuf5RSRHdrGQOdH_FxQ.webp",
+      "tgs": "/file/gifts/lowrider/model.qQcGNejjIxIYj0xDpI4oTM0HNGp8KabhfyENhllNsUAOTtuf5RSRHdrGQOdH_FxQ.tgs"
+    },
+    {
+      "name": "Paparazzi",
+      "count": 171,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.ERBrI1mGv4iaKqi_uLCd8WFPEmBK3D95m7Qqjrif0v1Sulp6DnzvlNb70S5m1QNo.webp",
+      "tgs": "/file/gifts/lowrider/model.ERBrI1mGv4iaKqi_uLCd8WFPEmBK3D95m7Qqjrif0v1Sulp6DnzvlNb70S5m1QNo.tgs"
+    },
+    {
+      "name": "Bass Drop",
+      "count": 169,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.eoPilD9ZydBgWthlW9dp0G_83RXCiOUdNrotiOGD6ZXi5CrxepqPSP6nlHy7ol9Z.webp",
+      "tgs": "/file/gifts/lowrider/model.eoPilD9ZydBgWthlW9dp0G_83RXCiOUdNrotiOGD6ZXi5CrxepqPSP6nlHy7ol9Z.tgs"
+    },
+    {
+      "name": "Blaze",
+      "count": 169,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.5FIr2o64fGjKdwVAanJkWPnSnnk2cHi3GH-d3fi3eW_GzZYzK5xF8vagJKDBI6JB.webp",
+      "tgs": "/file/gifts/lowrider/model.5FIr2o64fGjKdwVAanJkWPnSnnk2cHi3GH-d3fi3eW_GzZYzK5xF8vagJKDBI6JB.tgs"
+    },
+    {
+      "name": "Neon Nitro",
+      "count": 166,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.m8R9Qb_ghrSm2Ra9uGX-VEep8fntlNM6vqWBN208la9UrZRC85ajrwD1NGO8zHlH.webp",
+      "tgs": "/file/gifts/lowrider/model.m8R9Qb_ghrSm2Ra9uGX-VEep8fntlNM6vqWBN208la9UrZRC85ajrwD1NGO8zHlH.tgs"
+    },
+    {
+      "name": "Vape Wave",
+      "count": 157,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.heu5gsfuBxNbn9pCspqj7-GRoY70VtSRj3bU6yQxavLynVbvwajDNxvy4DbWqw6y.webp",
+      "tgs": "/file/gifts/lowrider/model.heu5gsfuBxNbn9pCspqj7-GRoY70VtSRj3bU6yQxavLynVbvwajDNxvy4DbWqw6y.tgs"
+    },
+    {
+      "name": "Dribble",
+      "count": 156,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.hiIO2yiO4zeUJcy7Wxa5tpkph4A-aYTs_ZQ_KpFw2K_Su78p5_jRnj2UWPMCJian.webp",
+      "tgs": "/file/gifts/lowrider/model.hiIO2yiO4zeUJcy7Wxa5tpkph4A-aYTs_ZQ_KpFw2K_Su78p5_jRnj2UWPMCJian.tgs"
+    },
+    {
+      "name": "Brown Sugar",
+      "count": 153,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.5IMY2FJ3gcyqLZaXFbTxmgNU0IX5KtxSQi2d7wHDNGo1qfsNch94OHWQRAmA3Epu.webp",
+      "tgs": "/file/gifts/lowrider/model.5IMY2FJ3gcyqLZaXFbTxmgNU0IX5KtxSQi2d7wHDNGo1qfsNch94OHWQRAmA3Epu.tgs"
+    },
+    {
+      "name": "Dark Roast",
+      "count": 147,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.Ky34F0F6dKRa4GGWo3mhfT41Be1d-a5_whJCxmC5gr50ELbxVU0bEeCjVWfGdEfz.webp",
+      "tgs": "/file/gifts/lowrider/model.Ky34F0F6dKRa4GGWo3mhfT41Be1d-a5_whJCxmC5gr50ELbxVU0bEeCjVWfGdEfz.tgs"
+    },
+    {
+      "name": "Alpine Gold",
+      "count": 138,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.B54L8PTlho8qKyJhGdet14L7SqTct0-oHUyOoGegX-i2vQhcbwut7KkYAHpUHY6Y.webp",
+      "tgs": "/file/gifts/lowrider/model.B54L8PTlho8qKyJhGdet14L7SqTct0-oHUyOoGegX-i2vQhcbwut7KkYAHpUHY6Y.tgs"
+    },
+    {
+      "name": "Grasshopper",
+      "count": 137,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.mDTWHMt7efP88snP0T-BdwLg_C3EJdhd9TqPeUt7cPFTiHVIzPhMzKH7HqdOjZja.webp",
+      "tgs": "/file/gifts/lowrider/model.mDTWHMt7efP88snP0T-BdwLg_C3EJdhd9TqPeUt7cPFTiHVIzPhMzKH7HqdOjZja.tgs"
+    },
+    {
+      "name": "Mothership",
+      "count": 129,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.qUdy71NE3QYdmczz-vRTzMFWQ7SH1RJHE5SOZ_iCt9mWpmnbPpKU-q-12CzeSg1V.webp",
+      "tgs": "/file/gifts/lowrider/model.qUdy71NE3QYdmczz-vRTzMFWQ7SH1RJHE5SOZ_iCt9mWpmnbPpKU-q-12CzeSg1V.tgs"
+    },
+    {
+      "name": "Jade Emperor",
+      "count": 128,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.HoqdgMkatCXdtDWtGHNsUhqSmMi-SWRaUJemXvcRvFCdaUGMd3OzNaELIBBBgil8.webp",
+      "tgs": "/file/gifts/lowrider/model.HoqdgMkatCXdtDWtGHNsUhqSmMi-SWRaUJemXvcRvFCdaUGMd3OzNaELIBBBgil8.tgs"
+    },
+    {
+      "name": "Grid Runner",
+      "count": 127,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.b5oNNnFvp47B2s8lDMDJDXKdX-KVx04v0qWCl8u-i6J0wqZhpSCnDYANY9iE8AMZ.webp",
+      "tgs": "/file/gifts/lowrider/model.b5oNNnFvp47B2s8lDMDJDXKdX-KVx04v0qWCl8u-i6J0wqZhpSCnDYANY9iE8AMZ.tgs"
+    },
+    {
+      "name": "Silent Hill",
+      "count": 125,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.rnUxakEW5eW2f7vcTmSHMNkqIpXGBIwlgTj-lUeSqxUIhxGDSUl6GIElf4-jIKnC.webp",
+      "tgs": "/file/gifts/lowrider/model.rnUxakEW5eW2f7vcTmSHMNkqIpXGBIwlgTj-lUeSqxUIhxGDSUl6GIElf4-jIKnC.tgs"
+    },
+    {
+      "name": "LA Noir",
+      "count": 122,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.q8Ar9Iinb0sa807TZY6BunyVSwPOyoae677wBZmZgO9gktOZDY4rHUPR9GCdcGH8.webp",
+      "tgs": "/file/gifts/lowrider/model.q8Ar9Iinb0sa807TZY6BunyVSwPOyoae677wBZmZgO9gktOZDY4rHUPR9GCdcGH8.tgs"
+    },
+    {
+      "name": "War Rig",
+      "count": 121,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.-g0j894p2pBLZV87xbF5r9a-79fuJbIQQPHMxfp66VQ85CIbBC9y9AoLQ7YphyR8.webp",
+      "tgs": "/file/gifts/lowrider/model.-g0j894p2pBLZV87xbF5r9a-79fuJbIQQPHMxfp66VQ85CIbBC9y9AoLQ7YphyR8.tgs"
+    },
+    {
+      "name": "Doggyland Bus",
+      "count": 119,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.yfRTCx01DGjB2Tgwi7KBK8RMKs9SF_Vdo2CzDu3fS9qpimzNXYuo-GtnOgsAhZLE.webp",
+      "tgs": "/file/gifts/lowrider/model.yfRTCx01DGjB2Tgwi7KBK8RMKs9SF_Vdo2CzDu3fS9qpimzNXYuo-GtnOgsAhZLE.tgs"
+    },
+    {
+      "name": "Green DeVille",
+      "count": 119,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.7QMtIoryf3x6O2P7oXbaY2tVryAwxdF_nOY5rVdFxOBcE0j1CjPvsWmHb_KoqB2G.webp",
+      "tgs": "/file/gifts/lowrider/model.7QMtIoryf3x6O2P7oXbaY2tVryAwxdF_nOY5rVdFxOBcE0j1CjPvsWmHb_KoqB2G.tgs"
+    },
+    {
+      "name": "Helicopter",
+      "count": 119,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.sKWUjz0KkDrXkGJsYepq_k-uNnwa8bdTwNQ70UKL_725i7aH2ZSZ4ZhBz1WeQSct.webp",
+      "tgs": "/file/gifts/lowrider/model.sKWUjz0KkDrXkGJsYepq_k-uNnwa8bdTwNQ70UKL_725i7aH2ZSZ4ZhBz1WeQSct.tgs"
+    },
+    {
+      "name": "Sticker Gang",
+      "count": 119,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": false,
+      "img": "/file/gifts/lowrider/model.uhriJsXO7SVsxQ12cgNUuXhGg91fHkBmtjxIax7J2ARXBJYT_4V07cppwAMBBBYC.webp",
+      "tgs": "/file/gifts/lowrider/model.uhriJsXO7SVsxQ12cgNUuXhGg91fHkBmtjxIax7J2ARXBJYT_4V07cppwAMBBBYC.tgs"
+    }
+  ],
+  "craftModels": [
+    {
+      "name": "Hippie",
+      "count": 118,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.v_qsFlX1KjWTzJ4Z2nMFUUBR361kPKRcKKFyOryNl1iUBN81ATrxc6qHZMr-ymfV.webp",
+      "tgs": "/file/gifts/lowrider/model.v_qsFlX1KjWTzJ4Z2nMFUUBR361kPKRcKKFyOryNl1iUBN81ATrxc6qHZMr-ymfV.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Tricycle",
+      "count": 116,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.L--sfeC1mzgPFrclzWOa_EJr4vJnC-t4IAUMq_hXnlaHWdIWkdWvnQfp5Q5jNd-3.webp",
+      "tgs": "/file/gifts/lowrider/model.L--sfeC1mzgPFrclzWOa_EJr4vJnC-t4IAUMq_hXnlaHWdIWkdWvnQfp5Q5jNd-3.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Bombay",
+      "count": 111,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.cxWj1zr8p7GtmsRbcaSHrTI_rKuCkQXanUAFgHJqDtkRe7PXTX5AO0OIcvAzOVjt.webp",
+      "tgs": "/file/gifts/lowrider/model.cxWj1zr8p7GtmsRbcaSHrTI_rKuCkQXanUAFgHJqDtkRe7PXTX5AO0OIcvAzOVjt.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Road Ape",
+      "count": 108,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.PpA4SEuHA865xWoynnRRJNXy4kMxm8O3Z1ov5D1EQS-4hZqqf9uf3J5jJIuzSJWQ.webp",
+      "tgs": "/file/gifts/lowrider/model.PpA4SEuHA865xWoynnRRJNXy4kMxm8O3Z1ov5D1EQS-4hZqqf9uf3J5jJIuzSJWQ.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Soul Plane",
+      "count": 103,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.oMO0E6t5BH8qMv2bYqn4SYv_FUvu4VQzAN0OE0eec-NF6zF9DFiOIsUPd7gKYWpc.webp",
+      "tgs": "/file/gifts/lowrider/model.oMO0E6t5BH8qMv2bYqn4SYv_FUvu4VQzAN0OE0eec-NF6zF9DFiOIsUPd7gKYWpc.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Golden Bike",
+      "count": 100,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.-P-63u9T7EDPu9cLYu-St6kkVgP5vyma-iuujKag08im1Th-Xq8jAcp9ySm6nA_W.webp",
+      "tgs": "/file/gifts/lowrider/model.-P-63u9T7EDPu9cLYu-St6kkVgP5vyma-iuujKag08im1Th-Xq8jAcp9ySm6nA_W.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Lava-Forged",
+      "count": 95,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.z_TapS_XrwoNvmSrq86HjLggMBDr4bGpSeMVPAHfRT23LgOspXXjctW6BmrnqRcs.webp",
+      "tgs": "/file/gifts/lowrider/model.z_TapS_XrwoNvmSrq86HjLggMBDr4bGpSeMVPAHfRT23LgOspXXjctW6BmrnqRcs.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Dry Eyes",
+      "count": 94,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.eWlzsF9mu8drgfZk1PeWQpPrxTbft7QFewGXLqLUHzs1ysY9gIBA5znBLTV8U779.webp",
+      "tgs": "/file/gifts/lowrider/model.eWlzsF9mu8drgfZk1PeWQpPrxTbft7QFewGXLqLUHzs1ysY9gIBA5znBLTV8U779.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Toy Car",
+      "count": 93,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.HC76vnSntH65Rccn1qvlRTsdAXADj0hUKs0aA-stcq6HBAT8nDitVkBSIj_t8s8H.webp",
+      "tgs": "/file/gifts/lowrider/model.HC76vnSntH65Rccn1qvlRTsdAXADj0hUKs0aA-stcq6HBAT8nDitVkBSIj_t8s8H.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "High Flyer",
+      "count": 84,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.imi8Z0y1DhR1A24QlmZ6ZtZvxl-1CkyvNzf7RdkUpxGADyQ9eG-e4rx27hqYnRl2.webp",
+      "tgs": "/file/gifts/lowrider/model.imi8Z0y1DhR1A24QlmZ6ZtZvxl-1CkyvNzf7RdkUpxGADyQ9eG-e4rx27hqYnRl2.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Blood Ruby",
+      "count": 81,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.qeoTeGCjYoLeTs9DcWnlvHBPwgPbu_ghpIf-d_GHleEkq7Jtj5Cc0_1XFwyxwTlp.webp",
+      "tgs": "/file/gifts/lowrider/model.qeoTeGCjYoLeTs9DcWnlvHBPwgPbu_ghpIf-d_GHleEkq7Jtj5Cc0_1XFwyxwTlp.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Gold Rush",
+      "count": 78,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.oQ2OdA_U6fMRPdUUYO3Ok0Yi2NlQI4eW7H9ax5Z4YA3k5yb_YjOdovAXKGI-W9yD.webp",
+      "tgs": "/file/gifts/lowrider/model.oQ2OdA_U6fMRPdUUYO3Ok0Yi2NlQI4eW7H9ax5Z4YA3k5yb_YjOdovAXKGI-W9yD.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "First Class",
+      "count": 53,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.No6Ve313g0exge7JKLe71vQfS8gRWqRt7d1kOdu419j0pb1O4CpKJJHE2WqIlLz_.webp",
+      "tgs": "/file/gifts/lowrider/model.No6Ve313g0exge7JKLe71vQfS8gRWqRt7d1kOdu419j0pb1O4CpKJJHE2WqIlLz_.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Gigahorse",
+      "count": 46,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.QMTiaPBj1MozgjwaHi6a3QjuxeM3LFQ_1uQtWqu3WTRMEQWHW2qtzanwxXLQussA.webp",
+      "tgs": "/file/gifts/lowrider/model.QMTiaPBj1MozgjwaHi6a3QjuxeM3LFQ_1uQtWqu3WTRMEQWHW2qtzanwxXLQussA.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Telegram Bus",
+      "count": 36,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.mYlHublCA3jtcjHX34Cb49UTxT9aQltHePpizOYfF8o_zaJmrKTMGrHWwjWMB7cz.webp",
+      "tgs": "/file/gifts/lowrider/model.mYlHublCA3jtcjHX34Cb49UTxT9aQltHePpizOYfF8o_zaJmrKTMGrHWwjWMB7cz.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "DeLorean",
+      "count": 33,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "crafted": true,
+      "img": "/file/gifts/lowrider/model.saYXMbKygVptT7xuseNIVklvo56UayZ1ZfTL-OODsv-GUxckSKickztCkJ3G86wf.webp",
+      "tgs": "/file/gifts/lowrider/model.saYXMbKygVptT7xuseNIVklvo56UayZ1ZfTL-OODsv-GUxckSKickztCkJ3G86wf.tgs",
+      "tier": "uncommon"
+    }
+  ],
+  "backdrops": [
+    {
+      "name": "Midnight Blue",
+      "count": 180,
+      "permille": 26,
+      "rarity": 26,
+      "pct": 2.6,
+      "center": "#5c6985",
+      "edge": "#354057",
+      "pattern": "#030a18",
+      "text": "#bfcce0"
+    },
+    {
+      "name": "Black",
+      "count": 168,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "center": "#363738",
+      "edge": "#0e0f0f",
+      "pattern": "#6c6868",
+      "text": "#8c8f91"
+    },
+    {
+      "name": "Onyx Black",
+      "count": 168,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "center": "#4d5254",
+      "edge": "#313638",
+      "pattern": "#000000",
+      "text": "#a9abad"
+    },
+    {
+      "name": "Moonstone",
+      "count": 121,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#7eb1b4",
+      "edge": "#588390",
+      "pattern": "#164552",
+      "text": "#daf5fd"
+    },
+    {
+      "name": "Sapphire",
+      "count": 118,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#58a3c8",
+      "edge": "#5379c2",
+      "pattern": "#0d45b6",
+      "text": "#c1deff"
+    },
+    {
+      "name": "Indigo Dye",
+      "count": 112,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#537991",
+      "edge": "#416479",
+      "pattern": "#031b29",
+      "text": "#c2dcee"
+    },
+    {
+      "name": "Celtic Blue",
+      "count": 110,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#45b8ed",
+      "edge": "#3886d9",
+      "pattern": "#003e85",
+      "text": "#c2e7ff"
+    },
+    {
+      "name": "Lemongrass",
+      "count": 108,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#aeb85a",
+      "edge": "#559345",
+      "pattern": "#466a07",
+      "text": "#d8f2c2"
+    },
+    {
+      "name": "Gunmetal",
+      "count": 107,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#4c5d63",
+      "edge": "#2f3b42",
+      "pattern": "#04080a",
+      "text": "#b6c5cc"
+    },
+    {
+      "name": "Cyberpunk",
+      "count": 106,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#858ff3",
+      "edge": "#865fd3",
+      "pattern": "#4318a6",
+      "text": "#e0d9ff"
+    },
+    {
+      "name": "Carmine",
+      "count": 103,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#e0574a",
+      "edge": "#a8383b",
+      "pattern": "#4f0100",
+      "text": "#ffb7ad"
+    },
+    {
+      "name": "Pure Gold",
+      "count": 103,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#ccab41",
+      "edge": "#987b32",
+      "pattern": "#703c00",
+      "text": "#ffe5ab"
+    },
+    {
+      "name": "Pacific Cyan",
+      "count": 102,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#5abea6",
+      "edge": "#3d95ba",
+      "pattern": "#02648d",
+      "text": "#b6efff"
+    },
+    {
+      "name": "Chocolate",
+      "count": 101,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#a46e58",
+      "edge": "#74443b",
+      "pattern": "#3e0a02",
+      "text": "#e4b6ac"
+    },
+    {
+      "name": "Desert Sand",
+      "count": 101,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#b39f82",
+      "edge": "#7e735b",
+      "pattern": "#504429",
+      "text": "#f2e5cd"
+    },
+    {
+      "name": "Ivory White",
+      "count": 100,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#bab6b1",
+      "edge": "#a19d97",
+      "pattern": "#665f52",
+      "text": "#f5f4f2"
+    },
+    {
+      "name": "French Violet",
+      "count": 99,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#c260e6",
+      "edge": "#914ed9",
+      "pattern": "#4a018a",
+      "text": "#ebc7ff"
+    },
+    {
+      "name": "Feldgrau",
+      "count": 98,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#899288",
+      "edge": "#5e6b63",
+      "pattern": "#1c261f",
+      "text": "#dee9e1"
+    },
+    {
+      "name": "Orange",
+      "count": 98,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#d19a3a",
+      "edge": "#c06f47",
+      "pattern": "#9d3907",
+      "text": "#ffe1c3"
+    },
+    {
+      "name": "Rosewood",
+      "count": 98,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#b77a77",
+      "edge": "#814c52",
+      "pattern": "#551c22",
+      "text": "#edcacd"
+    },
+    {
+      "name": "Steel Grey",
+      "count": 97,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#97a2ac",
+      "edge": "#63727c",
+      "pattern": "#334552",
+      "text": "#dfe4e8"
+    },
+    {
+      "name": "Dark Lilac",
+      "count": 96,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#b17da5",
+      "edge": "#8c577a",
+      "pattern": "#652852",
+      "text": "#f0c4e2"
+    },
+    {
+      "name": "Camo Green",
+      "count": 95,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#75944d",
+      "edge": "#547341",
+      "pattern": "#163701",
+      "text": "#cfe8b9"
+    },
+    {
+      "name": "Cappuccino",
+      "count": 95,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#b1907e",
+      "edge": "#7c6356",
+      "pattern": "#4a3226",
+      "text": "#ebd4c8"
+    },
+    {
+      "name": "Battleship Grey",
+      "count": 94,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#8c8c85",
+      "edge": "#6c6c66",
+      "pattern": "#2b2a20",
+      "text": "#cfcec4"
+    },
+    {
+      "name": "Pacific Green",
+      "count": 94,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#6fc793",
+      "edge": "#3b9c84",
+      "pattern": "#006149",
+      "text": "#c6fff0"
+    },
+    {
+      "name": "Satin Gold",
+      "count": 94,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#bf9b47",
+      "edge": "#8d7739",
+      "pattern": "#5d3b00",
+      "text": "#fee4a9"
+    },
+    {
+      "name": "Pistachio",
+      "count": 93,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#97b07c",
+      "edge": "#5c814c",
+      "pattern": "#28471b",
+      "text": "#d9f2c9"
+    },
+    {
+      "name": "Shamrock Green",
+      "count": 93,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#8ab163",
+      "edge": "#559345",
+      "pattern": "#126b00",
+      "text": "#d5fbc8"
+    },
+    {
+      "name": "Khaki Green",
+      "count": 92,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#adb070",
+      "edge": "#6b7d54",
+      "pattern": "#39501b",
+      "text": "#d3e6bb"
+    },
+    {
+      "name": "Raspberry",
+      "count": 92,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#e07b85",
+      "edge": "#b65980",
+      "pattern": "#890638",
+      "text": "#ffd6e6"
+    },
+    {
+      "name": "Sky Blue",
+      "count": 92,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#58b4c8",
+      "edge": "#538bc2",
+      "pattern": "#07609b",
+      "text": "#cde8fd"
+    },
+    {
+      "name": "Copper",
+      "count": 91,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#d08656",
+      "edge": "#9d6531",
+      "pattern": "#602901",
+      "text": "#f4d8be"
+    },
+    {
+      "name": "Fandango",
+      "count": 90,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#e28ab6",
+      "edge": "#a4588b",
+      "pattern": "#8e054e",
+      "text": "#ffc7eb"
+    },
+    {
+      "name": "Seal Brown",
+      "count": 90,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#664d45",
+      "edge": "#47362e",
+      "pattern": "#0a0605",
+      "text": "#d4bcb5"
+    },
+    {
+      "name": "Roman Silver",
+      "count": 89,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#a3a8b5",
+      "edge": "#7c808a",
+      "pattern": "#3f4550",
+      "text": "#dadfe2"
+    },
+    {
+      "name": "Burnt Sienna",
+      "count": 88,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#d66f3c",
+      "edge": "#b54b2d",
+      "pattern": "#6b0902",
+      "text": "#ffccb0"
+    },
+    {
+      "name": "Silver Blue",
+      "count": 88,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#80a4b8",
+      "edge": "#607c91",
+      "pattern": "#15374b",
+      "text": "#c9e4f4"
+    },
+    {
+      "name": "Emerald",
+      "count": 86,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#78c585",
+      "edge": "#42a171",
+      "pattern": "#006532",
+      "text": "#b9f9d9"
+    },
+    {
+      "name": "Azure Blue",
+      "count": 85,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#5db1cb",
+      "edge": "#448bab",
+      "pattern": "#025074",
+      "text": "#b5ecff"
+    },
+    {
+      "name": "Fire Engine",
+      "count": 84,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#f05f4f",
+      "edge": "#c43949",
+      "pattern": "#690009",
+      "text": "#ffb7a6"
+    },
+    {
+      "name": "Navy Blue",
+      "count": 82,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#6c9edd",
+      "edge": "#5c6ec9",
+      "pattern": "#1239a2",
+      "text": "#d3e1ff"
+    },
+    {
+      "name": "Gunship Green",
+      "count": 81,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#558a65",
+      "edge": "#3d6657",
+      "pattern": "#07261d",
+      "text": "#b5e0d4"
+    },
+    {
+      "name": "Cobalt Blue",
+      "count": 80,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#6088cf",
+      "edge": "#5162b8",
+      "pattern": "#13247c",
+      "text": "#c2d3f5"
+    },
+    {
+      "name": "Pine Green",
+      "count": 80,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#6ba97c",
+      "edge": "#3e7970",
+      "pattern": "#0b4833",
+      "text": "#d8f5e5"
+    },
+    {
+      "name": "French Blue",
+      "count": 78,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#5c9bc4",
+      "edge": "#37739a",
+      "pattern": "#073b5c",
+      "text": "#c1e3f9"
+    },
+    {
+      "name": "Purple",
+      "count": 78,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#ae6cae",
+      "edge": "#844784",
+      "pattern": "#470c47",
+      "text": "#f3cbf3"
+    },
+    {
+      "name": "Dark Green",
+      "count": 77,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#516341",
+      "edge": "#2b452f",
+      "pattern": "#000501",
+      "text": "#bfd1a9"
+    },
+    {
+      "name": "Malachite",
+      "count": 76,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#95b457",
+      "edge": "#3d9755",
+      "pattern": "#046b06",
+      "text": "#c2efbe"
+    },
+    {
+      "name": "Mexican Pink",
+      "count": 76,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#e36692",
+      "edge": "#c9497c",
+      "pattern": "#750230",
+      "text": "#ffd6e6"
+    },
+    {
+      "name": "Marine Blue",
+      "count": 75,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#4e689c",
+      "edge": "#3b4b7a",
+      "pattern": "#010821",
+      "text": "#bbcbf2"
+    },
+    {
+      "name": "Electric Purple",
+      "count": 74,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#ca70c6",
+      "edge": "#9662d4",
+      "pattern": "#620fb4",
+      "text": "#ebceff"
+    },
+    {
+      "name": "Hunter Green",
+      "count": 74,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#8fae78",
+      "edge": "#4b825b",
+      "pattern": "#1c491f",
+      "text": "#d8f5de"
+    },
+    {
+      "name": "Rifle Green",
+      "count": 74,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#64695c",
+      "edge": "#4b5241",
+      "pattern": "#0f120b",
+      "text": "#c3c7bd"
+    },
+    {
+      "name": "Persimmon",
+      "count": 73,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#e7a75a",
+      "edge": "#c5675f",
+      "pattern": "#ad0e00",
+      "text": "#ffe4d7"
+    },
+    {
+      "name": "Ranger Green",
+      "count": 73,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#5f7849",
+      "edge": "#3c4f3b",
+      "pattern": "#102209",
+      "text": "#b7c4b5"
+    },
+    {
+      "name": "Aquamarine",
+      "count": 72,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#60b195",
+      "edge": "#46abb4",
+      "pattern": "#035f67",
+      "text": "#c7fdfe"
+    },
+    {
+      "name": "Carrot Juice",
+      "count": 72,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#db9867",
+      "edge": "#c76f4f",
+      "pattern": "#8e2100",
+      "text": "#ffd7ca"
+    },
+    {
+      "name": "Lavender",
+      "count": 71,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#b789e4",
+      "edge": "#8a5abc",
+      "pattern": "#5b10ab",
+      "text": "#e8d1ff"
+    },
+    {
+      "name": "Neon Blue",
+      "count": 71,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#7596f9",
+      "edge": "#6862e4",
+      "pattern": "#2828bc",
+      "text": "#cfddff"
+    },
+    {
+      "name": "Tactical Pine",
+      "count": 71,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#44826b",
+      "edge": "#2f6369",
+      "pattern": "#002624",
+      "text": "#b7e6d3"
+    },
+    {
+      "name": "Platinum",
+      "count": 70,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#b2aea7",
+      "edge": "#88847e",
+      "pattern": "#3d382d",
+      "text": "#e9e7e2"
+    },
+    {
+      "name": "Mint Green",
+      "count": 69,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#7ecb82",
+      "edge": "#459e5a",
+      "pattern": "#026b22",
+      "text": "#bdffcc"
+    },
+    {
+      "name": "English Violet",
+      "count": 68,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#b186bb",
+      "edge": "#875a91",
+      "pattern": "#54225f",
+      "text": "#e6c7ed"
+    },
+    {
+      "name": "Tomato",
+      "count": 68,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#e6793e",
+      "edge": "#d44e3f",
+      "pattern": "#800b00",
+      "text": "#ffccbd"
+    },
+    {
+      "name": "Mustard",
+      "count": 67,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#d4980d",
+      "edge": "#c47712",
+      "pattern": "#7a2500",
+      "text": "#ffde9c"
+    },
+    {
+      "name": "Turquoise",
+      "count": 67,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#5ec0b8",
+      "edge": "#3d928e",
+      "pattern": "#11534c",
+      "text": "#bdf8f2"
+    },
+    {
+      "name": "Strawberry",
+      "count": 66,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#dd8e6f",
+      "edge": "#b75a60",
+      "pattern": "#a90c0c",
+      "text": "#ffd3d3"
+    },
+    {
+      "name": "Mystic Pearl",
+      "count": 64,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#d08b6d",
+      "edge": "#b05770",
+      "pattern": "#9b0526",
+      "text": "#fedde0"
+    },
+    {
+      "name": "Chestnut",
+      "count": 63,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#be6f54",
+      "edge": "#994838",
+      "pattern": "#601508",
+      "text": "#fec6b9"
+    },
+    {
+      "name": "Electric Indigo",
+      "count": 63,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#a980f3",
+      "edge": "#5b62d8",
+      "pattern": "#3722ab",
+      "text": "#d8d8ff"
+    },
+    {
+      "name": "Coral Red",
+      "count": 61,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#da896b",
+      "edge": "#c4654f",
+      "pattern": "#891200",
+      "text": "#ffd9d2"
+    },
+    {
+      "name": "Jade Green",
+      "count": 60,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#55c49c",
+      "edge": "#3b9977",
+      "pattern": "#044931",
+      "text": "#befee7"
+    },
+    {
+      "name": "Caramel",
+      "count": 59,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#d09932",
+      "edge": "#b77431",
+      "pattern": "#7d3600",
+      "text": "#ffd9b3"
+    },
+    {
+      "name": "Deep Cyan",
+      "count": 59,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#31b5aa",
+      "edge": "#189599",
+      "pattern": "#004f4f",
+      "text": "#d1fffd"
+    },
+    {
+      "name": "Light Olive",
+      "count": 59,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#c2af64",
+      "edge": "#887e45",
+      "pattern": "#594c04",
+      "text": "#f5ebbc"
+    },
+    {
+      "name": "Burgundy",
+      "count": 56,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "center": "#a35e66",
+      "edge": "#6d414a",
+      "pattern": "#340307",
+      "text": "#e7bcc0"
+    },
+    {
+      "name": "Old Gold",
+      "count": 54,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "center": "#b58d38",
+      "edge": "#946925",
+      "pattern": "#4f3302",
+      "text": "#ffdd8c"
+    },
+    {
+      "name": "Amber",
+      "count": 53,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "center": "#dab345",
+      "edge": "#b1802a",
+      "pattern": "#7a3100",
+      "text": "#ffedc7"
+    },
+    {
+      "name": "Grape",
+      "count": 50,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "center": "#9d74c1",
+      "edge": "#794da0",
+      "pattern": "#3e0a6b",
+      "text": "#e0bdfe"
+    }
+  ],
+  "symbols": [
+    {
+      "name": "Dollar Graffiti",
+      "count": 66,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ze-Cn9sUQ_WyungM8wygWTSB6fPzU9PjuPC60s98tT1MdZ9lsBK7go8UE6Dzna4h.webp"
+    },
+    {
+      "name": "Gem",
+      "count": 65,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.54A3C5LMYA8wTNq-l4Br8vTcQmocIidHDFo7XwKMMCanEXGPLvgdEQBZO33Zk2PS.webp"
+    },
+    {
+      "name": "Yo Sign",
+      "count": 64,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.tDBitZjmBYW3JMQ0-CnaMzTyGuJ4yYoNxTW6f_h-EmvqIPY0B9najcewt1lWXT8N.webp"
+    },
+    {
+      "name": "Obon Lantern",
+      "count": 63,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.b8BIsM-vmWSvDRpvCTGL6pAOHORXZef1l8WLvj0idoqU4u04UZ5zIDWZ5bkxn6Yo.webp"
+    },
+    {
+      "name": "Tamagotchi",
+      "count": 60,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.HewvjELGHHbCGXrhg-Zhpj5ACZ2PnOdDlczT1iL1_t7Dw1V8Xc0J0R3ELvCQ3Cr4.webp"
+    },
+    {
+      "name": "Cricket Helmet",
+      "count": 59,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.4pzaGdccqtyohRVWkWYonc7D1AVc0hJbqKzdSMkouPX2UKsTSrNwDGnnoL94rLr_.webp"
+    },
+    {
+      "name": "Duck Face",
+      "count": 59,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.o4MgaakkdNWndOqmOxw-DSv6Yhtrk8hWuGQfNqmDPQPZAkYVWtKOh_Ck3xLx1Swo.webp"
+    },
+    {
+      "name": "Loudspeaker",
+      "count": 58,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.OyHLk3So_gQub6HSpylxrh4vTHtemh27EBconG0F3kDnKFGJmzyhmTVFuaAyHVoA.webp"
+    },
+    {
+      "name": "Cash",
+      "count": 57,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.mmEzvFRRRpxdm06DisEihYy04Fa6P3IsaSmQhSK9CpKcDuUe5ECj7Q2wiQHYYNBp.webp"
+    },
+    {
+      "name": "Music Skull",
+      "count": 57,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.5asVNFSknoA_lqB6iDFssSQbhU4I5Yjw2dK6U4msBq8n9sFUBWKWn-OxR5-DpOb9.webp"
+    },
+    {
+      "name": "Chest",
+      "count": 56,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.TJFnZlJiE5qTpnCCMShdF9PABPcuCxIe3BCKYxmXuMRCDI7DocojjuMBSThDhDC8.webp"
+    },
+    {
+      "name": "Sword",
+      "count": 56,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.p8ByF0uvfv9EITSgU6G6fvuTGn9o8gDpEDkLXdIWx-4GgLeE08-xM1IhYJbSIOra.webp"
+    },
+    {
+      "name": "Birthday Cake",
+      "count": 55,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.yBLBwZEAXbrieBIIXId1zkxUiwm_5a-w8HHTRhcaGlVx5qPlBhYovpXZR0i4K5T0.webp"
+    },
+    {
+      "name": "Bunny",
+      "count": 55,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.JMZVHhlEhpFGmSmBV_sMk5NMfMXxRTrww5KHbsxb33sZa9OJWWHvtkab9_vjsAtr.webp"
+    },
+    {
+      "name": "Snoop Logo",
+      "count": 55,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.mhoDBAyjHzUHBKaILGimaz2oINHddTYKswFyGTtcAnf5GsL1HQMBD3-SeueTqQRE.webp"
+    },
+    {
+      "name": "Revolver",
+      "count": 54,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.5QBExLa9RyFLNRkYE1wfdxvmDWxgjfAsJKd25WI8CFQX5xhAQ2omCQkFh8xWvwGh.webp"
+    },
+    {
+      "name": "Oak Leaf",
+      "count": 53,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.SRWoJ5r43gogIHIPxDMajTcXtCfCIqOhvNEafQxKpSZ6fgOmtd-rsChbl1Lshffr.webp"
+    },
+    {
+      "name": "Bull of Heaven",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.OWQAD_Q6mRlaaeXcIxf-5mkfRq9poa5wJtnPEmsQGSU5SmDwy-mhprAxxC21FQ9I.webp"
+    },
+    {
+      "name": "Coconut",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.0_G6SRD42NOrVFxNnxWCKqm07DS3floEH26BtamZrUu-P6J7pqkEUdODv4IFnCPF.webp"
+    },
+    {
+      "name": "Crab",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.cQs-exf8W-3oEOiHieF0KHaRibeBn3w0nvBGqS79n1vVfo_VFyPVt6fIdEkcxY4I.webp"
+    },
+    {
+      "name": "Low Rider",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.blfD1VOMQZrVcXPu9ur0w_1RVWw7ugEICTf4Vnm3rFDiP4YVEodYr61cRmcsBAO6.webp"
+    },
+    {
+      "name": "Mannaz Rune",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.6cSCeu_hallepclrNtaLFHA5Iz7H6K0j7PgAnfu17VVcnKp-ccXipZ2ulUdS1I4S.webp"
+    },
+    {
+      "name": "Maple Leaf",
+      "count": 52,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.IK8st-DeGkQF3e9ubdeYGcKIVkIm7trTP65lD9pjPE6dRKudgDMYpbV4J9DidW_J.webp"
+    },
+    {
+      "name": "Donut",
+      "count": 51,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.WJpP92synxBl9K-0ZG_eRu-ItAuL_uklY8Y2VrECCrd68waM1smFRkjJl9lqsH0d.webp"
+    },
+    {
+      "name": "Eggplant",
+      "count": 51,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.V7nzLZMIXu_sjJRu-8skAWYmjyZZMh2L6V2fGEI7E-e-0HZD0Bq5puRN6ZCnyOJl.webp"
+    },
+    {
+      "name": "Gift Box",
+      "count": 51,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.18tzHD8siI5Mjs9a9o23yAcNkkvj_HQp_eSv4YF54nukf0O3yn-ZvDF54-jxSuty.webp"
+    },
+    {
+      "name": "Owl",
+      "count": 51,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.vN9j78KzwG9W22QykPfZcbsmqrVYrb-2D1jYHwMZ0xlV8cAr_JDwyoKOcZXzxMmm.webp"
+    },
+    {
+      "name": "Nordic Wolf",
+      "count": 50,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.7yAxbiK17nPIB55hLeya-EPfoKDYG0OjeBtHanWqXjDqWcRzgneuLZSVKqjlC1b_.webp"
+    },
+    {
+      "name": "Royal Crown",
+      "count": 50,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.qR5l-IlfPoN1kk5GeCg7UhZ__AxTMRVFfmGFrGIs3bfpkh3wr-763pZL8oM_sccV.webp"
+    },
+    {
+      "name": "Thunderbird",
+      "count": 50,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.YkVFhBazDmxmYADxMnALdcURQ7KlwL06kDN_5ti0zoIc3zMEBN6pbkTOL_Aul8gQ.webp"
+    },
+    {
+      "name": "Blunt",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.c03btT5uhZiq9D4Jg6rapyNgnn2k-N6c36NwSRGJRUzp79uRVWdkBAHTKeUOXFdk.webp"
+    },
+    {
+      "name": "Egg",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.RnLxE9gAuODrumIDRHbDVw2yy4XlzgX7LGXSTBJT0sS4_WWqS_YTZqgwT7Qg5DEF.webp"
+    },
+    {
+      "name": "Hedgehog",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.NRsxqui4MlQx_drrxJsTAJeCuZeskDY5HSQNmtpbAB42SvaLCw_84rFvPWNGlSQ8.webp"
+    },
+    {
+      "name": "Ram of Amun",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.BfqT_6zpaiT0INpikakfDaWNspQcy1YS-dSkeY1RGyc_sGgU2huouKhCWbrqhzvy.webp"
+    },
+    {
+      "name": "Wasp",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.AW9L1B1CRblgweVyJuOb5IyFtp1myCbzz76DyXJbkgmuPdm5X4BclIqBuClNqCLd.webp"
+    },
+    {
+      "name": "Bread",
+      "count": 48,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.idDgAvsBn7QH1iu4FYaFJhvrQHqWJcqt8YctG5RjPq7-TmVYMsWesvA1H_j5g5T6.webp"
+    },
+    {
+      "name": "Galaxy",
+      "count": 48,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.bOyB0_nYvevdZPJI82qibNQc_SnPvNFn1qIsRV7iknfmw5YBt6dRKKJ2LgkJwhFF.webp"
+    },
+    {
+      "name": "Lion Head",
+      "count": 48,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.YgsaWXuOE9-amPck38_cbwXorbVguhYkEIR5ZM7EMOuw8eDletB2ncDecNLjf_63.webp"
+    },
+    {
+      "name": "Boat",
+      "count": 47,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.g6icmNzgPaJfrA6PoQLdtAnZQNfNDdvuCNiYz2Tsz0QGi3olVTmDs3q2Yl-fhXoP.webp"
+    },
+    {
+      "name": "Griffon",
+      "count": 47,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.UpYwKPb00F99daluEj2XUwxCSY2gXJKbTwDT_O13sCZkwC1MxU-N0cdYFS5ZIzOd.webp"
+    },
+    {
+      "name": "Octopus",
+      "count": 47,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.K1W3Z1BkzJBN4G6t-F5SwQtXdPSD0RDElHzlzU6Uxgg6VQNlt0R49zERjrxXnQoN.webp"
+    },
+    {
+      "name": "Sun",
+      "count": 47,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.16I3ZHHeOH9UEMiS1KeCxpnmAx47yU9VYa2_jNgjTyvLwU4Z364uD6c0hf7hV5-d.webp"
+    },
+    {
+      "name": "Basketball",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.yLYdrPN3FJ0he6qtpJFS0d4bwQGDR8XD2rhTFUQpyrr-krzQVw6MCMZ_M5KLwV4j.webp"
+    },
+    {
+      "name": "Bowler Hat",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.M4up56DzNHUfeAqi-eryIn5-v9oCkOUa5MzwiG3tGnpC1TAsAWjTyh2hx3kUrDZL.webp"
+    },
+    {
+      "name": "Flower",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.UB53vU7IaIcbYNblOmQ7FmyqvDtxEE5V3XaMAm7mkrqx0cXwCZF81HeW_7ao9nxb.webp"
+    },
+    {
+      "name": "Hard Hat",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.3bXgNVxPVzeQUIdOFelFovY5pd3RN3hkFqcgqN1mJSa2BcZcw1X0WK01jhPnBlBT.webp"
+    },
+    {
+      "name": "Headphones",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.dsaElLJykHVoxuckMESonzTXOVmRrimJ7yo436BGzCRhPZVXrxWFONPqTpYm9Sfl.webp"
+    },
+    {
+      "name": "Narcissus",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.0qhnVG0XEsc4yKX6ly24SXUYR4tluFaSVq3L-PSNSN9fEzINaYI7fMDYLpxDC2lC.webp"
+    },
+    {
+      "name": "Neptune",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.71Sji6hNcRj0g9bpkjJo6CNxgRVah4BY7uFQ-H41DEdixiNO-YMs8GnIzis6DTl1.webp"
+    },
+    {
+      "name": "Rocket",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.3YO7hWfUmGyh4WzbVl6Pw4SgmRF0xpvnHG_eGD2BxgUo_MlSWKdt2UjBUvAq0YTq.webp"
+    },
+    {
+      "name": "Snoop Leaf",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.nfYmWY6MxKb2NQJYfsYc5TmMMU-5nouWSdbfv8YGIsDhFifgnbBvAtc6dEz-_T6P.webp"
+    },
+    {
+      "name": "Astronaut",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.-8M_E3lDmFIHMvLZhutRDsuE8uy-9e7CSXxCEiSDOdX2LAELg2dcwXAC9Le9II7g.webp"
+    },
+    {
+      "name": "Bascinet",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.Jf_Yr_TvkmR8ypBKHY6RYpxsJHEFQgFiJwrZKeAZLnDrZi4TqmDhcl1zFyTstWBB.webp"
+    },
+    {
+      "name": "Beretta",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.RqZ7P69GMWJUKxNm5ElaKM5vma7ADkb07UlE9f9UxPQu2FRxQRqJrhbJxRRRZIBM.webp"
+    },
+    {
+      "name": "Clover",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.RXcS7RuAnmxXRwiHIRMKYw-5VxePR0LAeD2kaG1eDXrsJvClXFWIdqEVgDHoCJQE.webp"
+    },
+    {
+      "name": "Full Moon",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.e-RHFJdirUBvbuCPSViP6555WRqTUeQIFCJDGyCo1g5x0Yt8Gf5BI8FPxEBnk3rO.webp"
+    },
+    {
+      "name": "Head Scarf",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ixxZLnL2EoL66zHLI5YPf908YITZbU-1CvXRXcazkVHFJdd59uZoBszxL3ldKR46.webp"
+    },
+    {
+      "name": "Iron Helmet",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.bfhb2yE8F25h0YXxnCL8iXTyzw1kbTwurzvEUxzhsm5JSVRJVFTv3teVASEIHgys.webp"
+    },
+    {
+      "name": "Jewel",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.HgBhdbWZJOlDQk7K7K6I6sThet-VcwCV-on8-beV6J92A9EvHU3U-tcQ_EDqulWZ.webp"
+    },
+    {
+      "name": "Magic Vial",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.WlgpTpsVyfoQwJlYnK9FKp7A7p4OAUUYLaGq9Wnylw4iK-VgeHtoJDJSQ7EqWpv1.webp"
+    },
+    {
+      "name": "Coffee Bean",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.hILMdiQfmpZzgqz2c_eRlmPteyKJq3DYCODBytESH67-9JZTscFeikrSAPQWtsxK.webp"
+    },
+    {
+      "name": "Doberman",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.icaY-HSo6D5gZGsSy6pSRVY5TyqT1XXu3wJpN9ylWS0O3bYQbVAu8Zu6eqnTgkXd.webp"
+    },
+    {
+      "name": "French Fries",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.cROwq4pDqhYACJ3vZdT5bazYiEiMbOrR5RNpvESCHEp-pMt2APr4IZAowpGa5a9s.webp"
+    },
+    {
+      "name": "Greek Helmet",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.bEJXoaIl5ZP-5W1exkmayOPf2_Ry45PXbcuw6W_QgBU2yXoxhfC-QKL4JMdP7xo9.webp"
+    },
+    {
+      "name": "Plume",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.uQFRjSCV3iNh5BG5UQGW6FPzwFRsbKuNjYd-LXVNEG5iOxK8zkLZoAiwbRsqQ5sg.webp"
+    },
+    {
+      "name": "Pumpkin Coach",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.2yfc6ZEGhDqfIC6zfscHDeK58Z-YomrANY4XEQGt98eKHo4dPhTjIFf_aYJVpuMp.webp"
+    },
+    {
+      "name": "Turkey",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.oJduID9rTSWlax6-p5eabhKfsbleWADDmlp744msCfm6PFscOBGw86YBPB2v9QBY.webp"
+    },
+    {
+      "name": "Unicorn",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.PzXUU4PH9l43FLPzHK53oyy6P7ghvq23zglHh1lA4OaJXQdKTWLIvieURv85eYzz.webp"
+    },
+    {
+      "name": "Bone",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.7vA6mNP2iTT1hL6sMPTtg1ybaFXClF7dCScpvyznOc38xESwvAPwB59BVN0qYU0M.webp"
+    },
+    {
+      "name": "Corn",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.OxcibL5s4Hg6jImPAkdR66szmP3czcfp445WZD9SKPxoc7kfw37mSxzeowoLxc_U.webp"
+    },
+    {
+      "name": "Maple",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.sVxCUbJ9-FEXD6A-lKGcuWiQuZYzBD8OL1WpG3R_VgelYAM-ULr8o3jziPfI7sQZ.webp"
+    },
+    {
+      "name": "Melon",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ucpWlKGb66yUrO8W0kcPiFceqJH9gGmZlqONgAwcE24lYF53BK5d4el2vXQTecxo.webp"
+    },
+    {
+      "name": "Radar",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.K15viHGp4OlWJ_Ax6Y2j102YKfiBewvnAdMF2RdU1BlP961WeZwIooVTnLRSPuSa.webp"
+    },
+    {
+      "name": "Rain Drop",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.NDev3G1cR7oPM4Mvuh4irS58_1tgQJe2Gtg3Cxv1Yh1vQiWEHDGTSf6vSkRuBFIV.webp"
+    },
+    {
+      "name": "Sauron",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.gav-Pm_uxiAVUAUtRYo4Mvo4Geqc3bF5MFLVYZD2O7wctAoP1vHuraPRZ3twQOu0.webp"
+    },
+    {
+      "name": "Bobble Hat",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.2TASaMEjG4kvU_dN0H70tHYs_t0Xqkf40BVvFJA5mQJcU5jiE4KSfQmQz5CUDAkj.webp"
+    },
+    {
+      "name": "Cowboy Hat",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.kQxFn6To3YODxSuhj1NqGDYFdhzJfbkNmFRL8XC4bFgr17abo1lHziXu1094Xis7.webp"
+    },
+    {
+      "name": "Monstera",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.VPHwLrevm-3y0srZAYBhZn991rZxiJ7H4t626g0o5RZ6etThuqf1-h5O1vlVqi36.webp"
+    },
+    {
+      "name": "Mustache",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.2ETfmwaI8-ZH0gN7QX7OxxQxX95yH1yUVD5UN8kewfmnzLNf5XUbyOYoWbs4I9rd.webp"
+    },
+    {
+      "name": "Sakura",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.O53HVLBTV9DFA3lZ4xFMdxyKM_qcapN0CKFQYItRSpwiK1PJ5oAflboc9XeWNbcA.webp"
+    },
+    {
+      "name": "Bubble Tea",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.6LwVZX2W9RQUkdBGwHiWlRUAZqjbrQIiRHFuXIKeCk02KsAcen7fK1yOhfXcqX7f.webp"
+    },
+    {
+      "name": "Cactus",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.pKXDEsob9_gpwsu_QOq4Jlj3LY9smI2ut065i6D2juF4kUk9SVYjOXSZWfhfryfO.webp"
+    },
+    {
+      "name": "Fehu Rune",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.sV4Lb5a8jWrN3rSBgEDVh4ehBMoO16wtReVjt8xn8pc2A7eBCIkbtA2j6_QiDiWK.webp"
+    },
+    {
+      "name": "Kitsune",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.FTEad_LwgTZvtD_U07EPsEmAJafIn0g7JfqkwLlybJNAXKyzDgZdoKIH-hnzDQzz.webp"
+    },
+    {
+      "name": "Cute Paw",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ARadD3eIQHLCuRmHOnvwc8rFeP27Wz1TXbYmqJ_FdolSBxfGKwgjIZBOzMm61mrE.webp"
+    },
+    {
+      "name": "Ring",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.NBUAhMbiy32V52ZkQdvEcv0LYXfuTnZLaj9PVYuRZpaHuvpaCy5xKv9XgZZH-CA8.webp"
+    },
+    {
+      "name": "Watermelon",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.eEtJWl65Y9zpxRFEkb137hlLUonFq9Qvwyfv1wIDigBX_jmRBPu_21DSsTCEFGuo.webp"
+    },
+    {
+      "name": "Black Bandana",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.8g0Wb7ONKAU4HGZDjEbu2on8-XfXD1DHnzzVhCfCdb8NFwR8qkTc7rej0w1N2wBk.webp"
+    },
+    {
+      "name": "Hand of God",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.m70gOlvoNdBMsowTFzOAKr4e4HjyPm3Q9xrCzqRAnS6llgknCRyM9qGKrTeOlbw8.webp"
+    },
+    {
+      "name": "Ice Cream",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.0yGmr_XZbXAtPnME5sqkz6JIxVNoB8La_J0rmCSulDQCG3fOY87ePVhS01SsMfx6.webp"
+    },
+    {
+      "name": "Ribeye Steak",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.sUqB2CzJ283JjfZYMulVXQxq7_VZGAuXrFIm1tboVkzmo_IdQ4VFNKiy3bqkW_06.webp"
+    },
+    {
+      "name": "Hamburger",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.F95ysxJBvqwATHK0yDQBPK4PQ4wgEMqz_MJ_ouqIPWA7UwoSJSdVrv1b11FZS6ey.webp"
+    },
+    {
+      "name": "Moon",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.zvRyucwlkSKWYlLOzka0_GFHpKiMT9oEKqJ4h7RtsXsoN6mlTk5_wImnfYJ-0-rR.webp"
+    },
+    {
+      "name": "Omusubi",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.bdUseeFWNDTqGnb1nhnr705JWhUQSKSTeRORxYPpWAyoYrS_2HaMLWG2XESYdzKM.webp"
+    },
+    {
+      "name": "Peace Dove",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ZIh2RTVFcqnEMYlatXlcAn9VgH6VeHJaw_URdRshC_PgFwnRqqDRDd_0MIP9dfb2.webp"
+    },
+    {
+      "name": "Scorpion",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.z0rYeB0JXMDwoGRAc-TcMs_4Iz4G5mrmc_PzHdH3FcaNL0y9FwUNGHu9dZuR_GAJ.webp"
+    },
+    {
+      "name": "Boombox",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.Gijo17T1umV8slGcNhIUBKIOKLcq5zZGkM-UYQL_KExJohZW0CSXWLsOco0D1_qY.webp"
+    },
+    {
+      "name": "Cherry",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.yl7ImJFLBZPu2M0aonfIkqDNjgKLgjf7FblobR6O0C6VVMz_jBeDTiocmvyRAVkQ.webp"
+    },
+    {
+      "name": "Hersir",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.bGodjt-NX1mXAYFYFVhff4svXGDhMjr2zwJ-H2t7jG2a14l_MUIuPwlIJJClKOyF.webp"
+    },
+    {
+      "name": "Lemon",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.01A6XqH3tzaUIqBBKuuSNaY4ELaR6DxKrP9P34WkOn7bNkX4RCnfqqRFSP56g7-g.webp"
+    },
+    {
+      "name": "213",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.a_tpSxG3giWBtqiSdv_lyfCrrh2OwEu9MAKf757qeKQaR1pC60lgeWYZtda5zoL3.webp"
+    },
+    {
+      "name": "Breeze",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.qaq-P3XbKCLvzC9IsQUC6AMQ8f9AbCH4IMCun1-P23S30nIcNfzeOE8BTVe8b4vT.webp"
+    },
+    {
+      "name": "Bunny Ears",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.FO_wSbh6LQqEPBgL_RVSYD4bcSZDRnglFs9sqiuO4o4yJBdB_VrseaElVfmnPecf.webp"
+    },
+    {
+      "name": "Gamepad",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.3qmh79WPaqNqw_UP2EriUIUS07Gcg5R0cwIg0ftjogbAmDX6J9qMZhKEalh2iB00.webp"
+    },
+    {
+      "name": "Sea Dragon",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.P_woghykLLkK_pjhxr2j1NLhGt8dk4sy4ECPhKuxTEwhg--bGz9XGqQnV3al9lC8.webp"
+    },
+    {
+      "name": "Spray Paint",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ZbouIxYtt_TLbWc5vk-A7LzCZJEU-g9iA5PrJIwYrepgMXWmLb7Y-7wpvFe9dxLL.webp"
+    },
+    {
+      "name": "Star",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.EaxdaTFbvJla35KFDBZ4wKVWY4DlOhTdx04czKQPrYW3yxkKdFDv5G4Fxzk-u2eN.webp"
+    },
+    {
+      "name": "Bong",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.6RYeAolfs1PySL7D17xM8y7hiduS8pTMJ1Ittna1JS5w3pYidcp0ue_vobhRLOf6.webp"
+    },
+    {
+      "name": "Geisha Fan",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.JKj7D_hwTfE0ArSoJYA2BZvTalwg22ABnT_SpW3hp2bHYyI4YnBl2QVgW5EEd95f.webp"
+    },
+    {
+      "name": "Key",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.17LZczwBBaQgrPYGu84GX8U9CanWlc7XqmgHygz4bto1vHiYeNmwJIFG_rBfHWYW.webp"
+    },
+    {
+      "name": "Musical Note",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.194IXMH974Ku7Hy8VVbZ8_PDcjm4t4Bcgp5kFfYk8pbU66_b8tSqPopHoCh94B2l.webp"
+    },
+    {
+      "name": "Vinyl Record",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.tyJFyrK0JQOjQqPluPRJX5g2X8qCLYA7vvtEC6vtG4o4Kyx8QN0A-nNixHnkeml2.webp"
+    },
+    {
+      "name": "Wepwawet",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.Vrvjr_m8pppsNlGZbhcjbX9H1RM5Krrh2vkBKBqE6tEa7H2Pwaj4siCYL5i_-83B.webp"
+    },
+    {
+      "name": "Ancient Urn",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.wVn3aY4HIHwJ39FjHKQc5L2zcP2nsgIEB8JlqLXqp5cCFZQbiKYImf7HjbLqyeIs.webp"
+    },
+    {
+      "name": "Earflap Hat",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.NEtKZLeWP54npz6ic8cWV-XKCmCZaxJwOFUvN2P-BdwUM00IMYi8bobZ1RXEPNZl.webp"
+    },
+    {
+      "name": "Eye of Horus",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.S6Bhd_0V23Ik55Vp8XxT66kdJbkxvUB9soFTvq3e57AXUbc2XnvoUaFBcAzO7U4N.webp"
+    },
+    {
+      "name": "Magic Wand",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.onuvr3fyjffNh2t93skedDHHtlazhrMjL_05j9c557rAppNY3Ige8iqfCLXNPFI7.webp"
+    },
+    {
+      "name": "Beanie",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.zQ_4bYPSegss1u67YNgulrPMolekfRuM6t3wqgmLkQc4nGaYLIbsixNhZZnwe1MX.webp"
+    },
+    {
+      "name": "Fireman Hat",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.g_pZ3cOE2TQRoPNmzxQ3499RIjAbcbBcOg0pgUXjeqr0ztQyl0z85xxahTR4YkR9.webp"
+    },
+    {
+      "name": "Like",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.DOyHS-Pwg5C6McuYt6CC-PDv49IUoTYS7lzOyAbXVMePl_lLdBlDyFQt-5csaxp7.webp"
+    },
+    {
+      "name": "Pro Headphones",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.XY0QMm6sCar7ke8bsp0U6mgx1DdfNcb373ED3V71nMfNagRQlBQJxshsjdkLm_XD.webp"
+    },
+    {
+      "name": "Bearskin",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.dhO8-TmThZPu1RiPztLH7G887luXYjnxH490OPmEeEq9db4PxvBlFuEeu-044i-B.webp"
+    },
+    {
+      "name": "Cocktail",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.8W0tWQbpUZS6F8Q7rxiBx9MSKsh3a_IZh_0O-YWAFRq7VvrXqDVQHmrAL8zSjhPz.webp"
+    },
+    {
+      "name": "Crown",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.Mz_9AnOH85bqNmYCwwkHJD0pshonYVd-bFb2fUPcKsZTYI5Oy9BY5KQUUZNdBSaV.webp"
+    },
+    {
+      "name": "Dessert",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.VGRnkjYR_U3sCmvkt27yaC7K0BzBD-2Y04OqR0cAXN4-rTKr4sY8bGFfoxPbpF6S.webp"
+    },
+    {
+      "name": "Gold",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.q9mAw_f7UFxl6t3m8EjlSJaSbeCouJyuC7vl75bKAdCXAtlIE4Tp7aIvIAyi01kL.webp"
+    },
+    {
+      "name": "Pomegranate",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.C3Ingn8GX_rBiVYVKvA6o3VquoLsDeahvB3DkuYS4YgLyhwnVKPXJfCTFaMqd-EZ.webp"
+    },
+    {
+      "name": "Brass Knuckles",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.mJGjt6zLJ4p04snlcwdyHJqncP_m1vkM6Ec61dkmBawHAV5WSSnpBW-moPORvZWW.webp"
+    },
+    {
+      "name": "Fleur-de-lis",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.UhmCpt0xoWIsX18PCeOH2RsBJg7ukZsv3K4uTGZFdGuxLuj_ZSvTMrZt6HT7kZfb.webp"
+    },
+    {
+      "name": "Hip-Hop",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.IWPmNhVpcdxQR9q9W5WACB_XXnLprQPdCspkMHXomp-gEQNqFO8Ys8qtwRlZFASo.webp"
+    },
+    {
+      "name": "Kite",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.mgJ7DnT8PHfNncHCZZJtWVLXIhPIOs30DJ-1csDUBRi28GPzt7Pqtx5jk4Ozk44m.webp"
+    },
+    {
+      "name": "Los Angeles",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.90T0uPYzzi_Mjv7Hmg40dcJUoE1NDOs-2GBI2CrHHUWPCpaPe9vgOkGkOsDRSrRF.webp"
+    },
+    {
+      "name": "Magic Hat",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.Xv7gaJP32uztnrLqgRSF0DorLXXvJfqmn_QCq9Kh0c-9vvusy3Vm1IK1FW7ST1Pv.webp"
+    },
+    {
+      "name": "Snoop Collar",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ZjYvZ2BFXgU_spnLV5neOgrEB-7XnCxKAo318agImxtX0wyn6YOv9M73VfnBTWhW.webp"
+    },
+    {
+      "name": "Thor Hammer",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.SXM3Bfzha-af1mKwZ50JWjOIC9DEgUU8OZ0FQ_Z3m2LlW6dTjoEmztQ7inU1GQ1y.webp"
+    },
+    {
+      "name": "Valkyrie",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.krfokvwN6e3Pervx8D7idhF1lrYNiBRPr_1Yfse2lyQAQPWiQn98WxO240iZig6p.webp"
+    },
+    {
+      "name": "Wolf Rage",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.mtyTp7LRipSJbl-sK2r0H7sMNUilJz4qh-PxnYRq9TmNUkoUDw3-77iCbYnOLj53.webp"
+    },
+    {
+      "name": "Desert Eagle",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.0DppxYab2rNlpI1auteEFYZ3JVvJIOxq97sc9QGiuJj--s62geNXedSv99y8CQNg.webp"
+    },
+    {
+      "name": "Glasses",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.ROmznVaHT2EUUpAjHFhC4vVfs50QlVF-kOMjAaRKjPpAuf5A69f2YE19eEpfN-M9.webp"
+    },
+    {
+      "name": "Palm Trees",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.KUiC2N2QpGGRoNB3VjPYMLfppgz1F9eEWifYSOJOs9F0zgLI-aXUc7m1u8RkFEid.webp"
+    },
+    {
+      "name": "Sharp Sword",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.TR1KDglAFUAHhobz3OdIYtYLUMWcXR7qYbPi7ZubR6MNH9O-Cy06sDb88xBy97lj.webp"
+    },
+    {
+      "name": "Tetsubin",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.LI4T8_T_tyHzxkEZ5EpF3G8se_wwKSUdf_PlvZPIuHmaU308rNrFx1M2jlAqXLnO.webp"
+    },
+    {
+      "name": "Tricorne",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.P8DkTSnIDsXYctn_QRrMu3pBX7aj_cUZbhMAeqPMQn5R_zgMIzoOsvms1fhXgSRp.webp"
+    },
+    {
+      "name": "Kitsune Mask",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.2_7qfpoPYxt0PJ9Bwt9wDU24HqQ0gbrOnxO8IoxnOcdyv1NBRegc2qv-QCB2e_94.webp"
+    },
+    {
+      "name": "Lion of Babylon",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.lSJAsbjo7SNWHGxNUHiLdcnvrykOq-QJS-RuV4CGtiyAUGemhZ9dT0_glPOk4lac.webp"
+    },
+    {
+      "name": "Robin Hood",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.U2XMDkXS-KLIjC0NPP_rmt_8FyL3tJNqHuH1N_i4dhHChinqC-YZ0yvcJ6-fOZfq.webp"
+    },
+    {
+      "name": "Trickster Fox",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.0MTOwpk9071TLVVo7iutyOUGu_hWiLuRlhSfVCWaw6LyoVpsjEHUMmt603ynJNc5.webp"
+    },
+    {
+      "name": "Cash Cap",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.C4eYxw1x0UG28e_RuGVSOL88RUk1qxhqcUy0OWJ683MrYanKRNvsTzHkO1NE_HlW.webp"
+    },
+    {
+      "name": "Crusader",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.e6LHjC7hjuesUiau-mRfhdSzCD9BaUNLJYo6az4cTOnuFp30PnkpGl8LzFeFF7gf.webp"
+    },
+    {
+      "name": "Toy Bucket",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.NcJfu8P8oc5paNQWglFogSqrQ6RH9bruhzlxjFTrzcLbO3LIB-prjnYA2KCzrNU4.webp"
+    },
+    {
+      "name": "Pickaxe",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.u_6iIhhXGRY7_s3lLq9cxg9v-zYMy9OEO9t0kqoJrerkUVCwNxgkb7vEu09u_Sd3.webp"
+    },
+    {
+      "name": "Spades",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.XFleyc9d7khck-PsqdI4cO3yGWfbw05aN2qkWhwFZ6Q-m3NwsjqHXWAM5ZnoU9M7.webp"
+    },
+    {
+      "name": "Straw Hat",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.nTzj7Oers-8thIc-KTge16nou7P_x4Q1vGy_vLSWViB0TF_y9xh1npsy6JGCPqFm.webp"
+    },
+    {
+      "name": "Meat Leg",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.j3ZqqHmEvMJj2GEQP4rPk_RqBPJMcecOqTQwtUXzAd1VDxJ9IXmvkhxjK4hefchn.webp"
+    },
+    {
+      "name": "Moon Cross",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.7GNm-UKdXOqhnmrZk_iPwvpM0_OyXt7gVCvNaO3H_147VSbbhwSV8FdX09qPcPwB.webp"
+    },
+    {
+      "name": "Onigiri",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.YJQg6Z4YUr9zh2GPifQJKVfGc6unyn6S29Uwf6i21YCMjKUxHlcgmhHLxMqA8qpU.webp"
+    },
+    {
+      "name": "Rap Mic",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.SeDbdhP2-wDOtGGvRSm8tRteiDwb07O1__XQxVx0mM1uwWqLpNDG87WomFpC0B29.webp"
+    },
+    {
+      "name": "Sprout",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.Qs7MNI5bI_wWt76tp3geAVREeHWVI8L2zKAvUZw7Vh4J_3jOJy7M8ykmCfbVeH7_.webp"
+    },
+    {
+      "name": "Swag Bandana",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.m9qNaTb1ZT_U_uzovOKoaS2ztZ1uzZomR9sRyy9xrO63MbYtH3x7VFt6R4ZOlcHL.webp"
+    },
+    {
+      "name": "Westside Hand",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.8DUYHE9KTDn244aw1V7YWH8pc4qWQmJrvLsivEhWaQQTQHZ20GhBzylih6TXsolN.webp"
+    },
+    {
+      "name": "Handset",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.tfjNOfYCE9EFw5pKd2wHQYTLIVAyT7S2aVJMDe9kLA1YOytuXXJ00YrUK5ZmPaUm.webp"
+    },
+    {
+      "name": "Money Bag",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.-UqnFr2vZSYRvGX73RqOvDYHVnrbtFV2fAQ2F5VFIvnAGuxgGiiJDZxdNp_av40Q.webp"
+    },
+    {
+      "name": "Nemes",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.IsZAfelsjr79p1iWeyl5e-wOZMtzs5f3edkQznNxmyrzDntGNCxrfXWe41bw0kzh.webp"
+    },
+    {
+      "name": "Panty",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.e1Xqnoz44u2r61Sy3dl-C5NokhbSbej0s5w-T29h1w3MZSM1HjPSZgX6ZacIlQwm.webp"
+    },
+    {
+      "name": "PC Mouse",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.rwy9T01ASYpPGWFSqSEgagsZ6iAX60iy8WwBvk_Af58eOz837Cov3BgJN6spcjN9.webp"
+    },
+    {
+      "name": "Spanner",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.R95bQGNTyZsMskvQ-NoVXZ5ZjDK8vn9xEkZWC-t2fWjw2dvl4ZS5IaDQ3eRZ2a0K.webp"
+    },
+    {
+      "name": "Legionary",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.3E93ZmnoJGtV2GJ0yh0JDnF74JIXzR_rZzHwjcqIXczNvX9NaI2ukS3_osFgyZA7.webp"
+    },
+    {
+      "name": "Sun Lion",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.8bOZEkiROSJ8wu260t6mbQAgZatlVALaf4tclRB8AYMNOu1gNxK_Ua7xhCuQftpD.webp"
+    },
+    {
+      "name": "Rap Sign",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.bbnwDB_VkoNRDsIK09Vjx82KlAJUszZAY7a-hB5NTBPEjVcafTYCiq9_iiz5yjnP.webp"
+    },
+    {
+      "name": "UZI",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.A5KCD0SiBfPvCwIs8FkGfg6Am0QrpEmaqRp3oTvCDdxpnz71QWlBch8CMwa5cX6o.webp"
+    },
+    {
+      "name": "Crusader Cross",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.A6uflq7U6j905dkw9hUMO6nTpSioMsHk-maebDl8c8enzlQLH0Guw2fAtHZWuy98.webp"
+    },
+    {
+      "name": "Gua Pi Mao",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.qMGfDFFDkyFhfa6wMd9QCL5VbknOpO2oFdkKm4W1VTjlMCENdz7JYbkAmlfN1l8F.webp"
+    },
+    {
+      "name": "Piranha",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.p2aCBJKriMSd0aCvd894FMtM_YObrPR-9m0jR1amcdZO46cWvDm05yoXzB-hoeX-.webp"
+    },
+    {
+      "name": "Bicorne",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.2BvPpP-NlkghhYLmllIdMebHJjAkr_HnzBxlAG_yQy_BTt1UMbevvVCIaaYbRxjh.webp"
+    },
+    {
+      "name": "Paisley",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lowrider/symbol.iguHGb4JH1Kqe4Tv88PpJxINwPQ66RgnwzOg9cENcQrXnxuajwnQdofOIOE9l_Ht.webp"
+    },
+    {
+      "name": "",
+      "count": 1123,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "https://nft.fragment.com/gift/lowrider-16908.medium.jpg"
+    },
+    {
+      "name": "Algorithm Cup",
+      "count": 60,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/algorithmcup/thumb.webp"
+    },
+    {
+      "name": "Artisan Brick",
+      "count": 3058,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/artisanbrick/thumb.webp"
+    },
+    {
+      "name": "Astral Shard",
+      "count": 3009,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/astralshard/thumb.webp"
+    },
+    {
+      "name": "B-Day Candle",
+      "count": 25113,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "img": "/file/gifts/bdaycandle/thumb.webp"
+    },
+    {
+      "name": "Berry Box",
+      "count": 9217,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/berrybox/thumb.webp"
+    },
+    {
+      "name": "Big Year",
+      "count": 13147,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/bigyear/thumb.webp"
+    },
+    {
+      "name": "Bling Binkie",
+      "count": 2211,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/blingbinky/thumb.webp"
+    },
+    {
+      "name": "Bonded Ring",
+      "count": 3004,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/bondedring/thumb.webp"
+    },
+    {
+      "name": "Bow Tie",
+      "count": 9113,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/bowtie/thumb.webp"
+    },
+    {
+      "name": "Bunny Muffin",
+      "count": 6980,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/bunnymuffin/thumb.webp"
+    },
+    {
+      "name": "Candy Cane",
+      "count": 17592,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/candycane/thumb.webp"
+    },
+    {
+      "name": "Chill Flame",
+      "count": 47698,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "img": "/file/gifts/chillflame/thumb.webp"
+    },
+    {
+      "name": "Clover Pin",
+      "count": 19949,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/cloverpin/thumb.webp"
+    },
+    {
+      "name": "Cookie Heart",
+      "count": 14038,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/cookieheart/thumb.webp"
+    },
+    {
+      "name": "Crystal Ball",
+      "count": 8615,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/crystalball/thumb.webp"
+    },
+    {
+      "name": "Cupid Charm",
+      "count": 6072,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/cupidcharm/thumb.webp"
+    },
+    {
+      "name": "Desk Calendar",
+      "count": 34815,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "img": "/file/gifts/deskcalendar/thumb.webp"
+    },
+    {
+      "name": "Diamond Ring",
+      "count": 8723,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/diamondring/thumb.webp"
+    },
+    {
+      "name": "Durov’s Cap",
+      "count": 3271,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/durovscap/thumb.webp"
+    },
+    {
+      "name": "Durov’s Glass",
+      "count": 718,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/durovsglasses/thumb.webp"
+    },
+    {
+      "name": "Easter Egg",
+      "count": 28130,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "img": "/file/gifts/easteregg/thumb.webp"
+    },
+    {
+      "name": "Electric Skull",
+      "count": 4431,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/electricskull/thumb.webp"
+    },
+    {
+      "name": "Eternal Candle",
+      "count": 12871,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/eternalcandle/thumb.webp"
+    },
+    {
+      "name": "Eternal Rose",
+      "count": 5899,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/eternalrose/thumb.webp"
+    },
+    {
+      "name": "Evil Eye",
+      "count": 18884,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/evileye/thumb.webp"
+    },
+    {
+      "name": "Faith Amulet",
+      "count": 12630,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/faithamulet/thumb.webp"
+    },
+    {
+      "name": "Fine Pen",
+      "count": 3807,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/finepen/thumb.webp"
+    },
+    {
+      "name": "Flying Broom",
+      "count": 6884,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/flyingbroom/thumb.webp"
+    },
+    {
+      "name": "Fresh Sock",
+      "count": 12833,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/freshsocks/thumb.webp"
+    },
+    {
+      "name": "Gem Signet",
+      "count": 2205,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/gemsignet/thumb.webp"
+    },
+    {
+      "name": "Genie Lamp",
+      "count": 2790,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/genielamp/thumb.webp"
+    },
+    {
+      "name": "Ginger Cookie",
+      "count": 19058,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/gingercookie/thumb.webp"
+    },
+    {
+      "name": "Hanging Star",
+      "count": 7300,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/hangingstar/thumb.webp"
+    },
+    {
+      "name": "Happy Brownie",
+      "count": 12168,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/happybrownie/thumb.webp"
+    },
+    {
+      "name": "Heart Locket",
+      "count": 1333,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/heartlocket/thumb.webp"
+    },
+    {
+      "name": "Heroic Helmet",
+      "count": 1354,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/heroichelmet/thumb.webp"
+    },
+    {
+      "name": "Hex Pot",
+      "count": 14937,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/hexpot/thumb.webp"
+    },
+    {
+      "name": "Holiday Drink",
+      "count": 6770,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/holidaydrink/thumb.webp"
+    },
+    {
+      "name": "Homemade Cake",
+      "count": 33727,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "img": "/file/gifts/homemadecake/thumb.webp"
+    },
+    {
+      "name": "Hypno Lollipop",
+      "count": 9299,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/hypnolollipop/thumb.webp"
+    },
+    {
+      "name": "Ice Cream",
+      "count": 37532,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "img": "/file/gifts/icecream/thumb.webp"
+    },
+    {
+      "name": "Input Key",
+      "count": 15623,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/inputkey/thumb.webp"
+    },
+    {
+      "name": "Instant Ramen",
+      "count": 26303,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "img": "/file/gifts/instantramen/thumb.webp"
+    },
+    {
+      "name": "Intelligence Cup",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/intelligencecup/thumb.webp"
+    },
+    {
+      "name": "Ion Gem",
+      "count": 2740,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/iongem/thumb.webp"
+    },
+    {
+      "name": "Ionic Dryer",
+      "count": 2830,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/ionicdryer/thumb.webp"
+    },
+    {
+      "name": "Jacks-in-the-Box",
+      "count": 16960,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/jackinthebox/thumb.webp"
+    },
+    {
+      "name": "Jelly Bunnie",
+      "count": 14424,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/jellybunny/thumb.webp"
+    },
+    {
+      "name": "Jester Hat",
+      "count": 13796,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/jesterhat/thumb.webp"
+    },
+    {
+      "name": "Jingle Bell",
+      "count": 9203,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/jinglebells/thumb.webp"
+    },
+    {
+      "name": "Jolly Chimp",
+      "count": 15869,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/jollychimp/thumb.webp"
+    },
+    {
+      "name": "Joyful Bundle",
+      "count": 4365,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/joyfulbundle/thumb.webp"
+    },
+    {
+      "name": "Khabib’s Papakha",
+      "count": 3691,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/khabibspapakha/thumb.webp"
+    },
+    {
+      "name": "Kissed Frog",
+      "count": 7736,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/kissedfrog/thumb.webp"
+    },
+    {
+      "name": "Liberty Figure",
+      "count": 25587,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "img": "/file/gifts/libertyfigure/thumb.webp"
+    },
+    {
+      "name": "Light Sword",
+      "count": 17832,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/lightsword/thumb.webp"
+    },
+    {
+      "name": "Lol Pop",
+      "count": 69802,
+      "permille": 47,
+      "rarity": 47,
+      "pct": 4.7,
+      "img": "/file/gifts/lolpop/thumb.webp"
+    },
+    {
+      "name": "Loot Bag",
+      "count": 6685,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/lootbag/thumb.webp"
+    },
+    {
+      "name": "Love Candle",
+      "count": 3408,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/lovecandle/thumb.webp"
+    },
+    {
+      "name": "Love Potion",
+      "count": 6923,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lovepotion/thumb.webp"
+    },
+    {
+      "name": "Low Rider",
+      "count": 6905,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lowrider/thumb.webp"
+    },
+    {
+      "name": "Lucky Locket",
+      "count": 556,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/luckylocket/thumb.webp"
+    },
+    {
+      "name": "Lunar Snake",
+      "count": 20211,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "img": "/file/gifts/lunarsnake/thumb.webp"
+    },
+    {
+      "name": "Lush Bouquet",
+      "count": 6953,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lushbouquet/thumb.webp"
+    },
+    {
+      "name": "Mad Pumpkin",
+      "count": 6842,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/madpumpkin/thumb.webp"
+    },
+    {
+      "name": "Magic Potion",
+      "count": 3330,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/magicpotion/thumb.webp"
+    },
+    {
+      "name": "Mighty Arm",
+      "count": 1859,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/mightyarm/thumb.webp"
+    },
+    {
+      "name": "Mini Oscar",
+      "count": 2194,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/minioscar/thumb.webp"
+    },
+    {
+      "name": "Mirage Lamp",
+      "count": 1556,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/miragelamp/thumb.webp"
+    },
+    {
+      "name": "Money Pot",
+      "count": 9861,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/moneypot/thumb.webp"
+    },
+    {
+      "name": "Mood Pack",
+      "count": 16740,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/moodpack/thumb.webp"
+    },
+    {
+      "name": "Moon Pendant",
+      "count": 13802,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/moonpendant/thumb.webp"
+    },
+    {
+      "name": "Mousse Cake",
+      "count": 8410,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/moussecake/thumb.webp"
+    },
+    {
+      "name": "Nail Bracelet",
+      "count": 1956,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/nailbracelet/thumb.webp"
+    },
+    {
+      "name": "Neko Helmet",
+      "count": 4301,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/nekohelmet/thumb.webp"
+    },
+    {
+      "name": "Party Sparkler",
+      "count": 22201,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "img": "/file/gifts/partysparkler/thumb.webp"
+    },
+    {
+      "name": "Perfume Bottle",
+      "count": 2191,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/perfumebottle/thumb.webp"
+    },
+    {
+      "name": "Pet Snake",
+      "count": 12277,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/petsnake/thumb.webp"
+    },
+    {
+      "name": "Plush Pepe",
+      "count": 2484,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/plushpepe/thumb.webp"
+    },
+    {
+      "name": "Pool Float",
+      "count": 16859,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/poolfloat/thumb.webp"
+    },
+    {
+      "name": "Precious Peach",
+      "count": 2167,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/preciouspeach/thumb.webp"
+    },
+    {
+      "name": "Pretty Posie",
+      "count": 6137,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/prettyposy/thumb.webp"
+    },
+    {
+      "name": "Rare Bird",
+      "count": 3848,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/rarebird/thumb.webp"
+    },
+    {
+      "name": "Record Player",
+      "count": 5680,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/recordplayer/thumb.webp"
+    },
+    {
+      "name": "Resistance Dog",
+      "count": 843,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/resistancedog/thumb.webp"
+    },
+    {
+      "name": "Restless Jar",
+      "count": 10103,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/restlessjar/thumb.webp"
+    },
+    {
+      "name": "Sakura Flower",
+      "count": 14629,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/sakuraflower/thumb.webp"
+    },
+    {
+      "name": "Santa Hat",
+      "count": 13110,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/santahat/thumb.webp"
+    },
+    {
+      "name": "Scared Cat",
+      "count": 14525,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/scaredcat/thumb.webp"
+    },
+    {
+      "name": "Sharp Tongue",
+      "count": 3956,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/sharptongue/thumb.webp"
+    },
+    {
+      "name": "Signet Ring",
+      "count": 7393,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/signetring/thumb.webp"
+    },
+    {
+      "name": "Skull Flower",
+      "count": 7172,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/skullflower/thumb.webp"
+    },
+    {
+      "name": "Sky Stiletto",
+      "count": 6346,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/skystilettos/thumb.webp"
+    },
+    {
+      "name": "Sleigh Bell",
+      "count": 4421,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/sleighbell/thumb.webp"
+    },
+    {
+      "name": "Snake Box",
+      "count": 10677,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/snakebox/thumb.webp"
+    },
+    {
+      "name": "Snoop Cigar",
+      "count": 19240,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/snoopcigar/thumb.webp"
+    },
+    {
+      "name": "Snoop Dogg",
+      "count": 58529,
+      "permille": 39,
+      "rarity": 39,
+      "pct": 3.9,
+      "img": "/file/gifts/snoopdogg/thumb.webp"
+    },
+    {
+      "name": "Snow Globe",
+      "count": 6806,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/snowglobe/thumb.webp"
+    },
+    {
+      "name": "Snow Mitten",
+      "count": 5296,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/snowmittens/thumb.webp"
+    },
+    {
+      "name": "Spiced Wine",
+      "count": 12750,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/spicedwine/thumb.webp"
+    },
+    {
+      "name": "Spring Basket",
+      "count": 13947,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/springbasket/thumb.webp"
+    },
+    {
+      "name": "Spy Agaric",
+      "count": 29394,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "img": "/file/gifts/spyagaric/thumb.webp"
+    },
+    {
+      "name": "Star Notepad",
+      "count": 9598,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/starnotepad/thumb.webp"
+    },
+    {
+      "name": "Stellar Rocket",
+      "count": 17492,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/stellarrocket/thumb.webp"
+    },
+    {
+      "name": "Surge Board",
+      "count": 3597,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/surgeboard/thumb.webp"
+    },
+    {
+      "name": "Swag Bag",
+      "count": 21898,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "img": "/file/gifts/swagbag/thumb.webp"
+    },
+    {
+      "name": "Swiss Watch",
+      "count": 11082,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/swisswatch/thumb.webp"
+    },
+    {
+      "name": "Tama Gadget",
+      "count": 11683,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/tamagadget/thumb.webp"
+    },
+    {
+      "name": "Timeless Book",
+      "count": 9799,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/timelessbook/thumb.webp"
+    },
+    {
+      "name": "Top Hat",
+      "count": 9257,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/tophat/thumb.webp"
+    },
+    {
+      "name": "Toy Bear",
+      "count": 30025,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "img": "/file/gifts/toybear/thumb.webp"
+    },
+    {
+      "name": "Trapped Heart",
+      "count": 9896,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/trappedheart/thumb.webp"
+    },
+    {
+      "name": "UFC Strike",
+      "count": 7060,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/ufcstrike/thumb.webp"
+    },
+    {
+      "name": "Valentine Box",
+      "count": 4106,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/valentinebox/thumb.webp"
+    },
+    {
+      "name": "Vice Cream",
+      "count": 48021,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "img": "/file/gifts/vicecream/thumb.webp"
+    },
+    {
+      "name": "Victory Medal",
+      "count": 16481,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/victorymedal/thumb.webp"
+    },
+    {
+      "name": "Vintage Cigar",
+      "count": 9161,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/vintagecigar/thumb.webp"
+    },
+    {
+      "name": "Voodoo Doll",
+      "count": 11177,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/voodoodoll/thumb.webp"
+    },
+    {
+      "name": "Westside Sign",
+      "count": 5339,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/westsidesign/thumb.webp"
+    },
+    {
+      "name": "Whip Cupcake",
+      "count": 16235,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/whipcupcake/thumb.webp"
+    },
+    {
+      "name": "Winter Wreath",
+      "count": 10298,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/winterwreath/thumb.webp"
+    },
+    {
+      "name": "Witch Hat",
+      "count": 31553,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "img": "/file/gifts/witchhat/thumb.webp"
+    },
+    {
+      "name": "Xmas Stocking",
+      "count": 16968,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/xmasstocking/thumb.webp"
+    }
+  ]
+}

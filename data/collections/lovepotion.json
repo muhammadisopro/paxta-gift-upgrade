@@ -1,0 +1,4506 @@
+{
+  "slug": "lovepotion",
+  "name": "Love Potion",
+  "plural": "Love Potions",
+  "supply": 6923,
+  "minted": 6923,
+  "circulating": 6923,
+  "price": 250,
+  "upgradePrice": 63,
+  "thumb": "/file/gifts/lovepotion/thumb.webp",
+  "baseTgs": "/file/gifts/lovepotion/model.9HoudCzI-mFi6BTtkX6Noy2sgAXjan5zD0Wrr3evAHZ_UxdsQ7t5x5lyuSKIDNDo.tgs",
+  "models": [
+    {
+      "name": "Copper Sulfate",
+      "count": 186,
+      "permille": 27,
+      "rarity": 27,
+      "pct": 2.7,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.9HoudCzI-mFi6BTtkX6Noy2sgAXjan5zD0Wrr3evAHZ_UxdsQ7t5x5lyuSKIDNDo.webp",
+      "tgs": "/file/gifts/lovepotion/model.9HoudCzI-mFi6BTtkX6Noy2sgAXjan5zD0Wrr3evAHZ_UxdsQ7t5x5lyuSKIDNDo.tgs"
+    },
+    {
+      "name": "Toxic Waste",
+      "count": 179,
+      "permille": 26,
+      "rarity": 26,
+      "pct": 2.6,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.MuvWO-S3mE_sKf6kSLgVypFY9apXNA0UW3l0qQRO6QfANfqdHgGEaVK31a3z56KM.webp",
+      "tgs": "/file/gifts/lovepotion/model.MuvWO-S3mE_sKf6kSLgVypFY9apXNA0UW3l0qQRO6QfANfqdHgGEaVK31a3z56KM.tgs"
+    },
+    {
+      "name": "Fairy Pollen",
+      "count": 175,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.wILcyFcAgydH39sOOtY9QsIz1L50-IxWKB8ZNw2JmHLvNsshVmw6jMk1hwUOQ2mE.webp",
+      "tgs": "/file/gifts/lovepotion/model.wILcyFcAgydH39sOOtY9QsIz1L50-IxWKB8ZNw2JmHLvNsshVmw6jMk1hwUOQ2mE.tgs"
+    },
+    {
+      "name": "Rusty Water",
+      "count": 173,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.S8MyzWHtBdhuc_fEt0mTEvEXpT2RK_VBgXqPAxnM3BGnFTlYVZz39oaegDy2O6v4.webp",
+      "tgs": "/file/gifts/lovepotion/model.S8MyzWHtBdhuc_fEt0mTEvEXpT2RK_VBgXqPAxnM3BGnFTlYVZz39oaegDy2O6v4.tgs"
+    },
+    {
+      "name": "Starry Night",
+      "count": 172,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.0NeB6ZT9zJBxnRdxjVZ7cVtMKhTg8e1ut_oowitO1duBeb_Z72U6Wdf-xFQ57jCO.webp",
+      "tgs": "/file/gifts/lovepotion/model.0NeB6ZT9zJBxnRdxjVZ7cVtMKhTg8e1ut_oowitO1duBeb_Z72U6Wdf-xFQ57jCO.tgs"
+    },
+    {
+      "name": "Berry Bomb",
+      "count": 169,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.ldnT6vYYEHr7jLgCybSS-iLL9md3puiVB_I6eZEA5qUslHgAW4E4giNlRjOHAhMW.webp",
+      "tgs": "/file/gifts/lovepotion/model.ldnT6vYYEHr7jLgCybSS-iLL9md3puiVB_I6eZEA5qUslHgAW4E4giNlRjOHAhMW.tgs"
+    },
+    {
+      "name": "Gold Rush",
+      "count": 168,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.hlfsQJHmJ94Uspt97qS0wkWte229pT3bN1Zc81FnrMOu9Bupu77F3HSAZ3h1qBaD.webp",
+      "tgs": "/file/gifts/lovepotion/model.hlfsQJHmJ94Uspt97qS0wkWte229pT3bN1Zc81FnrMOu9Bupu77F3HSAZ3h1qBaD.tgs"
+    },
+    {
+      "name": "Royal Spritz",
+      "count": 164,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.vqUAd7BuMfUT-CQhfiy3wvt6RPQUOCAVNB2xv4xMUOhG3mXcZUbDl8YSQpY3R5KK.webp",
+      "tgs": "/file/gifts/lovepotion/model.vqUAd7BuMfUT-CQhfiy3wvt6RPQUOCAVNB2xv4xMUOhG3mXcZUbDl8YSQpY3R5KK.tgs"
+    },
+    {
+      "name": "Ocean Glow",
+      "count": 163,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.-ruKsusi6LOEf5qdZFjnG6iWaPWFCa5Wq8g48XKeXKVu6g5JkU76G65qT4IjhiPY.webp",
+      "tgs": "/file/gifts/lovepotion/model.-ruKsusi6LOEf5qdZFjnG6iWaPWFCa5Wq8g48XKeXKVu6g5JkU76G65qT4IjhiPY.tgs"
+    },
+    {
+      "name": "Old Rum",
+      "count": 163,
+      "permille": 24,
+      "rarity": 24,
+      "pct": 2.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.Iqq2Ie2LLTklIk5LG5_FZzhaN8RbSYyR1Cwiw47EOFv37MGnAva66nukweYQYkv9.webp",
+      "tgs": "/file/gifts/lovepotion/model.Iqq2Ie2LLTklIk5LG5_FZzhaN8RbSYyR1Cwiw47EOFv37MGnAva66nukweYQYkv9.tgs"
+    },
+    {
+      "name": "Mystic Dew",
+      "count": 162,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.Edt1yzD_-9Yuv5soBVnMFGlKowQAnGS6zTwTuSIN-mkD7pZSdryQP612SNl7-FMF.webp",
+      "tgs": "/file/gifts/lovepotion/model.Edt1yzD_-9Yuv5soBVnMFGlKowQAnGS6zTwTuSIN-mkD7pZSdryQP612SNl7-FMF.tgs"
+    },
+    {
+      "name": "Sour Cider",
+      "count": 161,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.STxuVrhg1u0m-mnGnFfKtUaVutXGUgxtDtvNOawbU0406fe0Pci5KvsoEdebWqxE.webp",
+      "tgs": "/file/gifts/lovepotion/model.STxuVrhg1u0m-mnGnFfKtUaVutXGUgxtDtvNOawbU0406fe0Pci5KvsoEdebWqxE.tgs"
+    },
+    {
+      "name": "Sea Salt",
+      "count": 157,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.KBCmOgwQL455_C3yOTqjes_-gfdnz1FqEXy5zh81XhOT_g0wSecxVJbZJxlYqL3U.webp",
+      "tgs": "/file/gifts/lovepotion/model.KBCmOgwQL455_C3yOTqjes_-gfdnz1FqEXy5zh81XhOT_g0wSecxVJbZJxlYqL3U.tgs"
+    },
+    {
+      "name": "Sunset Serum",
+      "count": 150,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.kqKs4wtiwuhjS4VYhuuZiYMhcc6k-gryMrd8Grl3fN5X5DDJczcmE44whN1zez9a.webp",
+      "tgs": "/file/gifts/lovepotion/model.kqKs4wtiwuhjS4VYhuuZiYMhcc6k-gryMrd8Grl3fN5X5DDJczcmE44whN1zez9a.tgs"
+    },
+    {
+      "name": "Aerogel",
+      "count": 148,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.L7FC0Pz-8Vi_eYGNghIpl6K6VGMmaptAfsNuPB1-m0s7DzLr3Pweg9Z9zYFZNaWy.webp",
+      "tgs": "/file/gifts/lovepotion/model.L7FC0Pz-8Vi_eYGNghIpl6K6VGMmaptAfsNuPB1-m0s7DzLr3Pweg9Z9zYFZNaWy.tgs"
+    },
+    {
+      "name": "Poison Flask",
+      "count": 143,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.IGKAj8TD5f3EPq8LPDklO44lxUNn_MBt3Wp8B0fGwT0EkCmF06tYr9PhG9Ck0Gve.webp",
+      "tgs": "/file/gifts/lovepotion/model.IGKAj8TD5f3EPq8LPDklO44lxUNn_MBt3Wp8B0fGwT0EkCmF06tYr9PhG9Ck0Gve.tgs"
+    },
+    {
+      "name": "Seeker’s Wish",
+      "count": 138,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.j_DLag-Ftb_FeWHofKl--im83oZg8hRjBjkp2DN0d2hGoYvxGxe7JOK2HYXec2Kb.webp",
+      "tgs": "/file/gifts/lovepotion/model.j_DLag-Ftb_FeWHofKl--im83oZg8hRjBjkp2DN0d2hGoYvxGxe7JOK2HYXec2Kb.tgs"
+    },
+    {
+      "name": "Sugar Ponies",
+      "count": 138,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.me7y5vC825BpMj0_pkp6fpDgF2_KNnphNVmEKFGQNRaaU7ml_OhJv5BeMOs3Gn5h.webp",
+      "tgs": "/file/gifts/lovepotion/model.me7y5vC825BpMj0_pkp6fpDgF2_KNnphNVmEKFGQNRaaU7ml_OhJv5BeMOs3Gn5h.tgs"
+    },
+    {
+      "name": "Juliet",
+      "count": 136,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.h2jIzY2VuK55rpRxyEXsI34pTC76wtn8eL6xFAN6EYtRpXZXeapKnpLRtcMKgr_J.webp",
+      "tgs": "/file/gifts/lovepotion/model.h2jIzY2VuK55rpRxyEXsI34pTC76wtn8eL6xFAN6EYtRpXZXeapKnpLRtcMKgr_J.tgs"
+    },
+    {
+      "name": "Formic Acid",
+      "count": 130,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.eh4CDmrz0rhCIjiWLx0nW7ysPVgEN0IlLGWn25IISEaidlw944m3Vu4ziuYE_Rdp.webp",
+      "tgs": "/file/gifts/lovepotion/model.eh4CDmrz0rhCIjiWLx0nW7ysPVgEN0IlLGWn25IISEaidlw944m3Vu4ziuYE_Rdp.tgs"
+    },
+    {
+      "name": "Mouthwash",
+      "count": 130,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.-6v4_a3jMFWWRbB9HKO5F9sBCaJXQ4dYo2utUx9oFU9QGKDKSZOH-6WoGnnzzIMG.webp",
+      "tgs": "/file/gifts/lovepotion/model.-6v4_a3jMFWWRbB9HKO5F9sBCaJXQ4dYo2utUx9oFU9QGKDKSZOH-6WoGnnzzIMG.tgs"
+    },
+    {
+      "name": "Liquid Pearl",
+      "count": 125,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.GFu-TGI6x-BT854a82MlfxDDfydbhUINdpQjWNf8mD-C0d31sZj-ZZsAsmgabGFo.webp",
+      "tgs": "/file/gifts/lovepotion/model.GFu-TGI6x-BT854a82MlfxDDfydbhUINdpQjWNf8mD-C0d31sZj-ZZsAsmgabGFo.tgs"
+    },
+    {
+      "name": "Fine Mead",
+      "count": 123,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.c0IIS92RmP-5vT4OZ4DwC6KcLBXVMQEGImH7IzrFIv752yCB9yJOSKOey6ferBmq.webp",
+      "tgs": "/file/gifts/lovepotion/model.c0IIS92RmP-5vT4OZ4DwC6KcLBXVMQEGImH7IzrFIv752yCB9yJOSKOey6ferBmq.tgs"
+    },
+    {
+      "name": "Milkshake",
+      "count": 118,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.CZ4X69bLQNdQLKZbUtoXhJ_hBp9G7CvHcJb7aGrTGY9tKBAi7M-YnFxlbt0rjBbK.webp",
+      "tgs": "/file/gifts/lovepotion/model.CZ4X69bLQNdQLKZbUtoXhJ_hBp9G7CvHcJb7aGrTGY9tKBAi7M-YnFxlbt0rjBbK.tgs"
+    },
+    {
+      "name": "Surreal",
+      "count": 115,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.Sv9xP1BFQl6WpmgRtOBs8Q47MozLUSzogPOy3D9GIi8BCJ9NvjTSm02Lxr3M7Z9L.webp",
+      "tgs": "/file/gifts/lovepotion/model.Sv9xP1BFQl6WpmgRtOBs8Q47MozLUSzogPOy3D9GIi8BCJ9NvjTSm02Lxr3M7Z9L.tgs"
+    },
+    {
+      "name": "Bubble Bath",
+      "count": 114,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.RAE1uxL-np96_-ZiC0P_DFPyrAn1onPztS4jKrFyEqUMtBcAg8Wh7fwGgx4oOP66.webp",
+      "tgs": "/file/gifts/lovepotion/model.RAE1uxL-np96_-ZiC0P_DFPyrAn1onPztS4jKrFyEqUMtBcAg8Wh7fwGgx4oOP66.tgs"
+    },
+    {
+      "name": "Ruby Essence",
+      "count": 110,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.gz3whIjWCG_3n9NW4bH_isLQLuhd8rMyMdDSsGVPNq4m7Vtt894HW0BE0A_7Tj_2.webp",
+      "tgs": "/file/gifts/lovepotion/model.gz3whIjWCG_3n9NW4bH_isLQLuhd8rMyMdDSsGVPNq4m7Vtt894HW0BE0A_7Tj_2.tgs"
+    },
+    {
+      "name": "Paint Bottle",
+      "count": 109,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.dQDD9vOfV4Wv3W9hzECcsoQwBxiF0Ialu-nhj8vbfKpj4OInCAuVv7yIUCFXHOrl.webp",
+      "tgs": "/file/gifts/lovepotion/model.dQDD9vOfV4Wv3W9hzECcsoQwBxiF0Ialu-nhj8vbfKpj4OInCAuVv7yIUCFXHOrl.tgs"
+    },
+    {
+      "name": "Golden Mire",
+      "count": 107,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.VXtLkEDzi6WPePJabNpn04AjFmtYmp_ZD6Eied4F0bGGR1JEyEGjXb9846T6FgcJ.webp",
+      "tgs": "/file/gifts/lovepotion/model.VXtLkEDzi6WPePJabNpn04AjFmtYmp_ZD6Eied4F0bGGR1JEyEGjXb9846T6FgcJ.tgs"
+    },
+    {
+      "name": "Laxative",
+      "count": 106,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.9RlENPz09W8jsqmBmP8P6u9474wv58mh19drUAOeZHrSy8ohUxlXjRCBhG6hpDEK.webp",
+      "tgs": "/file/gifts/lovepotion/model.9RlENPz09W8jsqmBmP8P6u9474wv58mh19drUAOeZHrSy8ohUxlXjRCBhG6hpDEK.tgs"
+    },
+    {
+      "name": "White Ink",
+      "count": 105,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.9ep9x_G9lG7QGWNXeMikmBtuBZRaCufbkm7MOQVZIrH3-CkZxV9inkKsiqwT4IGi.webp",
+      "tgs": "/file/gifts/lovepotion/model.9ep9x_G9lG7QGWNXeMikmBtuBZRaCufbkm7MOQVZIrH3-CkZxV9inkKsiqwT4IGi.tgs"
+    },
+    {
+      "name": "Crime Scene",
+      "count": 103,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.U03Lvuh9vHMlGNANtvtZ_h7zsZpNB3VWguIz2uH2HyayjARPTOmgEScj1QZLGQ-K.webp",
+      "tgs": "/file/gifts/lovepotion/model.U03Lvuh9vHMlGNANtvtZ_h7zsZpNB3VWguIz2uH2HyayjARPTOmgEScj1QZLGQ-K.tgs"
+    },
+    {
+      "name": "Spades",
+      "count": 103,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.edgHzc3Q0E0DZQG-85zytElFtnDS-mMR_cD3ek2pQphIhZ_uAan55NUB3_rkAUCa.webp",
+      "tgs": "/file/gifts/lovepotion/model.edgHzc3Q0E0DZQG-85zytElFtnDS-mMR_cD3ek2pQphIhZ_uAan55NUB3_rkAUCa.tgs"
+    },
+    {
+      "name": "Peach Nectar",
+      "count": 101,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.WOjZGfsKMktTwXmGR2q6cC9u5yc9fuqdJNLd2h7gFLa3J58g-TtaYxogEaX4JmTH.webp",
+      "tgs": "/file/gifts/lovepotion/model.WOjZGfsKMktTwXmGR2q6cC9u5yc9fuqdJNLd2h7gFLa3J58g-TtaYxogEaX4JmTH.tgs"
+    },
+    {
+      "name": "Fragrant Oil",
+      "count": 100,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.DDLka6dYavTHMBAzkNDZgCn3gl2txUWNowMHdfZZyBZYc_JCi8wWRNYcKkeMOPF2.webp",
+      "tgs": "/file/gifts/lovepotion/model.DDLka6dYavTHMBAzkNDZgCn3gl2txUWNowMHdfZZyBZYc_JCi8wWRNYcKkeMOPF2.tgs"
+    },
+    {
+      "name": "Romeo",
+      "count": 99,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.svuLAa8LaDrezQaniYZQsWSPOhm7XKsel4FM4QyRbugL-9pi5WXRDKMxkarmd2UC.webp",
+      "tgs": "/file/gifts/lovepotion/model.svuLAa8LaDrezQaniYZQsWSPOhm7XKsel4FM4QyRbugL-9pi5WXRDKMxkarmd2UC.tgs"
+    },
+    {
+      "name": "Diamonds",
+      "count": 93,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.IwDlQ4lttWr6KJ19o1brrjcsUiaq-rCTxndDfvbEgVj5eEUu5mUdwXDuOMmWHKwD.webp",
+      "tgs": "/file/gifts/lovepotion/model.IwDlQ4lttWr6KJ19o1brrjcsUiaq-rCTxndDfvbEgVj5eEUu5mUdwXDuOMmWHKwD.tgs"
+    },
+    {
+      "name": "Cherry Wine",
+      "count": 90,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.wLUC--ntEbFahmOKirvCMkYfLl52IcgUWNAX8NjGWyVERl2qN1hxyNwMSXFVlrqb.webp",
+      "tgs": "/file/gifts/lovepotion/model.wLUC--ntEbFahmOKirvCMkYfLl52IcgUWNAX8NjGWyVERl2qN1hxyNwMSXFVlrqb.tgs"
+    },
+    {
+      "name": "Kiwi Juice",
+      "count": 86,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.5RjnBvaGb9Q2f_WCAxSR6B5WeD01x30ax_8EMlH9E28zOQjrsR1wSPqOrtN1DaC4.webp",
+      "tgs": "/file/gifts/lovepotion/model.5RjnBvaGb9Q2f_WCAxSR6B5WeD01x30ax_8EMlH9E28zOQjrsR1wSPqOrtN1DaC4.tgs"
+    },
+    {
+      "name": "Flat Pink",
+      "count": 82,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.-sk0tSN5DYyCanzS2wuVnC56xdRtomgMFtQNGkDoouHXW83aAYlZQopbWuKDUBz1.webp",
+      "tgs": "/file/gifts/lovepotion/model.-sk0tSN5DYyCanzS2wuVnC56xdRtomgMFtQNGkDoouHXW83aAYlZQopbWuKDUBz1.tgs"
+    },
+    {
+      "name": "First Aid",
+      "count": 76,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.Dz8biaV6NFFFj3R5Xw6RTMJnw6VDeB0fpZOH6IjsVF7YAXAab0RtPbJmVvT1-Sla.webp",
+      "tgs": "/file/gifts/lovepotion/model.Dz8biaV6NFFFj3R5Xw6RTMJnw6VDeB0fpZOH6IjsVF7YAXAab0RtPbJmVvT1-Sla.tgs"
+    },
+    {
+      "name": "Gothic Cola",
+      "count": 76,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.unpognphoIByk5cTGRjefuYIepklt4oTTJP7gVsaBPjYRwCEG5Ml_IuyXbaGYaVA.webp",
+      "tgs": "/file/gifts/lovepotion/model.unpognphoIByk5cTGRjefuYIepklt4oTTJP7gVsaBPjYRwCEG5Ml_IuyXbaGYaVA.tgs"
+    },
+    {
+      "name": "Clubs",
+      "count": 75,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.oY7iFke_wKGZz6gv_htf8oMDkBY9SaTQvDkw0zw0lSDII8Jboy4YtZFXRCiFhBAu.webp",
+      "tgs": "/file/gifts/lovepotion/model.oY7iFke_wKGZz6gv_htf8oMDkBY9SaTQvDkw0zw0lSDII8Jboy4YtZFXRCiFhBAu.tgs"
+    },
+    {
+      "name": "Tropicano",
+      "count": 74,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.srSxLtSAPgMh0P5U8mb9SnKumW4DeD3b0mJIMiZFqK_9dNEIAELXw6ce26j4ETyH.webp",
+      "tgs": "/file/gifts/lovepotion/model.srSxLtSAPgMh0P5U8mb9SnKumW4DeD3b0mJIMiZFqK_9dNEIAELXw6ce26j4ETyH.tgs"
+    },
+    {
+      "name": "Bubble Gum",
+      "count": 65,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.8OwaAoKh8sa--QASnAlJpQ_J_GbR1udVhaAloXMawOKwfjTKisR6pR8LFvnB4tUe.webp",
+      "tgs": "/file/gifts/lovepotion/model.8OwaAoKh8sa--QASnAlJpQ_J_GbR1udVhaAloXMawOKwfjTKisR6pR8LFvnB4tUe.tgs"
+    },
+    {
+      "name": "Hearts",
+      "count": 62,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.KhBuQQ6Yo8q0pIJXLnjjIxPjdr3XC_n2lLt8ewQOIWmE7c-LnDUQDzfp_j-KimYN.webp",
+      "tgs": "/file/gifts/lovepotion/model.KhBuQQ6Yo8q0pIJXLnjjIxPjdr3XC_n2lLt8ewQOIWmE7c-LnDUQDzfp_j-KimYN.tgs"
+    },
+    {
+      "name": "Star Power",
+      "count": 59,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.PKRGKM82zZt1B0ZvLAwCx6JH_vEq_pojN-94DtTmXjUxv159rfzYmyKZz-NRW9iO.webp",
+      "tgs": "/file/gifts/lovepotion/model.PKRGKM82zZt1B0ZvLAwCx6JH_vEq_pojN-94DtTmXjUxv159rfzYmyKZz-NRW9iO.tgs"
+    },
+    {
+      "name": "Angel Wings",
+      "count": 58,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": false,
+      "img": "/file/gifts/lovepotion/model.yGWnCcVQVW43XhxHs3OzhD7aB-Et1Sp0OyRY0P8A_9_NdWpzLK6Ley_6u15rm_my.webp",
+      "tgs": "/file/gifts/lovepotion/model.yGWnCcVQVW43XhxHs3OzhD7aB-Et1Sp0OyRY0P8A_9_NdWpzLK6Ley_6u15rm_my.tgs"
+    }
+  ],
+  "craftModels": [
+    {
+      "name": "Molten Gold",
+      "count": 58,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.Lt2Uiy1MuwC--59RpaaNMvsx76fU5R3Ig8mlOlMQuI2UAIQju_L4Z_7P2S9IIT9j.webp",
+      "tgs": "/file/gifts/lovepotion/model.Lt2Uiy1MuwC--59RpaaNMvsx76fU5R3Ig8mlOlMQuI2UAIQju_L4Z_7P2S9IIT9j.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Durov Duck",
+      "count": 57,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.ALrDTPRKeMNrCOueTyGtHAbpULJlZRSN5TRUastw8DMRnAb9Q06W5L4N-iAMQx1I.webp",
+      "tgs": "/file/gifts/lovepotion/model.ALrDTPRKeMNrCOueTyGtHAbpULJlZRSN5TRUastw8DMRnAb9Q06W5L4N-iAMQx1I.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Whole Milk",
+      "count": 57,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.UZTIS8PosDWnmecrjgzdN2-cR9ZeHivm10dYC3DlNtsmEBgjcyjugpyPMvPMZoTG.webp",
+      "tgs": "/file/gifts/lovepotion/model.UZTIS8PosDWnmecrjgzdN2-cR9ZeHivm10dYC3DlNtsmEBgjcyjugpyPMvPMZoTG.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Dragon Soul",
+      "count": 56,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.bvFyeOhzUtDFg4rt4riLPS1krLewlXyS8qvECScX6wN1QwrHMxeV3zl4sL6Jt3dA.webp",
+      "tgs": "/file/gifts/lovepotion/model.bvFyeOhzUtDFg4rt4riLPS1krLewlXyS8qvECScX6wN1QwrHMxeV3zl4sL6Jt3dA.tgs",
+      "tier": "legendary"
+    },
+    {
+      "name": "Emo Tears",
+      "count": 56,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.Q3SYvNJWPo7Oa-600PlOBMShpNCVO3_6k7GaGgrQQ05wrpe8RAdeJhtoH7eJawP0.webp",
+      "tgs": "/file/gifts/lovepotion/model.Q3SYvNJWPo7Oa-600PlOBMShpNCVO3_6k7GaGgrQQ05wrpe8RAdeJhtoH7eJawP0.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Astral Guide",
+      "count": 55,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.IcmGz-T5pGxjBo76amGYD0TL3Xpf3ogD_mL7MBZ2wOdZ0NLckID7bJCLlDAcOhES.webp",
+      "tgs": "/file/gifts/lovepotion/model.IcmGz-T5pGxjBo76amGYD0TL3Xpf3ogD_mL7MBZ2wOdZ0NLckID7bJCLlDAcOhES.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Beholder",
+      "count": 54,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.9AspYjGanFIb59EB8NUucwhJK2CF5nsfx3TTi7KCixkY7bcnxgSUjxujNMSTJq5k.webp",
+      "tgs": "/file/gifts/lovepotion/model.9AspYjGanFIb59EB8NUucwhJK2CF5nsfx3TTi7KCixkY7bcnxgSUjxujNMSTJq5k.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Beauty Brew",
+      "count": 53,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.vc-MB-F5Dm9hutLMAfYQmornOQbZlTfRCgIcw2UbhXHmWj7VfvJUbfPg5zLLrRrU.webp",
+      "tgs": "/file/gifts/lovepotion/model.vc-MB-F5Dm9hutLMAfYQmornOQbZlTfRCgIcw2UbhXHmWj7VfvJUbfPg5zLLrRrU.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Pickle Rick",
+      "count": 53,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.2FOSbAsbtZ5tMNl9qUn7Mx6dSkq1U1lnWS1PpjX8NUw0PTtqcby3Pyk5cV1JbN3F.webp",
+      "tgs": "/file/gifts/lovepotion/model.2FOSbAsbtZ5tMNl9qUn7Mx6dSkq1U1lnWS1PpjX8NUw0PTtqcby3Pyk5cV1JbN3F.tgs",
+      "tier": "epic"
+    },
+    {
+      "name": "Bloodlust",
+      "count": 51,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.woks5lHfeMTGVlcMskXh4eOyOKW455JG0EIwcbMkwQ2ztmx0vhxKbFT72Jy6Gt1O.webp",
+      "tgs": "/file/gifts/lovepotion/model.woks5lHfeMTGVlcMskXh4eOyOKW455JG0EIwcbMkwQ2ztmx0vhxKbFT72Jy6Gt1O.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Eye-lixir",
+      "count": 51,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.elqYnUivZK_6BKYdrYjePdoMaO96W9pdgbZPd45hAvNQyI3003TZG00_V9KjiPOP.webp",
+      "tgs": "/file/gifts/lovepotion/model.elqYnUivZK_6BKYdrYjePdoMaO96W9pdgbZPd45hAvNQyI3003TZG00_V9KjiPOP.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Unicorn Tears",
+      "count": 51,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.kzlu_8FdBN4O3IPzhPG_3Rtw55NGE4sy9FJxiNEXVBZkmfsM9PmYHTkzdNqhIOxq.webp",
+      "tgs": "/file/gifts/lovepotion/model.kzlu_8FdBN4O3IPzhPG_3Rtw55NGE4sy9FJxiNEXVBZkmfsM9PmYHTkzdNqhIOxq.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Banana",
+      "count": 49,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.xU0CPfvkh3enQqD54ROoTJx_Ay7nKekaU0G6N0RDHO7-zEXv4FHg4i6Ppmx8DG9A.webp",
+      "tgs": "/file/gifts/lovepotion/model.xU0CPfvkh3enQqD54ROoTJx_Ay7nKekaU0G6N0RDHO7-zEXv4FHg4i6Ppmx8DG9A.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Energy Drink",
+      "count": 46,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.Oc2j6NaKA7IrvvaL6oNzk1mnxjVTnwMUQHmFyhRwO5LHMPT8em1brbcPyaqk4EB5.webp",
+      "tgs": "/file/gifts/lovepotion/model.Oc2j6NaKA7IrvvaL6oNzk1mnxjVTnwMUQHmFyhRwO5LHMPT8em1brbcPyaqk4EB5.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "No Signal",
+      "count": 46,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.Zji_Qya7NSxPXKm25Yine8zlbJnYJU6tpjdP4EB9NAP-4hAgnrn-X_LzjJKx-vHu.webp",
+      "tgs": "/file/gifts/lovepotion/model.Zji_Qya7NSxPXKm25Yine8zlbJnYJU6tpjdP4EB9NAP-4hAgnrn-X_LzjJKx-vHu.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Espresso",
+      "count": 45,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.RVYp7c2IxPKLUxlXWVY3v6wfjRwep1W2wauYTyksqTr2IpW6M8xu13ZsPcX3-gYB.webp",
+      "tgs": "/file/gifts/lovepotion/model.RVYp7c2IxPKLUxlXWVY3v6wfjRwep1W2wauYTyksqTr2IpW6M8xu13ZsPcX3-gYB.tgs",
+      "tier": "rare"
+    },
+    {
+      "name": "Lucky Charm",
+      "count": 42,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.FDEyxI-iF_mnd9EopHURPs2k26950jg5rXxEODYXJ_e1u90QrSHxg2loWzkqkyrg.webp",
+      "tgs": "/file/gifts/lovepotion/model.FDEyxI-iF_mnd9EopHURPs2k26950jg5rXxEODYXJ_e1u90QrSHxg2loWzkqkyrg.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Nurgle’s Rot",
+      "count": 42,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.dTK0DLF8XCBgtJI0el63P2CpSXYqRG1DfwE8lSuy3crUL6yk6DCiAtHAXpA1gaL4.webp",
+      "tgs": "/file/gifts/lovepotion/model.dTK0DLF8XCBgtJI0el63P2CpSXYqRG1DfwE8lSuy3crUL6yk6DCiAtHAXpA1gaL4.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Jinx Tonic",
+      "count": 41,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.MFtZlMHFV8AyRn41MKXRVMXIZXfjRgeNxMrvNldlmU7zcr4KiqqB3P6L6bt7OmZu.webp",
+      "tgs": "/file/gifts/lovepotion/model.MFtZlMHFV8AyRn41MKXRVMXIZXfjRgeNxMrvNldlmU7zcr4KiqqB3P6L6bt7OmZu.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Healing Potion",
+      "count": 40,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.gPHmCBTNo6yZvfd9xZZWKy5kzW2WPVU1JlubOZsNqeS5MQrlEkTC1YyMayznMLPt.webp",
+      "tgs": "/file/gifts/lovepotion/model.gPHmCBTNo6yZvfd9xZZWKy5kzW2WPVU1JlubOZsNqeS5MQrlEkTC1YyMayznMLPt.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "Ice Queen",
+      "count": 40,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.1nswHuYl0mzNrltVn6PepMhObTkRgLx8ZCb7a3peApnXmyNdvpXKL2c_XOKaoyZV.webp",
+      "tgs": "/file/gifts/lovepotion/model.1nswHuYl0mzNrltVn6PepMhObTkRgLx8ZCb7a3peApnXmyNdvpXKL2c_XOKaoyZV.tgs",
+      "tier": "uncommon"
+    },
+    {
+      "name": "First Kiss",
+      "count": 39,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "crafted": true,
+      "img": "/file/gifts/lovepotion/model.JLgZILlpmqS3ivnfDTPrSpdwltKj1bt4QBYaJ4s-LCjykhzLe3ryztC_i-F346CV.webp",
+      "tgs": "/file/gifts/lovepotion/model.JLgZILlpmqS3ivnfDTPrSpdwltKj1bt4QBYaJ4s-LCjykhzLe3ryztC_i-F346CV.tgs",
+      "tier": "uncommon"
+    }
+  ],
+  "backdrops": [
+    {
+      "name": "Onyx Black",
+      "count": 239,
+      "permille": 35,
+      "rarity": 35,
+      "pct": 3.5,
+      "center": "#4d5254",
+      "edge": "#313638",
+      "pattern": "#000000",
+      "text": "#a9abad"
+    },
+    {
+      "name": "Black",
+      "count": 207,
+      "permille": 30,
+      "rarity": 30,
+      "pct": 3,
+      "center": "#363738",
+      "edge": "#0e0f0f",
+      "pattern": "#6c6868",
+      "text": "#8c8f91"
+    },
+    {
+      "name": "Cyberpunk",
+      "count": 158,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "center": "#858ff3",
+      "edge": "#865fd3",
+      "pattern": "#4318a6",
+      "text": "#e0d9ff"
+    },
+    {
+      "name": "Pure Gold",
+      "count": 151,
+      "permille": 22,
+      "rarity": 22,
+      "pct": 2.2,
+      "center": "#ccab41",
+      "edge": "#987b32",
+      "pattern": "#703c00",
+      "text": "#ffe5ab"
+    },
+    {
+      "name": "Fandango",
+      "count": 148,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#e28ab6",
+      "edge": "#a4588b",
+      "pattern": "#8e054e",
+      "text": "#ffc7eb"
+    },
+    {
+      "name": "Platinum",
+      "count": 148,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#b2aea7",
+      "edge": "#88847e",
+      "pattern": "#3d382d",
+      "text": "#e9e7e2"
+    },
+    {
+      "name": "Steel Grey",
+      "count": 148,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#97a2ac",
+      "edge": "#63727c",
+      "pattern": "#334552",
+      "text": "#dfe4e8"
+    },
+    {
+      "name": "Navy Blue",
+      "count": 146,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "center": "#6c9edd",
+      "edge": "#5c6ec9",
+      "pattern": "#1239a2",
+      "text": "#d3e1ff"
+    },
+    {
+      "name": "Electric Indigo",
+      "count": 141,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#a980f3",
+      "edge": "#5b62d8",
+      "pattern": "#3722ab",
+      "text": "#d8d8ff"
+    },
+    {
+      "name": "Silver Blue",
+      "count": 140,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#80a4b8",
+      "edge": "#607c91",
+      "pattern": "#15374b",
+      "text": "#c9e4f4"
+    },
+    {
+      "name": "Sky Blue",
+      "count": 140,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#58b4c8",
+      "edge": "#538bc2",
+      "pattern": "#07609b",
+      "text": "#cde8fd"
+    },
+    {
+      "name": "Hunter Green",
+      "count": 138,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#8fae78",
+      "edge": "#4b825b",
+      "pattern": "#1c491f",
+      "text": "#d8f5de"
+    },
+    {
+      "name": "Amber",
+      "count": 137,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#dab345",
+      "edge": "#b1802a",
+      "pattern": "#7a3100",
+      "text": "#ffedc7"
+    },
+    {
+      "name": "Lavender",
+      "count": 137,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#b789e4",
+      "edge": "#8a5abc",
+      "pattern": "#5b10ab",
+      "text": "#e8d1ff"
+    },
+    {
+      "name": "Mystic Pearl",
+      "count": 137,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#d08b6d",
+      "edge": "#b05770",
+      "pattern": "#9b0526",
+      "text": "#fedde0"
+    },
+    {
+      "name": "Pacific Green",
+      "count": 137,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "center": "#6fc793",
+      "edge": "#3b9c84",
+      "pattern": "#006149",
+      "text": "#c6fff0"
+    },
+    {
+      "name": "Cobalt Blue",
+      "count": 134,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#6088cf",
+      "edge": "#5162b8",
+      "pattern": "#13247c",
+      "text": "#c2d3f5"
+    },
+    {
+      "name": "Moonstone",
+      "count": 134,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#7eb1b4",
+      "edge": "#588390",
+      "pattern": "#164552",
+      "text": "#daf5fd"
+    },
+    {
+      "name": "Sapphire",
+      "count": 133,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#58a3c8",
+      "edge": "#5379c2",
+      "pattern": "#0d45b6",
+      "text": "#c1deff"
+    },
+    {
+      "name": "Caramel",
+      "count": 132,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#d09932",
+      "edge": "#b77431",
+      "pattern": "#7d3600",
+      "text": "#ffd9b3"
+    },
+    {
+      "name": "Khaki Green",
+      "count": 131,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "center": "#adb070",
+      "edge": "#6b7d54",
+      "pattern": "#39501b",
+      "text": "#d3e6bb"
+    },
+    {
+      "name": "Chestnut",
+      "count": 127,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#be6f54",
+      "edge": "#994838",
+      "pattern": "#601508",
+      "text": "#fec6b9"
+    },
+    {
+      "name": "Persimmon",
+      "count": 127,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#e7a75a",
+      "edge": "#c5675f",
+      "pattern": "#ad0e00",
+      "text": "#ffe4d7"
+    },
+    {
+      "name": "Battleship Grey",
+      "count": 123,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "center": "#8c8c85",
+      "edge": "#6c6c66",
+      "pattern": "#2b2a20",
+      "text": "#cfcec4"
+    },
+    {
+      "name": "French Blue",
+      "count": 121,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#5c9bc4",
+      "edge": "#37739a",
+      "pattern": "#073b5c",
+      "text": "#c1e3f9"
+    },
+    {
+      "name": "Electric Purple",
+      "count": 119,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#ca70c6",
+      "edge": "#9662d4",
+      "pattern": "#620fb4",
+      "text": "#ebceff"
+    },
+    {
+      "name": "Pistachio",
+      "count": 116,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#97b07c",
+      "edge": "#5c814c",
+      "pattern": "#28471b",
+      "text": "#d9f2c9"
+    },
+    {
+      "name": "Raspberry",
+      "count": 116,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#e07b85",
+      "edge": "#b65980",
+      "pattern": "#890638",
+      "text": "#ffd6e6"
+    },
+    {
+      "name": "Chocolate",
+      "count": 115,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "center": "#a46e58",
+      "edge": "#74443b",
+      "pattern": "#3e0a02",
+      "text": "#e4b6ac"
+    },
+    {
+      "name": "Malachite",
+      "count": 114,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#95b457",
+      "edge": "#3d9755",
+      "pattern": "#046b06",
+      "text": "#c2efbe"
+    },
+    {
+      "name": "Roman Silver",
+      "count": 113,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#a3a8b5",
+      "edge": "#7c808a",
+      "pattern": "#3f4550",
+      "text": "#dadfe2"
+    },
+    {
+      "name": "Lemongrass",
+      "count": 111,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#aeb85a",
+      "edge": "#559345",
+      "pattern": "#466a07",
+      "text": "#d8f2c2"
+    },
+    {
+      "name": "Jade Green",
+      "count": 110,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#55c49c",
+      "edge": "#3b9977",
+      "pattern": "#044931",
+      "text": "#befee7"
+    },
+    {
+      "name": "Turquoise",
+      "count": 109,
+      "permille": 16,
+      "rarity": 16,
+      "pct": 1.6,
+      "center": "#5ec0b8",
+      "edge": "#3d928e",
+      "pattern": "#11534c",
+      "text": "#bdf8f2"
+    },
+    {
+      "name": "Indigo Dye",
+      "count": 106,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#537991",
+      "edge": "#416479",
+      "pattern": "#031b29",
+      "text": "#c2dcee"
+    },
+    {
+      "name": "Aquamarine",
+      "count": 105,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#60b195",
+      "edge": "#46abb4",
+      "pattern": "#035f67",
+      "text": "#c7fdfe"
+    },
+    {
+      "name": "Dark Lilac",
+      "count": 104,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#b17da5",
+      "edge": "#8c577a",
+      "pattern": "#652852",
+      "text": "#f0c4e2"
+    },
+    {
+      "name": "Light Olive",
+      "count": 104,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#c2af64",
+      "edge": "#887e45",
+      "pattern": "#594c04",
+      "text": "#f5ebbc"
+    },
+    {
+      "name": "English Violet",
+      "count": 102,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#b186bb",
+      "edge": "#875a91",
+      "pattern": "#54225f",
+      "text": "#e6c7ed"
+    },
+    {
+      "name": "Mint Green",
+      "count": 102,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#7ecb82",
+      "edge": "#459e5a",
+      "pattern": "#026b22",
+      "text": "#bdffcc"
+    },
+    {
+      "name": "Orange",
+      "count": 101,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "center": "#d19a3a",
+      "edge": "#c06f47",
+      "pattern": "#9d3907",
+      "text": "#ffe1c3"
+    },
+    {
+      "name": "Strawberry",
+      "count": 100,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#dd8e6f",
+      "edge": "#b75a60",
+      "pattern": "#a90c0c",
+      "text": "#ffd3d3"
+    },
+    {
+      "name": "Midnight Blue",
+      "count": 99,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#5c6985",
+      "edge": "#354057",
+      "pattern": "#030a18",
+      "text": "#bfcce0"
+    },
+    {
+      "name": "Desert Sand",
+      "count": 96,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#b39f82",
+      "edge": "#7e735b",
+      "pattern": "#504429",
+      "text": "#f2e5cd"
+    },
+    {
+      "name": "Ivory White",
+      "count": 96,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#bab6b1",
+      "edge": "#a19d97",
+      "pattern": "#665f52",
+      "text": "#f5f4f2"
+    },
+    {
+      "name": "Purple",
+      "count": 95,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "center": "#ae6cae",
+      "edge": "#844784",
+      "pattern": "#470c47",
+      "text": "#f3cbf3"
+    },
+    {
+      "name": "Grape",
+      "count": 93,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#9d74c1",
+      "edge": "#794da0",
+      "pattern": "#3e0a6b",
+      "text": "#e0bdfe"
+    },
+    {
+      "name": "Emerald",
+      "count": 89,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "center": "#78c585",
+      "edge": "#42a171",
+      "pattern": "#006532",
+      "text": "#b9f9d9"
+    },
+    {
+      "name": "Carrot Juice",
+      "count": 86,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#db9867",
+      "edge": "#c76f4f",
+      "pattern": "#8e2100",
+      "text": "#ffd7ca"
+    },
+    {
+      "name": "Satin Gold",
+      "count": 86,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#bf9b47",
+      "edge": "#8d7739",
+      "pattern": "#5d3b00",
+      "text": "#fee4a9"
+    },
+    {
+      "name": "Copper",
+      "count": 84,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#d08656",
+      "edge": "#9d6531",
+      "pattern": "#602901",
+      "text": "#f4d8be"
+    },
+    {
+      "name": "Cappuccino",
+      "count": 83,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#b1907e",
+      "edge": "#7c6356",
+      "pattern": "#4a3226",
+      "text": "#ebd4c8"
+    },
+    {
+      "name": "Pacific Cyan",
+      "count": 81,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#5abea6",
+      "edge": "#3d95ba",
+      "pattern": "#02648d",
+      "text": "#b6efff"
+    },
+    {
+      "name": "Rosewood",
+      "count": 81,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "center": "#b77a77",
+      "edge": "#814c52",
+      "pattern": "#551c22",
+      "text": "#edcacd"
+    },
+    {
+      "name": "Pine Green",
+      "count": 76,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#6ba97c",
+      "edge": "#3e7970",
+      "pattern": "#0b4833",
+      "text": "#d8f5e5"
+    },
+    {
+      "name": "Neon Blue",
+      "count": 74,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "center": "#7596f9",
+      "edge": "#6862e4",
+      "pattern": "#2828bc",
+      "text": "#cfddff"
+    },
+    {
+      "name": "Shamrock Green",
+      "count": 72,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "center": "#8ab163",
+      "edge": "#559345",
+      "pattern": "#126b00",
+      "text": "#d5fbc8"
+    },
+    {
+      "name": "Burgundy",
+      "count": 61,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#a35e66",
+      "edge": "#6d414a",
+      "pattern": "#340307",
+      "text": "#e7bcc0"
+    },
+    {
+      "name": "Azure Blue",
+      "count": 60,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "center": "#5db1cb",
+      "edge": "#448bab",
+      "pattern": "#025074",
+      "text": "#b5ecff"
+    },
+    {
+      "name": "Coral Red",
+      "count": 48,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "center": "#da896b",
+      "edge": "#c4654f",
+      "pattern": "#891200",
+      "text": "#ffd9d2"
+    }
+  ],
+  "symbols": [
+    {
+      "name": "Galaxy",
+      "count": 49,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.bOyB0_nYvevdZPJI82qibNQc_SnPvNFn1qIsRV7iknfmw5YBt6dRKKJ2LgkJwhFF.webp"
+    },
+    {
+      "name": "Fleur-de-lis",
+      "count": 47,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.UhmCpt0xoWIsX18PCeOH2RsBJg7ukZsv3K4uTGZFdGuxLuj_ZSvTMrZt6HT7kZfb.webp"
+    },
+    {
+      "name": "Coffee Bean",
+      "count": 46,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.hILMdiQfmpZzgqz2c_eRlmPteyKJq3DYCODBytESH67-9JZTscFeikrSAPQWtsxK.webp"
+    },
+    {
+      "name": "Doberman",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.icaY-HSo6D5gZGsSy6pSRVY5TyqT1XXu3wJpN9ylWS0O3bYQbVAu8Zu6eqnTgkXd.webp"
+    },
+    {
+      "name": "Origami",
+      "count": 45,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.AXH_x4DxUHHfxEnmHazW_lG08edPBqTEqTc173F_n5Zu7K-6P8lEJzjyrLG328v8.webp"
+    },
+    {
+      "name": "Hippo",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.C3FaEcXU915JUG2oUeMy5YXsLueQNl_2yByMeoy0bFqYPcka8N_mlF7iHMP_J8lv.webp"
+    },
+    {
+      "name": "Passion Latte",
+      "count": 44,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Ob5rcWevnzNR_K3ayUeLd5iFqYGmqkzso8lBw1h3aiHd1wEWJRNr_L3kYY_mni_A.webp"
+    },
+    {
+      "name": "Aubergine",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.lAIS579fltmGL1jbyM73bedKTxq6GZiq6PIQoEnfRAmP9GovgyeFJ90a7jXYkeVJ.webp"
+    },
+    {
+      "name": "Gift",
+      "count": 43,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Qw6esW4sRs2awh6ki-QV_btRf6ZRIc28LQ5gW0YljKSTHqYlJlBz7KohCEU7wejT.webp"
+    },
+    {
+      "name": "Cake",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.pYSbDgN9VARmv2SIMZ9Hxbjk-RCLd9CP_ahnswvOnTvrnbYth0rcJp3AmyYRpCSO.webp"
+    },
+    {
+      "name": "Wagasa",
+      "count": 42,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.k9xxVhqvfLa1k3nJ-sFHkz28oDnd24mSd0yNQnARQLLs1EWk_q4XZStuK4R2Njce.webp"
+    },
+    {
+      "name": "Bishop",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.C_392xbCJ-hjz7iQxzjHGW-7TyLlLZskUhLFEaq73cKclawpe48zuGonbbcXfsi0.webp"
+    },
+    {
+      "name": "Fish",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.bG113FQNJSrMNpwDtxEGiWEEy5zT7t2QRYIPqtyg5CE5fR9fv9Wcy1--O4rNRw7a.webp"
+    },
+    {
+      "name": "Gift Box",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.18tzHD8siI5Mjs9a9o23yAcNkkvj_HQp_eSv4YF54nukf0O3yn-ZvDF54-jxSuty.webp"
+    },
+    {
+      "name": "Hazelnut",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.hgFCNjfLiVEoXRvEm3DIubZ10ubnNPGVuYr-Jt7N2V5yxjKIF19wzBugi1bq3-pP.webp"
+    },
+    {
+      "name": "Love Candy",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.dR2AJY1Iah2DEIi6IKpUjSmd5uMYRsv_SXfdHTnwsr_YxLq2jdYoPBBSGTEJVM8I.webp"
+    },
+    {
+      "name": "Ouroboros",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tp31ZJ6tZYMlZhOkH0HUjxyIXRz5L7uIUPL_bJyPd1fKecQ3_5GMUJaAErL-5HZZ.webp"
+    },
+    {
+      "name": "Rabbit",
+      "count": 41,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Vvl8Oz3Fawp5MXG4egl7y179qE1_YVHJIVF_yk7jc5IOTIKag4n3tN_0ases0nlX.webp"
+    },
+    {
+      "name": "Boat",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.g6icmNzgPaJfrA6PoQLdtAnZQNfNDdvuCNiYz2Tsz0QGi3olVTmDs3q2Yl-fhXoP.webp"
+    },
+    {
+      "name": "Celtic Cross",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.X5UROHYv15Z8MXj16f8cclb6vclIkiUWD2LvFUZiRichAFP923T_jigySHAcWU4A.webp"
+    },
+    {
+      "name": "Chili",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tHh5esxW44mQG8Y8Ljhry5Cy1LrbOly9zfs0dx_iDe7gRdsG-Kk_wGoeQ7wO7emZ.webp"
+    },
+    {
+      "name": "Panty",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.e1Xqnoz44u2r61Sy3dl-C5NokhbSbej0s5w-T29h1w3MZSM1HjPSZgX6ZacIlQwm.webp"
+    },
+    {
+      "name": "Telescope",
+      "count": 40,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ZkK3gF6g_zjZTCbj4M4EGXc3B53GB2NbYZ8DnGwjQ2LWCGRa4HLIrZzoXBtTxWap.webp"
+    },
+    {
+      "name": "Angel",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.I9gUnxi1kS8hisecGHc5jK-mrOe4eF-Bnuz0QEGRJGdGCp_oYXwqEt0lhvaDNafv.webp"
+    },
+    {
+      "name": "Jewel",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.HgBhdbWZJOlDQk7K7K6I6sThet-VcwCV-on8-beV6J92A9EvHU3U-tcQ_EDqulWZ.webp"
+    },
+    {
+      "name": "Love Dove",
+      "count": 39,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.zungRcNFC37vcAuV1Cdyyt_Hfxp89SJvCzLQZZOuczI2gS6y-hCnpGCclxgVVVqE.webp"
+    },
+    {
+      "name": "French Fries",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.cROwq4pDqhYACJ3vZdT5bazYiEiMbOrR5RNpvESCHEp-pMt2APr4IZAowpGa5a9s.webp"
+    },
+    {
+      "name": "Fried Egg",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.O8rdQOxi8aCqy_qdWQJhlUEki3mahNYgF4ZQW22kx2QzGxSlrGb79ncfIRvFiocx.webp"
+    },
+    {
+      "name": "Gingerbread",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.zs255hF-WF2HbcuHC0xjn1Q91kiD3Pmr8WS6Sn_kP9vTaxWwR-lnTtNta0uG64Jc.webp"
+    },
+    {
+      "name": "Key",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.17LZczwBBaQgrPYGu84GX8U9CanWlc7XqmgHygz4bto1vHiYeNmwJIFG_rBfHWYW.webp"
+    },
+    {
+      "name": "Monarch",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.hyQVGOhsCuJ-9zXcF5JmNqljSwAl2sZo3PV7S7hLG8K7p5dxIkflhXQ1s_e2rG2o.webp"
+    },
+    {
+      "name": "Smartphone",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tPg4cOe3RyVkbs6fKNBBulQ8Iw_o2kEczR7VUDAuWA5MP5IiC8E_jb6PzoWJSxfV.webp"
+    },
+    {
+      "name": "Thunderbird",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.YkVFhBazDmxmYADxMnALdcURQ7KlwL06kDN_5ti0zoIc3zMEBN6pbkTOL_Aul8gQ.webp"
+    },
+    {
+      "name": "War Tiger",
+      "count": 38,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.200GbYQbvjmHirfQ49M-iIn1g08vA8sntaOXzubWavFh6UhPp6eL-fR42mUYKwfi.webp"
+    },
+    {
+      "name": "Chocolate",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.m64FjgT0csJK8eeqbHryl5I2YotT_s9CRZMgI1YYI5h1nEhp8Y1t8cI8jZXUthRc.webp"
+    },
+    {
+      "name": "Clubs",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.EzemN7W-XgG7kMbX8KJtvxl_fghYaDeD1la37Oma84qaahv6QdCI9CtWVU-WtYRC.webp"
+    },
+    {
+      "name": "Paper Lantern",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.OLmK5xFZji3E3rjvglfLlEYCwg1ECGjoN9a9fV7A3dEl_B2ZYVwIHRhaALmLP2-K.webp"
+    },
+    {
+      "name": "PC Mouse",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.rwy9T01ASYpPGWFSqSEgagsZ6iAX60iy8WwBvk_Af58eOz837Cov3BgJN6spcjN9.webp"
+    },
+    {
+      "name": "Rainbow",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.y43kyGrcDr15menZ306tRab-FDCW3zw-WkzWBVx9MZbrfLFUFfzffDzD3xChcELM.webp"
+    },
+    {
+      "name": "Sea Dragon",
+      "count": 37,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.P_woghykLLkK_pjhxr2j1NLhGt8dk4sy4ECPhKuxTEwhg--bGz9XGqQnV3al9lC8.webp"
+    },
+    {
+      "name": "Candle",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.8D1Q7X1YeBLg_aRvBbzOMZ_uz7F_o5IOkr8SpwjNg5gCDBvu2Td48DnvShgrE2DX.webp"
+    },
+    {
+      "name": "Heart Lock",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.3q4-DtwajUoMAI5HKfMbzceiMYzZoA4eKkIf-Xo7mDxw6L39lW5f9-oXzm6lKSjk.webp"
+    },
+    {
+      "name": "Hot Matcha",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.fu35Vz92S5eNkMh1kvdCS6qx8A3VQQpAlX3UHzEMPJ8pHUecyN9C21i1SlCFr3uQ.webp"
+    },
+    {
+      "name": "Ice Cream",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.0yGmr_XZbXAtPnME5sqkz6JIxVNoB8La_J0rmCSulDQCG3fOY87ePVhS01SsMfx6.webp"
+    },
+    {
+      "name": "Lovestruck",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.n7DoAXIWsfIrRpx9orlgK6qPjCquxAwesBqoNueoq1UUdv4IFG07jjLvgjDsGP77.webp"
+    },
+    {
+      "name": "Radar",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.K15viHGp4OlWJ_Ax6Y2j102YKfiBewvnAdMF2RdU1BlP961WeZwIooVTnLRSPuSa.webp"
+    },
+    {
+      "name": "Tree of Life",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.5jd3xeHqjC9XQKws0GSXgrES-PNkEVv2otM7yS_7Bjiw_tnfXhCYAYoRLJGImoji.webp"
+    },
+    {
+      "name": "Tulip",
+      "count": 36,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.q3-2twew-5ePkr5DrEFAxn2WG8RtV3BqDWADURKsFR0o3YG9SAFzHtqCEiV6giRc.webp"
+    },
+    {
+      "name": "Fluffy Wolf",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.aE1L4vO-D-CIfFmlFOCFWa6Ww6538deKIrqzo4ENiCS8_mxTi76J_0-q1VT-FTLs.webp"
+    },
+    {
+      "name": "Geisha Fan",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.JKj7D_hwTfE0ArSoJYA2BZvTalwg22ABnT_SpW3hp2bHYyI4YnBl2QVgW5EEd95f.webp"
+    },
+    {
+      "name": "Genie Lamp",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.TSK2MGSWqbT5G3YfyO-l9QpfdxEgXDEMgWoFqVNEEMyq2RnBF56PLEHhPwGnQQRW.webp"
+    },
+    {
+      "name": "Khinkali",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Y7W0Hf_HCamks3spKaCBqWG4P7cCCcJtPnBIbW_EmHN7MsT6o1MXNjHt-V7jViwn.webp"
+    },
+    {
+      "name": "Ladybug",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.EfnH87L8O9lOLZKwa9IDTh5OA1vwdQfQk7kw_1jfTgreBwi7x5ZOsE6-wGUExgTx.webp"
+    },
+    {
+      "name": "Loving Heart",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.uQ2UodkXt4qHF_QnywOg6Yq4MuMG0gv6rOsngyQmu59KUPMrPw5CJlrmnMXKv-n0.webp"
+    },
+    {
+      "name": "Pear",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.DDUFscBZyXeq33DncGuOQOOCTyFtt8zMMTL5FLesoWVYjKYLIfJtRXTTyUZM_oSH.webp"
+    },
+    {
+      "name": "Twin Koi",
+      "count": 35,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.6STkAS_LpcpFL2vfdhEXTJ7j9TBNhukqCI4nnILr_tf4h5P4KOmnvQcBXpu8KRAv.webp"
+    },
+    {
+      "name": "Coat of Arms",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.hhJVG8Ytm0w9maAeYl8vubsVdfVniT3VU0uMNLo9YfQ7eSoMouYH1zulTbDz-HOD.webp"
+    },
+    {
+      "name": "Cupcake",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.VhJwamhwoFkxgC1cO-cGWNC9LM-ThalF4xBSfaC1DmDSIPv185hXZJcGi3XDRhcj.webp"
+    },
+    {
+      "name": "Cute Bear",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.w1CnuoxOKKyvk4K1Pv5J_1RTFA8Qp_GQyB0ciyA_C-i90sD34KFpjWNWelDHW2Jm.webp"
+    },
+    {
+      "name": "Lily",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.vUwzZHH48xAgQ8kGr386YfR95Cw-XbSwHXR-SuyRsZ4wbTSNpGzen1jTGPG-_-WF.webp"
+    },
+    {
+      "name": "Patched Heart",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.rrIbbRUAJhUCCTKbAkQhHkgvROUVcaE1yPqtpaM9CkbD0DM61DYU7BRvB7owY2q1.webp"
+    },
+    {
+      "name": "Plum",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.XPVsFnbbv4-Qi05Jp_M72ITfnEThC4rwP9FFI9tt0rpq8GkNWz3CNU5b2UWGGR9L.webp"
+    },
+    {
+      "name": "Pyramid",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.do74P15Yct5BJ65oEe65nxYKqdm2RXb5JYQw3Pvx3QObj8whePCwcpVbq-6OoV6M.webp"
+    },
+    {
+      "name": "Water Drops",
+      "count": 34,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.cA2PY5SGI1ZY1WvPD2BKj64MtIsu_Z9QZrcKBPdXl50KAKa1xr_Q7wnoWIUNKsSG.webp"
+    },
+    {
+      "name": "Ace Of Hearts",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.CFBKeJjCIhJA8AS-98iMYX1kvTu3U3UR-E21bB3KQHfib1tFnnCJttTk0AkLWDLn.webp"
+    },
+    {
+      "name": "Cherry",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.yl7ImJFLBZPu2M0aonfIkqDNjgKLgjf7FblobR6O0C6VVMz_jBeDTiocmvyRAVkQ.webp"
+    },
+    {
+      "name": "Cupid",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.PySABJddSu606O9JLKqT0UxgCp3_0PSeOqkCGrG6uhrNE1_quVeW7stWC4qCGnxn.webp"
+    },
+    {
+      "name": "Guitar",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.XeNE45clZEUUKxq7I9LbooUDXcl87jJHnLoVkLxoYX1kqatfwbijZzpFd9VB05oF.webp"
+    },
+    {
+      "name": "Heart Box",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.jK0m5mW0bHvHCg-XoXQ0TIZI_hlMsiIl-8lNdB7oxoE3vmt8652FuyT7FbrecR8i.webp"
+    },
+    {
+      "name": "Imperial Lion",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.lWf58BDM15yPXEkH6e2GhOjK04KPu-84tEMipSctjMBXWR8cL9O0eCccFOIiM4iM.webp"
+    },
+    {
+      "name": "Puzzle",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.6JrTnTlPQQElJICE8Dvucj5q3SM3ZrlO4_IPpuLzQsBE5obHyMvquV2XjIbjWOUq.webp"
+    },
+    {
+      "name": "Red Deer",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.KPmMLFASl2WLbwVCZsxk5Zz4AxRJ9HiuoAqvmjyOj7VkZK2R94BZ__N_1Rpuhaa5.webp"
+    },
+    {
+      "name": "Rose",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.EKrP89St0fJW0Ap-noIfF7PhvRpLW7vkxOry1N8f3tbijA4xWw1wkpYHQwHvmJkd.webp"
+    },
+    {
+      "name": "Spellbook",
+      "count": 33,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.4lYCsoVMpaucMZ4MS4ZosfgSwiF6CSbLpPy-H6TppwSrIQ1T6fNdT8HyWJJXGoTb.webp"
+    },
+    {
+      "name": "Cicada",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.BHl5F6OVJhw1oJ8pi8NzDOpjTWrIyaRcLoaYLqlSVXEoUkf66U3uhchkKMUEgmJo.webp"
+    },
+    {
+      "name": "Cocktail",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.8W0tWQbpUZS6F8Q7rxiBx9MSKsh3a_IZh_0O-YWAFRq7VvrXqDVQHmrAL8zSjhPz.webp"
+    },
+    {
+      "name": "Coin Purse",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Yl33ZhmNxdNy9afqwq1nBnOdmP4OgIR_l36OQdHS5iAzU53RJuJq4MdkCsqDUQ0X.webp"
+    },
+    {
+      "name": "Dessert",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.VGRnkjYR_U3sCmvkt27yaC7K0BzBD-2Y04OqR0cAXN4-rTKr4sY8bGFfoxPbpF6S.webp"
+    },
+    {
+      "name": "Eggplant",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.V7nzLZMIXu_sjJRu-8skAWYmjyZZMh2L6V2fGEI7E-e-0HZD0Bq5puRN6ZCnyOJl.webp"
+    },
+    {
+      "name": "Fenrir",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Lc1Q2K07EgvLsQ6gik44MNOCBGcFXX91XwTcZslhk83uN92FgfgGjR6mUVTKSbZ0.webp"
+    },
+    {
+      "name": "Grape",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.v4RQmSytouBrgByXuTqihp1RI7KKIt-GjUkrn0TZXIyMTSm5dQ9riTR2kSvt8_bK.webp"
+    },
+    {
+      "name": "Hourglass",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.B6gQYOcSO9TQ5335qjIJaBpcO0aVbo2QPbf2_IEOVa5IrtPviZQFW77y5TeJUeDF.webp"
+    },
+    {
+      "name": "Ice Pop",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.WTz6jSlfrDy-x4uxXrLGPUp4njpyrOG23qKKhMVlvT3LRcmnLevdtUkCa9fw-TEi.webp"
+    },
+    {
+      "name": "Neko Mask",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.g4nzBTqENLeQSSIEfri-5xkMT86cBFaUNOn9tIUGfxyQ3vC-GeiBy2JTeSSjNmf1.webp"
+    },
+    {
+      "name": "Pawn",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.7w9nxRrQe0vmdDB7dt-ec1ABizc6kUKrqZMdY0lkSYgZu2RJ1IQj151G8YbN03Af.webp"
+    },
+    {
+      "name": "Rabbit Mask",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.gYaMf0-ehAaq4jyaxCBmVilszrbuvZKZe21V2cqp14tId0GweAt505_RoIuudp7G.webp"
+    },
+    {
+      "name": "Ring",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.NBUAhMbiy32V52ZkQdvEcv0LYXfuTnZLaj9PVYuRZpaHuvpaCy5xKv9XgZZH-CA8.webp"
+    },
+    {
+      "name": "Spanner",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.R95bQGNTyZsMskvQ-NoVXZ5ZjDK8vn9xEkZWC-t2fWjw2dvl4ZS5IaDQ3eRZ2a0K.webp"
+    },
+    {
+      "name": "Tic-Tac-Toe",
+      "count": 32,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.w6P2MKKmuhgArFYv_HuIrCvqPdOrI-x3ei4qMbnC2y_zGEr-W_OckBfddsxt5Bwb.webp"
+    },
+    {
+      "name": "Bamboo",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.533OmOIHXGETtIZ7wdKpfrii2N-ln_s8wvnP4b64wngZ_rdr32H61wqiurCZRGbD.webp"
+    },
+    {
+      "name": "Bottlenose",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.CNib2C15Z6p52HSTJucZjcq8yBJqBcLa1QhNbE3jCGKfvyV7-QEPoqEN3kbQihgj.webp"
+    },
+    {
+      "name": "Bouquet",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.4G65eatcxGgycumJ02UmAMFpmNPKbcI5C9zHNEuwm7ReflejvrS6OHF_XibzkfNF.webp"
+    },
+    {
+      "name": "Bread",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.idDgAvsBn7QH1iu4FYaFJhvrQHqWJcqt8YctG5RjPq7-TmVYMsWesvA1H_j5g5T6.webp"
+    },
+    {
+      "name": "Cat Mask",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.1gfBgBPe8TtHj8wzphEJLsjqQPV8h0itpW7vrHEYHn5L7Zx0NnjaKJ0VkVJxa5Zm.webp"
+    },
+    {
+      "name": "Cute Paw",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ARadD3eIQHLCuRmHOnvwc8rFeP27Wz1TXbYmqJ_FdolSBxfGKwgjIZBOzMm61mrE.webp"
+    },
+    {
+      "name": "Flying Heart",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.3mnjwHZjKSx5eZVqJfampp7yuOFY47nSF3Jh9y_9ToYgGg0BbJRGLbjnXc2z0dGY.webp"
+    },
+    {
+      "name": "Handcuffs",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.X9PmYGROjioCw3iN48zIW3sabNrN0hyol6f_hyLycmo8srJnEDSw727E_BMGSN_P.webp"
+    },
+    {
+      "name": "Headband",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.vANx6LybFQifrJzmzBpjmxYwT3Oe3803fClzZklDxlDL7seT0J94j2DiYZIK72vb.webp"
+    },
+    {
+      "name": "Holy Grail",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Tawfzb9wPCGpD3mANR2SXOTUw49lz8zNLTO6QnK4qGO-cGev5k_xBSD4LBoKYSlt.webp"
+    },
+    {
+      "name": "Mars & Venus",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.B2IPNCXvjsm-bsKPvM5VwC8gBlADeKorj0bGaRwArPEUfETYbYomKju06bSA_B8p.webp"
+    },
+    {
+      "name": "Pearl",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.8EUCI3LLyXGuJqCfbh_8ln9IwVgzpKuGC2L7MSrncOPSbWsluoqcMj7s-grwE5-n.webp"
+    },
+    {
+      "name": "Tongue",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.YGocFSVCUoq8NT2JPP4UfcjhD2acQT_LeQv67_l4ZoyBrLYgTH51fDQIPvB9gScA.webp"
+    },
+    {
+      "name": "Unicorn Head",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.mGX_RWKqCi7q75UkC_3zJsj6gdK8lCqAVUDNjJbAsfCsolkErtFkzmbeZc0YFTUO.webp"
+    },
+    {
+      "name": "Viking Shield",
+      "count": 31,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.h0tAkYRUKAGy7lruYG-p1_Q6rhpV9pRVJ7bksZCgctwVXc9yNgSupYbknbAbaedZ.webp"
+    },
+    {
+      "name": "Birthday Cake",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.yBLBwZEAXbrieBIIXId1zkxUiwm_5a-w8HHTRhcaGlVx5qPlBhYovpXZR0i4K5T0.webp"
+    },
+    {
+      "name": "Flaming Heart",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.83P1pHjKdWBPcLAC8x_kPKaLm2tEAgSmy1FJCG4mrw3X-FM2iQbmKJ_yvvc4tsbQ.webp"
+    },
+    {
+      "name": "Lovebirds",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.bARZcU9cNXD0vfai_mnCNtBtDKLzlXpx_BGCW4TWxckuNKGywuigf4ULI-QmMsBy.webp"
+    },
+    {
+      "name": "Moon",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.zvRyucwlkSKWYlLOzka0_GFHpKiMT9oEKqJ4h7RtsXsoN6mlTk5_wImnfYJ-0-rR.webp"
+    },
+    {
+      "name": "Scissors",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Aue2nRrFax65SI8gfr3Y8cAVFRSc2jYRQNnJhS7UJGQOxLQJozVI2GKB_nGgnVKs.webp"
+    },
+    {
+      "name": "Teru Bōzu",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tAd8Nx2gOoWa04D-uYMDcS9kJyAJ-ca_A2Ke5gg4ypDSd8goeUqprD6RHSn39Z19.webp"
+    },
+    {
+      "name": "Wise Raven",
+      "count": 30,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.hT7Z67UPZq7hc60SUXm8w6vfZeTeUHLeqaJ_Hdxn-32fwdKNBZ5YVqok1YZBuHjU.webp"
+    },
+    {
+      "name": "Amour Scoops",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.bkObtfw4CWcHCbcJidipwLthbIFVQKnWp1x2VNKCwJLBZgAUdpKj8cBOBdFydV6z.webp"
+    },
+    {
+      "name": "Bow Tie",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.KZfFsFEdAZ-_RVtquP4amCdsIxPRR0uslNEHCFI9KGsr9nzqVryzzvGZIRevNBFO.webp"
+    },
+    {
+      "name": "Cow Skull",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.GcVyW6Cn-UPBiI0puO7D-dWcu0X9PI2kzPa51fTYZHVmmphURdmJhJ1GIZ8dUJz3.webp"
+    },
+    {
+      "name": "Fire",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.sZpmJlVRJ1UQ3YUWYyMNvvXHgIgwkJghYbWGVmofXcOMhlXVSsHG6myqT5-jFuKO.webp"
+    },
+    {
+      "name": "Jumbo Pencil",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.pAeuK0e4_STV2hXJhIfuLoqhEUoYHjeVH5r1uoa9kbICdp7k45BEGz1MPeqBdipl.webp"
+    },
+    {
+      "name": "Love Mug",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.e8dsAfa55GzexKKv1Fk_xJoox4VpuY_fbOHo7LTp_BTWiT5wx5pnJKFycKfPQp6N.webp"
+    },
+    {
+      "name": "Pierced Heart",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.eZzdtXqhw7CJQoi2n47_rakIlKN_OvO-dx7zjosxCFKV0oPtEH_jqOrgtJRsBoZn.webp"
+    },
+    {
+      "name": "Two Hearts",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.oTB_S8YgHEbBYilcPZ56PGj6mRJ26zvJ0P7Sw2J69Jsy1CjeMac_Wnu-Q8m0cGYX.webp"
+    },
+    {
+      "name": "Yogi Shaman",
+      "count": 29,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.9NB8chBIqmZvW0AWYKOhgYFSDg4T8J-xzgEuY632pnii1mm4y5O2r7zF45F51S1m.webp"
+    },
+    {
+      "name": "Butterfly",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.8_2Uz1MM1FfY6lQhoUWsdBWyZV1OK8xPhmnLrg6FxSj06dqTFQicTsPCBZIbhyT2.webp"
+    },
+    {
+      "name": "Crescent",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.gP8EtpO-QRu_d0vrSx8j0-JP4S1p9TT-PouArsoNCbAqx3hGpf9Oew06Z_1HuhSe.webp"
+    },
+    {
+      "name": "Diamond",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.FDCI8OSarB02Bf1VI3NLe5nxt32UDH0su6XITa01S1FKancUTTMYmqVlfDRQZCyr.webp"
+    },
+    {
+      "name": "Heart Glasses",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.y01dIzWeWVBoTgsbawbg1wKB1ks5IMKa7ihoETu7OzfO_3ZY_6RLh1J0QL74_gHt.webp"
+    },
+    {
+      "name": "Lovely Bra",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.UD5xCHM8FbY3J_jNP3LHRtIe1NGH9qaWkUDDx7YPWiAaUT7P76ooW0ZSyFpZVpPS.webp"
+    },
+    {
+      "name": "Magic Hat",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Xv7gaJP32uztnrLqgRSF0DorLXXvJfqmn_QCq9Kh0c-9vvusy3Vm1IK1FW7ST1Pv.webp"
+    },
+    {
+      "name": "Moose Head",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.gpxCP7x6y-nxN75W4_7dl2JxOyOZvhtBxblvLsQMG2nC-YdJJ0wqPmL7ntLG65w8.webp"
+    },
+    {
+      "name": "Muffin",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ULtUGkJQBtydUZcIJCCUNDwa6OnYQCdQPwyrrb0txPz7ufKZBg3ImYUHGke_E-Fe.webp"
+    },
+    {
+      "name": "Rocket",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.3YO7hWfUmGyh4WzbVl6Pw4SgmRF0xpvnHG_eGD2BxgUo_MlSWKdt2UjBUvAq0YTq.webp"
+    },
+    {
+      "name": "Thief",
+      "count": 28,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.kfIxIsj3cZ2I6CpYxTXS-d-g_qYmtWGYX-QvDdCtcQLFITqEdfeExSFdmRVB0tIF.webp"
+    },
+    {
+      "name": "Champagne",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tdR7Ay1gRBFU1x6jNDk2gXbjvEElijlT3ToeVFiuWE5r8NmIdS6JaT4ZhraSegNr.webp"
+    },
+    {
+      "name": "Chick",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.5eho0lEA3tFz8OfH8tZCZIv3H9Z_M_hFZVkcK64nNsiOiNSHxeZ4CsMoKYf2oFHV.webp"
+    },
+    {
+      "name": "Chili Pepper",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.k_SDaR3hKCEjC7a_8Yxh8waa55buRJ9aytFlo83D0f_aHuXze2FlCFAXSWDIewQt.webp"
+    },
+    {
+      "name": "Date Pin",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.zChQi2q18mjoBW8zGrhTOLSv-MqIhEDWJ8L25Qu40Q6QXzqoEi9FYJfKHue4xhmM.webp"
+    },
+    {
+      "name": "Eagle",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.S9Hku6F5_j80J3F_HXrp7O6IJIYhMQrDXmGoeGbMyOcQH4BEEbkUAg_xTS22YcBs.webp"
+    },
+    {
+      "name": "Fehu Rune",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.sV4Lb5a8jWrN3rSBgEDVh4ehBMoO16wtReVjt8xn8pc2A7eBCIkbtA2j6_QiDiWK.webp"
+    },
+    {
+      "name": "Hammerhead",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.oeX_MnR_ZTU6CewEwSBuDx5ySChxBXEGM3VoV1eklhuoxEX8VRfooGjk8LyS_qPp.webp"
+    },
+    {
+      "name": "Heart Balloon",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.gye5Phj2kElYt3tKwrZIgqiUrsr2LzVZD-NnBkByWvy73RMdeGq0OA4lPnZgOYc-.webp"
+    },
+    {
+      "name": "High Heels",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.4xjrktCCiaXT0RyQctwZ-FRhJ3nHnQLVmDd-OH5TiFMLKn3LhquY7Fmcks2REzzn.webp"
+    },
+    {
+      "name": "Love Lock",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.TL_a91AQingEGzFzl0Ak3BWmZVXo5gLdtfDRptYfsWzFFWfIN5B4ekRiG__mQYS4.webp"
+    },
+    {
+      "name": "Lovely Rose",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.5rnfdaLbfojar394Pygyav2M26GXw75DNS84Cvl9bqPnxWWZ1nJ0zbbKwhoHqMlu.webp"
+    },
+    {
+      "name": "Okami Wolf",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.z_vI_1_nytZLE6c6VoxnqToOYSM7hHUVFF9-uNlHhMTb8CMOXp7MKpJnT55Bxqec.webp"
+    },
+    {
+      "name": "Omusubi",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.bdUseeFWNDTqGnb1nhnr705JWhUQSKSTeRORxYPpWAyoYrS_2HaMLWG2XESYdzKM.webp"
+    },
+    {
+      "name": "Viper",
+      "count": 27,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ZITnOaPTqFEyquiccdDgo1eBJ4PzIO9LaxcgeyQkqxNufFDhYGRx3-YOutdxGvyv.webp"
+    },
+    {
+      "name": "Bonsai",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.-VVbt9_czXLOmRQK297DQddIQnX9hY02bVVt4SavOZdjqH8eIUBLwJAONw6nByzH.webp"
+    },
+    {
+      "name": "Flower Sun",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Zb7pQHXTGmqBALeFEsmFIh15_nFqad_COJ7zonOGaY4PjMyWHK9zvn2Uxh-O3WfS.webp"
+    },
+    {
+      "name": "Lotus Flower",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.OXzHuAIGLFkzVGwgRBOnV4AL-4NpfF0Plvsf-a16FvjIdn0uOm9gSohstUecueZH.webp"
+    },
+    {
+      "name": "Love Puzzle",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.xssH2NymYP88F58wx6bHG6keIINvp1EEley45yQecR6UT-xoBFsEAnCH9P8h3Gz6.webp"
+    },
+    {
+      "name": "Mustang",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.X6NztOmf5Nbz_jNV_Vdb1BhfAJFPGJGzXkB1RtpZRzLzKUYqskLqHPJRYbsMw4Yo.webp"
+    },
+    {
+      "name": "Old Candle",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.19gCm7pbhf8Gwr4rymmXrqy5qcpSY8jWnvDJO6IkvXKpuB4zEqSzs2VVpbfgMeG8.webp"
+    },
+    {
+      "name": "Beer",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.sSkjZDi4hy3R_NDsdZ24R1y4sxPn9TXqbi57SkZRRLOu7kLdNCcbDIqYRZQRJX1h.webp"
+    },
+    {
+      "name": "Blossom",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.MNaes-w2Yb4muqe2vPaDMg_UctId-EK0MWYlzOM-CgrG3eN4Cotk9j-0tc5neC7_.webp"
+    },
+    {
+      "name": "Book",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.oFlu8e9RQLZNXA-xzJFl2YizJPvnabK6lC7SPJiP1GToUYzSsA5zoh22QlfJOKbi.webp"
+    },
+    {
+      "name": "Carambola",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.HI99rz-5W4Y8K-4QtwCmsXH4vavXdYNiLq_gOXSvLPDe6UkYWgPA4o4yYN17CBZ1.webp"
+    },
+    {
+      "name": "Conch",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.gmXFU7pba0hJMITR3dCkdiQ7zWd1duadq7nH4t97FkTF1sQWOLY-Hd3KUF9CIUaH.webp"
+    },
+    {
+      "name": "Heartbeat",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.yDOBQxmCGScOMdp-rM3q-6XdShHpPZj8lCyOSoAVR5_2HMj2Ag07w-734cc4qTGa.webp"
+    },
+    {
+      "name": "Jellyfish",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ffpBYx23dTuKNUz_B4siMgpnSFHng24DZQtXN5GyExakwHz-7Z9dHoY56SiGuaNt.webp"
+    },
+    {
+      "name": "Lemon Slice",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.5RgRyEl58KudgJBnIwsiNLEYwqDC9IUb8ey_RthBG2IjrR0jbBCa-EKjdahicyju.webp"
+    },
+    {
+      "name": "Pickaxe",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.u_6iIhhXGRY7_s3lLq9cxg9v-zYMy9OEO9t0kqoJrerkUVCwNxgkb7vEu09u_Sd3.webp"
+    },
+    {
+      "name": "Spider",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.-AXaVApbN0zraL7E6y6TmTJKT36V_nFwuNB-bQ4vbboiPxMf-iRbsv9ZVw2ITgxe.webp"
+    },
+    {
+      "name": "Spirit Impala",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.GmcOAPoVO6-3zSsSgr49PI4m6FD2NjiH-MqnYkxPOmho7eMjXb2qtZ9iVCGhNtMl.webp"
+    },
+    {
+      "name": "Star Crown",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.2X61lUA-078NCPQ9AQhQteEU_aggETq1yqIgHnxVKIvvV2BWG184y_udV8rg6HEJ.webp"
+    },
+    {
+      "name": "Sweets Box",
+      "count": 25,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.bUcQPh1LcjjacK4qQMd7wY6g-ZIQyMf_zvycnFdS7-cPd7ggNqbPv_3cVpThW-KW.webp"
+    },
+    {
+      "name": "Love Bulb",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.DqIHXXW_slcpzFpwO0Q8huZowwwXA-DJNlnc7O_ajsA2ZIreRghqq5sb1hNUjWRB.webp"
+    },
+    {
+      "name": "Party Popper",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.FaWBA8Enx6_AOKgUPIcthNvJgOLzQUQnytdp5cU3yZ4gUPYC3-GoB47rw2OLknNi.webp"
+    },
+    {
+      "name": "Yin-Yang",
+      "count": 24,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.QGH-NwkpuCgVcnAy_zInDCdrcBt7OVL_MzBblcWmHjEZy3DcfRy6yDquYJaGipPv.webp"
+    },
+    {
+      "name": "Balloon",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.gRZJARRbLNT3mQxDPj4HHpykYxVNJje6fwvPTKsEUI_GRoULePRUdJvWL-bUVYfi.webp"
+    },
+    {
+      "name": "Firebird",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.muvvTvFYoRDm6qIEEFJStn40QhJi6ZYCK7ElRWOEZMOoD6tJW7VVSYPCvVaf5g2b.webp"
+    },
+    {
+      "name": "Love Berry",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.0WrQRRvPEVLGfSep2CxK82hjH_I1eivRgK90M5NVAdyQKUz1CwvVuliUPOV3JGC2.webp"
+    },
+    {
+      "name": "Lovely Kiss",
+      "count": 23,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.CNi-u_zUJs9tePAmu9qsoUemIYdPgqIaiFPrnvhhh1lU9vm8QpZ1NXG7rJ0252E4.webp"
+    },
+    {
+      "name": "Crusader Cross",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.A6uflq7U6j905dkw9hUMO6nTpSioMsHk-maebDl8c8enzlQLH0Guw2fAtHZWuy98.webp"
+    },
+    {
+      "name": "Cupid Archer",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.o8MR1-8e1DLG_y36jzAtLto3M9s7kFXOs27wG5u9WEqVuItxlU_XzD2OPg1feS1w.webp"
+    },
+    {
+      "name": "Handset",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tfjNOfYCE9EFw5pKd2wHQYTLIVAyT7S2aVJMDe9kLA1YOytuXXJ00YrUK5ZmPaUm.webp"
+    },
+    {
+      "name": "Mask",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.GWtXLAwK8kVmvCndK60ODG8CcpDJR_03siBoD0PZaPkS-u_D7Ni7gIR8M48jRLUs.webp"
+    },
+    {
+      "name": "Shiny Heart",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tHeOS55ZUgfU2azrFa-ckJSn4LXpMP5twFWyiRwx9p5yH1WR6MMTnUEYa_1GqN2J.webp"
+    },
+    {
+      "name": "Sword Fight",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.L_s8hOjCtp_c2qHVuCRgfglQ4AMzNG8L6UTkg2TX3BZB2I_vNa0__5nvYEcAUr8L.webp"
+    },
+    {
+      "name": "Wepwawet",
+      "count": 22,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Vrvjr_m8pppsNlGZbhcjbX9H1RM5Krrh2vkBKBqE6tEa7H2Pwaj4siCYL5i_-83B.webp"
+    },
+    {
+      "name": "Love Scene",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.4NWmHqQC1sWyIeJsr5WqNNDfR8VH5IlmUp8F2xotmaATzS3f2zXTASB9Wv2XXLVe.webp"
+    },
+    {
+      "name": "Lovely Rain",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.rDGqeWCCSC8j6V07omsJQnEn1tboli71k7TWOUJECwqaGXv5Om4eWDb4s8yyqAU-.webp"
+    },
+    {
+      "name": "Pigeon",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.J_aS4pe6okdMwk5FxE3cfLEY53EAPsMjpcXEKko8FRR-mHD-Hl5ouQDtUP7go-bp.webp"
+    },
+    {
+      "name": "Sleepy Unicorn",
+      "count": 21,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.dIO2jYVtOywyG_CK286VCLy4F3RQke2Y7wOuAF0ZM7k-KlBiFLkDCaucIQHx1vIZ.webp"
+    },
+    {
+      "name": "Candy",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.RfoFYWBHYJ6mhs7-BDYU3JsGtjDEx9xaYJe4cPeuq5Zm105cXwXgz1epBk15wEeU.webp"
+    },
+    {
+      "name": "Gold",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.q9mAw_f7UFxl6t3m8EjlSJaSbeCouJyuC7vl75bKAdCXAtlIE4Tp7aIvIAyi01kL.webp"
+    },
+    {
+      "name": "Melon",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ucpWlKGb66yUrO8W0kcPiFceqJH9gGmZlqONgAwcE24lYF53BK5d4el2vXQTecxo.webp"
+    },
+    {
+      "name": "Musical Note",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.194IXMH974Ku7Hy8VVbZ8_PDcjm4t4Bcgp5kFfYk8pbU66_b8tSqPopHoCh94B2l.webp"
+    },
+    {
+      "name": "Narcissus",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.0qhnVG0XEsc4yKX6ly24SXUYR4tluFaSVq3L-PSNSN9fEzINaYI7fMDYLpxDC2lC.webp"
+    },
+    {
+      "name": "Padlock",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.aNmr5aNVQDf55PCgb8d4PvCNPKSNcmxW6kbVP6pXv8hcAK0w6TwRNXVmO8IRFanL.webp"
+    },
+    {
+      "name": "Trinity Knot",
+      "count": 20,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.98ZLCyZE9AugeVJkqVBezwPJUTEkZsR5-_3OQWjclbu4EQO_omjpissyUhud3ey_.webp"
+    },
+    {
+      "name": "Crystal Ball",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.b6a3zxyP_WNm2oRyHuQF_b_EK4yjgCAiIK-5RCtML8hVL-egCJ2J5XFrUCc3ud3k.webp"
+    },
+    {
+      "name": "Cupid’s Arrow",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol._2blT31EzLLSBijIprZeO7s3sSadZr5lcOyZKpbqIVe88gtvnBa88P9Q5gQK8b1T.webp"
+    },
+    {
+      "name": "Love Letter",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.W5tDS6OC3wBTPyZZSEMADFsKYVuQdEd9LI5-5R_72IsCURasT1aiI9JzJN1eyLbv.webp"
+    },
+    {
+      "name": "Totem Bear",
+      "count": 19,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.uxXsszRHkkuVpoeRJATcC2R9UJg0f_6kI9YJUA6SHGzsMBmEhSudKSZAOAbpcayl.webp"
+    },
+    {
+      "name": "Acorn",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.mohgkG_baMSNYCMtCs_yOOXl3xDniM119SAX3UYhEvv6blnr5VWGIEAGtYP0XOX2.webp"
+    },
+    {
+      "name": "Love",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.uRMvMAoft_2QajHlvWUpN5feKi2zQ3Ua97yH6Elz-c_t2OdqMbmWLPdxC8DrQjxC.webp"
+    },
+    {
+      "name": "Love Potion",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.CDteA0kqJyIMjLl7LnyoDgnpYJa6tWN4NCcUs28gejyKmrznWWKDLkDMbikhTZgd.webp"
+    },
+    {
+      "name": "Loveberry",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol._MnaIX9Blpdx5YUh3AycAm-DJzfWDcb6WxmfdfeTnpWTvigyzuZQJv9gZAf_Y741.webp"
+    },
+    {
+      "name": "Napkins",
+      "count": 18,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.b9Dreo8iQ0mro6q1KMVa0TWB7lBhC3lR18jXICYFHoX2BtrsYHf4UNlDiIFdb8gn.webp"
+    },
+    {
+      "name": "Coconut",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.0_G6SRD42NOrVFxNnxWCKqm07DS3floEH26BtamZrUu-P6J7pqkEUdODv4IFnCPF.webp"
+    },
+    {
+      "name": "Heart Donut",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.pxv8SftmQnlmMK0AzFlqAzogsCS-nHkUK0aHNnE14pi8pULmuCdkahFcBoNJoTxn.webp"
+    },
+    {
+      "name": "Lovely Key",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.yDnG8Riu0Eupyr18oHHXHAMDxaL4cBNdz4rF2asm5aLJzHA5C-gSHEDIGdXBxu2_.webp"
+    },
+    {
+      "name": "Mailbox",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.HGABJ9W876JooroOb0CX62FV3eJ5ZQW4a6ZUAK0KPgWPVdLvxnubVwh5lPjzW5Dw.webp"
+    },
+    {
+      "name": "Paper Crane",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.BEy20mV-nsesx-u1HlyhQp_9H1GcwGIJ132NOvAK7hmqamulcKTF789m1WZXXz4t.webp"
+    },
+    {
+      "name": "Paw",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.d61Yr0EDxzKeOeRgtrYIbJAXgPFqQhY-qfZ_zjxFkOoTgt33IJjdyKHRsv1CAXxC.webp"
+    },
+    {
+      "name": "Serpent",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.TyfW3wNn6IyWtcWPen5y7iknBBCpkixsVu1lg5mouPBAa4rGIGHeFs2SElNs94rU.webp"
+    },
+    {
+      "name": "Shell",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.YPj1r11yXGN7foQZalQti2EG6LTh9YsLP6Dp7SQl9EuH99iACNZZOofu9TPRrPOp.webp"
+    },
+    {
+      "name": "Strawberry",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.3ctdhH53pOoeo3CY2ntcS-2LWEACUUJhwBCpopQ4w0J75X-swmbHDWKJS_JX8c3_.webp"
+    },
+    {
+      "name": "Top Hat",
+      "count": 17,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.mlP5hERxeZ6pKrQZA1zP3RRcJG9CncXpbwhPw8ud6MEdgJVTRsszolmQzR1ZkVGt.webp"
+    },
+    {
+      "name": "Flirty Message",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.X13uDIOzexTDJqDjK93XiRRez7VfLprqcF942UFVoYOoehL1MEewZQhkTSJbdBUm.webp"
+    },
+    {
+      "name": "Heart Shades",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.MAnBPNASm2ddB1E8rODJ9L4zyXQPAooe7_BHJLwDaJSTAkfsvVNfq8o00G_H_gRi.webp"
+    },
+    {
+      "name": "Love Daisy",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.y96nRL2BZNPD2AKDuWz7L_GQFd-s0SK1cUzSeoAsaofhMO9wJahppTvSKiQR6q1G.webp"
+    },
+    {
+      "name": "Shooting Star",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.vSyk_CCNfzbR5MjKK6rm2L315f2E7vfe8_m32WWuP2XqtwKfO2r2-XwZZbKBLyzD.webp"
+    },
+    {
+      "name": "Venetian Mask",
+      "count": 16,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ZnYD5KzzBmUu-eecHIX9Uhs6culqVUGNRG9IYV1H2-dLtJF--ChUxj6O8LWvasye.webp"
+    },
+    {
+      "name": "Angelic Heart",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.tWN9LR60Uh7v22ej7fQ83l7AAK_50Y5QU3c2pAiyuWbn8K9DYhKkTXyVbSMZfglm.webp"
+    },
+    {
+      "name": "Apple",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.nIP4L9qP9nK_ADwIoYL6aa_IbpqZX4rIJToYehsMX7-qa1ZJLGr8ZrzeBP-Y_VH_.webp"
+    },
+    {
+      "name": "February 14",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.sLg0YRba2dJanfi8_MqlGCu04Zw6g1rpjtd8q4laaVbqEloISJFJ96MhNP6wQlwG.webp"
+    },
+    {
+      "name": "Heart",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.yn58nsDGnK4HkwrJzTFy5zO6RM9bZanvXdI4-Eeprq74-Q2sPa-LgheHZeoaL_iS.webp"
+    },
+    {
+      "name": "Lion Head",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.YgsaWXuOE9-amPck38_cbwXorbVguhYkEIR5ZM7EMOuw8eDletB2ncDecNLjf_63.webp"
+    },
+    {
+      "name": "Sakura Flower",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.5knGlx8KFooqBMfsUNdebYD3QgsGoBqt7u7DV0Jz9_WvUC69oVEem3e6I3u1gqJ_.webp"
+    },
+    {
+      "name": "Succubus",
+      "count": 15,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.xeXKvR0EKTDROKf9vChyPJyNRHpVPMUBy_tXju7g2KS-hBtPb_R55MxsaQ5Ab4Ew.webp"
+    },
+    {
+      "name": "Bunny",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.JMZVHhlEhpFGmSmBV_sMk5NMfMXxRTrww5KHbsxb33sZa9OJWWHvtkab9_vjsAtr.webp"
+    },
+    {
+      "name": "Carrot",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Yl04q1hpNoNX1Ztx5N5yGIGkgUgWaKiDnsaljOSJsxavLcC4xRyFqL51-3cM7r3A.webp"
+    },
+    {
+      "name": "Flower Tulip",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.xUnN2u3xJu-xFzoKoffM-s65Yoxl37Ncf5oxUF3qhfZPbC6XibqYLHVSdVw026Z9.webp"
+    },
+    {
+      "name": "Hamburger",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.F95ysxJBvqwATHK0yDQBPK4PQ4wgEMqz_MJ_ouqIPWA7UwoSJSdVrv1b11FZS6ey.webp"
+    },
+    {
+      "name": "Hand of God",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.m70gOlvoNdBMsowTFzOAKr4e4HjyPm3Q9xrCzqRAnS6llgknCRyM9qGKrTeOlbw8.webp"
+    },
+    {
+      "name": "Like",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.DOyHS-Pwg5C6McuYt6CC-PDv49IUoTYS7lzOyAbXVMePl_lLdBlDyFQt-5csaxp7.webp"
+    },
+    {
+      "name": "Little Cupid",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.mk5T9EvhUuvG6BxE8sFRMx4zQg-HyGx_lP80PcjFwq4ZcLZObl4bK8w9DgzxIHPX.webp"
+    },
+    {
+      "name": "Seahorse",
+      "count": 14,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.hT3dGOf6N2OD6eHuh5htGLdeDOq0DuNWvGk6wKoIhKafAJmmtjJygq6So35_rlHv.webp"
+    },
+    {
+      "name": "Cunning Fox",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.LQ3OzF5NfaCGdYEDdhLstkvhpv1kBUdwQaliV2NDVHj6wM7jbn5qfw4rXhh6WOIw.webp"
+    },
+    {
+      "name": "Kitty Cat",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.9CGsnn_p_Jljat3BSqAfELpbuysYSfAjonWyOGDrShf7wF4xASR-nWhcmLKcfEbs.webp"
+    },
+    {
+      "name": "Like Button",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ZudyAF4lpp092NJ7gtTtv54MqZi1i-trMt2dBj213wb5tB6qqG3ADAkDt2IMmiTX.webp"
+    },
+    {
+      "name": "Lingerie",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.EpkCQ-k8QYLrki5ugDze39B6jcBXf4Mu5nl9L7yB8NOSaIUwjkE5VasVeI8zQNkH.webp"
+    },
+    {
+      "name": "Mustache",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.2ETfmwaI8-ZH0gN7QX7OxxQxX95yH1yUVD5UN8kewfmnzLNf5XUbyOYoWbs4I9rd.webp"
+    },
+    {
+      "name": "Pixel Heart",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Iea6B0K9Cb4COMD4oR5-fpjs_IyunK9J12W5wcB83jELO0-BgwKPgV2usaPXju9g.webp"
+    },
+    {
+      "name": "Sumerian Bird",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol._sY-_w6wHufIv_u-_TZd0xQARclBUM_5LpR6pGo7mX-sph2yPBb4htclextwQKro.webp"
+    },
+    {
+      "name": "Tsunami",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.nxD6rgYmKQ2S03nkwBTCR7kbNi75JvwnzpAJddejWuGdSI6az-bEyNgpnEfaRe8P.webp"
+    },
+    {
+      "name": "Watermelon",
+      "count": 13,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.eEtJWl65Y9zpxRFEkb137hlLUonFq9Qvwyfv1wIDigBX_jmRBPu_21DSsTCEFGuo.webp"
+    },
+    {
+      "name": "Heraldic Lily",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.3B_migZQ22XJ1eEni75qCbF1IV6-plefPF9a8XToRf_P_lAAHyAz7b8sbN4yH8Zf.webp"
+    },
+    {
+      "name": "Lips",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.aCPzQsSJXjVN_B0G0M-gQoY2-X3IbHNhBYoDpLzgnU2cuzGQZ76b-_I3o-H1lkjs.webp"
+    },
+    {
+      "name": "Love Bell",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol._5kasr85yyJrlnvglRpyXoX0KeHTtgrcrrx1RsqPP5mXf2ds7-fPuDoZbHoKRnmr.webp"
+    },
+    {
+      "name": "Paw Print",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.D7BfReao2j9GqanzGM6xhKoJKLTZZqIblgT4REy46vO01iQBXc3fX9oGUUQFQ4xj.webp"
+    },
+    {
+      "name": "Rose Blossom",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.UYkYkVrlR8EiLXg31iOvnqJQRzORM16SC3yzf8sEUGQM0h5vU1nlJMAwD8j2f6TX.webp"
+    },
+    {
+      "name": "Spicy Chilli",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ABrX5F7fiP9b42KsUvTCTforJJvEno1XiH6OKcs1MJVRhG1E51bheCpWMqYKv7Cd.webp"
+    },
+    {
+      "name": "Stilettos",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.ijUQiUKjNsmb_1OmSNNB5anuOkoEeN1UHQBEa8pG8H1anynqIP4bOLGUz3wFA70v.webp"
+    },
+    {
+      "name": "Teddy Bear",
+      "count": 12,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.CylcYNhY70YLET3qb-odwcym0G1kdivxO3Nwdr9ZfnhPC331A62OsiisrJAEKy6g.webp"
+    },
+    {
+      "name": "Broken Heart",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.xbMVCRubR_GRtopaSaWHT8qwTwN3dIcWxD4_RDwKzjNeOyLFpbyNO8QApx9DfvGn.webp"
+    },
+    {
+      "name": "Chest",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.TJFnZlJiE5qTpnCCMShdF9PABPcuCxIe3BCKYxmXuMRCDI7DocojjuMBSThDhDC8.webp"
+    },
+    {
+      "name": "Heart Ring",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.Gg7D2cbyMYBHKaIm8_9Zwx8csbHN5rigmgjc5qPyew9lAee61dTL-dLqrO82B8ZW.webp"
+    },
+    {
+      "name": "Love Cherry",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.J7N0u07UxKUpYJlEAUEM4NOqxeRaDEOJO-awoLuzCPAy4h0AoIOhL6VQab-etSGx.webp"
+    },
+    {
+      "name": "Obon Lantern",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.b8BIsM-vmWSvDRpvCTGL6pAOHORXZef1l8WLvj0idoqU4u04UZ5zIDWZ5bkxn6Yo.webp"
+    },
+    {
+      "name": "Sunflower",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.rm6LZSIjZti4qhREzxXNe02Oo6JfFOGhdmGCejY02wwukirEITOii8NrD-d9gaCs.webp"
+    },
+    {
+      "name": "Wine Toast",
+      "count": 11,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.oVWfwUyLOB7ztg_nFETV-xuQjcfZ523XDISPa1GOlDJOjDbr5UpwmbDxCo4x5Cga.webp"
+    },
+    {
+      "name": "Cupid’s Bow",
+      "count": 10,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.-rpX4d8893z4urtBn44uoQJ5R3rLOpFWvNUIup5zI-jLvapfDFxfxYHDM-dmOXgX.webp"
+    },
+    {
+      "name": "Plume",
+      "count": 10,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.uQFRjSCV3iNh5BG5UQGW6FPzwFRsbKuNjYd-LXVNEG5iOxK8zkLZoAiwbRsqQ5sg.webp"
+    },
+    {
+      "name": "Sharp Sword",
+      "count": 10,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.TR1KDglAFUAHhobz3OdIYtYLUMWcXR7qYbPi7ZubR6MNH9O-Cy06sDb88xBy97lj.webp"
+    },
+    {
+      "name": "Black Cat",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.p-ZiRdap0cg4RqalJ-b3VN4INyhsJ8GjZOkqmNDVeK2roiFBzeSNQIBhJJDiFcOn.webp"
+    },
+    {
+      "name": "Bunny Ears",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.FO_wSbh6LQqEPBgL_RVSYD4bcSZDRnglFs9sqiuO4o4yJBdB_VrseaElVfmnPecf.webp"
+    },
+    {
+      "name": "Double Bed",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.lZs0y3wt9OdAfGb-Pxbe6XKGpp9chtgBgjyGCgoM4YSUV8Raemua3Q88ebAUq4Dn.webp"
+    },
+    {
+      "name": "Hearts",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.jN98ea1d-OYr1iFyrSIh0JZ46-IChVxe4qIkIh1MVlp3IJhVb8SiWbK23ylqe_iF.webp"
+    },
+    {
+      "name": "Kitsune Mask",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.2_7qfpoPYxt0PJ9Bwt9wDU24HqQ0gbrOnxO8IoxnOcdyv1NBRegc2qv-QCB2e_94.webp"
+    },
+    {
+      "name": "Valentine",
+      "count": 9,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.IdubaTBODJmMqtPBz6PfEAuoRuQuvrWRs9A9LpSmXnyf0KsGRZwpL1JKjUyU87BB.webp"
+    },
+    {
+      "name": "Bubbles",
+      "count": 8,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.X_gm8VhU1PG9dEmQjfr_pUuBLViylFYdb-tQ-R67pNhCgEOFED9TBNHD2piP61JG.webp"
+    },
+    {
+      "name": "Flower",
+      "count": 7,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.UB53vU7IaIcbYNblOmQ7FmyqvDtxEE5V3XaMAm7mkrqx0cXwCZF81HeW_7ao9nxb.webp"
+    },
+    {
+      "name": "Romantic Cake",
+      "count": 6,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.77OUtJMtfyGc94IjKLqPXUHBGlv1aEJJsjlj_p-ORUC6tVO0vyTJEknVtsXNHYGm.webp"
+    },
+    {
+      "name": "Sakura",
+      "count": 6,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/lovepotion/symbol.O53HVLBTV9DFA3lZ4xFMdxyKM_qcapN0CKFQYItRSpwiK1PJ5oAflboc9XeWNbcA.webp"
+    },
+    {
+      "name": "",
+      "count": 1123,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "https://nft.fragment.com/gift/lovepotion-12363.medium.jpg"
+    },
+    {
+      "name": "Algorithm Cup",
+      "count": 60,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/algorithmcup/thumb.webp"
+    },
+    {
+      "name": "Artisan Brick",
+      "count": 3058,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/artisanbrick/thumb.webp"
+    },
+    {
+      "name": "Astral Shard",
+      "count": 3009,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/astralshard/thumb.webp"
+    },
+    {
+      "name": "B-Day Candle",
+      "count": 25113,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "img": "/file/gifts/bdaycandle/thumb.webp"
+    },
+    {
+      "name": "Berry Box",
+      "count": 9217,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/berrybox/thumb.webp"
+    },
+    {
+      "name": "Big Year",
+      "count": 13147,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/bigyear/thumb.webp"
+    },
+    {
+      "name": "Bling Binkie",
+      "count": 2211,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/blingbinky/thumb.webp"
+    },
+    {
+      "name": "Bonded Ring",
+      "count": 3004,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/bondedring/thumb.webp"
+    },
+    {
+      "name": "Bow Tie",
+      "count": 9113,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/bowtie/thumb.webp"
+    },
+    {
+      "name": "Bunny Muffin",
+      "count": 6980,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/bunnymuffin/thumb.webp"
+    },
+    {
+      "name": "Candy Cane",
+      "count": 17592,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/candycane/thumb.webp"
+    },
+    {
+      "name": "Chill Flame",
+      "count": 47698,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "img": "/file/gifts/chillflame/thumb.webp"
+    },
+    {
+      "name": "Clover Pin",
+      "count": 19949,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/cloverpin/thumb.webp"
+    },
+    {
+      "name": "Cookie Heart",
+      "count": 14038,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/cookieheart/thumb.webp"
+    },
+    {
+      "name": "Crystal Ball",
+      "count": 8615,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/crystalball/thumb.webp"
+    },
+    {
+      "name": "Cupid Charm",
+      "count": 6072,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/cupidcharm/thumb.webp"
+    },
+    {
+      "name": "Desk Calendar",
+      "count": 34815,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "img": "/file/gifts/deskcalendar/thumb.webp"
+    },
+    {
+      "name": "Diamond Ring",
+      "count": 8723,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/diamondring/thumb.webp"
+    },
+    {
+      "name": "Durov’s Cap",
+      "count": 3271,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/durovscap/thumb.webp"
+    },
+    {
+      "name": "Durov’s Glass",
+      "count": 718,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/durovsglasses/thumb.webp"
+    },
+    {
+      "name": "Easter Egg",
+      "count": 28130,
+      "permille": 19,
+      "rarity": 19,
+      "pct": 1.9,
+      "img": "/file/gifts/easteregg/thumb.webp"
+    },
+    {
+      "name": "Electric Skull",
+      "count": 4431,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/electricskull/thumb.webp"
+    },
+    {
+      "name": "Eternal Candle",
+      "count": 12871,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/eternalcandle/thumb.webp"
+    },
+    {
+      "name": "Eternal Rose",
+      "count": 5899,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/eternalrose/thumb.webp"
+    },
+    {
+      "name": "Evil Eye",
+      "count": 18884,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/evileye/thumb.webp"
+    },
+    {
+      "name": "Faith Amulet",
+      "count": 12630,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/faithamulet/thumb.webp"
+    },
+    {
+      "name": "Fine Pen",
+      "count": 3807,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/finepen/thumb.webp"
+    },
+    {
+      "name": "Flying Broom",
+      "count": 6884,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/flyingbroom/thumb.webp"
+    },
+    {
+      "name": "Fresh Sock",
+      "count": 12833,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/freshsocks/thumb.webp"
+    },
+    {
+      "name": "Gem Signet",
+      "count": 2205,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/gemsignet/thumb.webp"
+    },
+    {
+      "name": "Genie Lamp",
+      "count": 2790,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/genielamp/thumb.webp"
+    },
+    {
+      "name": "Ginger Cookie",
+      "count": 19058,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/gingercookie/thumb.webp"
+    },
+    {
+      "name": "Hanging Star",
+      "count": 7300,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/hangingstar/thumb.webp"
+    },
+    {
+      "name": "Happy Brownie",
+      "count": 12168,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/happybrownie/thumb.webp"
+    },
+    {
+      "name": "Heart Locket",
+      "count": 1333,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/heartlocket/thumb.webp"
+    },
+    {
+      "name": "Heroic Helmet",
+      "count": 1354,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/heroichelmet/thumb.webp"
+    },
+    {
+      "name": "Hex Pot",
+      "count": 14937,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/hexpot/thumb.webp"
+    },
+    {
+      "name": "Holiday Drink",
+      "count": 6770,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/holidaydrink/thumb.webp"
+    },
+    {
+      "name": "Homemade Cake",
+      "count": 33727,
+      "permille": 23,
+      "rarity": 23,
+      "pct": 2.3,
+      "img": "/file/gifts/homemadecake/thumb.webp"
+    },
+    {
+      "name": "Hypno Lollipop",
+      "count": 9299,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/hypnolollipop/thumb.webp"
+    },
+    {
+      "name": "Ice Cream",
+      "count": 37532,
+      "permille": 25,
+      "rarity": 25,
+      "pct": 2.5,
+      "img": "/file/gifts/icecream/thumb.webp"
+    },
+    {
+      "name": "Input Key",
+      "count": 15623,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/inputkey/thumb.webp"
+    },
+    {
+      "name": "Instant Ramen",
+      "count": 26303,
+      "permille": 18,
+      "rarity": 18,
+      "pct": 1.8,
+      "img": "/file/gifts/instantramen/thumb.webp"
+    },
+    {
+      "name": "Intelligence Cup",
+      "count": 26,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/intelligencecup/thumb.webp"
+    },
+    {
+      "name": "Ion Gem",
+      "count": 2740,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/iongem/thumb.webp"
+    },
+    {
+      "name": "Ionic Dryer",
+      "count": 2830,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/ionicdryer/thumb.webp"
+    },
+    {
+      "name": "Jacks-in-the-Box",
+      "count": 16960,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/jackinthebox/thumb.webp"
+    },
+    {
+      "name": "Jelly Bunnie",
+      "count": 14424,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/jellybunny/thumb.webp"
+    },
+    {
+      "name": "Jester Hat",
+      "count": 13796,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/jesterhat/thumb.webp"
+    },
+    {
+      "name": "Jingle Bell",
+      "count": 9203,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/jinglebells/thumb.webp"
+    },
+    {
+      "name": "Jolly Chimp",
+      "count": 15869,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/jollychimp/thumb.webp"
+    },
+    {
+      "name": "Joyful Bundle",
+      "count": 4365,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/joyfulbundle/thumb.webp"
+    },
+    {
+      "name": "Khabib’s Papakha",
+      "count": 3691,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/khabibspapakha/thumb.webp"
+    },
+    {
+      "name": "Kissed Frog",
+      "count": 7736,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/kissedfrog/thumb.webp"
+    },
+    {
+      "name": "Liberty Figure",
+      "count": 25587,
+      "permille": 17,
+      "rarity": 17,
+      "pct": 1.7,
+      "img": "/file/gifts/libertyfigure/thumb.webp"
+    },
+    {
+      "name": "Light Sword",
+      "count": 17832,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/lightsword/thumb.webp"
+    },
+    {
+      "name": "Lol Pop",
+      "count": 69802,
+      "permille": 47,
+      "rarity": 47,
+      "pct": 4.7,
+      "img": "/file/gifts/lolpop/thumb.webp"
+    },
+    {
+      "name": "Loot Bag",
+      "count": 6685,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/lootbag/thumb.webp"
+    },
+    {
+      "name": "Love Candle",
+      "count": 3408,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/lovecandle/thumb.webp"
+    },
+    {
+      "name": "Love Potion",
+      "count": 6923,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lovepotion/thumb.webp"
+    },
+    {
+      "name": "Low Rider",
+      "count": 6905,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lowrider/thumb.webp"
+    },
+    {
+      "name": "Lucky Locket",
+      "count": 556,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/luckylocket/thumb.webp"
+    },
+    {
+      "name": "Lunar Snake",
+      "count": 20211,
+      "permille": 14,
+      "rarity": 14,
+      "pct": 1.4,
+      "img": "/file/gifts/lunarsnake/thumb.webp"
+    },
+    {
+      "name": "Lush Bouquet",
+      "count": 6953,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/lushbouquet/thumb.webp"
+    },
+    {
+      "name": "Mad Pumpkin",
+      "count": 6842,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/madpumpkin/thumb.webp"
+    },
+    {
+      "name": "Magic Potion",
+      "count": 3330,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/magicpotion/thumb.webp"
+    },
+    {
+      "name": "Mighty Arm",
+      "count": 1859,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/mightyarm/thumb.webp"
+    },
+    {
+      "name": "Mini Oscar",
+      "count": 2194,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/minioscar/thumb.webp"
+    },
+    {
+      "name": "Mirage Lamp",
+      "count": 1556,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/miragelamp/thumb.webp"
+    },
+    {
+      "name": "Money Pot",
+      "count": 9861,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/moneypot/thumb.webp"
+    },
+    {
+      "name": "Mood Pack",
+      "count": 16740,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/moodpack/thumb.webp"
+    },
+    {
+      "name": "Moon Pendant",
+      "count": 13802,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/moonpendant/thumb.webp"
+    },
+    {
+      "name": "Mousse Cake",
+      "count": 8410,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/moussecake/thumb.webp"
+    },
+    {
+      "name": "Nail Bracelet",
+      "count": 1956,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/nailbracelet/thumb.webp"
+    },
+    {
+      "name": "Neko Helmet",
+      "count": 4301,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/nekohelmet/thumb.webp"
+    },
+    {
+      "name": "Party Sparkler",
+      "count": 22201,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "img": "/file/gifts/partysparkler/thumb.webp"
+    },
+    {
+      "name": "Perfume Bottle",
+      "count": 2191,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/perfumebottle/thumb.webp"
+    },
+    {
+      "name": "Pet Snake",
+      "count": 12277,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/petsnake/thumb.webp"
+    },
+    {
+      "name": "Plush Pepe",
+      "count": 2484,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/plushpepe/thumb.webp"
+    },
+    {
+      "name": "Pool Float",
+      "count": 16859,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/poolfloat/thumb.webp"
+    },
+    {
+      "name": "Precious Peach",
+      "count": 2167,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/preciouspeach/thumb.webp"
+    },
+    {
+      "name": "Pretty Posie",
+      "count": 6137,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/prettyposy/thumb.webp"
+    },
+    {
+      "name": "Rare Bird",
+      "count": 3848,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/rarebird/thumb.webp"
+    },
+    {
+      "name": "Record Player",
+      "count": 5680,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/recordplayer/thumb.webp"
+    },
+    {
+      "name": "Resistance Dog",
+      "count": 843,
+      "permille": 1,
+      "rarity": 1,
+      "pct": 0.1,
+      "img": "/file/gifts/resistancedog/thumb.webp"
+    },
+    {
+      "name": "Restless Jar",
+      "count": 10103,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/restlessjar/thumb.webp"
+    },
+    {
+      "name": "Sakura Flower",
+      "count": 14629,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/sakuraflower/thumb.webp"
+    },
+    {
+      "name": "Santa Hat",
+      "count": 13110,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/santahat/thumb.webp"
+    },
+    {
+      "name": "Scared Cat",
+      "count": 14525,
+      "permille": 10,
+      "rarity": 10,
+      "pct": 1,
+      "img": "/file/gifts/scaredcat/thumb.webp"
+    },
+    {
+      "name": "Sharp Tongue",
+      "count": 3956,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/sharptongue/thumb.webp"
+    },
+    {
+      "name": "Signet Ring",
+      "count": 7393,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/signetring/thumb.webp"
+    },
+    {
+      "name": "Skull Flower",
+      "count": 7172,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/skullflower/thumb.webp"
+    },
+    {
+      "name": "Sky Stiletto",
+      "count": 6346,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/skystilettos/thumb.webp"
+    },
+    {
+      "name": "Sleigh Bell",
+      "count": 4421,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/sleighbell/thumb.webp"
+    },
+    {
+      "name": "Snake Box",
+      "count": 10677,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/snakebox/thumb.webp"
+    },
+    {
+      "name": "Snoop Cigar",
+      "count": 19240,
+      "permille": 13,
+      "rarity": 13,
+      "pct": 1.3,
+      "img": "/file/gifts/snoopcigar/thumb.webp"
+    },
+    {
+      "name": "Snoop Dogg",
+      "count": 58529,
+      "permille": 39,
+      "rarity": 39,
+      "pct": 3.9,
+      "img": "/file/gifts/snoopdogg/thumb.webp"
+    },
+    {
+      "name": "Snow Globe",
+      "count": 6806,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/snowglobe/thumb.webp"
+    },
+    {
+      "name": "Snow Mitten",
+      "count": 5296,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/snowmittens/thumb.webp"
+    },
+    {
+      "name": "Spiced Wine",
+      "count": 12750,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/spicedwine/thumb.webp"
+    },
+    {
+      "name": "Spring Basket",
+      "count": 13947,
+      "permille": 9,
+      "rarity": 9,
+      "pct": 0.9,
+      "img": "/file/gifts/springbasket/thumb.webp"
+    },
+    {
+      "name": "Spy Agaric",
+      "count": 29394,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "img": "/file/gifts/spyagaric/thumb.webp"
+    },
+    {
+      "name": "Star Notepad",
+      "count": 9598,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/starnotepad/thumb.webp"
+    },
+    {
+      "name": "Stellar Rocket",
+      "count": 17492,
+      "permille": 12,
+      "rarity": 12,
+      "pct": 1.2,
+      "img": "/file/gifts/stellarrocket/thumb.webp"
+    },
+    {
+      "name": "Surge Board",
+      "count": 3597,
+      "permille": 2,
+      "rarity": 2,
+      "pct": 0.2,
+      "img": "/file/gifts/surgeboard/thumb.webp"
+    },
+    {
+      "name": "Swag Bag",
+      "count": 21898,
+      "permille": 15,
+      "rarity": 15,
+      "pct": 1.5,
+      "img": "/file/gifts/swagbag/thumb.webp"
+    },
+    {
+      "name": "Swiss Watch",
+      "count": 11082,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/swisswatch/thumb.webp"
+    },
+    {
+      "name": "Tama Gadget",
+      "count": 11683,
+      "permille": 8,
+      "rarity": 8,
+      "pct": 0.8,
+      "img": "/file/gifts/tamagadget/thumb.webp"
+    },
+    {
+      "name": "Timeless Book",
+      "count": 9799,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/timelessbook/thumb.webp"
+    },
+    {
+      "name": "Top Hat",
+      "count": 9257,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/tophat/thumb.webp"
+    },
+    {
+      "name": "Toy Bear",
+      "count": 30025,
+      "permille": 20,
+      "rarity": 20,
+      "pct": 2,
+      "img": "/file/gifts/toybear/thumb.webp"
+    },
+    {
+      "name": "Trapped Heart",
+      "count": 9896,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/trappedheart/thumb.webp"
+    },
+    {
+      "name": "UFC Strike",
+      "count": 7060,
+      "permille": 5,
+      "rarity": 5,
+      "pct": 0.5,
+      "img": "/file/gifts/ufcstrike/thumb.webp"
+    },
+    {
+      "name": "Valentine Box",
+      "count": 4106,
+      "permille": 3,
+      "rarity": 3,
+      "pct": 0.3,
+      "img": "/file/gifts/valentinebox/thumb.webp"
+    },
+    {
+      "name": "Vice Cream",
+      "count": 48021,
+      "permille": 32,
+      "rarity": 32,
+      "pct": 3.2,
+      "img": "/file/gifts/vicecream/thumb.webp"
+    },
+    {
+      "name": "Victory Medal",
+      "count": 16481,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/victorymedal/thumb.webp"
+    },
+    {
+      "name": "Vintage Cigar",
+      "count": 9161,
+      "permille": 6,
+      "rarity": 6,
+      "pct": 0.6,
+      "img": "/file/gifts/vintagecigar/thumb.webp"
+    },
+    {
+      "name": "Voodoo Doll",
+      "count": 11177,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/voodoodoll/thumb.webp"
+    },
+    {
+      "name": "Westside Sign",
+      "count": 5339,
+      "permille": 4,
+      "rarity": 4,
+      "pct": 0.4,
+      "img": "/file/gifts/westsidesign/thumb.webp"
+    },
+    {
+      "name": "Whip Cupcake",
+      "count": 16235,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/whipcupcake/thumb.webp"
+    },
+    {
+      "name": "Winter Wreath",
+      "count": 10298,
+      "permille": 7,
+      "rarity": 7,
+      "pct": 0.7,
+      "img": "/file/gifts/winterwreath/thumb.webp"
+    },
+    {
+      "name": "Witch Hat",
+      "count": 31553,
+      "permille": 21,
+      "rarity": 21,
+      "pct": 2.1,
+      "img": "/file/gifts/witchhat/thumb.webp"
+    },
+    {
+      "name": "Xmas Stocking",
+      "count": 16968,
+      "permille": 11,
+      "rarity": 11,
+      "pct": 1.1,
+      "img": "/file/gifts/xmasstocking/thumb.webp"
+    }
+  ]
+}

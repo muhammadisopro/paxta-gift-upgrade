@@ -1,0 +1,754 @@
+{
+  "collections": {
+    "coinflip": {
+      "enabled": true,
+      "price": 250,
+      "upgradePrice": 100,
+      "supply": 500
+    },
+    "mask": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 150,
+      "supply": 500
+    },
+    "intelligencecup": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 26
+    },
+    "algorithmcup": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 60
+    },
+    "luckylocket": {
+      "enabled": false,
+      "price": 1000,
+      "upgradePrice": 250,
+      "supply": 556
+    },
+    "durovsglasses": {
+      "enabled": false,
+      "price": 1000,
+      "upgradePrice": 250,
+      "supply": 718
+    },
+    "resistancedog": {
+      "enabled": false,
+      "price": 1000,
+      "upgradePrice": 250,
+      "supply": 843
+    },
+    "miragelamp": {
+      "enabled": false,
+      "price": 1000,
+      "upgradePrice": 250,
+      "supply": 1556
+    },
+    "nailbracelet": {
+      "enabled": false,
+      "price": 1000,
+      "upgradePrice": 250,
+      "supply": 1956
+    },
+    "heartlocket": {
+      "enabled": false,
+      "price": 1000,
+      "upgradePrice": 250,
+      "supply": 1973
+    },
+    "minioscar": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 2194
+    },
+    "gemsignet": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 2205
+    },
+    "genielamp": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 2790
+    },
+    "plushpepe": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 2861
+    },
+    "bondedring": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3004
+    },
+    "astralshard": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3009
+    },
+    "preciouspeach": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3160
+    },
+    "lovecandle": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3408
+    },
+    "surgeboard": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3597
+    },
+    "heroichelmet": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3794
+    },
+    "finepen": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3807
+    },
+    "rarebird": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3848
+    },
+    "sharptongue": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 3956
+    },
+    "mightyarm": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4123
+    },
+    "nekohelmet": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4301
+    },
+    "sleighbell": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4421
+    },
+    "electricskull": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4431
+    },
+    "iongem": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4692
+    },
+    "durovscap": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4774
+    },
+    "perfumebottle": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4848
+    },
+    "magicpotion": {
+      "enabled": false,
+      "price": 500,
+      "upgradePrice": 125,
+      "supply": 4871
+    },
+    "snowmittens": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 5296
+    },
+    "westsidesign": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 5339
+    },
+    "recordplayer": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 5680
+    },
+    "holidaydrink": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6770
+    },
+    "snowglobe": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6806
+    },
+    "artisanbrick": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6852
+    },
+    "flyingbroom": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6884
+    },
+    "lowrider": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6905
+    },
+    "lovepotion": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6923
+    },
+    "lushbouquet": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6953
+    },
+    "bunnymuffin": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 6980
+    },
+    "ufcstrike": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 7060
+    },
+    "skullflower": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 7172
+    },
+    "hangingstar": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 7300
+    },
+    "signetring": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 7393
+    },
+    "diamondring": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 8723
+    },
+    "bowtie": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9113
+    },
+    "jinglebells": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9203
+    },
+    "berrybox": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9217
+    },
+    "tophat": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9257
+    },
+    "hypnolollipop": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9299
+    },
+    "starnotepad": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9598
+    },
+    "timelessbook": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9799
+    },
+    "trappedheart": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9896
+    },
+    "blingbinky": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 9990
+    },
+    "winterwreath": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 10298
+    },
+    "snakebox": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 10677
+    },
+    "swisswatch": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 11082
+    },
+    "tamagadget": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 11683
+    },
+    "spicedwine": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 12750
+    },
+    "bigyear": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 13147
+    },
+    "moonpendant": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 13802
+    },
+    "cookieheart": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 14038
+    },
+    "kissedfrog": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 14278
+    },
+    "lootbag": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 14489
+    },
+    "hexpot": {
+      "enabled": false,
+      "price": 250,
+      "upgradePrice": 63,
+      "supply": 14937
+    },
+    "victorymedal": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 16481
+    },
+    "moodpack": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 16740
+    },
+    "poolfloat": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 16859
+    },
+    "xmasstocking": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 16968
+    },
+    "candycane": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 17592
+    },
+    "lightsword": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 17832
+    },
+    "evileye": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 18884
+    },
+    "gingercookie": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 19058
+    },
+    "snoopcigar": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 19240
+    },
+    "scaredcat": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 19289
+    },
+    "lunarsnake": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 20211
+    },
+    "swagbag": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 21898
+    },
+    "madpumpkin": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 22199
+    },
+    "partysparkler": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 22201
+    },
+    "bdaycandle": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 25113
+    },
+    "libertyfigure": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 25587
+    },
+    "ionicdryer": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 25719
+    },
+    "voodoodoll": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 27620
+    },
+    "crystalball": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 27732
+    },
+    "easteregg": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 28130
+    },
+    "khabibspapakha": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 29000
+    },
+    "spyagaric": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 29394
+    },
+    "toybear": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 30025
+    },
+    "vintagecigar": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 31024
+    },
+    "witchhat": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 31553
+    },
+    "cupidcharm": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 33112
+    },
+    "homemadecake": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 33727
+    },
+    "eternalrose": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 37640
+    },
+    "valentinebox": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 41025
+    },
+    "eternalcandle": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 46590
+    },
+    "chillflame": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 47698
+    },
+    "vicecream": {
+      "enabled": false,
+      "price": 100,
+      "upgradePrice": 25,
+      "supply": 48021
+    },
+    "skystilettos": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 58460
+    },
+    "lolpop": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 69802
+    },
+    "santahat": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 89034
+    },
+    "moneypot": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 91779
+    },
+    "sakuraflower": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 93115
+    },
+    "jackinthebox": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 97345
+    },
+    "joyfulbundle": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 114092
+    },
+    "restlessjar": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 120184
+    },
+    "jellybunny": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 129350
+    },
+    "jollychimp": {
+      "enabled": false,
+      "price": 50,
+      "upgradePrice": 25,
+      "supply": 132155
+    },
+    "stellarrocket": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 156318
+    },
+    "inputkey": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 159750
+    },
+    "faithamulet": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 172784
+    },
+    "prettyposy": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 181231
+    },
+    "jesterhat": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 190222
+    },
+    "freshsocks": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 200509
+    },
+    "moussecake": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 230505
+    },
+    "springbasket": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 231311
+    },
+    "happybrownie": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 264231
+    },
+    "cloverpin": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 270970
+    },
+    "petsnake": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 279106
+    },
+    "deskcalendar": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 288772
+    },
+    "icecream": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 342255
+    },
+    "whipcupcake": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 367619
+    },
+    "instantramen": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 457382
+    },
+    "snoopdogg": {
+      "enabled": false,
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 593781
+    }
+  }
+}
