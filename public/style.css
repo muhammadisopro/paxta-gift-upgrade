@@ -3085,21 +3085,61 @@ button, input, textarea {
   }
 }
 
-/* ---- Mobile Responsive Refinements (Telegram iOS 3-col Grid & Bottom Sheets) ---- */
+/* ---- Mobile Responsive Refinements (2-col High-End Collectible Grid & Sleek Header) ---- */
 @media (max-width: 640px) {
   .topbar-inner {
-    padding: 8px 12px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .brand {
+    gap: 6px;
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-text strong {
+    font-size: 14.5px;
   }
 
   .brand-text span {
     display: none;
   }
 
-  .user-pill span:not(.avatar) {
-    max-width: 88px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .user-bar {
+    gap: 6px;
+  }
+
+  .promo-pill {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .promo-pill-text {
+    display: none;
+  }
+
+  .balance-pill {
+    padding: 5px 8px 5px 7px;
+    font-size: 13px;
+    gap: 4px;
+  }
+
+  .balance-plus {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+
+  .user-pill {
+    padding: 3px 5px;
+  }
+
+  .user-pill-name {
+    display: none;
   }
 
   .ios-hero-banner {
@@ -3122,44 +3162,46 @@ button, input, textarea {
     font-size: 12px;
   }
 
-  /* Authentic Telegram iOS 3-column Collectible Grid on Mobile */
+  /* 2-column High-End Collectible Grid on Mobile for Maximum Clarity & Luxury */
   .tg-profile-gift-grid,
   .gift-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
   }
 
   .pinned-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
   }
 
   .gift-card {
-    border-radius: 15px;
-    padding: 8px 6px 7px;
+    border-radius: 18px;
+    padding: 12px 10px 10px;
   }
 
   .gift-card-art {
-    width: 68px;
-    height: 68px;
+    width: 106px !important;
+    height: 106px !important;
+    margin: 6px auto 10px;
   }
 
   .gift-card-title {
-    font-size: 11.5px;
+    font-size: 13.5px;
+    font-weight: 700;
   }
 
   .gift-card-sub {
-    font-size: 10px;
+    font-size: 11.5px;
   }
 
   .gift-card-top {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .gift-card-num,
   .gift-card-badge {
-    padding: 1px 5px;
-    font-size: 9.5px;
+    padding: 2px 7px;
+    font-size: 10.5px;
   }
 
   .catalog-grid {
@@ -3168,28 +3210,39 @@ button, input, textarea {
   }
 
   .tg-ios-cover {
-    padding: 12px 14px 18px;
+    padding: 14px 14px 20px;
   }
 
   .avatar-xl {
-    width: 80px;
-    height: 80px;
-    font-size: 30px;
+    width: 84px;
+    height: 84px;
+    font-size: 32px;
   }
 
   .tg-name-row h1 {
-    font-size: 20px;
+    font-size: 21px;
   }
 
   .tg-ios-action-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 7px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .tg-ios-action-btn {
+    padding: 9px 4px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .tg-ios-action-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .tg-stats-row {
     grid-template-columns: repeat(2, 1fr);
-    gap: 7px;
-    padding: 10px 12px 12px;
+    gap: 8px;
+    padding: 12px 12px 14px;
   }
 
   .tg-floating-pin {
@@ -3411,4 +3464,557 @@ button, input, textarea {
   border: 1px solid rgba(140, 158, 255, 0.35);
   border-radius: 8px;
   padding: 4px 10px;
+}
+
+/* ============================================================================
+   1. Shop Store Hero Promo Carousel (Real Store / Drop Banners)
+   ============================================================================ */
+.shop-hero-carousel-wrap {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 22px;
+  background: rgba(18, 22, 36, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+.shop-hero-carousel {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+}
+
+.shop-slide {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.98);
+  padding: 24px 28px;
+  cursor: pointer;
+  position: relative;
+}
+
+.shop-slide.active {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.shop-slide-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  width: fit-content;
+  margin-bottom: 14px;
+}
+
+.shop-slide-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.shop-slide-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shop-slide-text h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.shop-slide-text p {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 520px;
+}
+
+.shop-slide-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.shop-slide-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 184, 46, 0.16);
+  color: var(--saffron);
+  border: 1px solid rgba(255, 184, 46, 0.3);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.shop-slide-btn {
+  padding: 7px 18px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+}
+
+.shop-slide-art {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.shop-slide-art img {
+  width: 105px;
+  height: 105px;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.6));
+  animation: floatArt 4s ease-in-out infinite alternate;
+}
+
+.shop-slide-art-glow {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  filter: blur(28px);
+  z-index: 1;
+}
+
+@keyframes floatArt {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-7px) rotate(2deg); }
+}
+
+/* Individual Slide Theme Accents */
+.shop-slide-durov {
+  background: radial-gradient(circle at 85% 50%, rgba(120, 80, 220, 0.28), transparent 60%),
+              linear-gradient(135deg, rgba(26, 18, 44, 0.95), rgba(42, 28, 76, 0.88));
+}
+.shop-slide-durov .shop-slide-badge {
+  background: rgba(140, 100, 255, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+}
+.glow-durov { background: rgba(168, 85, 247, 0.45); }
+
+.shop-slide-crown {
+  background: radial-gradient(circle at 85% 50%, rgba(255, 184, 46, 0.26), transparent 60%),
+              linear-gradient(135deg, rgba(38, 26, 12, 0.95), rgba(64, 44, 20, 0.88));
+}
+.shop-slide-crown .shop-slide-badge {
+  background: rgba(255, 184, 46, 0.2);
+  color: #fde047;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+}
+.glow-crown { background: rgba(234, 179, 8, 0.45); }
+
+.shop-slide-icecream {
+  background: radial-gradient(circle at 85% 50%, rgba(56, 189, 248, 0.24), transparent 60%),
+              linear-gradient(135deg, rgba(14, 30, 48, 0.95), rgba(22, 54, 84, 0.88));
+}
+.shop-slide-icecream .shop-slide-badge {
+  background: rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+.glow-ice { background: rgba(14, 165, 233, 0.45); }
+
+/* Carousel Dots */
+.shop-carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0 14px;
+}
+
+.shop-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shop-dot.active {
+  width: 24px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(108, 99, 255, 0.6);
+}
+
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 0 12px;
+}
+.section-title-bar-left h3 {
+  font-size: 18px;
+  font-weight: 750;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.section-title-bar-left span {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+/* ============================================================================
+   2. Real Secondary Marketplace (Bozor Banner & Live Trading Board)
+   ============================================================================ */
+.market-hero-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.market-hero-card {
+  background: radial-gradient(circle at 90% 20%, rgba(34, 197, 94, 0.16), transparent 50%),
+              linear-gradient(135deg, rgba(20, 26, 38, 0.88), rgba(28, 38, 54, 0.78));
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.38);
+}
+
+.market-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 750;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.pulse-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.35); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.market-hero-content h2 {
+  font-size: 21px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  letter-spacing: -0.015em;
+}
+
+.market-hero-content p {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.market-hero-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.market-stats-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.mstat-item {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mstat-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.mstat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.mstat-label {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.mstat-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+/* Verified Seller Tag on Market Cards */
+.market-seller-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 7px 2px 4px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s, transform 0.12s;
+  max-width: 100%;
+}
+.market-seller-row:hover {
+  background: rgba(140, 158, 255, 0.16);
+  transform: translateY(-1px);
+}
+.seller-avatar-mini {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.seller-uname {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.seller-verified-mini {
+  flex-shrink: 0;
+}
+
+.market-buy-pill {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(255, 184, 46, 0.22), rgba(255, 150, 20, 0.28));
+  color: var(--saffron-text);
+  border: 1px solid rgba(255, 184, 46, 0.4);
+  border-radius: 12px;
+  padding: 7px 10px;
+  font-weight: 800;
+  font-size: 13.5px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.market-buy-pill:hover {
+  background: linear-gradient(135deg, rgba(255, 184, 46, 0.35), rgba(255, 150, 20, 0.4));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 184, 46, 0.35);
+}
+.market-buy-pill:active {
+  transform: scale(0.97);
+}
+.market-buy-txt {
+  font-size: 11.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-left: 2px;
+}
+
+/* ============================================================================
+   3. VIP Telegram Collectible Profile & Vitrina Showcase
+   ============================================================================ */
+.profile-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 2px;
+}
+
+.tg-user-tags {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.tg-id-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-2);
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+
+.act-btn-stars {
+  border-color: rgba(255, 184, 46, 0.3) !important;
+  color: var(--saffron) !important;
+}
+.act-btn-stars:hover {
+  background: rgba(255, 184, 46, 0.16) !important;
+}
+.act-btn-promo {
+  border-color: rgba(255, 159, 67, 0.3) !important;
+  color: #ff9f43 !important;
+}
+.act-btn-promo:hover {
+  background: rgba(255, 159, 67, 0.16) !important;
+}
+
+.stat-pill-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.stat-pill-icon.gold-star {
+  color: var(--saffron);
+}
+
+.stat-pill-data {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.pinned-counter-badge {
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 184, 46, 0.15);
+  color: var(--saffron);
+  border: 1px solid rgba(255, 184, 46, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.empty-showcase-box {
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* Mobile Responsiveness for Banners & Stats */
+@media (max-width: 640px) {
+  .shop-slide {
+    padding: 16px 16px 14px;
+  }
+  .shop-slide-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .shop-slide-text h2 {
+    font-size: 17.5px;
+  }
+  .shop-slide-text p {
+    font-size: 11.5px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .shop-slide-art {
+    width: 90px;
+    height: 90px;
+  }
+  .shop-slide-art img {
+    width: 76px;
+    height: 76px;
+  }
+  .shop-slide-meta {
+    margin-top: 6px;
+    gap: 8px;
+  }
+  .shop-slide-price {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+  .shop-slide-btn {
+    padding: 5px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .market-hero-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .market-hero-content h2 {
+    font-size: 17px;
+  }
+  .market-hero-content p {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  .market-stats-board {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .mstat-item {
+    padding: 10px 12px;
+  }
+  .mstat-icon {
+    font-size: 18px;
+  }
+  .mstat-val {
+    font-size: 13.5px;
+  }
 }

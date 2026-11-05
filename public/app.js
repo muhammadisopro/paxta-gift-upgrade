@@ -588,8 +588,29 @@ function renderCatalog() {
   }
 }
 
+// ---- Update Market Live Stats (Fragment / OpenSea style) ----
+function updateMarketStats() {
+  const list = STATE.marketListings || [];
+  const totalCount = list.length;
+  const prices = list.map(g => g.salePrice || 0).filter(p => p > 0);
+  const floorPrice = prices.length ? Math.min(...prices) : 0;
+  const totalVolume = prices.reduce((s, p) => s + p, 0);
+  const sellers = new Set(list.map(g => g.owner).filter(Boolean)).size;
+
+  const totalEl = document.getElementById('marketStatTotalCount');
+  const floorEl = document.getElementById('marketStatFloorPrice');
+  const volEl = document.getElementById('marketStatTotalVolume');
+  const sellersEl = document.getElementById('marketStatSellersCount');
+
+  if (totalEl) totalEl.textContent = `${fmtInt(totalCount)} ta`;
+  if (floorEl) floorEl.textContent = floorPrice > 0 ? `${fmtInt(floorPrice)} ⭐` : '--';
+  if (volEl) volEl.textContent = totalVolume > 0 ? `${fmtInt(totalVolume)} ⭐` : '--';
+  if (sellersEl) sellersEl.textContent = `${fmtInt(sellers)} ta`;
+}
+
 // ---- Render Secondary Resale Market (Qayta Sotuv Bozori) ----
 function renderMarket() {
+  updateMarketStats();
   const grid = document.getElementById('marketGrid');
   if (!grid) return;
   grid.innerHTML = '';
@@ -597,6 +618,9 @@ function renderMarket() {
   const q = STATE.marketQuery.trim().toLowerCase().replace(/^#/, '').replace(/^@/, '');
   let list = STATE.marketListings.filter(g => {
     if (STATE.marketFilter === 'crafted' && !g.crafted) return false;
+    if (STATE.marketFilter === 'durovscap' && g.slug !== 'durovscap') return false;
+    if (STATE.marketFilter === 'imperialcrown' && g.slug !== 'imperialcrown') return false;
+    if (STATE.marketFilter === 'icecream' && g.slug !== 'icecream') return false;
     if (q) {
       const matchName = (g.name || '').toLowerCase().includes(q);
       const matchModel = (g.model?.name || '').toLowerCase().includes(q);
@@ -618,7 +642,7 @@ function renderMarket() {
   if (!list.length) {
     grid.innerHTML = `
       <div class="empty-box">
-        <strong>Marketda hozircha sotuvdagi sovgʻalar yoʻq</strong>
+        <strong>Marketda mos sovgʻalar topilmadi</strong>
         <span>Profilingizdagi yaxshilangan (Upgraded) sovgʻani «Sotish» tugmasi orqali Marketga chiqarishingiz mumkin!</span>
         <button type="button" class="btn btn-primary btn-sm" id="btnEmptyListGift">+ Sovgʻamni sotuvga qoʻyish</button>
       </div>
@@ -708,6 +732,13 @@ function renderProfileView() {
   const regFilterBtn = document.getElementById('filterBtnRegular');
   if (regFilterBtn) regFilterBtn.hidden = !isOwn;
 
+  // Paxta ID Pill
+  const idEl = document.getElementById('profileIdTag');
+  if (idEl) {
+    const pId = prof.paxtaId || prof.id || (isOwn && STATE.user?.paxtaId) || (isOwn && STATE.user?.id) || 100;
+    idEl.textContent = `ID: ${pId}`;
+  }
+
   // Worn Gift Status Badge (Crown + Gift Icon next to Name)
   const wornGift = prof.wornGift;
   const badge = document.getElementById('profileWornBadge');
@@ -765,31 +796,43 @@ function renderProfileView() {
     });
   }
 
-  // Profile Stats Row
+  // Profile Stats Row (Modern Glass Metrics)
   const stats = prof.stats || {};
   const statsRow = document.getElementById('profileStatsRow');
   if (statsRow) {
     statsRow.innerHTML = `
       <div class="tg-stat-pill">
-        <strong>${fmtInt(stats.totalGifts || 0)}</strong>
-        <span>Jami sovgʻa</span>
+        <div class="stat-pill-icon">🎁</div>
+        <div class="stat-pill-data">
+          <strong>${fmtInt(stats.totalGifts || 0)}</strong>
+          <span>Jami sovgʻa</span>
+        </div>
       </div>
       <div class="tg-stat-pill">
-        <strong>${fmtInt(stats.upgradedCount || 0)}</strong>
-        <span>Noyob (Upgraded)</span>
+        <div class="stat-pill-icon">🌟</div>
+        <div class="stat-pill-data">
+          <strong>${fmtInt(stats.upgradedCount || 0)}</strong>
+          <span>Noyob (Upgraded)</span>
+        </div>
       </div>
       <div class="tg-stat-pill">
-        <strong>${fmtInt(stats.craftedCount || 0)}</strong>
-        <span>Maxfiy Craft</span>
+        <div class="stat-pill-icon">🔮</div>
+        <div class="stat-pill-data">
+          <strong>${fmtInt(stats.craftedCount || 0)}</strong>
+          <span>Craft modellar</span>
+        </div>
       </div>
-      <div class="tg-stat-pill">
-        <strong style="color:var(--saffron);">${svgStar(14)} ${fmtInt(stats.collectionValue || 0)}</strong>
-        <span>Kolleksiya qiymati</span>
+      <div class="tg-stat-pill tg-stat-gold">
+        <div class="stat-pill-icon gold-star">${svgStar(16)}</div>
+        <div class="stat-pill-data">
+          <strong style="color:var(--saffron);">${fmtInt(stats.collectionValue || 0)} ⭐</strong>
+          <span>Kolleksiya qiymati</span>
+        </div>
       </div>
     `;
   }
 
-  // Pinned Showcase Section (📌 Profilga qadalgan sovgʻalar)
+  // Pinned Showcase Section (📌 Profilga qadalgan sovgʻalar / Vitrina)
   const pinnedSec = document.getElementById('pinnedShowcaseSection');
   const pinnedGrid = document.getElementById('pinnedGiftsGrid');
   const pinnedCountLbl = document.getElementById('pinnedCountLabel');
@@ -803,7 +846,15 @@ function renderProfileView() {
         pinnedGrid.appendChild(buildGiftCard(pg));
       }
     } else {
-      pinnedSec.hidden = true;
+      pinnedSec.hidden = !isOwn;
+      if (isOwn) {
+        pinnedGrid.innerHTML = `
+          <div class="empty-showcase-box">
+            <span>✨ Vitrinangiz hozircha boʻsh. Sovgʻangizni ochib «Profilga qadash» tugmasini bossangiz, bu yerda koʻrinadi!</span>
+          </div>
+        `;
+        if (pinnedCountLbl) pinnedCountLbl.textContent = `0 / 6`;
+      }
     }
   }
 
@@ -820,6 +871,7 @@ function renderInventoryGrid(giftsList, isOwn, profileUsername) {
   grid.innerHTML = '';
 
   const filtered = giftsList.filter(g => {
+    if (STATE.invFilter === 'worn') return !!g.worn;
     if (STATE.invFilter === 'pinned') return !!g.pinned;
     if (STATE.invFilter === 'upgraded') return g.state === 'upgraded';
     if (STATE.invFilter === 'crafted') return g.state === 'upgraded' && g.crafted;
@@ -897,21 +949,28 @@ function buildGiftCard(g, opts = {}) {
   const foot = document.createElement('div');
   foot.className = 'gift-card-foot';
   if (opts.isMarketCard) {
+    const sInit = (g.owner || 'U').charAt(0).toUpperCase();
     foot.innerHTML = `
       <div class="gift-card-title">${esc(g.name)} ${formatGiftNum(g.number)}</div>
       <div class="gift-card-sub">${esc(g.model?.name || '')}</div>
-      <div class="gift-card-seller">
-        <span>Egasi:</span>
-        <b data-seller="${esc(g.owner)}">@${esc(g.owner)}</b>
+      <div class="market-seller-row" data-seller="${esc(g.owner)}">
+        <span class="seller-avatar-mini">${esc(sInit)}</span>
+        <span class="seller-uname">@${esc(g.owner)}</span>
+        <svg class="seller-verified-mini" viewBox="0 0 24 24" width="13" height="13" fill="#3b99fc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
       </div>
-      <button type="button" class="market-buy-pill">
-        ${svgStar(13)}
+      <button type="button" class="market-buy-pill" title="Xarid qilish">
+        ${svgStar(14)}
         <span>${fmtInt(g.salePrice)}</span>
+        <span class="market-buy-txt">Xarid</span>
       </button>
     `;
     foot.querySelector('[data-seller]')?.addEventListener('click', (e) => {
       e.stopPropagation();
       openUserProfile(g.owner);
+    });
+    foot.querySelector('.market-buy-pill')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      buyMarketGift(g);
     });
   } else if (g.state === 'upgraded') {
     foot.innerHTML = `
@@ -3168,6 +3227,89 @@ function switchTab(tab) {
   if (tab === 'admin') loadAdminData();
 }
 
+let shopCarouselTimer = null;
+let currentShopSlide = 0;
+
+function initShopCarousel() {
+  const slides = document.querySelectorAll('.shop-slide');
+  const dots = document.querySelectorAll('.shop-dot');
+  if (!slides.length) return;
+
+  function setSlide(index) {
+    currentShopSlide = (index + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('active', i === currentShopSlide));
+    dots.forEach((d, i) => d.classList.toggle('active', i === currentShopSlide));
+  }
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const target = parseInt(dot.dataset.slideTarget || '0', 10);
+      setSlide(target);
+      restartShopTimer();
+    });
+  });
+
+  document.querySelectorAll('[data-buy-slug]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const slug = btn.dataset.buySlug;
+      const col = (STATE.collections || []).find(c => c.slug === slug || c.id === slug);
+      if (col) {
+        openBuyCollectionSheet(col);
+      } else {
+        const fallback = {
+          slug,
+          id: slug,
+          name: slug === 'durovscap' ? "Durov’s Cap" : slug === 'imperialcrown' ? 'Imperial Crown' : 'Ice Cream',
+          base: slug === 'durovscap' ? 5000 : slug === 'imperialcrown' ? 250 : 25,
+          upgrade: slug === 'durovscap' ? 500 : slug === 'imperialcrown' ? 100 : 25,
+          supply: slug === 'durovscap' ? 30 : slug === 'imperialcrown' ? 250 : 342255,
+          remainingToBuy: slug === 'durovscap' ? 30 : slug === 'imperialcrown' ? 250 : 342255
+        };
+        openBuyCollectionSheet(fallback);
+      }
+    });
+  });
+
+  slides.forEach(slide => {
+    slide.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      const slug = slide.dataset.slug;
+      if (slug) {
+        const col = (STATE.collections || []).find(c => c.slug === slug || c.id === slug);
+        if (col) openBuyCollectionSheet(col);
+      }
+    });
+  });
+
+  function startShopTimer() {
+    stopShopTimer();
+    shopCarouselTimer = setInterval(() => {
+      setSlide(currentShopSlide + 1);
+    }, 5500);
+  }
+
+  function stopShopTimer() {
+    if (shopCarouselTimer) clearInterval(shopCarouselTimer);
+    shopCarouselTimer = null;
+  }
+
+  function restartShopTimer() {
+    startShopTimer();
+  }
+
+  const wrap = document.querySelector('.shop-hero-carousel-wrap');
+  if (wrap) {
+    wrap.addEventListener('mouseenter', stopShopTimer);
+    wrap.addEventListener('mouseleave', startShopTimer);
+    wrap.addEventListener('touchstart', stopShopTimer, { passive: true });
+    wrap.addEventListener('touchend', startShopTimer, { passive: true });
+  }
+
+  startShopTimer();
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.main-tab, .ios-tab-item').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3196,6 +3338,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   document.getElementById('profActShop')?.addEventListener('click', () => switchTab('shop'));
   document.getElementById('profActStars')?.addEventListener('click', () => openAddStarsModal(250));
+  document.getElementById('profActPromo')?.addEventListener('click', openPromoModal);
+  document.getElementById('btnMarketRules')?.addEventListener('click', () => {
+    openSubModal('Qayta Sotuv Bozori Qoidalari', `
+      <div class="form-stack" style="font-size:14px;line-height:1.6;color:var(--text-2);">
+        <p><b style="color:#fff;">1. Komissiya 0%:</b> Siz sotuvga qoʻygan narxingiz boʻyicha toʻliq Stars olasiz.</p>
+        <p><b style="color:#fff;">2. Tezkor hisob-kitob:</b> Boshqa foydalanuvchi sovgʻangizni sotib olgan soniyadayoq Stars balansingizga oʻtadi.</p>
+        <p><b style="color:#fff;">3. Qaytarib olish:</b> Istalgan vaqtda sovgʻangizni sotuvdan qaytarib olishingiz mumkin.</p>
+        <p><b style="color:#fff;">4. Faqat Upgraded:</b> Bozorga faqat yaxshilangan (Upgraded) va Craft qilingan noyob sovgʻalar chiqariladi.</p>
+      </div>
+    `);
+  });
   document.getElementById('btnEditBio')?.addEventListener('click', openEditBioModal);
   document.getElementById('btnShareProfile')?.addEventListener('click', async () => {
     const profUser = (STATE.viewedProfile || STATE.user)?.username || 'user';
@@ -3328,6 +3481,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   notifyPaxtaMiniApp('web_app_ready');
   notifyPaxtaMiniApp('web_app_expand');
+  initShopCarousel();
   await Promise.all([loginUser(), loadCollections(), loadMarket()]);
 
   // Support deep-linking to any user's profile via ?profile=username
