@@ -2396,9 +2396,14 @@ async function openCollectionModelsExplorer(c) {
 
     body.innerHTML = `
       <div class="form-stack">
+        <div id="expLiveStage" style="display:flex;flex-direction:column;align-items:center;padding:12px;border-radius:18px;background:radial-gradient(circle, rgba(108,99,255,0.22) 0%, rgba(18,20,30,0.92) 78%);border:1px solid rgba(255,255,255,0.12);">
+          <div id="expLiveLottie" style="width:128px;height:128px;cursor:pointer;" title="Qayta oʻynatish uchun bosing"></div>
+          <strong id="expLiveName" style="font-size:15px;margin-top:4px;color:#fff;"></strong>
+          <span id="expLiveRarity" style="font-size:12px;color:#93c5fd;font-weight:700;"></span>
+        </div>
         <div style="display:flex;gap:8px;">
-          <button type="button" class="filter-chip active" id="expTabReg">✨ Oddiy Upgrade (${regModels.length})</button>
-          <button type="button" class="filter-chip" id="expTabCraft">🔨 Maxfiy Craft (${craftModels.length})</button>
+          <button type="button" class="filter-chip active" id="expTabReg">Oddiy Upgrade (${regModels.length})</button>
+          <button type="button" class="filter-chip" id="expTabCraft">Maxfiy Craft (${craftModels.length})</button>
         </div>
         <div class="models-explorer-grid" id="expGrid"></div>
         <button type="button" class="btn btn-tonal gv-btn" id="btnBackToBuySheet" style="height:40px;">← Orqaga qaytish</button>
@@ -2406,14 +2411,44 @@ async function openCollectionModelsExplorer(c) {
     `;
 
     const grid = body.querySelector('#expGrid');
+    const lottieBox = body.querySelector('#expLiveLottie');
+    const nameEl = body.querySelector('#expLiveName');
+    const rarityEl = body.querySelector('#expLiveRarity');
+    let activeLottie = null;
+
+    const previewModel = (m, isCraft) => {
+      if (!m) return;
+      if (activeLottie) activeLottie.destroy();
+      nameEl.textContent = m.name;
+      rarityEl.textContent = isCraft && m.tier ? (TIER_LABELS[m.tier] || m.tier) : `Kamyoblik: ${fmtPct(m.rarity)}`;
+      activeLottie = mountLottieOrImg(lottieBox, {
+        imgUrl: m.img,
+        jsonUrl: m.tgs,
+        size: 128,
+        loop: true,
+        autoplay: true
+      });
+    };
+
+    lottieBox?.addEventListener('click', () => {
+      if (activeLottie) activeLottie.play();
+    });
+
     const renderItems = (items, isCraft) => {
-      grid.innerHTML = items.map(m => `
-        <div class="model-preview-card">
+      grid.innerHTML = items.map((m, idx) => `
+        <div class="model-preview-card" data-midx="${idx}" style="cursor:pointer;">
           <img src="${esc(m.img)}" alt="${esc(m.name)}" loading="lazy" />
           <strong>${esc(m.name)}</strong>
           <span>${isCraft && m.tier ? esc(TIER_LABELS[m.tier] || m.tier) : fmtPct(m.rarity)}</span>
         </div>
       `).join('');
+      grid.querySelectorAll('[data-midx]').forEach(card => {
+        card.addEventListener('click', () => {
+          const i = parseInt(card.getAttribute('data-midx'), 10);
+          previewModel(items[i], isCraft);
+        });
+      });
+      if (items[0]) previewModel(items[0], isCraft);
     };
 
     renderItems(regModels, false);
@@ -2429,6 +2464,7 @@ async function openCollectionModelsExplorer(c) {
       renderItems(craftModels, true);
     });
     body.querySelector('#btnBackToBuySheet')?.addEventListener('click', () => {
+      if (activeLottie) activeLottie.destroy();
       openBuyCollectionSheet(c);
     });
   });

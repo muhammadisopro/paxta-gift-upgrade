@@ -144,7 +144,7 @@ function loadSettings() {
     collections: Object.fromEntries(index.map(c => [
       c.slug,
       {
-        enabled: c.slug === 'coinflip',
+        enabled: c.slug === 'coinflip' || c.slug === 'imperialcrown',
         price: c.price || 250,
         upgradePrice: c.upgradePrice || 100,
         supply: c.supply || 500
@@ -158,7 +158,7 @@ function loadSettings() {
 function getColConfig(slug, fallbackCol = {}) {
   const settings = loadSettings();
   const cfg = settings.collections?.[slug] || {};
-  const enabled = cfg.enabled !== undefined ? !!cfg.enabled : (slug === 'coinflip');
+  const enabled = cfg.enabled !== undefined ? !!cfg.enabled : (slug === 'coinflip' || slug === 'imperialcrown');
   const supply = cfg.supply || fallbackCol.supply || 500;
   const price = cfg.price || fallbackCol.price || 250;
   const upgradePrice = cfg.upgradePrice || fallbackCol.upgradePrice || 100;

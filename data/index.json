@@ -1,5 +1,21 @@
 [
   {
+    "slug": "imperialcrown",
+    "name": "Imperial Crown",
+    "supply": 250,
+    "minted": 0,
+    "circulating": 250,
+    "price": 1000,
+    "upgradePrice": 500,
+    "enabled": true,
+    "thumb": "/a/imperialcrown/thumb.svg",
+    "baseTgs": "/a/imperialcrown/base.json",
+    "modelsCount": 30,
+    "craftModelsCount": 13,
+    "backdropsCount": 51,
+    "symbolsCount": 64
+  },
+  {
     "slug": "coinflip",
     "name": "Coin Flip",
     "supply": 500,
