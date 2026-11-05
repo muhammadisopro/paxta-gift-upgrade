@@ -171,7 +171,11 @@ function formatModelForClient(slug, m) {
     const c = loadCollection('imperialcrown');
     if (c) {
       const allModels = [...(c.models || []), ...(c.craftModels || [])];
-      const match = allModels.find(x => x.id === m.id || x.name === m.name);
+      let match = allModels.find(x => x.id === m.id || x.name === m.name);
+      if (!match && c.models && c.models.length > 0) {
+        const hash = String(m.name || m.id || '').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+        match = c.models[hash % c.models.length];
+      }
       if (match) {
         img = normalizeUrl(slug, match.img);
         tgs = normalizeTgsToJson(slug, match.tgs);

@@ -8,6 +8,8 @@ const CRAFT_DIR = path.join(ROOT_DIR, 'Craft model');
 const OUT_DIR = path.join(ROOT_DIR, 'public', 'a', 'imperialcrown');
 const CACHE_DIR = path.join(ROOT_DIR, 'data', 'cache');
 
+const BASE_TGS_PATH = 'c:\\Users\\Muham\\Downloads\\Telegram Desktop\\BlackGoldEm_by_StickerEmojiRobot-tgs\\007.tgs';
+
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.mkdirSync(CACHE_DIR, { recursive: true });
 
@@ -60,8 +62,14 @@ function lottieToSvg(lottieData) {
   const bodyEls = [];
   let gradIdCounter = 1;
 
-  const nullLayer = (lottieData.layers || []).find(l => l.nm && l.nm.includes('NULL'));
+  // Find NULL CONTROL layer (parent 19)
+  const nullLayer = (lottieData.layers || []).find(l => l.ty === 3 || (l.nm && l.nm.includes('NULL')));
   const nullScale = (evalAnimProp(nullLayer?.ks?.s)?.[0] ?? 100) / 100;
+  const nullP = evalAnimProp(nullLayer?.ks?.p) || [252.95, 269.2, 0];
+  const nullA = evalAnimProp(nullLayer?.ks?.a) || [60, 60, 0];
+  let nullR = evalAnimProp(nullLayer?.ks?.r) || 0;
+  if (Array.isArray(nullR)) nullR = nullR[0];
+
   const layersBottomUp = [...(lottieData.layers || [])].reverse();
 
   for (const layer of layersBottomUp) {
@@ -160,9 +168,10 @@ function lottieToSvg(lottieData) {
     }
   }
 
+  // Exact NULL CONTROL parent transform alignment
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>${defs.join('')}</defs>
-  <g transform="translate(256, 256) scale(${nullScale.toFixed(3)}, ${nullScale.toFixed(3)}) translate(-256, -256)">
+  <g transform="translate(${nullP[0].toFixed(2)}, ${nullP[1].toFixed(2)}) rotate(${Number(nullR).toFixed(2)}) scale(${nullScale.toFixed(3)}, ${nullScale.toFixed(3)}) translate(${(-nullA[0]).toFixed(2)}, ${(-nullA[1]).toFixed(2)})">
     ${bodyEls.join('\n    ')}
   </g>
 </svg>`;
@@ -179,13 +188,8 @@ function parseFilename(file) {
 
 // Process 30 Crown standard models
 const crownFiles = fs.readdirSync(CROWN_DIR).filter(f => f.endsWith('.tgs')).sort();
-console.log(`Found ${crownFiles.length} crown models in ${CROWN_DIR}`);
+console.log(`Processing ${crownFiles.length} crown models from ${CROWN_DIR}...`);
 
-// 30 standard models across supply 100
-// 10 models count 5 (permille 50, 5%)
-// 10 models count 3 (permille 30, 3%)
-// 10 models count 2 (permille 20, 2%)
-// Total count = 50 + 30 + 20 = 100, permille = 500 + 300 + 200 = 1000
 const standardModels = [];
 crownFiles.forEach((f, idx) => {
   const { id, name } = parseFilename(f);
@@ -203,7 +207,7 @@ crownFiles.forEach((f, idx) => {
   fs.writeFileSync(jsonPath, JSON.stringify(lottieJson));
   fs.writeFileSync(svgPath, svgStr);
 
-  // Also cache them for backend direct serving
+  // Cache them
   fs.writeFileSync(path.join(CACHE_DIR, `imperialcrown__${fileKey}.tgs`), rawTgs);
   fs.writeFileSync(path.join(CACHE_DIR, `imperialcrown__${fileKey}.json`), JSON.stringify(lottieJson));
   fs.writeFileSync(path.join(CACHE_DIR, `imperialcrown__${fileKey}.svg`), svgStr);
@@ -233,12 +237,10 @@ crownFiles.forEach((f, idx) => {
 });
 
 console.log(`Standard models processed: ${standardModels.length}`);
-console.log('Total supply count:', standardModels.reduce((s, m) => s + m.count, 0));
-console.log('Total permille:', standardModels.reduce((s, m) => s + m.permille, 0));
 
 // Process 12 Craft models
 const craftFiles = fs.readdirSync(CRAFT_DIR).filter(f => f.endsWith('.tgs')).sort();
-console.log(`Found ${craftFiles.length} craft models in ${CRAFT_DIR}`);
+console.log(`Processing ${craftFiles.length} craft models from ${CRAFT_DIR}...`);
 
 const craftModels = [];
 craftFiles.forEach((f, idx) => {
@@ -262,7 +264,6 @@ craftFiles.forEach((f, idx) => {
   fs.writeFileSync(path.join(CACHE_DIR, `imperialcrown__${fileKey}.json`), JSON.stringify(lottieJson));
   fs.writeFileSync(path.join(CACHE_DIR, `imperialcrown__${fileKey}.svg`), svgStr);
 
-  // Equal weight: 83 or 84, summing to 1000
   const permille = idx < 4 ? 84 : 83;
 
   craftModels.push({
@@ -280,11 +281,14 @@ craftFiles.forEach((f, idx) => {
 });
 
 console.log(`Craft models processed: ${craftModels.length}`);
-console.log('Total craft permille:', craftModels.reduce((s, m) => s + m.permille, 0));
 
-// Also create default base and thumb
-const baseFile = crownFiles[0];
-const baseTgs = fs.readFileSync(path.join(CROWN_DIR, baseFile));
+// Base Imperial Crown setup (from authentic 007.tgs if available)
+let baseTgs;
+if (fs.existsSync(BASE_TGS_PATH)) {
+  baseTgs = fs.readFileSync(BASE_TGS_PATH);
+} else {
+  baseTgs = fs.readFileSync(path.join(CROWN_DIR, crownFiles[0]));
+}
 const baseJson = JSON.parse(zlib.gunzipSync(baseTgs).toString('utf8'));
 const baseSvg = lottieToSvg(baseJson);
 
@@ -295,7 +299,7 @@ fs.writeFileSync(path.join(CACHE_DIR, 'imperialcrown__base.tgs'), baseTgs);
 fs.writeFileSync(path.join(CACHE_DIR, 'imperialcrown__base.json'), JSON.stringify(baseJson));
 fs.writeFileSync(path.join(CACHE_DIR, 'imperialcrown__thumb.svg'), baseSvg);
 
-// Now update data/collections/imperialcrown.json
+// Update data/collections/imperialcrown.json
 const colPath = path.join(ROOT_DIR, 'data', 'collections', 'imperialcrown.json');
 const crownCol = JSON.parse(fs.readFileSync(colPath, 'utf8'));
 
@@ -330,4 +334,4 @@ if (crownIdx) {
   console.log('Updated data/index.json successfully!');
 }
 
-console.log('All Crown and Craft assets successfully deployed!');
+console.log('All Crown and Craft assets successfully re-rendered and centered!');
