@@ -101,6 +101,9 @@ async function loadCloudStateOnStartup() {
       if (parsed.settings.collections.imperialcrown) {
         parsed.settings.collections.imperialcrown.enabled = true;
       }
+      if (parsed.settings.collections.icecream) {
+        parsed.settings.collections.icecream.enabled = true;
+      }
       fs.writeFileSync(settingsFile, JSON.stringify(parsed.settings, null, 2));
     }
     if (parsed.payments && parsed.payments.lastUpdateId) {
