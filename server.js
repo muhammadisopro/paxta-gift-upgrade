@@ -70,7 +70,7 @@ let cloudSyncInFlight = false;
 let lastCloudSyncTime = 0;
 
 async function loadCloudStateOnStartup() {
-  // 1. Primary Cloud Database: Turso LibSQL
+  // 1. Primary Cloud Database: Turso LibSQL (Exclusive authoritative persistence)
   try {
     await initTursoSync(dataDir);
   } catch (err) {
@@ -79,136 +79,11 @@ async function loadCloudStateOnStartup() {
 
   const localUsers = loadJSON(usersFile, {});
   const localInv = loadJSON(inventoryFile, []);
-  console.log(`📂 [LocalState] Current state: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
-
-  if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
-  try {
-    const res = await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
-      headers: {
-        'Authorization': `Bearer ${STATE_GH_TOKEN}`,
-        'Accept': 'application/vnd.github+json',
-        'User-Agent': 'PaxtaGiftsServer'
-      }
-    });
-    if (!res.ok) {
-      console.warn(`Cloud state fetch status: ${res.status} (keeping disk state safe)`);
-      return;
-    }
-    const gist = await res.json();
-    const raw = gist.files?.['paxta_gifts_state.json']?.content;
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-
-    // Smart Merge for Users
-    const mergedUsers = { ...localUsers, ...(parsed.users || {}) };
-    if (Object.keys(mergedUsers).length > 0) {
-      fs.writeFileSync(usersFile, JSON.stringify(mergedUsers, null, 2));
-    }
-
-    // Smart Merge for Inventory (By Gift ID: never lose any gift!)
-    const invMap = new Map();
-    for (const g of localInv) if (g && g.id) invMap.set(g.id, g);
-    for (const g of (parsed.inventory || [])) if (g && g.id) {
-      // If gift exists in both, prefer the one with later upgraded/crafted status
-      const existing = invMap.get(g.id);
-      if (!existing || (g.state === 'upgraded' && existing.state === 'regular')) {
-        invMap.set(g.id, g);
-      }
-    }
-    const mergedInv = Array.from(invMap.values());
-    if (mergedInv.length > 0) {
-      fs.writeFileSync(inventoryFile, JSON.stringify(mergedInv, null, 2));
-    }
-
-    if (parsed.settings && parsed.settings.collections) {
-      if (parsed.settings.collections.imperialcrown) {
-        parsed.settings.collections.imperialcrown.enabled = true;
-      }
-      if (parsed.settings.collections.icecream) {
-        parsed.settings.collections.icecream.enabled = true;
-      }
-      if (parsed.settings.collections.durovscap) {
-        parsed.settings.collections.durovscap.enabled = true;
-        parsed.settings.collections.durovscap.price = 5000;
-        parsed.settings.collections.durovscap.supply = 30;
-      }
-      fs.writeFileSync(settingsFile, JSON.stringify(parsed.settings, null, 2));
-    }
-    if (parsed.payments && parsed.payments.lastUpdateId) {
-      const curPayments = loadJSON(paymentsFile, {});
-      const maxOffset = Math.max(curPayments.lastUpdateId || 0, parsed.payments.lastUpdateId || 0);
-      fs.writeFileSync(paymentsFile, JSON.stringify({ ...curPayments, ...parsed.payments, lastUpdateId: maxOffset }, null, 2));
-    }
-    if (Array.isArray(parsed.activity) && parsed.activity.length > 0) {
-      const curAct = loadJSON(activityFile, []);
-      const actMap = new Map();
-      for (const a of curAct) if (a && a.id) actMap.set(a.id, a);
-      for (const a of parsed.activity) if (a && a.id) actMap.set(a.id, a);
-      fs.writeFileSync(activityFile, JSON.stringify(Array.from(actMap.values()).slice(-200), null, 2));
-    }
-    if (parsed.promocodes && typeof parsed.promocodes === 'object') {
-      const curPromos = loadJSON(promocodesFile, {});
-      const mergedPromos = { ...curPromos, ...parsed.promocodes };
-      fs.writeFileSync(promocodesFile, JSON.stringify(mergedPromos, null, 2));
-    }
-    console.log(`☁️ [CloudState] Successfully synced state (${Object.keys(mergedUsers).length} users, ${mergedInv.length} gifts)`);
-  } catch (err) {
-    console.error('Cloud state restore warning:', err.message);
-  }
+  console.log(`📂 [TursoState] Active state: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
 }
 
 function scheduleCloudSync() {
-  if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
-  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-
-  // Debounce to 5000ms and respect 10s minimum interval to avoid GitHub API 403 Rate Limits
-  cloudSyncTimer = setTimeout(async () => {
-    if (cloudSyncInFlight) return scheduleCloudSync();
-    const now = Date.now();
-    if (now - lastCloudSyncTime < 10000) {
-      return scheduleCloudSync();
-    }
-    cloudSyncInFlight = true;
-    try {
-      const curInv = loadJSON(inventoryFile, []);
-      const curUsers = loadJSON(usersFile, {});
-      // SAFETY CHECK: NEVER overwrite cloud with empty or wiped inventory!
-      if (!Array.isArray(curInv) || curInv.length === 0) {
-        console.warn('⚠️ [CloudSync] Refusing to sync empty inventory to cloud!');
-        return;
-      }
-      const payload = {
-        updatedAt: new Date().toISOString(),
-        users: curUsers,
-        inventory: curInv,
-        settings: loadJSON(settingsFile, null),
-        payments: loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 }),
-        activity: loadJSON(activityFile, []).slice(-200),
-        promocodes: loadJSON(promocodesFile, {})
-      };
-      const res = await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${STATE_GH_TOKEN}`,
-          'Accept': 'application/vnd.github+json',
-          'Content-Type': 'application/json',
-          'User-Agent': 'PaxtaGiftsServer'
-        },
-        body: JSON.stringify({
-          files: {
-            'paxta_gifts_state.json': {
-              content: JSON.stringify(payload)
-            }
-          }
-        })
-      });
-      if (res.ok) {
-        lastCloudSyncTime = Date.now();
-      }
-    } catch {} finally {
-      cloudSyncInFlight = false;
-    }
-  }, 5000);
+  // All persistence is handled in real-time by Turso Cloud Database (turso.js)
 }
 
 function logActivity(entry) {
