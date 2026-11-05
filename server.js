@@ -412,7 +412,7 @@ function enrichGift(g, inv, users) {
     burnedCount: stats.burnedCount,
     valueStars: g.salePrice || (g.paid || stats.price) + (g.upgradePaid || 0),
     upgradePrice: stats.upgradePrice,
-    canCraft: g.state === 'upgraded' && !g.salePrice && ((c.craftModels && c.craftModels.length > 0) || true),
+    canCraft: g.state === 'upgraded' && !g.salePrice && Boolean(c.craftModels && c.craftModels.length > 0),
     model: g.model ? formatModelForClient(g.slug, g.model) : null,
     backdrop: g.backdrop ? formatBackdropForClient(g.backdrop) : null,
     symbol: g.symbol ? formatSymbolForClient(g.slug, g.symbol) : null

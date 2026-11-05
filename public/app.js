@@ -547,7 +547,7 @@ function renderCatalog() {
       <span class="catalog-card-supply">${fmtInt(c.remainingToBuy)} / ${fmtInt(c.supply)}</span>
       <img class="catalog-card-art" src="${esc(c.thumb)}" alt="${esc(c.name)}" loading="lazy" />
       <div class="catalog-card-name">${esc(c.name)}</div>
-      <div class="catalog-card-meta">${c.modelsCount || 28} oddiy · ${c.craftModelsCount || 13} craft model</div>
+      <div class="catalog-card-meta">${c.modelsCount || 28} noyob model${c.craftModelsCount ? ` · ${c.craftModelsCount} craft model` : ''}</div>
       <div class="catalog-card-price">${svgStar(14)}<span>${fmtInt(c.base)}</span></div>
     `;
     el.addEventListener('click', () => openBuyCollectionSheet(c));
@@ -1126,9 +1126,11 @@ function renderGiftViewDialog(gift, head, body) {
       <button class="icon-btn" id="gvBtnPin" title="${gift.pinned ? 'Profil qadashdan olish' : 'Profilga qadab qoʻyish (📌)'}" style="${gift.pinned ? 'background:rgba(251,191,36,0.28);color:#fde68a;' : ''}">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="${gift.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
       </button>
+      ${gift.canCraft ? `
       <button class="icon-btn" id="gvBtnCraft" title="Sovgʻa tayyorlash (Craft)">
         ${svgCraftIcon(22)}
       </button>
+      ` : ''}
     ` : ''}
     ${isMine ? `
       <button class="icon-btn" id="gvBtnMore" title="Yana">
@@ -1342,10 +1344,12 @@ function renderGiftViewDialog(gift, head, body) {
     menu.id = 'gvCtxMenu';
     menu.innerHTML = `
       ${isUpgraded ? `
+        ${gift.canCraft ? `
         <button class="ctx-item" id="ctxCraft">
           ${svgCraftIcon(18)}
           <span>Tayyorlash (Craft)</span>
         </button>
+        ` : ''}
         <button class="ctx-item" id="ctxPin">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
           <span>${gift.pinned ? 'Qadashdan olish' : '📌 Profilga qadab qoʻyish'}</span>
@@ -2324,7 +2328,7 @@ function openBuyCollectionSheet(c) {
         <span>${hasEnough ? `Sotib olish · ${svgStar(15)} ${fmtInt(c.base)}` : `PaxtaGram Stars orqali olish · ${svgStar(15)} ${fmtInt(deficit)}`}</span>
       </button>
       <button type="button" class="btn btn-tonal gv-btn" id="btnPreviewModelsList" style="height:40px;font-size:13.5px;">
-        <span>👁 Modellar va % ehtimolliklarni koʻrish (${c.modelsCount || 28} oddiy · ${c.craftModelsCount || 13} craft)</span>
+        <span>👁 Modellar va % ehtimolliklarni koʻrish (${c.modelsCount || 28} model${c.craftModelsCount ? ` · ${c.craftModelsCount} craft` : ''})</span>
       </button>
     </div>
   `, (body) => {
@@ -2402,8 +2406,8 @@ async function openCollectionModelsExplorer(c) {
           <span id="expLiveRarity" style="font-size:12px;color:#93c5fd;font-weight:700;"></span>
         </div>
         <div style="display:flex;gap:8px;">
-          <button type="button" class="filter-chip active" id="expTabReg">Oddiy Upgrade (${regModels.length})</button>
-          <button type="button" class="filter-chip" id="expTabCraft">Maxfiy Craft (${craftModels.length})</button>
+          <button type="button" class="filter-chip active" id="expTabReg">Noyob Upgrade Modellar (${regModels.length})</button>
+          ${craftModels.length ? `<button type="button" class="filter-chip" id="expTabCraft">Maxfiy Craft (${craftModels.length})</button>` : ''}
         </div>
         <div class="models-explorer-grid" id="expGrid"></div>
         <button type="button" class="btn btn-tonal gv-btn" id="btnBackToBuySheet" style="height:40px;">← Orqaga qaytish</button>
