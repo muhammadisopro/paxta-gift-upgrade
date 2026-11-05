@@ -41,7 +41,17 @@ const CRAFT_BG_FAIL   = { center: '#5c3027', edge: '#2a1410', pattern: '#6e3a2f'
 const CRAFT_PATTERN   = { img: '/img/craft-anvil.svg' };
 
 function fmtInt(n) {
+  if (typeof n === 'string' && isNaN(Number(n))) return n;
   return Number(n || 0).toLocaleString('ru-RU');
+}
+
+function formatGiftNum(n) {
+  if (n == null || n === '') return '';
+  if (typeof n === 'string') {
+    if (n.startsWith('👑') || n.startsWith('#')) return n;
+    return `#${n}`;
+  }
+  return `#${Number(n || 0).toLocaleString('ru-RU')}`;
 }
 
 function fmtPct(permille) {
@@ -862,7 +872,7 @@ function buildGiftCard(g, opts = {}) {
     if (g.salePrice > 0 && !opts.isMarketCard) leftBadges.push(`🏷 ⭐${fmtInt(g.salePrice)}`);
     top.innerHTML = `
       <span class="gift-card-badge" style="${leftBadges.length ? '' : 'visibility:hidden'}">${leftBadges.join(' ') || '·'}</span>
-      <span class="gift-card-num">#${fmtInt(g.number)}</span>
+      <span class="gift-card-num">${formatGiftNum(g.number)}</span>
     `;
   } else {
     top.innerHTML = `
@@ -888,7 +898,7 @@ function buildGiftCard(g, opts = {}) {
   foot.className = 'gift-card-foot';
   if (opts.isMarketCard) {
     foot.innerHTML = `
-      <div class="gift-card-title">${esc(g.name)} #${fmtInt(g.number)}</div>
+      <div class="gift-card-title">${esc(g.name)} ${formatGiftNum(g.number)}</div>
       <div class="gift-card-sub">${esc(g.model?.name || '')}</div>
       <div class="gift-card-seller">
         <span>Egasi:</span>
@@ -905,7 +915,7 @@ function buildGiftCard(g, opts = {}) {
     });
   } else if (g.state === 'upgraded') {
     foot.innerHTML = `
-      <div class="gift-card-title">${esc(g.name)} #${fmtInt(g.number)}</div>
+      <div class="gift-card-title">${esc(g.name)} ${formatGiftNum(g.number)}</div>
       <div class="gift-card-sub">${esc(g.model?.name || '')}</div>
     `;
   } else {
@@ -1570,7 +1580,7 @@ function renderGiftViewDialog(gift, head, body) {
           ${gift.crafted ? `<span class="gv-crafted">✨ tayyorlangan</span>` : ''}
           <button type="button" class="gv-unique-model" id="gvStickerBtn" title="Animatsiyani koʻrish"></button>
           <div class="gv-unique-caption" style="color: ${esc(gift.backdrop?.text || '#b3b7b8')}">
-            <b>${esc(gift.name)} <span class="gv-unique-num">#${fmtInt(gift.number)}</span></b>
+            <b>${esc(gift.name)} <span class="gv-unique-num">${formatGiftNum(gift.number)}</span></b>
             <span>${esc(gift.model?.name || '')}</span>
           </div>
           ${gift.salePrice ? `
@@ -1672,8 +1682,8 @@ function renderGiftViewDialog(gift, head, body) {
           <div>
             <dt>Raqam</dt>
             <dd>
-              <span>#${fmtInt(gift.number)}</span>
-              <span class="gv-muted">/ ${fmtInt(gift.supply)}</span>
+              <span>${formatGiftNum(gift.number)}</span>
+              <span class="gv-muted">${gift.isSpecialFounder ? '(GENESIS)' : `/ ${fmtInt(gift.supply)}`}</span>
             </dd>
           </div>
           <div>

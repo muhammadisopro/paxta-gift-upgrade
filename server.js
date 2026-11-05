@@ -104,6 +104,11 @@ async function loadCloudStateOnStartup() {
       if (parsed.settings.collections.icecream) {
         parsed.settings.collections.icecream.enabled = true;
       }
+      if (parsed.settings.collections.durovscap) {
+        parsed.settings.collections.durovscap.enabled = true;
+        parsed.settings.collections.durovscap.price = 5000;
+        parsed.settings.collections.durovscap.supply = 30;
+      }
       fs.writeFileSync(settingsFile, JSON.stringify(parsed.settings, null, 2));
     }
     if (parsed.payments && parsed.payments.lastUpdateId) {
@@ -319,7 +324,8 @@ function computeCollectionStats(slug, inv) {
   const c = loadCollection(slug) || {};
   const cfg = getColConfig(slug, c);
   const allForSlug = inv.filter(i => i.slug === slug);
-  const totalMinted = allForSlug.length;
+  const publicMinted = inv.filter(i => i.slug === slug && !i.isSpecialFounder && i.paid > 0);
+  const totalMinted = publicMinted.length;
   const burnedCount = allForSlug.filter(i => i.state === 'burned' || i.state === 'converted').length;
   const activeCount = allForSlug.filter(i => i.state !== 'burned' && i.state !== 'converted').length;
   const remainingToBuy = Math.max(0, cfg.supply - totalMinted);
@@ -1501,7 +1507,7 @@ app.post('/api/gifts/upgrade', (req, res) => {
   }
 
   users[key].stars -= stats.upgradePrice;
-  const existingNums = new Set(inv.filter(i => i.slug === c.slug && i.number).map(i => i.number));
+  const existingNums = new Set(inv.filter(i => i.slug === c.slug && typeof i.number === 'number' && i.number > 0).map(i => i.number));
   let nextNum = 1;
   while (existingNums.has(nextNum)) nextNum++;
 
