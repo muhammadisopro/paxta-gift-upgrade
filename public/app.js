@@ -14,7 +14,11 @@ const STATE = {
   collectors: [],
   activity: [],
   adminCollections: [],
+  adminUsers: [],
+  adminPromos: [],
   adminStats: { usersCount: 0, totalGifts: 0, burnedGifts: 0, marketCount: 0 },
+  adminSubtab: 'collections',
+  adminUserQuery: '',
   activeTab: 'shop',
   invFilter: 'all',
   adminFilter: 'all',
@@ -390,14 +394,18 @@ function notifyPaxtaMiniApp(eventType, eventData = {}) {
 function detectPaxtaGramUser() {
   const webApp = parsePaxtaWebAppData();
   if (webApp?.user) {
-    return webApp.user.username || webApp.user.first_name || 'Muhammadiso';
+    return webApp.user.username || webApp.user.first_name || (webApp.user.id ? `user_${webApp.user.id}` : null);
   }
   const params = new URLSearchParams(window.location.search);
   const qUser = params.get('user') || params.get('username');
   if (qUser) return qUser;
   const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-  if (tgUser) return tgUser.username || tgUser.first_name || 'Muhammadiso';
-  return localStorage.getItem('paxta_gift_user') || 'Muhammadiso';
+  if (tgUser) return tgUser.username || tgUser.first_name || (tgUser.id ? `user_${tgUser.id}` : null);
+  const local = localStorage.getItem('paxta_gift_user');
+  if (local) return local;
+  const guest = 'guest_' + Math.floor(1000 + Math.random() * 9000);
+  localStorage.setItem('paxta_gift_user', guest);
+  return guest;
 }
 
 async function loginUser(username) {
@@ -484,17 +492,27 @@ async function loadExploreData(query = '') {
 
 async function loadAdminData() {
   if (!STATE.user?.isAdmin) return;
-  const data = await api('/api/admin/collections');
-  if (data.ok) {
-    STATE.adminCollections = data.collections || [];
+  const [dataCols, dataUsers, dataPromos] = await Promise.all([
+    api('/api/admin/collections'),
+    api('/api/admin/users'),
+    api('/api/admin/promocodes')
+  ]);
+  if (dataCols && dataCols.ok) {
+    STATE.adminCollections = dataCols.collections || [];
     STATE.adminStats = {
-      usersCount: data.usersCount || 0,
-      totalGifts: data.totalGifts || 0,
-      burnedGifts: data.burnedGifts || 0,
-      marketCount: data.marketCount || 0
+      usersCount: dataCols.usersCount || 0,
+      totalGifts: dataCols.totalGifts || 0,
+      burnedGifts: dataCols.burnedGifts || 0,
+      marketCount: dataCols.marketCount || 0
     };
-    renderAdminPanel();
   }
+  if (dataUsers && dataUsers.ok) {
+    STATE.adminUsers = dataUsers.users || [];
+  }
+  if (dataPromos && dataPromos.ok) {
+    STATE.adminPromos = dataPromos.promocodes || [];
+  }
+  renderAdminPanel();
 }
 
 async function openUserProfile(username) {
@@ -986,8 +1004,7 @@ function renderExplore() {
 function renderAdminPanel() {
   if (!STATE.user?.isAdmin) return;
   const statsRow = document.getElementById('adminStatsRow');
-  const listEl = document.getElementById('adminList');
-  if (!statsRow || !listEl) return;
+  if (!statsRow) return;
 
   const enabledCount = STATE.adminCollections.filter(c => c.enabled).length;
   statsRow.innerHTML = `
@@ -1004,10 +1021,36 @@ function renderAdminPanel() {
       <span>Marketda sotuvdagi sovgʻalar</span>
     </div>
     <div class="admin-stat-card">
-      <strong>${fmtInt(STATE.adminStats.usersCount)}</strong>
+      <strong>${fmtInt(STATE.adminStats.usersCount || STATE.adminUsers.length)}</strong>
       <span>Roʻyxatdan oʻtgan foydalanuvchilar</span>
     </div>
   `;
+
+  // Subtabs switching
+  document.querySelectorAll('.admin-subnav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.subtab === STATE.adminSubtab);
+  });
+
+  const paneCols = document.getElementById('adminSubpaneCollections');
+  const paneUsers = document.getElementById('adminSubpaneUsers');
+  const panePromos = document.getElementById('adminSubpanePromos');
+
+  if (paneCols) paneCols.hidden = STATE.adminSubtab !== 'collections';
+  if (paneUsers) paneUsers.hidden = STATE.adminSubtab !== 'users';
+  if (panePromos) panePromos.hidden = STATE.adminSubtab !== 'promos';
+
+  if (STATE.adminSubtab === 'collections') {
+    renderAdminCollections();
+  } else if (STATE.adminSubtab === 'users') {
+    renderAdminUsers();
+  } else if (STATE.adminSubtab === 'promos') {
+    renderAdminPromos();
+  }
+}
+
+function renderAdminCollections() {
+  const listEl = document.getElementById('adminList');
+  if (!listEl) return;
 
   const q = STATE.adminQuery.trim().toLowerCase();
   const filtered = STATE.adminCollections.filter(c => {
@@ -1084,6 +1127,361 @@ function renderAdminPanel() {
 
     listEl.appendChild(row);
   }
+}
+
+function renderAdminUsers() {
+  const usersListEl = document.getElementById('adminUsersList');
+  if (!usersListEl) return;
+
+  const q = (STATE.adminUserQuery || '').trim().toLowerCase();
+  const filtered = STATE.adminUsers.filter(u => {
+    if (!q) return true;
+    return (u.username && u.username.toLowerCase().includes(q)) ||
+           (u.displayName && u.displayName.toLowerCase().includes(q)) ||
+           (u.paxtaId && String(u.paxtaId).includes(q));
+  });
+
+  if (filtered.length === 0) {
+    usersListEl.innerHTML = `<div class="empty-box">Foydalanuvchi topilmadi</div>`;
+    return;
+  }
+
+  usersListEl.innerHTML = '';
+  for (const u of filtered) {
+    const card = document.createElement('div');
+    card.className = 'admin-user-card';
+
+    const letter = (u.displayName || u.username || 'U')[0].toUpperCase();
+    const avatarHtml = u.avatarUrl
+      ? `<img class="avatar" src="${esc(u.avatarUrl)}" alt="" />`
+      : `<span class="avatar">${letter}</span>`;
+
+    card.innerHTML = `
+      <div class="admin-user-meta">
+        ${avatarHtml}
+        <div class="admin-user-details">
+          <strong>
+            <span>${esc(u.displayName || u.username)}</span>
+            <small style="color:var(--text-3);">@${esc(u.username)}</small>
+          </strong>
+          <small>ID: ${u.paxtaId ? `<b>${u.paxtaId}</b>` : '—'} · Sovgʻalar: <b>${u.giftsCount || 0} ta</b> ${u.upgradedCount ? `(${u.upgradedCount} upgrade)` : ''}</small>
+        </div>
+      </div>
+
+      <div class="admin-user-actions">
+        <span class="admin-user-balance-badge" title="Joriy balans">
+          ⭐ ${fmtInt(u.stars)}
+        </span>
+        <button type="button" class="btn btn-tonal btn-sm" data-quick-star="100" data-user="${esc(u.username)}">+100 ⭐</button>
+        <button type="button" class="btn btn-tonal btn-sm" data-quick-star="500" data-user="${esc(u.username)}">+500 ⭐</button>
+        <button type="button" class="btn btn-tonal btn-sm" data-quick-star="-100" data-user="${esc(u.username)}">-100 ⭐</button>
+        <button type="button" class="btn btn-tonal btn-sm" data-edit-bal="${esc(u.username)}">✏️ Balans</button>
+        <button type="button" class="btn btn-primary btn-sm" data-grant-gift="${esc(u.username)}">🎁 Sovgʻa berish</button>
+      </div>
+    `;
+
+    // Quick star buttons
+    card.querySelectorAll('[data-quick-star]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const delta = parseInt(btn.dataset.quickStar, 10);
+        btn.disabled = true;
+        const res = await api('/api/admin/user/balance', {
+          method: 'POST',
+          body: JSON.stringify({
+            targetUsername: u.username,
+            mode: 'delta',
+            deltaStars: delta,
+            reason: `Admin tezkor ${delta > 0 ? '+' : ''}${delta} ⭐`
+          })
+        });
+        btn.disabled = false;
+        if (res.ok) {
+          showToast(`@${u.username} balansi: ⭐ ${fmtInt(res.stars)} (${delta > 0 ? '+' : ''}${delta})`);
+          await loadAdminData();
+          if (STATE.user && STATE.user.username === u.username) {
+            STATE.user.stars = res.stars;
+            const el = document.getElementById('userStars');
+            if (el) el.textContent = fmtInt(res.stars);
+          }
+        } else {
+          showToast(res.error || 'Xatolik');
+        }
+      });
+    });
+
+    // Custom balance edit
+    card.querySelector(`[data-edit-bal="${u.username}"]`).addEventListener('click', () => {
+      openAdminBalanceModal(u.username, u.stars);
+    });
+
+    // Grant gift
+    card.querySelector(`[data-grant-gift="${u.username}"]`).addEventListener('click', () => {
+      openAdminGrantGiftModal(u.username);
+    });
+
+    usersListEl.appendChild(card);
+  }
+}
+
+function renderAdminPromos() {
+  const promosListEl = document.getElementById('adminPromosList');
+  if (!promosListEl) return;
+
+  if (STATE.adminPromos.length === 0) {
+    promosListEl.innerHTML = `<div class="empty-box">Hozircha hech qanday promokod yoʻq</div>`;
+    return;
+  }
+
+  promosListEl.innerHTML = '';
+  for (const p of STATE.adminPromos) {
+    const card = document.createElement('div');
+    card.className = 'admin-promo-card';
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span class="admin-promo-code-badge">${esc(p.code)}</span>
+        <div>
+          <strong style="font-size:14px;display:block;">⭐ ${fmtInt(p.stars)} Stars</strong>
+          <small style="color:var(--text-2);font-size:12px;">
+            Foydalanildi: <b>${p.usedCount || 0} / ${p.maxUses || 0}</b> · Qoldi: <b>${p.remainingUses || 0}</b>
+          </small>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-tonal btn-sm" data-del-promo="${esc(p.code)}" style="color:#ff6b6b;">
+          🗑 Oʻchirish
+        </button>
+      </div>
+    `;
+
+    card.querySelector(`[data-del-promo="${p.code}"]`).addEventListener('click', async () => {
+      if (!confirm(`Haqiqatan ham "${p.code}" promokodini oʻchirmoqchimisiz?`)) return;
+      const res = await api('/api/admin/promocode', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete', code: p.code })
+      });
+      if (res.ok) {
+        showToast(`Promokod "${p.code}" oʻchirildi`);
+        await loadAdminData();
+      } else {
+        showToast(res.error || 'Xatolik');
+      }
+    });
+
+    promosListEl.appendChild(card);
+  }
+}
+
+function openAdminBalanceModal(targetUsername, currentStars) {
+  const html = `
+    <div class="sheet-form">
+      <div style="margin-bottom:12px;">
+        <strong>Foydalanuvchi:</strong> @${esc(targetUsername)}<br/>
+        <strong>Joriy balans:</strong> ⭐ ${fmtInt(currentStars)}
+      </div>
+      <div class="sheet-field">
+        <label>Amal turi</label>
+        <select id="adminBalMode" style="background:var(--field);color:var(--text);border:1px solid var(--line-strong);border-radius:10px;padding:8px 12px;font-weight:600;width:100%;">
+          <option value="delta_add">Qoʻshish (+)</option>
+          <option value="delta_sub">Kamaytirish (-)</option>
+          <option value="set">Aniq balansni belgilash (=)</option>
+        </select>
+      </div>
+      <div class="sheet-field" style="margin-top:10px;">
+        <label>Miqdor (Stars ⭐)</label>
+        <input type="number" id="adminBalAmount" value="100" min="0" style="font-size:16px;font-weight:700;width:100%;" autofocus />
+      </div>
+      <div class="sheet-field" style="margin-top:10px;">
+        <label>Sabab (Izoh)</label>
+        <input type="text" id="adminBalReason" placeholder="Masalan: Tanlov gʻolibi" style="width:100%;" />
+      </div>
+      <button type="button" class="btn btn-primary" id="adminBtnSaveBal" style="width:100%;padding:12px;margin-top:14px;">
+        Balansni saqlash
+      </button>
+    </div>
+  `;
+
+  openSubModal(`Balansni oʻzgartirish: @${targetUsername}`, html, (modalBody) => {
+    const btn = modalBody.querySelector('#adminBtnSaveBal');
+    btn.addEventListener('click', async () => {
+      const modeSelect = modalBody.querySelector('#adminBalMode').value;
+      const amount = parseInt(modalBody.querySelector('#adminBalAmount').value, 10) || 0;
+      const reason = modalBody.querySelector('#adminBalReason').value.trim();
+
+      let mode = 'delta';
+      let deltaStars = amount;
+      let newStars = amount;
+
+      if (modeSelect === 'delta_add') {
+        mode = 'delta';
+        deltaStars = Math.abs(amount);
+      } else if (modeSelect === 'delta_sub') {
+        mode = 'delta';
+        deltaStars = -Math.abs(amount);
+      } else if (modeSelect === 'set') {
+        mode = 'set';
+        newStars = Math.max(0, amount);
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saqlanmoqda...';
+
+      const res = await api('/api/admin/user/balance', {
+        method: 'POST',
+        body: JSON.stringify({
+          targetUsername,
+          mode,
+          deltaStars,
+          newStars,
+          reason: reason || 'Admin panel orqali'
+        })
+      });
+
+      if (res.ok) {
+        closeSubModal();
+        showToast(`@${targetUsername} balansi yangilandi: ⭐ ${fmtInt(res.stars)}`);
+        await loadAdminData();
+        if (STATE.user && STATE.user.username === targetUsername) {
+          STATE.user.stars = res.stars;
+          const el = document.getElementById('userStars');
+          if (el) el.textContent = fmtInt(res.stars);
+        }
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Balansni saqlash';
+        showToast(res.error || 'Xatolik');
+      }
+    });
+  });
+}
+
+function openAdminGrantGiftModal(targetUsername) {
+  const options = STATE.collections.map(c => `
+    <option value="${esc(c.slug)}">${esc(c.name)} (${c.slug})</option>
+  `).join('');
+
+  const html = `
+    <div class="sheet-form">
+      <div style="margin-bottom:12px;">
+        <strong>Qabul qiluvchi:</strong> @${esc(targetUsername)}
+      </div>
+      <div class="sheet-field">
+        <label>Sovgʻa kolleksiyasi</label>
+        <select id="adminGiftSlug" style="background:var(--field);color:var(--text);border:1px solid var(--line-strong);border-radius:10px;padding:8px 12px;font-weight:600;width:100%;">
+          ${options}
+        </select>
+      </div>
+      <div class="sheet-field" style="margin-top:12px;">
+        <label>Sovgʻa holati</label>
+        <select id="adminGiftState" style="background:var(--field);color:var(--text);border:1px solid var(--line-strong);border-radius:10px;padding:8px 12px;font-weight:600;width:100%;">
+          <option value="upgraded">Yaxshilangan (Upgraded - Seriya raqam va model bilan)</option>
+          <option value="regular">Oddiy (Regular - Baza sovgʻa)</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-primary" id="adminBtnGrantSubmit" style="width:100%;padding:12px;margin-top:16px;">
+        Sovgʻani topshirish 🎁
+      </button>
+    </div>
+  `;
+
+  openSubModal(`Sovgʻa berish: @${targetUsername}`, html, (modalBody) => {
+    const btn = modalBody.querySelector('#adminBtnGrantSubmit');
+    btn.addEventListener('click', async () => {
+      const slug = modalBody.querySelector('#adminGiftSlug').value;
+      const isUpgraded = modalBody.querySelector('#adminGiftState').value === 'upgraded';
+
+      btn.disabled = true;
+      btn.textContent = 'Sovgʻa tayyorlanmoqda...';
+
+      const res = await api('/api/admin/user/gift', {
+        method: 'POST',
+        body: JSON.stringify({
+          targetUsername,
+          slug,
+          isUpgraded
+        })
+      });
+
+      if (res.ok) {
+        closeSubModal();
+        launchEdgeConfetti();
+        showToast(`@${targetUsername} foydalanuvchisiga ${res.gift?.name || 'sovgʻa'} muvaffaqiyatli topshirildi!`);
+        await loadAdminData();
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Sovgʻani topshirish 🎁';
+        showToast(res.error || 'Xatolik');
+      }
+    });
+  });
+}
+
+function openPromoModal() {
+  const html = `
+    <div class="sheet-form">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="font-size:42px;margin-bottom:4px;">🎟</div>
+        <p style="color:var(--text-2);font-size:13.5px;margin:0;">
+          Maxsus promokodni kiriting va bepul Stars yoki eksklyuziv sovgʻalarni qoʻlga kiriting!
+        </p>
+      </div>
+
+      <div class="sheet-field">
+        <label>Promokod kodi</label>
+        <input type="text" id="promoCodeInput" placeholder="Masalan: PAXTA100" style="text-transform:uppercase;font-weight:800;letter-spacing:1.5px;font-size:16px;text-align:center;" autofocus />
+      </div>
+
+      <button type="button" class="btn btn-primary" id="btnSubmitPromo" style="width:100%;padding:12px;font-size:15px;margin-top:12px;">
+        Faollashtirish
+      </button>
+    </div>
+  `;
+
+  openSubModal('🎟 Promokodni faollashtirish', html, (modalBody) => {
+    const input = modalBody.querySelector('#promoCodeInput');
+    const btn = modalBody.querySelector('#btnSubmitPromo');
+
+    const handleRedeem = async () => {
+      const code = (input.value || '').trim();
+      if (!code) {
+        showToast('Iltimos, promokodni kiriting');
+        input.focus();
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Tekshirilmoqda...';
+
+      const res = await api('/api/promocode/redeem', {
+        method: 'POST',
+        body: JSON.stringify({
+          code,
+          username: STATE.user?.username,
+          initData: STATE.initData,
+          authToken: STATE.authToken
+        })
+      });
+
+      if (res.ok) {
+        closeSubModal();
+        launchEdgeConfetti();
+        showToast(res.message || 'Promokod muvaffaqiyatli faollashtirildi!');
+        if (res.newBalance != null && STATE.user) {
+          STATE.user.stars = res.newBalance;
+          const starsEl = document.getElementById('userStars');
+          if (starsEl) starsEl.textContent = fmtInt(res.newBalance);
+        }
+        await Promise.all([loginUser(STATE.user?.username), loadCollections()]);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Faollashtirish';
+        showToast(res.error || 'Promokod xato yoki muddati oʻtgan');
+      }
+    };
+
+    btn.addEventListener('click', handleRedeem);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleRedeem();
+    });
+  });
 }
 
 // ============================================================================
@@ -2851,6 +3249,61 @@ window.addEventListener('DOMContentLoaded', async () => {
     showToast('Barcha 125 ta gift doʻkonda yoqildi!');
     await Promise.all([loadAdminData(), loadCollections()]);
   });
+
+  // Admin Sub-Navigation Tabs
+  document.querySelectorAll('.admin-subnav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      STATE.adminSubtab = btn.dataset.subtab || 'collections';
+      renderAdminPanel();
+    });
+  });
+
+  // Admin User Search & Refresh
+  document.getElementById('adminUserSearch')?.addEventListener('input', (e) => {
+    STATE.adminUserQuery = e.target.value;
+    renderAdminUsers();
+  });
+  document.getElementById('adminBtnRefreshUsers')?.addEventListener('click', async () => {
+    showToast('Foydalanuvchilar yangilanmoqda...');
+    await loadAdminData();
+  });
+
+  // Admin Create Promo Code
+  document.getElementById('adminBtnCreatePromo')?.addEventListener('click', async () => {
+    const codeEl = document.getElementById('adminNewPromoCode');
+    const starsEl = document.getElementById('adminNewPromoStars');
+    const maxEl = document.getElementById('adminNewPromoMax');
+    const code = (codeEl?.value || '').trim();
+    const stars = parseInt(starsEl?.value, 10) || 100;
+    const maxUses = parseInt(maxEl?.value, 10) || 50;
+
+    if (!code || code.length < 3) {
+      showToast('Promokod kamida 3 belgidan iborat boʻlishi kerak');
+      codeEl?.focus();
+      return;
+    }
+
+    const res = await api('/api/admin/promocode', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'create',
+        code,
+        stars,
+        maxUses
+      })
+    });
+
+    if (res.ok) {
+      showToast(`Promokod "${res.promocode.code}" muvaffaqiyatli yaratildi!`);
+      if (codeEl) codeEl.value = '';
+      await loadAdminData();
+    } else {
+      showToast(res.error || 'Xatolik');
+    }
+  });
+
+  // Promo Code Button in Header
+  document.getElementById('btnOpenPromo')?.addEventListener('click', openPromoModal);
 
   document.getElementById('btnAddStars')?.addEventListener('click', () => openAddStarsModal(250));
   document.getElementById('btnSwitchUser')?.addEventListener('click', openSwitchUserModal);

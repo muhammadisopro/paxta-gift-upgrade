@@ -16,6 +16,7 @@ const usersFile = path.join(dataDir, 'users.json');
 const inventoryFile = path.join(dataDir, 'inventory.json');
 const paymentsFile = path.join(dataDir, 'payments.json');
 const activityFile = path.join(dataDir, 'activity.json');
+const promocodesFile = path.join(dataDir, 'promocodes.json');
 
 // PaxtaGram @UpgradeBot (Forge, ID: 682) configuration
 const PAXTA_BOT_TOKEN = process.env.PAXTA_BOT_TOKEN || '682:OSWsBqK5LZHWlGJmzeONb9iIjE-UV7QBQY_';
@@ -33,6 +34,7 @@ if (!fs.existsSync(usersFile)) fs.writeFileSync(usersFile, '{}');
 if (!fs.existsSync(inventoryFile)) fs.writeFileSync(inventoryFile, '[]');
 if (!fs.existsSync(paymentsFile)) fs.writeFileSync(paymentsFile, '{"invoices":{},"charges":{},"lastUpdateId":80860}');
 if (!fs.existsSync(activityFile)) fs.writeFileSync(activityFile, '[]');
+if (!fs.existsSync(promocodesFile)) fs.writeFileSync(promocodesFile, '{}');
 
 const loadJSON = (f, fb) => {
   try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fb; }
@@ -41,7 +43,7 @@ const saveJSON = (f, d) => {
   const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
   fs.renameSync(tmp, f);
-  if ([usersFile, inventoryFile, settingsFile, paymentsFile, activityFile].includes(f)) {
+  if ([usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile].includes(f)) {
     scheduleCloudSync();
   }
 };
@@ -96,6 +98,9 @@ async function loadCloudStateOnStartup() {
     }
 
     if (parsed.settings && parsed.settings.collections) {
+      if (parsed.settings.collections.imperialcrown) {
+        parsed.settings.collections.imperialcrown.enabled = true;
+      }
       fs.writeFileSync(settingsFile, JSON.stringify(parsed.settings, null, 2));
     }
     if (parsed.payments && parsed.payments.lastUpdateId) {
@@ -109,6 +114,11 @@ async function loadCloudStateOnStartup() {
       for (const a of curAct) if (a && a.id) actMap.set(a.id, a);
       for (const a of parsed.activity) if (a && a.id) actMap.set(a.id, a);
       fs.writeFileSync(activityFile, JSON.stringify(Array.from(actMap.values()).slice(-200), null, 2));
+    }
+    if (parsed.promocodes && typeof parsed.promocodes === 'object') {
+      const curPromos = loadJSON(promocodesFile, {});
+      const mergedPromos = { ...curPromos, ...parsed.promocodes };
+      fs.writeFileSync(promocodesFile, JSON.stringify(mergedPromos, null, 2));
     }
     console.log(`☁️ [CloudState] Successfully synced state (${Object.keys(mergedUsers).length} users, ${mergedInv.length} gifts)`);
   } catch (err) {
@@ -142,7 +152,8 @@ function scheduleCloudSync() {
         inventory: curInv,
         settings: loadJSON(settingsFile, null),
         payments: loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 }),
-        activity: loadJSON(activityFile, []).slice(-200)
+        activity: loadJSON(activityFile, []).slice(-200),
+        promocodes: loadJSON(promocodesFile, {})
       };
       const res = await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
         method: 'PATCH',
@@ -667,6 +678,330 @@ app.post('/api/admin/bulk', (req, res) => {
   }
   saveJSON(settingsFile, settings);
   res.json({ ok: true });
+});
+
+// ---- User Promo Code Redemption (Foydalanuvchilar uchun Promokod) ----
+app.post('/api/promocode/redeem', (req, res) => {
+  const codeRaw = (req.body.code || '').trim().toUpperCase();
+  const webAppUser = verifyWebAppInitData(req.body.initData);
+  const tokenSession = verifySessionToken(req.body.authToken || req.headers['x-auth-token']);
+  const verifiedPaxtaId = webAppUser?.id || tokenSession?.paxtaId || null;
+
+  const users = loadJSON(usersFile, {});
+  let key = null;
+  if (verifiedPaxtaId) {
+    key = Object.keys(users).find(k => Number(users[k].paxtaId) === Number(verifiedPaxtaId)) || null;
+  }
+  if (!key) {
+    key = cleanKey(req.body.username || webAppUser?.username || tokenSession?.username || '');
+  }
+
+  if (!key || !users[key]) {
+    return res.status(401).json({ ok: false, error: 'Avval akkauntingizga kiring' });
+  }
+
+  if (!codeRaw) {
+    return res.status(400).json({ ok: false, error: 'Promokod kiritilmadi' });
+  }
+
+  const promos = loadJSON(promocodesFile, {});
+  const promoKey = Object.keys(promos).find(k => k.trim().toUpperCase() === codeRaw);
+  if (!promoKey || !promos[promoKey]) {
+    return res.status(404).json({ ok: false, error: 'Bunday promokod mavjud emas yoki muddati tugagan' });
+  }
+
+  const promo = promos[promoKey];
+  if (promo.maxUses && promo.usedCount >= promo.maxUses) {
+    return res.status(400).json({ ok: false, error: 'Ushbu promokoddan foydalanish limiti tugagan' });
+  }
+
+  promo.usedBy = promo.usedBy || [];
+  if (promo.usedBy.includes(key)) {
+    return res.status(400).json({ ok: false, error: 'Siz bu promokoddan allaqachon foydalangansiz' });
+  }
+
+  let rewardDescription = '';
+  let mintedGift = null;
+
+  if (promo.rewardType === 'gift' && promo.giftSlug) {
+    const c = loadCollection(promo.giftSlug);
+    if (!c) return res.status(400).json({ ok: false, error: 'Sovgʻa kolleksiyasi topilmadi' });
+    const inv = loadJSON(inventoryFile, []);
+    const stats = computeCollectionStats(c.slug, inv);
+
+    const gift = {
+      id: `g_${Date.now().toString(36)}${crypto.randomBytes(3).toString('hex')}`,
+      owner: key,
+      ownerName: users[key].displayName || key,
+      slug: c.slug,
+      name: c.name,
+      thumb: normalizeUrl(c.slug, c.thumb),
+      baseTgs: normalizeTgsToJson(c.slug, c.baseTgs || c.thumb),
+      supply: stats.supply,
+      state: 'regular',
+      crafted: false,
+      hidden: false,
+      worn: false,
+      pinned: false,
+      salePrice: null,
+      paid: 0,
+      boughtAt: new Date().toISOString()
+    };
+    inv.push(gift);
+    saveJSON(inventoryFile, inv);
+    mintedGift = enrichGift(gift, inv, users);
+    rewardDescription = `${c.name} sovgʻasi`;
+  } else {
+    const starsAmount = Math.max(1, parseInt(promo.stars, 10) || 50);
+    users[key].stars = (users[key].stars || 0) + starsAmount;
+    rewardDescription = `⭐ ${starsAmount} Stars`;
+  }
+
+  promo.usedCount = (promo.usedCount || 0) + 1;
+  promo.usedBy.push(key);
+
+  saveJSON(promocodesFile, promos);
+  saveJSON(usersFile, users);
+
+  logActivity({
+    type: 'promocode',
+    actor: key,
+    actorName: users[key].displayName || key,
+    code: promo.code || codeRaw,
+    reward: rewardDescription
+  });
+
+  return res.json({
+    ok: true,
+    message: `Tabriklaymiz! Sizga ${rewardDescription} taqdim etildi!`,
+    rewardType: promo.rewardType || 'stars',
+    stars: promo.stars || 0,
+    newBalance: users[key].stars,
+    gift: mintedGift
+  });
+});
+
+// ---- Admin Promocodes Management (ID: 100) ----
+app.get('/api/admin/promocodes', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
+  const promos = loadJSON(promocodesFile, {});
+  const list = Object.values(promos).map(p => ({
+    ...p,
+    remainingUses: Math.max(0, (p.maxUses || 0) - (p.usedCount || 0))
+  }));
+  res.json({ ok: true, promocodes: list });
+});
+
+app.post('/api/admin/promocode', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
+  const { action, code, stars, maxUses, rewardType, giftSlug } = req.body;
+  const promos = loadJSON(promocodesFile, {});
+  const cleanCode = (code || '').trim().toUpperCase();
+
+  if (action === 'delete') {
+    if (promos[cleanCode]) {
+      delete promos[cleanCode];
+      saveJSON(promocodesFile, promos);
+      return res.json({ ok: true, message: `Promokod ${cleanCode} oʻchirildi` });
+    }
+    return res.status(404).json({ ok: false, error: 'Promokod topilmadi' });
+  }
+
+  if (!cleanCode || cleanCode.length < 3) {
+    return res.status(400).json({ ok: false, error: 'Promokod kamida 3 belgidan iborat boʻlishi kerak' });
+  }
+
+  promos[cleanCode] = {
+    code: cleanCode,
+    rewardType: rewardType || 'stars',
+    stars: Math.max(1, parseInt(stars, 10) || 100),
+    maxUses: parseInt(maxUses, 10) || 50,
+    usedCount: promos[cleanCode]?.usedCount || 0,
+    usedBy: promos[cleanCode]?.usedBy || [],
+    giftSlug: giftSlug || null,
+    createdAt: new Date().toISOString()
+  };
+
+  saveJSON(promocodesFile, promos);
+  res.json({ ok: true, promocode: promos[cleanCode] });
+});
+
+// ---- Admin Users & Balance Management (ID: 100) ----
+app.get('/api/admin/users', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
+  const users = loadJSON(usersFile, {});
+  const inv = loadJSON(inventoryFile, []);
+
+  const list = Object.keys(users).map(k => {
+    const u = users[k];
+    const userGifts = inv.filter(g => g.owner === k && g.state !== 'burned' && g.state !== 'converted');
+    return {
+      username: u.username || k,
+      displayName: u.displayName || u.username || k,
+      paxtaId: u.paxtaId || null,
+      avatarUrl: u.avatarUrl || null,
+      stars: u.stars || 0,
+      giftsCount: userGifts.length,
+      upgradedCount: userGifts.filter(g => g.state === 'upgraded').length,
+      createdAt: u.createdAt || null
+    };
+  });
+
+  list.sort((a, b) => (b.stars || 0) - (a.stars || 0));
+  res.json({ ok: true, users: list });
+});
+
+app.post('/api/admin/user/balance', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
+  const { targetUsername, mode, deltaStars, newStars, reason } = req.body;
+  const targetKey = cleanKey(targetUsername);
+  const users = loadJSON(usersFile, {});
+
+  if (!users[targetKey]) {
+    users[targetKey] = {
+      username: targetKey,
+      displayName: targetKey,
+      paxtaId: null,
+      avatarUrl: null,
+      bio: '',
+      stars: 0,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  const oldBalance = users[targetKey].stars || 0;
+  if (mode === 'set') {
+    users[targetKey].stars = Math.max(0, parseInt(newStars, 10) || 0);
+  } else {
+    const delta = parseInt(deltaStars, 10) || 0;
+    users[targetKey].stars = Math.max(0, oldBalance + delta);
+  }
+
+  saveJSON(usersFile, users);
+
+  logActivity({
+    type: 'admin_balance',
+    actor: 'admin_100',
+    target: targetKey,
+    oldBalance,
+    newBalance: users[targetKey].stars,
+    delta: users[targetKey].stars - oldBalance,
+    reason: reason || 'Admin panel orqali oʻzgartirildi'
+  });
+
+  res.json({
+    ok: true,
+    username: targetKey,
+    stars: users[targetKey].stars,
+    oldBalance,
+    delta: users[targetKey].stars - oldBalance
+  });
+});
+
+app.post('/api/admin/user/gift', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
+  const { targetUsername, slug, isUpgraded } = req.body;
+  const targetKey = cleanKey(targetUsername);
+  const users = loadJSON(usersFile, {});
+  if (!users[targetKey]) {
+    users[targetKey] = {
+      username: targetKey,
+      displayName: targetKey,
+      paxtaId: null,
+      avatarUrl: null,
+      bio: '',
+      stars: 0,
+      createdAt: new Date().toISOString()
+    };
+    saveJSON(usersFile, users);
+  }
+
+  const c = loadCollection(slug);
+  if (!c) return res.status(404).json({ ok: false, error: 'Kolleksiya topilmadi' });
+
+  const inv = loadJSON(inventoryFile, []);
+  const stats = computeCollectionStats(c.slug, inv);
+
+  let gift;
+  if (isUpgraded) {
+    const existingNums = new Set(inv.filter(i => i.slug === c.slug && i.number).map(i => i.number));
+    let nextNum = 1;
+    while (existingNums.has(nextNum)) nextNum++;
+
+    const model = weightedPick(c.models);
+    const backdrop = weightedPick(c.backdrops);
+    const symbol = weightedPick(c.symbols);
+
+    gift = {
+      id: `g_${Date.now().toString(36)}${crypto.randomBytes(3).toString('hex')}`,
+      owner: targetKey,
+      ownerName: users[targetKey].displayName || targetKey,
+      slug: c.slug,
+      name: c.name,
+      thumb: normalizeUrl(c.slug, c.thumb),
+      baseTgs: normalizeTgsToJson(c.slug, c.baseTgs || c.thumb),
+      supply: stats.supply,
+      state: 'upgraded',
+      crafted: false,
+      hidden: false,
+      worn: false,
+      pinned: false,
+      salePrice: null,
+      paid: 0,
+      number: nextNum,
+      model: formatModelForClient(c.slug, model),
+      backdrop: formatBackdropForClient(backdrop),
+      symbol: formatSymbolForClient(c.slug, symbol),
+      boughtAt: new Date().toISOString(),
+      upgradedAt: new Date().toISOString(),
+      mintedBy: 'admin_100'
+    };
+  } else {
+    gift = {
+      id: `g_${Date.now().toString(36)}${crypto.randomBytes(3).toString('hex')}`,
+      owner: targetKey,
+      ownerName: users[targetKey].displayName || targetKey,
+      slug: c.slug,
+      name: c.name,
+      thumb: normalizeUrl(c.slug, c.thumb),
+      baseTgs: normalizeTgsToJson(c.slug, c.baseTgs || c.thumb),
+      supply: stats.supply,
+      state: 'regular',
+      crafted: false,
+      hidden: false,
+      worn: false,
+      pinned: false,
+      salePrice: null,
+      paid: 0,
+      boughtAt: new Date().toISOString(),
+      mintedBy: 'admin_100'
+    };
+  }
+
+  inv.push(gift);
+  saveJSON(inventoryFile, inv);
+
+  const enriched = enrichGift(gift, inv, users);
+  logActivity({
+    type: 'admin_gift',
+    actor: 'admin_100',
+    target: targetKey,
+    giftId: gift.id,
+    giftName: gift.name,
+    slug: gift.slug
+  });
+
+  res.json({ ok: true, gift: enriched });
 });
 
 // ---- Users & PaxtaGram Sync (Preserves all existing user data by paxtaId OR username!) ----
