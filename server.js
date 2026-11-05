@@ -108,8 +108,8 @@ function loadSettings() {
       c.slug,
       {
         enabled: c.slug === 'coinflip' || c.slug === 'imperialcrown',
-        price: c.price || 250,
-        upgradePrice: c.upgradePrice || 100,
+        price: c.price !== undefined ? c.price : 250,
+        upgradePrice: c.upgradePrice !== undefined ? c.upgradePrice : 100,
         supply: c.supply || 500
       }
     ]))
@@ -122,9 +122,9 @@ function getColConfig(slug, fallbackCol = {}) {
   const settings = loadSettings();
   const cfg = settings.collections?.[slug] || {};
   const enabled = cfg.enabled !== undefined ? !!cfg.enabled : (slug === 'coinflip' || slug === 'imperialcrown');
-  const supply = cfg.supply || fallbackCol.supply || 500;
-  const price = cfg.price || fallbackCol.price || 250;
-  const upgradePrice = cfg.upgradePrice || fallbackCol.upgradePrice || 100;
+  const supply = cfg.supply !== undefined ? cfg.supply : (fallbackCol.supply || 500);
+  const price = cfg.price !== undefined ? cfg.price : (fallbackCol.price !== undefined ? fallbackCol.price : 250);
+  const upgradePrice = cfg.upgradePrice !== undefined ? cfg.upgradePrice : (fallbackCol.upgradePrice !== undefined ? fallbackCol.upgradePrice : 100);
   return { enabled, supply, price, upgradePrice };
 }
 
@@ -169,8 +169,9 @@ function formatModelForClient(slug, m) {
   // Auto-healing for Imperial Crown and dynamic collections: ensure valid model image & tgs
   if (slug === 'imperialcrown') {
     const c = loadCollection('imperialcrown');
-    if (c && c.models) {
-      const match = c.models.find(x => x.id === m.id || x.name === m.name);
+    if (c) {
+      const allModels = [...(c.models || []), ...(c.craftModels || [])];
+      const match = allModels.find(x => x.id === m.id || x.name === m.name);
       if (match) {
         img = normalizeUrl(slug, match.img);
         tgs = normalizeTgsToJson(slug, match.tgs);
@@ -542,16 +543,16 @@ app.post('/api/admin/collection', (req, res) => {
 
   const settings = loadSettings();
   const prev = settings.collections[slug] || {
-    enabled: slug === 'coinflip',
-    price: c.price || 250,
-    upgradePrice: c.upgradePrice || 100,
+    enabled: slug === 'coinflip' || slug === 'imperialcrown',
+    price: c.price !== undefined ? c.price : 250,
+    upgradePrice: c.upgradePrice !== undefined ? c.upgradePrice : 100,
     supply: c.supply || 500
   };
 
   settings.collections[slug] = {
     enabled: enabled !== undefined ? !!enabled : prev.enabled,
     price: price !== undefined ? Math.max(1, parseInt(price, 10) || prev.price) : prev.price,
-    upgradePrice: upgradePrice !== undefined ? Math.max(1, parseInt(upgradePrice, 10) || prev.upgradePrice) : prev.upgradePrice,
+    upgradePrice: upgradePrice !== undefined ? Math.max(0, parseInt(upgradePrice, 10) || 0) : prev.upgradePrice,
     supply: supply !== undefined ? Math.max(1, parseInt(supply, 10) || prev.supply) : prev.supply
   };
 
@@ -570,8 +571,8 @@ app.post('/api/admin/bulk', (req, res) => {
     if (!settings.collections[c.slug]) {
       settings.collections[c.slug] = {
         enabled: c.slug === 'coinflip',
-        price: c.price || 250,
-        upgradePrice: c.upgradePrice || 100,
+        price: c.price !== undefined ? c.price : 250,
+        upgradePrice: c.upgradePrice !== undefined ? c.upgradePrice : 100,
         supply: c.supply || 500
       };
     }
