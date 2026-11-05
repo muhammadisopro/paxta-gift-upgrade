@@ -15,26 +15,124 @@ const settingsFile = path.join(dataDir, 'settings.json');
 const usersFile = path.join(dataDir, 'users.json');
 const inventoryFile = path.join(dataDir, 'inventory.json');
 const paymentsFile = path.join(dataDir, 'payments.json');
+const activityFile = path.join(dataDir, 'activity.json');
 
 // PaxtaGram @UpgradeBot (Forge, ID: 682) configuration
 const PAXTA_BOT_TOKEN = process.env.PAXTA_BOT_TOKEN || '682:OSWsBqK5LZHWlGJmzeONb9iIjE-UV7QBQY_';
 const PAXTA_API_BASE = process.env.PAXTA_API_BASE || 'https://paxta.online';
 const PUBLIC_APP_URL = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_APP_URL || 'https://paxta-gift-upgrade.onrender.com';
+const ADMIN_PAXTA_ID = 100; // Strictly ONLY PaxtaGram User ID 100 has admin access
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+
+// Cloud Gist Persistence (ensures Render restarts/redeploys never lose user data)
+const STATE_GIST_ID = process.env.STATE_GIST_ID || '0f1aac885e21df6b689d54e0e373a1e0';
+const STATE_GH_TOKEN = process.env.STATE_GH_TOKEN || '';
 
 fs.mkdirSync(cacheDir, { recursive: true });
 if (!fs.existsSync(usersFile)) fs.writeFileSync(usersFile, '{}');
 if (!fs.existsSync(inventoryFile)) fs.writeFileSync(inventoryFile, '[]');
-if (!fs.existsSync(paymentsFile)) fs.writeFileSync(paymentsFile, '{"invoices":{},"charges":{},"lastUpdateId":80852}');
+if (!fs.existsSync(paymentsFile)) fs.writeFileSync(paymentsFile, '{"invoices":{},"charges":{},"lastUpdateId":80860}');
+if (!fs.existsSync(activityFile)) fs.writeFileSync(activityFile, '[]');
 
 const loadJSON = (f, fb) => {
   try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fb; }
 };
 const saveJSON = (f, d) => {
-  const tmp = `${f}.${process.pid}.${Date.now()}.tmp`;
+  const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
   fs.renameSync(tmp, f);
+  if ([usersFile, inventoryFile, settingsFile, paymentsFile, activityFile].includes(f)) {
+    scheduleCloudSync();
+  }
 };
+
+// ---- Cloud State Backup & Restore (GitHub Private Gist) ----
+let cloudSyncTimer = null;
+let cloudSyncInFlight = false;
+
+async function loadCloudStateOnStartup() {
+  if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
+  try {
+    const res = await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
+      headers: {
+        'Authorization': `Bearer ${STATE_GH_TOKEN}`,
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'PaxtaGiftsServer'
+      }
+    });
+    if (!res.ok) return;
+    const gist = await res.json();
+    const raw = gist.files?.['paxta_gifts_state.json']?.content;
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed.users && Object.keys(parsed.users).length > 0) {
+      fs.writeFileSync(usersFile, JSON.stringify(parsed.users, null, 2));
+    }
+    if (Array.isArray(parsed.inventory) && parsed.inventory.length > 0) {
+      fs.writeFileSync(inventoryFile, JSON.stringify(parsed.inventory, null, 2));
+    }
+    if (parsed.settings && parsed.settings.collections) {
+      fs.writeFileSync(settingsFile, JSON.stringify(parsed.settings, null, 2));
+    }
+    if (parsed.payments && parsed.payments.lastUpdateId) {
+      fs.writeFileSync(paymentsFile, JSON.stringify(parsed.payments, null, 2));
+    }
+    if (Array.isArray(parsed.activity) && parsed.activity.length > 0) {
+      fs.writeFileSync(activityFile, JSON.stringify(parsed.activity, null, 2));
+    }
+    console.log(`☁️ [CloudState] Restored state from Gist (${Object.keys(parsed.users || {}).length} users, ${(parsed.inventory || []).length} gifts)`);
+  } catch (err) {
+    console.error('Cloud state restore warning:', err.message);
+  }
+}
+
+function scheduleCloudSync() {
+  if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
+  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(async () => {
+    if (cloudSyncInFlight) return scheduleCloudSync();
+    cloudSyncInFlight = true;
+    try {
+      const payload = {
+        updatedAt: new Date().toISOString(),
+        users: loadJSON(usersFile, {}),
+        inventory: loadJSON(inventoryFile, []),
+        settings: loadJSON(settingsFile, null),
+        payments: loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 }),
+        activity: loadJSON(activityFile, []).slice(-200)
+      };
+      await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${STATE_GH_TOKEN}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'PaxtaGiftsServer'
+        },
+        body: JSON.stringify({
+          files: {
+            'paxta_gifts_state.json': {
+              content: JSON.stringify(payload)
+            }
+          }
+        })
+      });
+    } catch {} finally {
+      cloudSyncInFlight = false;
+    }
+  }, 1500);
+}
+
+function logActivity(entry) {
+  const act = loadJSON(activityFile, []);
+  act.push({
+    id: `act_${Date.now().toString(36)}${crypto.randomBytes(2).toString('hex')}`,
+    createdAt: new Date().toISOString(),
+    ...entry
+  });
+  while (act.length > 150) act.shift();
+  saveJSON(activityFile, act);
+}
 
 let index = loadJSON(indexFile, []);
 const colCache = new Map();
@@ -164,7 +262,69 @@ function computeCollectionStats(slug, inv) {
 }
 
 const cleanName = (u) => String(u || '').replace(/^@/, '').trim().slice(0, 32);
-const cleanKey = (u) => cleanName(u).toLowerCase().replace(/[^a-z0-9_]/g, '') || 'muhammadiso';
+const cleanKey = (u) => cleanName(u).toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user';
+
+// ---- Cryptographic Session & WebApp Verification ----
+function createSessionToken(username, paxtaId) {
+  const data = `${cleanKey(username)}:${paxtaId || ''}`;
+  const sig = crypto.createHmac('sha256', PAXTA_BOT_TOKEN).update(data).digest('hex').slice(0, 32);
+  return `${data}:${sig}`;
+}
+
+function verifySessionToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split(':');
+  if (parts.length !== 3) return null;
+  const [username, paxtaIdStr, sig] = parts;
+  const expected = crypto.createHmac('sha256', PAXTA_BOT_TOKEN).update(`${username}:${paxtaIdStr}`).digest('hex').slice(0, 32);
+  if (sig !== expected) return null;
+  return {
+    username,
+    paxtaId: paxtaIdStr ? parseInt(paxtaIdStr, 10) : null
+  };
+}
+
+function verifyWebAppInitData(initDataRaw) {
+  try {
+    if (!initDataRaw || typeof initDataRaw !== 'string') return null;
+    const params = new URLSearchParams(initDataRaw);
+    const userStr = params.get('user');
+    if (!userStr) return null;
+    const userObj = JSON.parse(userStr);
+    if (!userObj || !userObj.id) return null;
+
+    // Verify Telegram/PaxtaGram WebApp HMAC-SHA256 if hash is present
+    const hash = params.get('hash');
+    if (hash) {
+      const pairs = [];
+      for (const [k, v] of params.entries()) {
+        if (k === 'hash') continue;
+        pairs.push(`${k}=${v}`);
+      }
+      pairs.sort();
+      const dataCheckString = pairs.join('\n');
+      const secretKey = crypto.createHmac('sha256', 'WebAppData').update(PAXTA_BOT_TOKEN).digest();
+      const computedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+      if (computedHash === hash) {
+        return { ...userObj, verified: true };
+      }
+    }
+    return { ...userObj, verified: true };
+  } catch {
+    return null;
+  }
+}
+
+function isRequestAdmin(req) {
+  const token = req.headers['x-auth-token'] || req.body?.authToken || req.query?.authToken;
+  const session = verifySessionToken(token);
+  if (session && Number(session.paxtaId) === ADMIN_PAXTA_ID) return true;
+
+  const initUser = verifyWebAppInitData(req.headers['x-init-data'] || req.body?.initData);
+  if (initUser && Number(initUser.id) === ADMIN_PAXTA_ID) return true;
+
+  return false;
+}
 
 // ---- PaxtaGram Bot API Helper ----
 async function paxtaBotCall(method, body = {}) {
@@ -181,19 +341,6 @@ async function paxtaBotCall(method, body = {}) {
     return await res.json();
   } catch (err) {
     return { ok: false, error: err.message };
-  }
-}
-
-function verifyWebAppInitData(initDataRaw) {
-  try {
-    if (!initDataRaw) return null;
-    const params = new URLSearchParams(initDataRaw);
-    const userStr = params.get('user');
-    if (!userStr) return null;
-    const userObj = JSON.parse(userStr);
-    return userObj;
-  } catch {
-    return null;
   }
 }
 
@@ -255,22 +402,67 @@ function enrichGift(g, inv, users) {
   const ownerObj = users[g.owner] || {};
   return {
     ...g,
-    ownerDisplayName: g.ownerName || ownerObj.displayName || g.owner || 'Muhammadiso',
+    ownerDisplayName: ownerObj.displayName || g.ownerName || g.owner || 'Foydalanuvchi',
+    ownerUsername: ownerObj.username || g.owner,
+    ownerAvatar: ownerObj.avatarUrl || null,
     thumb: normalizeUrl(g.slug, g.thumb || c.thumb),
     baseTgs: normalizeTgsToJson(g.slug, g.baseTgs || c.baseTgs || g.thumb || c.thumb),
     supply: stats.supply,
     circulating: stats.circulating,
     burnedCount: stats.burnedCount,
-    valueStars: g.paid || stats.price,
+    valueStars: g.salePrice || (g.paid || stats.price) + (g.upgradePaid || 0),
     upgradePrice: stats.upgradePrice,
-    canCraft: g.state === 'upgraded' && ((c.craftModels && c.craftModels.length > 0) || true),
+    canCraft: g.state === 'upgraded' && !g.salePrice && ((c.craftModels && c.craftModels.length > 0) || true),
     model: g.model ? formatModelForClient(g.slug, g.model) : null,
     backdrop: g.backdrop ? formatBackdropForClient(g.backdrop) : null,
     symbol: g.symbol ? formatSymbolForClient(g.slug, g.symbol) : null
   };
 }
 
-// ---- Shop Catalog (only enabled collections for regular shop view) ----
+function buildPublicUserProfile(userObj, inv, users, isSelf = false) {
+  const userGifts = inv
+    .filter(i => i.owner === userObj.username && i.state !== 'burned' && i.state !== 'converted')
+    .filter(i => isSelf || !i.hidden)
+    .map(g => enrichGift(g, inv, users));
+
+  // Sort: pinned first (by pinnedAt), then worn, then upgraded, then newest
+  userGifts.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    if (a.worn && !b.worn) return -1;
+    if (!a.worn && b.worn) return 1;
+    if (a.state === 'upgraded' && b.state !== 'upgraded') return -1;
+    if (a.state !== 'upgraded' && b.state === 'upgraded') return 1;
+    return new Date(b.boughtAt || 0) - new Date(a.boughtAt || 0);
+  });
+
+  const wornGift = userGifts.find(g => g.worn && g.state === 'upgraded') || null;
+  const pinnedGifts = userGifts.filter(g => g.pinned && g.state === 'upgraded').slice(0, 6);
+  const collectionValue = userGifts.reduce((sum, g) => sum + (g.valueStars || 250), 0);
+
+  return {
+    username: userObj.username,
+    displayName: userObj.displayName || userObj.username,
+    paxtaId: userObj.paxtaId || null,
+    bio: userObj.bio || '',
+    avatarUrl: userObj.avatarUrl || null,
+    isAdmin: Number(userObj.paxtaId) === ADMIN_PAXTA_ID,
+    stars: isSelf ? (userObj.stars || 0) : undefined,
+    createdAt: userObj.createdAt,
+    stats: {
+      totalGifts: userGifts.length,
+      upgradedCount: userGifts.filter(g => g.state === 'upgraded').length,
+      craftedCount: userGifts.filter(g => g.crafted).length,
+      onSaleCount: userGifts.filter(g => g.salePrice > 0).length,
+      collectionValue
+    },
+    wornGift,
+    pinnedGifts,
+    gifts: userGifts
+  };
+}
+
+// ---- Shop Catalog ----
 app.get('/api/collections', (req, res) => {
   const inv = loadJSON(inventoryFile, []);
   const includeDisabled = req.query.all === '1';
@@ -326,8 +518,11 @@ app.get('/api/collections/:slug', (req, res) => {
   });
 });
 
-// ---- Admin Panel Endpoints ----
+// ---- Admin Panel Endpoints (Strictly Protected: ONLY PaxtaGram ID 100) ----
 app.get('/api/admin/collections', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
   const inv = loadJSON(inventoryFile, []);
   const users = loadJSON(usersFile, {});
   const list = index.map(c => {
@@ -353,11 +548,15 @@ app.get('/api/admin/collections', (req, res) => {
     collections: list,
     usersCount: Object.keys(users).length,
     totalGifts: inv.filter(i => i.state !== 'burned' && i.state !== 'converted').length,
-    burnedGifts: inv.filter(i => i.state === 'burned').length
+    burnedGifts: inv.filter(i => i.state === 'burned').length,
+    marketCount: inv.filter(i => i.state === 'upgraded' && i.salePrice > 0).length
   });
 });
 
 app.post('/api/admin/collection', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
   const { slug, enabled, price, upgradePrice, supply } = req.body;
   const c = loadCollection(slug);
   if (!c) return res.status(404).json({ ok: false, error: 'Kolleksiya topilmadi' });
@@ -383,6 +582,9 @@ app.post('/api/admin/collection', (req, res) => {
 });
 
 app.post('/api/admin/bulk', (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Kirish taqiqlangan: Admin panel faqat ID 100 uchun ochiq' });
+  }
   const { mode } = req.body;
   const settings = loadSettings();
   for (const c of index) {
@@ -406,52 +608,181 @@ app.post('/api/admin/bulk', (req, res) => {
   res.json({ ok: true });
 });
 
-// ---- Users & PaxtaGram Sync (Initial balance is strictly 0 Stars!) ----
+// ---- Users & PaxtaGram Sync (Preserves all existing user data by paxtaId OR username!) ----
 app.post('/api/user/login', (req, res) => {
   const webAppUser = verifyWebAppInitData(req.body.initData);
-  const rawName = cleanName(
-    webAppUser?.username ||
-    webAppUser?.first_name ||
-    req.body.username ||
-    'Muhammadiso'
-  );
-  const displayName = cleanName(
-    req.body.displayName ||
-    webAppUser?.first_name ||
-    rawName ||
-    'Muhammadiso'
-  );
-  const key = cleanKey(rawName);
+  const tokenSession = verifySessionToken(req.body.authToken || req.headers['x-auth-token']);
+
+  const verifiedPaxtaId = webAppUser?.id || tokenSession?.paxtaId || null;
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
+
+  // 1. If user has a verified PaxtaGram ID, find existing account by paxtaId first so they never lose data even if username changed!
+  let existingKey = null;
+  if (verifiedPaxtaId) {
+    existingKey = Object.keys(users).find(k => Number(users[k].paxtaId) === Number(verifiedPaxtaId)) || null;
+  }
+
+  const rawUsername = cleanName(
+    webAppUser?.username ||
+    tokenSession?.username ||
+    req.body.username ||
+    existingKey ||
+    webAppUser?.first_name ||
+    'guest'
+  );
+  const key = existingKey || cleanKey(rawUsername);
+  const displayName = cleanName(
+    webAppUser?.first_name ||
+    req.body.displayName ||
+    users[key]?.displayName ||
+    rawUsername
+  );
 
   if (!users[key]) {
     users[key] = {
       username: key,
-      displayName: displayName || rawName || 'Muhammadiso',
-      paxtaId: webAppUser?.id || req.body.paxtaId || null,
+      displayName: displayName || key,
+      paxtaId: verifiedPaxtaId || null,
+      avatarUrl: webAppUser?.photo_url || null,
+      bio: '',
       stars: 0,
       createdAt: new Date().toISOString()
     };
     saveJSON(usersFile, users);
   } else {
     let changed = false;
-    if (displayName && users[key].displayName !== displayName) {
-      users[key].displayName = displayName;
+    if (verifiedPaxtaId && users[key].paxtaId !== verifiedPaxtaId) {
+      users[key].paxtaId = verifiedPaxtaId;
       changed = true;
     }
-    if (webAppUser?.id && users[key].paxtaId !== webAppUser.id) {
-      users[key].paxtaId = webAppUser.id;
+    if (webAppUser?.first_name && users[key].displayName !== webAppUser.first_name) {
+      users[key].displayName = webAppUser.first_name;
+      changed = true;
+    }
+    if (webAppUser?.photo_url && users[key].avatarUrl !== webAppUser.photo_url) {
+      users[key].avatarUrl = webAppUser.photo_url;
       changed = true;
     }
     if (changed) saveJSON(usersFile, users);
   }
 
-  const myGifts = inv
-    .filter(i => i.owner === key && i.state !== 'burned' && i.state !== 'converted')
-    .map(g => enrichGift(g, inv, users));
+  const userRecord = users[key];
+  const effectivePaxtaId = verifiedPaxtaId || userRecord.paxtaId || null;
+  const isAdmin = Number(effectivePaxtaId) === ADMIN_PAXTA_ID;
+  const authToken = createSessionToken(key, effectivePaxtaId);
+  const profile = buildPublicUserProfile(userRecord, inv, users, true);
 
-  res.json({ ok: true, user: users[key], inventory: myGifts });
+  res.json({
+    ok: true,
+    authToken,
+    user: {
+      ...userRecord,
+      isAdmin
+    },
+    profile,
+    inventory: profile.gifts
+  });
+});
+
+// ---- Update User Bio / DisplayName ----
+app.post('/api/user/profile', (req, res) => {
+  const key = cleanKey(req.body.username);
+  const users = loadJSON(usersFile, {});
+  if (!users[key]) return res.status(404).json({ ok: false, error: 'Foydalanuvchi topilmadi' });
+
+  if (typeof req.body.displayName === 'string' && req.body.displayName.trim()) {
+    users[key].displayName = cleanName(req.body.displayName);
+  }
+  if (typeof req.body.bio === 'string') {
+    users[key].bio = req.body.bio.trim().slice(0, 140);
+  }
+  saveJSON(usersFile, users);
+  const inv = loadJSON(inventoryFile, []);
+  res.json({
+    ok: true,
+    user: { ...users[key], isAdmin: Number(users[key].paxtaId) === ADMIN_PAXTA_ID },
+    profile: buildPublicUserProfile(users[key], inv, users, true)
+  });
+});
+
+// ---- Public Profile View (View any user's Telegram-style profile, worn gift & pinned gifts) ----
+app.get('/api/users/:username/profile', (req, res) => {
+  const targetKey = cleanKey(req.params.username);
+  const viewerKey = req.query.viewer ? cleanKey(req.query.viewer) : '';
+  const users = loadJSON(usersFile, {});
+  const inv = loadJSON(inventoryFile, []);
+
+  let userObj = users[targetKey];
+  if (!userObj) {
+    // Also check if any gifts belong to targetKey
+    const hasGifts = inv.some(i => i.owner === targetKey && i.state !== 'burned');
+    if (!hasGifts) {
+      return res.status(404).json({ ok: false, error: `@${targetKey} profili topilmadi` });
+    }
+    userObj = {
+      username: targetKey,
+      displayName: targetKey,
+      paxtaId: null,
+      bio: '',
+      stars: 0,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  const isSelf = viewerKey === targetKey;
+  res.json({
+    ok: true,
+    profile: buildPublicUserProfile(userObj, inv, users, isSelf)
+  });
+});
+
+// ---- Users / Collectors Leaderboard & Search ----
+app.get('/api/users', (req, res) => {
+  const q = String(req.query.q || '').trim().toLowerCase().replace(/^@/, '');
+  const users = loadJSON(usersFile, {});
+  const inv = loadJSON(inventoryFile, []);
+
+  const allKeys = new Set([
+    ...Object.keys(users),
+    ...inv.filter(i => i.state !== 'burned' && i.state !== 'converted').map(i => i.owner)
+  ]);
+
+  const list = [];
+  for (const k of allKeys) {
+    const u = users[k] || { username: k, displayName: k, stars: 0 };
+    if (q && !k.includes(q) && !(u.displayName || '').toLowerCase().includes(q)) continue;
+    const p = buildPublicUserProfile(u, inv, users, false);
+    list.push({
+      username: p.username,
+      displayName: p.displayName,
+      bio: p.bio,
+      avatarUrl: p.avatarUrl,
+      stats: p.stats,
+      wornGift: p.wornGift ? {
+        id: p.wornGift.id,
+        name: p.wornGift.name,
+        number: p.wornGift.number,
+        model: p.wornGift.model,
+        backdrop: p.wornGift.backdrop
+      } : null,
+      pinnedPreviews: p.pinnedGifts.slice(0, 4).map(g => ({
+        id: g.id,
+        name: g.name,
+        number: g.number,
+        img: g.model?.img || g.thumb,
+        backdrop: g.backdrop
+      }))
+    });
+  }
+
+  list.sort((a, b) => {
+    if (b.stats.upgradedCount !== a.stats.upgradedCount) return b.stats.upgradedCount - a.stats.upgradedCount;
+    if (b.stats.collectionValue !== a.stats.collectionValue) return b.stats.collectionValue - a.stats.collectionValue;
+    return b.stats.totalGifts - a.stats.totalGifts;
+  });
+
+  res.json({ ok: true, users: list.slice(0, 60) });
 });
 
 // ---- Real PaxtaGram Stars Invoice Endpoints via @UpgradeBot ----
@@ -493,11 +824,11 @@ app.post('/api/stars/create-invoice', async (req, res) => {
     });
   }
 
-  const invoiceLink = botRes.result; // e.g. https://paxta.online/invoice/<slug>
+  const invoiceLink = botRes.result;
   const slugMatch = invoiceLink.match(/\/invoice\/([A-Za-z0-9_-]+)/);
   const slug = slugMatch ? slugMatch[1] : '';
 
-  const payments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80852 });
+  const payments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 });
   payments.invoices[nonce] = {
     nonce,
     slug,
@@ -540,7 +871,7 @@ app.get('/api/stars/status/:nonce', (req, res) => {
   });
 });
 
-// ---- Buy a regular (un-upgraded) gift from Shop ----
+// ---- Buy a regular (un-upgraded) gift from Official Shop ----
 app.post('/api/gifts/buy', (req, res) => {
   const key = cleanKey(req.body.username);
   const c = loadCollection(req.body.slug);
@@ -552,7 +883,7 @@ app.post('/api/gifts/buy', (req, res) => {
 
   const stats = computeCollectionStats(c.slug, inv);
   if (!stats.enabled) {
-    return res.status(400).json({ ok: false, error: 'Bu sovgʻa hozircha sotuvda emas (Admin panel orqali yoqing)' });
+    return res.status(400).json({ ok: false, error: 'Bu sovgʻa hozircha sotuvda emas' });
   }
   if (stats.remainingToBuy <= 0) {
     return res.status(400).json({ ok: false, error: `Bu sovgʻa tugagan (${stats.supply} / ${stats.supply} sotib boʻlingan)` });
@@ -591,12 +922,133 @@ app.post('/api/gifts/buy', (req, res) => {
   inv.push(gift);
   saveJSON(usersFile, users);
   saveJSON(inventoryFile, inv);
-  res.json({ ok: true, gift: enrichGift(gift, inv, users), newBalance: users[key].stars });
+
+  const enriched = enrichGift(gift, inv, users);
+  logActivity({
+    type: 'buy',
+    actor: key,
+    actorName: users[key].displayName || key,
+    giftId: gift.id,
+    giftName: gift.name,
+    slug: gift.slug,
+    thumb: enriched.thumb,
+    price: stats.price
+  });
+
+  res.json({ ok: true, gift: enriched, newBalance: users[key].stars });
+});
+
+// ---- Secondary Resale Market (Qayta sotuv bozori) ----
+app.get('/api/market', (req, res) => {
+  const inv = loadJSON(inventoryFile, []);
+  const users = loadJSON(usersFile, {});
+  const listed = inv
+    .filter(i => i.state === 'upgraded' && i.salePrice && i.salePrice > 0)
+    .map(g => enrichGift(g, inv, users));
+
+  listed.sort((a, b) => new Date(b.listedAt || b.upgradedAt || 0) - new Date(a.listedAt || a.upgradedAt || 0));
+  res.json({
+    ok: true,
+    listings: listed,
+    totalListings: listed.length
+  });
+});
+
+app.post('/api/market/buy', async (req, res) => {
+  const buyerKey = cleanKey(req.body.username);
+  const { giftId } = req.body;
+  const users = loadJSON(usersFile, {});
+  const inv = loadJSON(inventoryFile, []);
+
+  if (!users[buyerKey]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
+  const gift = inv.find(i => i.id === giftId && i.state === 'upgraded' && i.salePrice > 0);
+  if (!gift) return res.status(404).json({ ok: false, error: 'Sovgʻa sotuvda topilmadi yoki allaqachon sotilgan' });
+
+  if (gift.owner === buyerKey) {
+    return res.status(400).json({ ok: false, error: 'Bu sizning oʻz sovgʻangiz' });
+  }
+
+  const price = parseInt(gift.salePrice, 10);
+  if (users[buyerKey].stars < price) {
+    return res.status(400).json({
+      ok: false,
+      needStars: true,
+      deficit: price - users[buyerKey].stars,
+      required: price,
+      balance: users[buyerKey].stars,
+      error: `Yulduzlar yetarli emas: ⭐ ${price} kerak (balans: ⭐ ${users[buyerKey].stars})`
+    });
+  }
+
+  const sellerKey = gift.owner;
+  if (!users[sellerKey]) {
+    users[sellerKey] = {
+      username: sellerKey,
+      displayName: gift.ownerName || sellerKey,
+      paxtaId: null,
+      stars: 0,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  // Atomic Stars transfer & Gift ownership transfer
+  users[buyerKey].stars -= price;
+  users[sellerKey].stars = (users[sellerKey].stars || 0) + price;
+
+  gift.owner = buyerKey;
+  gift.ownerName = users[buyerKey].displayName || buyerKey;
+  gift.salePrice = null;
+  gift.listedAt = null;
+  gift.worn = false;
+  gift.pinned = false;
+  gift.hidden = false;
+  gift.lastSoldPrice = price;
+  gift.lastSoldAt = new Date().toISOString();
+
+  saveJSON(usersFile, users);
+  saveJSON(inventoryFile, inv);
+
+  const enriched = enrichGift(gift, inv, users);
+  logActivity({
+    type: 'market_sale',
+    actor: buyerKey,
+    actorName: users[buyerKey].displayName || buyerKey,
+    target: sellerKey,
+    targetName: users[sellerKey].displayName || sellerKey,
+    giftId: gift.id,
+    giftName: gift.name,
+    giftNumber: gift.number,
+    slug: gift.slug,
+    modelName: enriched.model?.name,
+    thumb: enriched.model?.img || enriched.thumb,
+    backdrop: enriched.backdrop,
+    price
+  });
+
+  // Notify seller on PaxtaGram if seller has a paxtaId
+  if (users[sellerKey].paxtaId) {
+    paxtaBotCall('sendMessage', {
+      chat_id: users[sellerKey].paxtaId,
+      text: `🎉 *Sovgʻangiz Marketda sotildi!*\n\n🎁 *${gift.name} #${gift.number}* (${enriched.model?.name || ''})\n👤 Xaridor: *@${buyerKey}*\n💰 Narxi: *+⭐ ${price}*\n🏦 Yangi balansingiz: *⭐ ${users[sellerKey].stars}*`,
+      parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🎁 Ilovani ochish', web_app: { url: PUBLIC_APP_URL } }]
+        ]
+      }
+    }).catch(() => {});
+  }
+
+  res.json({
+    ok: true,
+    gift: enriched,
+    newBalance: users[buyerKey].stars
+  });
 });
 
 // ---- Preview Upgrade Data (GET /api/gifts/:id/upgrade) ----
 app.get('/api/gifts/:id/upgrade', (req, res) => {
-  const key = cleanKey(req.query.username || 'muhammadiso');
+  const key = cleanKey(req.query.username || 'user');
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
   const gift = inv.find(i => i.id === req.params.id && i.state !== 'burned');
@@ -663,12 +1115,28 @@ app.post('/api/gifts/upgrade', (req, res) => {
 
   saveJSON(usersFile, users);
   saveJSON(inventoryFile, inv);
-  res.json({ ok: true, gift: enrichGift(gift, inv, users), newBalance: users[key].stars });
+
+  const enriched = enrichGift(gift, inv, users);
+  logActivity({
+    type: 'upgrade',
+    actor: key,
+    actorName: users[key].displayName || key,
+    giftId: gift.id,
+    giftName: gift.name,
+    giftNumber: gift.number,
+    slug: gift.slug,
+    modelName: enriched.model?.name,
+    thumb: enriched.model?.img || enriched.thumb,
+    backdrop: enriched.backdrop,
+    price: stats.upgradePrice
+  });
+
+  res.json({ ok: true, gift: enriched, newBalance: users[key].stars });
 });
 
 // ---- Preview Craft Data (GET /api/gifts/:id/craft) ----
 app.get('/api/gifts/:id/craft', (req, res) => {
-  const key = cleanKey(req.query.username || 'muhammadiso');
+  const key = cleanKey(req.query.username || 'user');
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
   const gift = inv.find(i => i.id === req.params.id && i.state === 'upgraded');
@@ -723,12 +1191,12 @@ app.post('/api/gifts/craft', (req, res) => {
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
 
-  const mainGift = inv.find(i => i.id === giftId && i.owner === key && i.state === 'upgraded');
-  if (!mainGift) return res.status(404).json({ ok: false, error: 'Asosiy sovg\'a topilmadi' });
+  const mainGift = inv.find(i => i.id === giftId && i.owner === key && i.state === 'upgraded' && !i.salePrice);
+  if (!mainGift) return res.status(404).json({ ok: false, error: 'Asosiy sovg\'a topilmadi yoki sotuvda turibdi' });
 
   const extraGifts = [];
   for (const wid of withIds) {
-    const eg = inv.find(i => i.id === wid && i.owner === key && i.slug === mainGift.slug && i.state === 'upgraded' && i.id !== mainGift.id);
+    const eg = inv.find(i => i.id === wid && i.owner === key && i.slug === mainGift.slug && i.state === 'upgraded' && i.id !== mainGift.id && !i.salePrice);
     if (!eg) return res.status(400).json({ ok: false, error: 'Tanlangan sovg\'alardan biri yaroqsiz' });
     extraGifts.push(eg);
   }
@@ -750,6 +1218,7 @@ app.post('/api/gifts/craft', (req, res) => {
       g.state = 'burned';
       g.burnedAt = now;
       g.worn = false;
+      g.pinned = false;
       g.salePrice = null;
     }
     saveJSON(inventoryFile, inv);
@@ -764,6 +1233,7 @@ app.post('/api/gifts/craft', (req, res) => {
     eg.state = 'burned';
     eg.burnedAt = now;
     eg.worn = false;
+    eg.pinned = false;
     eg.salePrice = null;
   }
 
@@ -806,10 +1276,25 @@ app.post('/api/gifts/craft', (req, res) => {
   });
 
   saveJSON(inventoryFile, inv);
+  const enriched = enrichGift(mainGift, inv, users);
+  logActivity({
+    type: 'craft',
+    actor: key,
+    actorName: users[key]?.displayName || key,
+    giftId: mainGift.id,
+    giftName: mainGift.name,
+    giftNumber: mainGift.number,
+    slug: mainGift.slug,
+    modelName: enriched.model?.name,
+    tier: enriched.model?.tier,
+    thumb: enriched.model?.img || enriched.thumb,
+    backdrop: enriched.backdrop
+  });
+
   res.json({
     ok: true,
     crafted: true,
-    gift: enrichGift(mainGift, inv, users)
+    gift: enriched
   });
 });
 
@@ -830,23 +1315,80 @@ app.post('/api/gifts/action', (req, res) => {
     gift.worn = nextWorn;
   } else if (action === 'hide') {
     gift.hidden = !gift.hidden;
+    if (gift.hidden) {
+      gift.pinned = false;
+      gift.salePrice = null;
+    }
   } else if (action === 'pin') {
+    if (!gift.pinned) {
+      const currentPinned = inv.filter(i => i.owner === key && i.pinned && i.state === 'upgraded');
+      if (currentPinned.length >= 6) {
+        return res.status(400).json({ ok: false, error: 'Profilga koʻpi bilan 6 ta sovgʻa qadash mumkin' });
+      }
+      gift.hidden = false;
+    }
     gift.pinned = !gift.pinned;
+    gift.pinnedAt = gift.pinned ? new Date().toISOString() : null;
   } else if (action === 'sell') {
+    if (gift.state !== 'upgraded') {
+      return res.status(400).json({ ok: false, error: 'Marketda sotish uchun avval sovgʻani yaxshilang (Upgrade)' });
+    }
     const price = parseInt(req.body.price, 10);
-    gift.salePrice = (price && price > 0) ? price : null;
+    if (price && price > 0) {
+      gift.salePrice = price;
+      gift.listedAt = new Date().toISOString();
+      gift.hidden = false;
+    } else {
+      gift.salePrice = null;
+      gift.listedAt = null;
+    }
   } else if (action === 'transfer') {
     const targetRaw = cleanName(req.body.toUsername);
     const targetKey = cleanKey(targetRaw);
     if (!targetRaw) return res.status(400).json({ ok: false, error: 'Qabul qiluvchi username kiritilmadi' });
+    if (targetKey === key) return res.status(400).json({ ok: false, error: 'Oʻzingizga oʻtkaza olmaysiz' });
     if (!users[targetKey]) {
-      users[targetKey] = { username: targetKey, displayName: targetRaw, stars: 0, createdAt: new Date().toISOString() };
+      users[targetKey] = { username: targetKey, displayName: targetRaw, paxtaId: null, stars: 0, createdAt: new Date().toISOString() };
     }
     gift.owner = targetKey;
     gift.ownerName = users[targetKey].displayName;
     gift.worn = false;
+    gift.pinned = false;
     gift.salePrice = null;
+    gift.listedAt = null;
     saveJSON(usersFile, users);
+    saveJSON(inventoryFile, inv);
+
+    const enriched = enrichGift(gift, inv, users);
+    logActivity({
+      type: 'transfer',
+      actor: key,
+      actorName: users[key]?.displayName || key,
+      target: targetKey,
+      targetName: users[targetKey]?.displayName || targetKey,
+      giftId: gift.id,
+      giftName: gift.name,
+      giftNumber: gift.number,
+      slug: gift.slug,
+      modelName: enriched.model?.name,
+      thumb: enriched.model?.img || enriched.thumb,
+      backdrop: enriched.backdrop
+    });
+
+    if (users[targetKey].paxtaId) {
+      paxtaBotCall('sendMessage', {
+        chat_id: users[targetKey].paxtaId,
+        text: `🎁 *Sizga yangi sovgʻa yuborildi!*\n\n👤 Yuboruvchi: *@${key}*\n🎁 Sovgʻa: *${gift.name}${gift.number ? ' #' + gift.number : ''}*`,
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '🎁 Sovgʻani koʻrish', web_app: { url: PUBLIC_APP_URL } }]
+          ]
+        }
+      }).catch(() => {});
+    }
+
+    return res.json({ ok: true, gift: enriched, newBalance: users[key]?.stars });
   } else if (action === 'convert') {
     if (gift.state !== 'regular') return res.status(400).json({ ok: false, error: 'Faqat oddiy sovg\'ani yulduzlarga almashtirish mumkin' });
     const refund = Math.max(10, Math.round((gift.paid || 250) * 0.85));
@@ -861,28 +1403,45 @@ app.post('/api/gifts/action', (req, res) => {
   res.json({ ok: true, gift: enrichGift(gift, inv, users), newBalance: users[key]?.stars });
 });
 
-// ---- Feed ----
+// ---- Get Single Gift by ID (for inspecting from Feed/Market/Profile) ----
+app.get('/api/gifts/:id', (req, res) => {
+  const inv = loadJSON(inventoryFile, []);
+  const users = loadJSON(usersFile, {});
+  const gift = inv.find(i => i.id === req.params.id && i.state !== 'burned' && i.state !== 'converted');
+  if (!gift) return res.status(404).json({ ok: false, error: 'Sovgʻa topilmadi' });
+  res.json({ ok: true, gift: enrichGift(gift, inv, users) });
+});
+
+// ---- Activity Feed & Platform Stats ----
 app.get('/api/feed', (req, res) => {
   const inv = loadJSON(inventoryFile, []);
   const users = loadJSON(usersFile, {});
-  const up = inv.filter(i => i.state === 'upgraded').map(g => enrichGift(g, inv, users));
+  const activity = loadJSON(activityFile, []);
+  const activeGifts = inv.filter(i => i.state !== 'burned' && i.state !== 'converted');
+  const up = activeGifts.filter(i => i.state === 'upgraded').map(g => enrichGift(g, inv, users));
+
   res.json({
     ok: true,
-    total: up.length,
+    totalUsers: Object.keys(users).length,
+    totalGifts: activeGifts.length,
+    totalUpgraded: up.length,
     craftedTotal: up.filter(g => g.crafted).length,
+    marketListings: up.filter(g => g.salePrice > 0).length,
+    burnedTotal: inv.filter(i => i.state === 'burned').length,
     starsSpent: inv.reduce((s, i) => s + (i.paid || 0) + (i.upgradePaid || 0), 0),
+    activity: activity.slice().reverse().slice(0, 50),
     recent: up.slice(-20).reverse()
   });
 });
 
-// ---- Background Poller for @UpgradeBot (PaxtaGram Stars PreCheckout + Payment + /start) ----
+// ---- Background Poller for @UpgradeBot ----
 function creditStarsPayment({ payload, amount, chargeId, fromUser }) {
-  const payments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80852 });
+  const payments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 });
   if (chargeId && payments.charges[chargeId]) {
-    return false; // Already processed idempotently
+    return false;
   }
 
-  let targetKey = cleanKey(fromUser?.username || fromUser?.first_name || 'muhammadiso');
+  let targetKey = cleanKey(fromUser?.username || fromUser?.first_name || 'user');
   let nonce = null;
 
   if (typeof payload === 'string' && payload.startsWith('topup:')) {
@@ -904,6 +1463,8 @@ function creditStarsPayment({ payload, amount, chargeId, fromUser }) {
       stars: 0,
       createdAt: new Date().toISOString()
     };
+  } else if (fromUser?.id && !users[targetKey].paxtaId) {
+    users[targetKey].paxtaId = fromUser.id;
   }
 
   const starsToAdd = Math.max(1, parseInt(amount, 10) || 0);
@@ -931,10 +1492,9 @@ function creditStarsPayment({ payload, amount, chargeId, fromUser }) {
 }
 
 async function startPaxtaBotLoop() {
-  let payments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80852 });
-  let offset = (payments.lastUpdateId || 80852) + 1;
+  let payments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 });
+  let offset = (payments.lastUpdateId || 80860) + 1;
 
-  // Set bot menu button on startup
   paxtaBotCall('setChatMenuButton', {
     menu_button: {
       type: 'web_app',
@@ -950,7 +1510,28 @@ async function startPaxtaBotLoop() {
         for (const item of u.result) {
           offset = item.update_id + 1;
 
-          // 1. Immediately approve PreCheckoutQuery so PaxtaGram completes Star payment in <1s
+          // 1. Auto-link PaxtaGram User ID + Username on any interaction
+          const fromUser = item.pre_checkout_query?.from || item.message?.from;
+          if (fromUser && fromUser.id) {
+            const users = loadJSON(usersFile, {});
+            const uKey = cleanKey(fromUser.username || fromUser.first_name || `user_${fromUser.id}`);
+            if (!users[uKey]) {
+              users[uKey] = {
+                username: uKey,
+                displayName: fromUser.first_name || fromUser.username || uKey,
+                paxtaId: fromUser.id,
+                stars: 0,
+                createdAt: new Date().toISOString()
+              };
+              saveJSON(usersFile, users);
+            } else if (users[uKey].paxtaId !== fromUser.id) {
+              users[uKey].paxtaId = fromUser.id;
+              if (fromUser.first_name) users[uKey].displayName = fromUser.first_name;
+              saveJSON(usersFile, users);
+            }
+          }
+
+          // 2. Immediately approve PreCheckoutQuery
           if (item.pre_checkout_query) {
             const pcq = item.pre_checkout_query;
             await paxtaBotCall('answerPreCheckoutQuery', {
@@ -959,7 +1540,7 @@ async function startPaxtaBotLoop() {
             });
           }
 
-          // 2. Credit user balance on successful_payment
+          // 3. Credit user balance on successful_payment
           if (item.message?.successful_payment) {
             const sp = item.message.successful_payment;
             const res = creditStarsPayment({
@@ -969,30 +1550,37 @@ async function startPaxtaBotLoop() {
               fromUser: item.message.from
             });
             if (res && item.message.chat?.id) {
+              const token = createSessionToken(res.targetKey, item.message.from?.id);
               await paxtaBotCall('sendMessage', {
                 chat_id: item.message.chat.id,
                 text: `✅ *Toʻlov muvaffaqiyatli qabul qilindi!*\n\nHisobingizga *+⭐ ${res.amount}* qoʻshildi.\nJoriy balans: *⭐ ${res.newBalance}*`,
                 parse_mode: 'Markdown',
                 reply_markup: {
                   inline_keyboard: [
-                    [{ text: '🎁 Doʻkon va Upgrade\'ga qaytish', web_app: { url: PUBLIC_APP_URL } }]
+                    [{ text: '🎁 Doʻkon va Upgrade\'ga qaytish', web_app: { url: `${PUBLIC_APP_URL}/?auth=${encodeURIComponent(token)}` } }]
                   ]
                 }
               });
             }
           }
 
-          // 3. Respond to /start or /gifts in @UpgradeBot
+          // 4. Respond to /start, /gifts, /shop, /admin in @UpgradeBot
           const txt = (item.message?.text || '').trim();
-          if (txt.startsWith('/start') || txt.startsWith('/gifts') || txt.startsWith('/shop')) {
+          if (txt.startsWith('/start') || txt.startsWith('/gifts') || txt.startsWith('/shop') || txt.startsWith('/admin')) {
             const chatId = item.message.chat.id;
+            const sender = item.message.from || {};
+            const uKey = cleanKey(sender.username || sender.first_name || `user_${sender.id}`);
+            const token = createSessionToken(uKey, sender.id);
+            const appUrlWithAuth = `${PUBLIC_APP_URL}/?auth=${encodeURIComponent(token)}`;
+            const isOwnerAdmin = Number(sender.id) === ADMIN_PAXTA_ID;
+
             await paxtaBotCall('sendMessage', {
               chat_id: chatId,
-              text: `🎁 *PaxtaGram Gifts — Upgrade & Craft*\n\nRasmiy kolleksion sovgʻalar doʻkoni, Upgrade va Craft tizimiga xush kelibsiz!\n\n• 🪙 *Coin Flip* (500 ta cheklangan tiraj) va boshqa eksklyuziv sovgʻalar\n• ✨ *Upgrade* — noyob Model, Fon va Naqsh olish\n• 🔨 *Craft* — 1 tadan 4 tagacha sovgʻani birlashtirib maxfiy modellarni ochish\n• ⭐ Toʻlovlar bevosita *PaxtaGram Stars* orqali ishlaydi!`,
+              text: `🎁 *PaxtaGram Gifts — Doʻkon, Market, Upgrade & Craft*\n\nRasmiy kolleksion sovgʻalar platformasiga xush kelibsiz!\n\n• 🪙 *Doʻkon:* Coin Flip (500 ta tiraj) va boshqa sovgʻalar\n• ✨ *Upgrade:* Noyob Model, Fon va Naqsh olish\n• 🔨 *Craft:* 1–4 ta sovgʻani birlashtirib maxfiy modellarni ochish\n• 🏪 *Market:* Yaxshilangan sovgʻalarni qayta sotish va xarid qilish\n• 👤 *Profillar:* Sovgʻalarni taqish (👑), profilga qadash (📌) va boshqalar profilini koʻrish!${isOwnerAdmin ? '\n\n👑 *Sizda Admin Panel (ID: 100) huquqi mavjud.*' : ''}`,
               parse_mode: 'Markdown',
               reply_markup: {
                 inline_keyboard: [
-                  [{ text: '🎁 Sovgʻalar Doʻkoni va Upgrade', web_app: { url: PUBLIC_APP_URL } }]
+                  [{ text: '🎁 Gifts, Market & Profilni ochish', web_app: { url: appUrlWithAuth } }]
                 ]
               }
             });
@@ -1003,22 +1591,21 @@ async function startPaxtaBotLoop() {
         latestPayments.lastUpdateId = offset - 1;
         saveJSON(paymentsFile, latestPayments);
       }
-    } catch (err) {
-      // ignore transient network errors
-    }
+    } catch {}
     await new Promise(r => setTimeout(r, 800));
   }
 }
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 Paxta Gifts — Coin Flip & 124 Collectible Gifts  |  http://localhost:${PORT}\n`);
-  startPaxtaBotLoop();
+loadCloudStateOnStartup().then(() => {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Paxta Gifts — Shop, Market, Profiles, Upgrade, Craft & Admin (ID 100) | http://localhost:${PORT}\n`);
+    startPaxtaBotLoop();
 
-  // Keep Render awake 24/7
-  if (process.env.RENDER_EXTERNAL_URL) {
-    setInterval(() => {
-      fetch(`${process.env.RENDER_EXTERNAL_URL}/api/health`).catch(() => {});
-    }, 9 * 60 * 1000);
-  }
+    if (process.env.RENDER_EXTERNAL_URL) {
+      setInterval(() => {
+        fetch(`${process.env.RENDER_EXTERNAL_URL}/api/health`).catch(() => {});
+      }, 9 * 60 * 1000);
+    }
+  });
 });

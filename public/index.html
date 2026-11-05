@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Paxta Gifts — Doʻkon, Profil, Upgrade va Craft</title>
+  <title>Paxta Gifts — Doʻkon, Market, Profil, Upgrade va Craft</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
     <!-- Top Navigation Bar -->
     <header class="topbar">
       <div class="topbar-inner">
-        <div class="brand" id="brandHome">
+        <div class="brand" id="brandHome" style="cursor:pointer;">
           <div class="brand-logo">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/>
@@ -33,29 +33,37 @@
 
         <nav class="main-tabs" role="tablist">
           <button class="main-tab active" data-tab="shop" id="tabShop">
-            <span>Doʻkon</span>
+            <span>🎁 Doʻkon</span>
             <b class="tab-badge" id="shopCountBadge">1</b>
           </button>
+          <button class="main-tab" data-tab="market" id="tabMarket">
+            <span>🏪 Market</span>
+            <b class="tab-badge" id="marketCountBadge">0</b>
+          </button>
           <button class="main-tab" data-tab="inventory" id="tabInventory">
-            <span>Profil</span>
+            <span>👤 Profil</span>
             <b class="tab-badge" id="invCountBadge">0</b>
           </button>
-          <button class="main-tab" data-tab="admin" id="tabAdmin">
+          <button class="main-tab" data-tab="explore" id="tabExplore">
+            <span>🏆 Odamlar & Jonli</span>
+          </button>
+          <!-- STRICTLY HIDDEN UNLESS PAXTAGRAM USER ID === 100 -->
+          <button class="main-tab" data-tab="admin" id="tabAdmin" hidden>
             <span>⚙️ Admin</span>
           </button>
         </nav>
 
         <div class="user-bar">
-          <button class="balance-pill" id="btnAddStars" title="Yulduzlar qoʻshish">
+          <button class="balance-pill" id="btnAddStars" title="PaxtaGram Stars qoʻshish">
             <svg class="star-svg" viewBox="0 0 24 24" width="16" height="16">
               <path fill="currentColor" d="M12 1.8l2.9 6.2 6.8.8-5 4.6 1.4 6.7L12 16.7 5.9 20.1l1.4-6.7-5-4.6 6.8-.8z"/>
             </svg>
-            <span id="userStars">5 000</span>
+            <span id="userStars">0</span>
             <span class="balance-plus">+</span>
           </button>
-          <button class="user-pill" id="btnSwitchUser" title="PaxtaGram profilni almashtirish">
+          <button class="user-pill" id="btnSwitchUser" title="PaxtaGram profil">
             <span class="avatar avatar-sm" id="userAvatar">M</span>
-            <span id="userDisplayName">Muhammadiso</span>
+            <span id="userDisplayName">Foydalanuvchi</span>
           </button>
         </div>
       </div>
@@ -63,7 +71,7 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      <!-- TAB 1: Do'kon (Shop — Only enabled collections, currently Coin Flip 500 supply) -->
+      <!-- TAB 1: Do'kon (Official Shop — Buy regular gifts, then Upgrade & Craft in Profile) -->
       <section class="tab-pane active" id="paneShop">
         <div class="profile-banner">
           <div class="profile-banner-left">
@@ -72,48 +80,159 @@
             </div>
             <div class="profile-meta">
               <div class="profile-name-row">
-                <h1>Sovgʻalar doʻkoni</h1>
+                <h1>Rasmiy Sovgʻalar Doʻkoni</h1>
               </div>
-              <p class="profile-sub">Doʻkondan sovgʻa sotib oling, soʻngra <b>Profil</b> boʻlimiga oʻtib uni <b>Upgrade (yaxshilash)</b> va <b>Craft (tayyorlash)</b> qiling</p>
+              <p class="profile-sub">Cheklangan tirajdagi sovgʻalarni xarid qiling, <b>Profil</b> boʻlimida <b>Upgrade</b> va <b>Craft</b> qiling yoki <b>Market</b>da soting</p>
             </div>
           </div>
         </div>
         <div class="catalog-grid" id="catalogGrid"></div>
       </section>
 
-      <!-- TAB 2: Profil (User's Inventory — Upgrade & Craft here) -->
-      <section class="tab-pane" id="paneInventory" hidden>
+      <!-- TAB 2: Market (Secondary Resale Marketplace for Upgraded & Crafted Gifts) -->
+      <section class="tab-pane" id="paneMarket" hidden>
         <div class="profile-banner">
           <div class="profile-banner-left">
-            <div class="avatar avatar-lg" id="profileAvatar">M</div>
+            <div class="brand-logo" style="width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#f59e0b,#d97706);">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM6.5 8C5.67 8 5 7.33 5 6.5S5.67 5 6.5 5 8 5.67 8 6.5 7.33 8 6.5 8z"/></svg>
+            </div>
             <div class="profile-meta">
               <div class="profile-name-row">
-                <h1 id="profileName">Muhammadiso</h1>
-                <span class="profile-worn-badge" id="profileWornBadge" hidden></span>
+                <h1>🏪 Qayta Sotuv Bozori (Market)</h1>
               </div>
-              <p class="profile-sub">Sovgʻani bosing — oddiy sovgʻani <b>Upgrade</b> qilish yoki yaxshilangan sovgʻalardan <b>Craft</b> qilish uchun</p>
+              <p class="profile-sub">Foydalanuvchilar tomonidan Upgrade va Craft qilingan noyob sovgʻalarni xarid qiling yoki oʻz sovgʻangizni sotuvga qoʻying</p>
             </div>
           </div>
           <div class="profile-filters">
+            <button class="btn btn-tonal btn-sm" id="btnGoListMyGift">+ Sovgʻamni sotuvga qoʻyish</button>
+          </div>
+        </div>
+
+        <div class="shop-toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="text" id="marketSearch" placeholder="Model nomi, #raqam yoki @sotuvchi boʻyicha qidirish..." />
+          </div>
+          <div class="shop-sort">
+            <button class="filter-chip active" data-mfilter="all">Barchasi</button>
+            <button class="filter-chip" data-mfilter="crafted">🔨 Craft modellar</button>
+            <button class="filter-chip" data-mfilter="price_asc">Arzonroq ⭐↑</button>
+            <button class="filter-chip" data-mfilter="price_desc">Qimmatroq ⭐↓</button>
+            <button class="filter-chip" data-mfilter="num_asc">Raqam #1↑</button>
+          </div>
+        </div>
+
+        <div class="gift-grid" id="marketGrid"></div>
+      </section>
+
+      <!-- TAB 3: Telegram-Style Collectible Profile (Own Profile OR Visiting Another User's Profile) -->
+      <section class="tab-pane" id="paneInventory" hidden>
+        <div class="tg-profile-card" id="tgProfileCard">
+          <canvas class="tg-profile-bg" id="profileBannerCanvas"></canvas>
+          <!-- Floating Pinned Showcase Icons in Banner -->
+          <div class="tg-profile-floating-pins" id="profileFloatingPins"></div>
+
+          <div class="tg-profile-top-actions" id="profileTopActions">
+            <button class="btn btn-tonal btn-sm" id="btnBackToMyProfile" hidden>← Mening profilimga qaytish</button>
+            <div style="display:flex;gap:8px;margin-left:auto;">
+              <button class="btn btn-tonal btn-sm" id="btnEditBio">✏️ Bio</button>
+              <button class="btn btn-tonal btn-sm" id="btnShareProfile">🔗 Ulashish</button>
+            </div>
+          </div>
+
+          <div class="tg-profile-center">
+            <div class="tg-avatar-wrap">
+              <div class="avatar avatar-xl" id="profileAvatar">M</div>
+              <span class="tg-avatar-crown" id="profileAvatarCrown" hidden title="Taqilgan sovgʻa">👑</span>
+            </div>
+            <div class="tg-name-row">
+              <h1 id="profileName">Muhammadiso</h1>
+              <button class="profile-worn-badge" id="profileWornBadge" hidden title="Taqilgan sovgʻani koʻrish"></button>
+            </div>
+            <div class="tg-username-row" id="profileUsernameHandle">@muhammadiso</div>
+            <p class="tg-bio" id="profileBioText">Sovgʻani bosing — Upgrade, Craft, profilga qadash (📌) yoki boshqa profilga oʻtkazish uchun</p>
+
+            <div class="tg-stats-row" id="profileStatsRow"></div>
+          </div>
+        </div>
+
+        <!-- Pinned Gifts Showcase Section (Telegram-style Pinned Showcase) -->
+        <div class="pinned-showcase-section" id="pinnedShowcaseSection" hidden>
+          <div class="section-head">
+            <h3>📌 Profilga qadalgan sovgʻalar</h3>
+            <span id="pinnedCountLabel">0 / 6</span>
+          </div>
+          <div class="pinned-grid" id="pinnedGiftsGrid"></div>
+        </div>
+
+        <!-- Profile Inventory Toolbar & Grid -->
+        <div class="shop-toolbar" style="margin-top:14px;">
+          <div class="profile-filters">
             <button class="filter-chip active" data-filter="all">Barchasi</button>
-            <button class="filter-chip" data-filter="regular">Oddiy (Upgrade uchun)</button>
-            <button class="filter-chip" data-filter="upgraded">Noyob (Upgraded)</button>
-            <button class="filter-chip" data-filter="crafted">✨ Tayyorlangan (Craft)</button>
+            <button class="filter-chip" data-filter="pinned">📌 Qadalganlar</button>
+            <button class="filter-chip" data-filter="upgraded">✨ Noyob (Upgraded)</button>
+            <button class="filter-chip" data-filter="crafted">🔨 Tayyorlangan (Craft)</button>
+            <button class="filter-chip" data-filter="regular" id="filterBtnRegular">🎁 Oddiy (Upgrade uchun)</button>
+            <button class="filter-chip" data-filter="sale">🏷 Sotuvda</button>
           </div>
         </div>
 
         <div class="gift-grid" id="inventoryGrid"></div>
       </section>
 
-      <!-- TAB 3: Admin Panel (Manage all 125 collections: toggle active, edit price, upgradePrice, supply) -->
+      <!-- TAB 4: Odamlar & Jonli (Collectors Directory, Search Any Profile & Live Activity Feed) -->
+      <section class="tab-pane" id="paneExplore" hidden>
+        <div class="profile-banner">
+          <div class="profile-banner-left">
+            <div class="brand-logo" style="width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#8b5cf6,#6366f1);">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="profile-meta">
+              <div class="profile-name-row">
+                <h1>🏆 Kolleksionerlar va Jonli Faollik</h1>
+              </div>
+              <p class="profile-sub">Istalgan foydalanuvchining profiliga kiring, taqilgan (👑) va qadalgan (📌) sovgʻalarini koʻring yoki jonli Upgrade va savdolarni kuzating</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="text" id="userDirectorySearch" placeholder="@username kiriting (boshqalar profilini koʻrish uchun)..." />
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnOpenSearchedProfile">Profilni ochish</button>
+        </div>
+
+        <div class="explore-columns">
+          <div class="explore-col">
+            <div class="section-head">
+              <h3>👑 Top Kolleksionerlar (Profilni koʻrish uchun bosing)</h3>
+            </div>
+            <div class="collectors-list" id="collectorsList"></div>
+          </div>
+          <div class="explore-col">
+            <div class="section-head">
+              <h3>⚡ Soʻnggi harakatlar (Upgrade, Craft, Market, Oʻtkazmalar)</h3>
+            </div>
+            <div class="activity-list" id="activityList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: Admin Panel (Strictly only visible & accessible to PaxtaGram User ID 100) -->
       <section class="tab-pane" id="paneAdmin" hidden>
         <div class="profile-banner">
           <div class="profile-banner-left">
             <div class="profile-meta">
               <div class="profile-name-row">
-                <h1>⚙️ Admin Boshqaruv Paneli</h1>
+                <h1>⚙️ Admin Boshqaruv Paneli (ID: 100)</h1>
               </div>
-              <p class="profile-sub">Istalgan sovgʻani doʻkonda yoqish/oʻchirish, narxini, upgrade narxini va tirajini oʻzgartirish (barcha oʻzgarishlar bazada saqlanadi)</p>
+              <p class="profile-sub">Faqat ID 100 egasi uchun: istalgan sovgʻani doʻkonda yoqish/oʻchirish, narxini, upgrade narxini va tirajini oʻzgartirish</p>
             </div>
           </div>
           <div class="profile-filters">
@@ -151,7 +270,7 @@
     </div>
   </div>
 
-  <!-- Secondary Action Prompt Modal (Shop Buy / Transfer / Sell / Login / Stars) -->
+  <!-- Secondary Action Prompt Modal (Shop Buy / Transfer / Sell / Login / Stars / Explorer) -->
   <div class="modal-backdrop" id="subModalBackdrop" hidden>
     <div class="modal-panel sub-modal-panel" id="subModalPanel" role="dialog" aria-modal="true">
       <div class="modal-head" id="subModalHead">

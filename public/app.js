@@ -1,11 +1,20 @@
-// Paxta Gifts — Do'kon, Profil, Upgrade, Craft & Admin Panel (No Sound Effects)
+// Paxta Gifts — Do'kon, Market, Profil, Upgrade, Craft & Admin Panel (No Sound Effects)
 
 const STATE = {
   user: null,
+  authToken: localStorage.getItem('paxta_gift_auth_token') || '',
+  initData: '',
+  myProfile: null,
+  viewedProfile: null, // null = viewing own profile, otherwise another user's profile object
   inventory: [],
   collections: [],
+  marketListings: [],
+  marketFilter: 'all',
+  marketQuery: '',
+  collectors: [],
+  activity: [],
   adminCollections: [],
-  adminStats: { usersCount: 0, totalGifts: 0, burnedGifts: 0 },
+  adminStats: { usersCount: 0, totalGifts: 0, burnedGifts: 0, marketCount: 0 },
   activeTab: 'shop',
   invFilter: 'all',
   adminFilter: 'all',
@@ -332,9 +341,15 @@ function launchEdgeConfetti() {
 
 // ---- API Calls & State Sync ----
 async function api(url, opts = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(STATE.authToken ? { 'x-auth-token': STATE.authToken } : {}),
+    ...(STATE.initData ? { 'x-init-data': STATE.initData } : {}),
+    ...(opts.headers || {})
+  };
   const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...opts
+    ...opts,
+    headers
   });
   return res.json();
 }
@@ -382,6 +397,17 @@ function detectPaxtaGramUser() {
 
 async function loginUser(username) {
   const webApp = parsePaxtaWebAppData();
+  if (webApp?.initData) {
+    STATE.initData = webApp.initData;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const urlAuthToken = params.get('auth');
+  if (urlAuthToken) {
+    STATE.authToken = urlAuthToken;
+    localStorage.setItem('paxta_gift_auth_token', urlAuthToken);
+  }
+
   const saved = username || detectPaxtaGramUser();
   const data = await api('/api/user/login', {
     method: 'POST',
@@ -389,15 +415,36 @@ async function loginUser(username) {
       username: saved,
       displayName: !username && webApp?.user?.first_name ? webApp.user.first_name : undefined,
       paxtaId: !username && webApp?.user?.id ? webApp.user.id : undefined,
-      initData: !username && webApp?.initData ? webApp.initData : undefined
+      initData: !username && webApp?.initData ? webApp.initData : undefined,
+      authToken: !username ? STATE.authToken : undefined
     })
   });
   if (data.ok) {
     STATE.user = data.user;
+    STATE.myProfile = data.profile;
     STATE.inventory = data.inventory || [];
+    if (data.authToken) {
+      STATE.authToken = data.authToken;
+      localStorage.setItem('paxta_gift_auth_token', data.authToken);
+    }
     localStorage.setItem('paxta_gift_user', STATE.user.username || STATE.user.displayName);
+
+    // Strictly hide/show Admin Tab ONLY for PaxtaGram ID === 100
+    const adminTabBtn = document.getElementById('tabAdmin');
+    if (adminTabBtn) {
+      adminTabBtn.hidden = !STATE.user.isAdmin;
+      if (!STATE.user.isAdmin && STATE.activeTab === 'admin') {
+        switchTab('shop');
+      }
+    }
+
+    // If currently viewing own profile, keep it synced
+    if (!STATE.viewedProfile || STATE.viewedProfile.username === STATE.user.username) {
+      STATE.viewedProfile = null;
+    }
+
     renderHeaderUser();
-    renderInventory();
+    renderProfileView();
   }
 }
 
@@ -410,41 +457,74 @@ async function loadCollections() {
   }
 }
 
+async function loadMarket() {
+  const data = await api('/api/market');
+  if (data.ok) {
+    STATE.marketListings = data.listings || [];
+    const badge = document.getElementById('marketCountBadge');
+    if (badge) badge.textContent = STATE.marketListings.length;
+    renderMarket();
+  }
+}
+
+async function loadExploreData(query = '') {
+  const [uRes, fRes] = await Promise.all([
+    api(`/api/users?q=${encodeURIComponent(query)}`),
+    api('/api/feed')
+  ]);
+  if (uRes.ok) STATE.collectors = uRes.users || [];
+  if (fRes.ok) STATE.activity = fRes.activity || [];
+  renderExplore();
+}
+
 async function loadAdminData() {
+  if (!STATE.user?.isAdmin) return;
   const data = await api('/api/admin/collections');
   if (data.ok) {
     STATE.adminCollections = data.collections || [];
     STATE.adminStats = {
       usersCount: data.usersCount || 0,
       totalGifts: data.totalGifts || 0,
-      burnedGifts: data.burnedGifts || 0
+      burnedGifts: data.burnedGifts || 0,
+      marketCount: data.marketCount || 0
     };
     renderAdminPanel();
   }
 }
 
+async function openUserProfile(username) {
+  if (!username) return;
+  const clean = String(username).replace(/^@/, '').trim().toLowerCase();
+  if (STATE.user && clean === STATE.user.username) {
+    STATE.viewedProfile = null;
+    switchTab('inventory');
+    renderProfileView();
+    return;
+  }
+  const res = await api(`/api/users/${encodeURIComponent(clean)}/profile?viewer=${encodeURIComponent(STATE.user?.username || '')}`);
+  if (!res.ok) {
+    return showToast(res.error || 'Profil topilmadi');
+  }
+  STATE.viewedProfile = res.profile;
+  STATE.invFilter = 'all';
+  document.querySelectorAll('#paneInventory .filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === 'all');
+  });
+  switchTab('inventory');
+  renderProfileView();
+}
+
 function renderHeaderUser() {
   if (!STATE.user) return;
-  const disp = STATE.user.displayName || STATE.user.username || 'Muhammadiso';
+  const disp = STATE.user.displayName || STATE.user.username || 'Foydalanuvchi';
   const initial = disp.charAt(0).toUpperCase();
   document.getElementById('userStars').textContent = fmtInt(STATE.user.stars);
   document.getElementById('userDisplayName').textContent = disp;
   document.getElementById('userAvatar').textContent = initial;
-  document.getElementById('profileAvatar').textContent = initial;
-  document.getElementById('profileName').textContent = disp;
   document.getElementById('invCountBadge').textContent = STATE.inventory.length;
-
-  const wornGift = STATE.inventory.find(g => g.worn && g.state === 'upgraded');
-  const badge = document.getElementById('profileWornBadge');
-  if (wornGift && wornGift.model) {
-    badge.hidden = false;
-    badge.innerHTML = `<img src="${esc(wornGift.model.img)}" alt="" /><span>${esc(wornGift.name)} #${wornGift.number}</span>`;
-  } else {
-    badge.hidden = true;
-  }
 }
 
-// ---- Render Shop Catalog (Only enabled collections, e.g. Coin Flip 500 supply) ----
+// ---- Render Shop Catalog ----
 function renderCatalog() {
   const grid = document.getElementById('catalogGrid');
   if (!grid) return;
@@ -454,7 +534,7 @@ function renderCatalog() {
     grid.innerHTML = `
       <div class="empty-box">
         <strong>Hozircha doʻkonda faol sovgʻalar yoʻq</strong>
-        <span>⚙️ Admin boʻlimiga oʻtib istalgan sovgʻani yoqishingiz mumkin.</span>
+        <span>Tez orada yangi kolleksiyalar qoʻshiladi.</span>
       </div>
     `;
     return;
@@ -475,43 +555,260 @@ function renderCatalog() {
   }
 }
 
-// ---- Render Profile Inventory Grid ----
+// ---- Render Secondary Resale Market (Qayta Sotuv Bozori) ----
+function renderMarket() {
+  const grid = document.getElementById('marketGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const q = STATE.marketQuery.trim().toLowerCase().replace(/^#/, '').replace(/^@/, '');
+  let list = STATE.marketListings.filter(g => {
+    if (STATE.marketFilter === 'crafted' && !g.crafted) return false;
+    if (q) {
+      const matchName = (g.name || '').toLowerCase().includes(q);
+      const matchModel = (g.model?.name || '').toLowerCase().includes(q);
+      const matchOwner = (g.owner || '').toLowerCase().includes(q) || (g.ownerDisplayName || '').toLowerCase().includes(q);
+      const matchNum = String(g.number || '') === q;
+      if (!matchName && !matchModel && !matchOwner && !matchNum) return false;
+    }
+    return true;
+  });
+
+  if (STATE.marketFilter === 'price_asc') {
+    list.sort((a, b) => (a.salePrice || 0) - (b.salePrice || 0));
+  } else if (STATE.marketFilter === 'price_desc') {
+    list.sort((a, b) => (b.salePrice || 0) - (a.salePrice || 0));
+  } else if (STATE.marketFilter === 'num_asc') {
+    list.sort((a, b) => (a.number || 999999) - (b.number || 999999));
+  }
+
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="empty-box">
+        <strong>Marketda hozircha sotuvdagi sovgʻalar yoʻq</strong>
+        <span>Profilingizdagi yaxshilangan (Upgraded) sovgʻani «Sotish» tugmasi orqali Marketga chiqarishingiz mumkin!</span>
+        <button type="button" class="btn btn-primary btn-sm" id="btnEmptyListGift">+ Sovgʻamni sotuvga qoʻyish</button>
+      </div>
+    `;
+    grid.querySelector('#btnEmptyListGift')?.addEventListener('click', openListMyGiftPickerModal);
+    return;
+  }
+
+  for (const g of list) {
+    grid.appendChild(buildGiftCard(g, { isMarketCard: true }));
+  }
+}
+
+async function buyMarketGift(gift) {
+  if (!STATE.user) return showToast('Avval tizimga kiring');
+  if (gift.owner === STATE.user.username) {
+    return showToast('Bu sizning oʻz sovgʻangiz');
+  }
+  const price = gift.salePrice || 250;
+  if ((STATE.user.stars || 0) < price) {
+    const deficit = Math.max(1, price - (STATE.user.stars || 0));
+    openAddStarsModal(deficit, `${gift.name} #${gift.number} xarid qilish`, async () => {
+      await buyMarketGift(gift);
+    });
+    return;
+  }
+
+  const res = await api('/api/market/buy', {
+    method: 'POST',
+    body: JSON.stringify({
+      username: STATE.user.username,
+      giftId: gift.id
+    })
+  });
+  if (!res.ok) {
+    if (res.needStars) {
+      openAddStarsModal(res.deficit || price, `${gift.name} #${gift.number} xarid qilish`);
+      return;
+    }
+    return showToast(res.error || 'Sotib olishda xatolik');
+  }
+
+  closeGiftModal();
+  launchEdgeConfetti();
+  showToast(`🎉 ${gift.name} #${gift.number} xarid qilindi!`);
+  await Promise.all([loginUser(STATE.user.username), loadMarket()]);
+  switchTab('inventory');
+  openGiftModal(res.gift, 'view');
+}
+
+// ---- Render Telegram-Style Collectible Profile (Own Profile OR Another User's Profile) ----
+function renderProfileView() {
+  const prof = STATE.viewedProfile || STATE.myProfile || {
+    username: STATE.user?.username || 'user',
+    displayName: STATE.user?.displayName || 'Foydalanuvchi',
+    bio: STATE.user?.bio || '',
+    stats: {
+      totalGifts: STATE.inventory.length,
+      upgradedCount: STATE.inventory.filter(g => g.state === 'upgraded').length,
+      craftedCount: STATE.inventory.filter(g => g.crafted).length,
+      onSaleCount: STATE.inventory.filter(g => g.salePrice > 0).length,
+      collectionValue: STATE.inventory.reduce((s, g) => s + (g.valueStars || 250), 0)
+    },
+    wornGift: STATE.inventory.find(g => g.worn && g.state === 'upgraded') || null,
+    pinnedGifts: STATE.inventory.filter(g => g.pinned && g.state === 'upgraded').slice(0, 6),
+    gifts: STATE.inventory
+  };
+
+  const isOwn = !STATE.viewedProfile || (STATE.user && prof.username === STATE.user.username);
+  const disp = prof.displayName || prof.username || 'Foydalanuvchi';
+  const initial = disp.charAt(0).toUpperCase();
+
+  document.getElementById('profileAvatar').textContent = initial;
+  document.getElementById('profileName').textContent = disp;
+  document.getElementById('profileUsernameHandle').textContent = `@${prof.username}`;
+  document.getElementById('profileBioText').textContent =
+    prof.bio || (isOwn
+      ? 'Sovgʻani bosing — Upgrade, Craft, profilga qadash (📌), taqish (👑) yoki boshqa profilga oʻtkazish uchun'
+      : `@${prof.username} ning rasmiy Paxta Gifts kolleksiyasi`);
+
+  document.getElementById('btnBackToMyProfile').hidden = isOwn;
+  document.getElementById('btnEditBio').hidden = !isOwn;
+  const regFilterBtn = document.getElementById('filterBtnRegular');
+  if (regFilterBtn) regFilterBtn.hidden = !isOwn;
+
+  // Worn Gift Status Badge (Crown + Gift Icon next to Name)
+  const wornGift = prof.wornGift;
+  const badge = document.getElementById('profileWornBadge');
+  const crown = document.getElementById('profileAvatarCrown');
+  if (wornGift && wornGift.model) {
+    badge.hidden = false;
+    crown.hidden = false;
+    badge.innerHTML = `<img src="${esc(wornGift.model.img)}" alt="" /><span>${esc(wornGift.name)} #${wornGift.number}</span>`;
+    badge.onclick = () => openGiftModal(wornGift, 'view');
+  } else {
+    badge.hidden = true;
+    crown.hidden = true;
+    badge.onclick = null;
+  }
+
+  // Draw Telegram-style Radial Backdrop Banner from Worn Gift or Top Pinned Gift
+  const bannerCanvas = document.getElementById('profileBannerCanvas');
+  const heroGift = wornGift || (prof.pinnedGifts && prof.pinnedGifts[0]) || (prof.gifts || []).find(g => g.state === 'upgraded');
+  if (bannerCanvas) {
+    if (heroGift && heroGift.backdrop) {
+      requestAnimationFrame(() => drawUniqueBackdrop(bannerCanvas, heroGift.backdrop, heroGift.symbol));
+    } else {
+      requestAnimationFrame(() => drawUniqueBackdrop(bannerCanvas, {
+        center: '#242b3d',
+        edge: '#10141f',
+        pattern: '#2d3748'
+      }, null));
+    }
+  }
+
+  // Floating Pinned Gift Icons around the Telegram Profile Banner
+  const floatWrap = document.getElementById('profileFloatingPins');
+  if (floatWrap) {
+    floatWrap.innerHTML = '';
+    const pinPositions = [
+      { top: '18%', left: '6%', delay: '0s' },
+      { top: '56%', left: '10%', delay: '0.7s' },
+      { top: '18%', right: '6%', delay: '0.35s' },
+      { top: '56%', right: '10%', delay: '1.1s' },
+      { top: '36%', left: '18%', delay: '0.5s' },
+      { top: '36%', right: '18%', delay: '0.9s' }
+    ];
+    (prof.pinnedGifts || []).slice(0, 6).forEach((pg, idx) => {
+      const pos = pinPositions[idx % pinPositions.length];
+      const pinEl = document.createElement('div');
+      pinEl.className = 'tg-floating-pin';
+      if (pos.top) pinEl.style.top = pos.top;
+      if (pos.left) pinEl.style.left = pos.left;
+      if (pos.right) pinEl.style.right = pos.right;
+      pinEl.style.animationDelay = pos.delay;
+      pinEl.title = `📌 ${pg.name} #${pg.number}`;
+      pinEl.innerHTML = `<img src="${esc(pg.model?.img || pg.thumb)}" alt="" />`;
+      pinEl.addEventListener('click', () => openGiftModal(pg, 'view'));
+      floatWrap.appendChild(pinEl);
+    });
+  }
+
+  // Profile Stats Row
+  const stats = prof.stats || {};
+  const statsRow = document.getElementById('profileStatsRow');
+  if (statsRow) {
+    statsRow.innerHTML = `
+      <div class="tg-stat-pill">
+        <strong>${fmtInt(stats.totalGifts || 0)}</strong>
+        <span>Jami sovgʻa</span>
+      </div>
+      <div class="tg-stat-pill">
+        <strong>${fmtInt(stats.upgradedCount || 0)}</strong>
+        <span>✨ Noyob</span>
+      </div>
+      <div class="tg-stat-pill">
+        <strong>${fmtInt(stats.craftedCount || 0)}</strong>
+        <span>🔨 Craft</span>
+      </div>
+      <div class="tg-stat-pill">
+        <strong>⭐ ${fmtInt(stats.collectionValue || 0)}</strong>
+        <span>Qiymati</span>
+      </div>
+    `;
+  }
+
+  // Pinned Showcase Section (📌 Profilga qadalgan sovgʻalar)
+  const pinnedSec = document.getElementById('pinnedShowcaseSection');
+  const pinnedGrid = document.getElementById('pinnedGiftsGrid');
+  const pinnedCountLbl = document.getElementById('pinnedCountLabel');
+  const pinnedList = prof.pinnedGifts || [];
+  if (pinnedSec && pinnedGrid) {
+    if (pinnedList.length > 0) {
+      pinnedSec.hidden = false;
+      if (pinnedCountLbl) pinnedCountLbl.textContent = `${pinnedList.length} / 6 qadalgan`;
+      pinnedGrid.innerHTML = '';
+      for (const pg of pinnedList) {
+        pinnedGrid.appendChild(buildGiftCard(pg));
+      }
+    } else {
+      pinnedSec.hidden = true;
+    }
+  }
+
+  renderInventoryGrid(prof.gifts || [], isOwn, prof.username);
+}
+
 function renderInventory() {
+  renderProfileView();
+}
+
+function renderInventoryGrid(giftsList, isOwn, profileUsername) {
   const grid = document.getElementById('inventoryGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
-  const filtered = STATE.inventory.filter(g => {
+  const filtered = giftsList.filter(g => {
+    if (STATE.invFilter === 'pinned') return !!g.pinned;
     if (STATE.invFilter === 'upgraded') return g.state === 'upgraded';
     if (STATE.invFilter === 'crafted') return g.state === 'upgraded' && g.crafted;
     if (STATE.invFilter === 'regular') return g.state === 'regular';
+    if (STATE.invFilter === 'sale') return g.salePrice > 0;
     return true;
   });
 
   if (!filtered.length) {
     grid.innerHTML = `
       <div class="empty-box">
-        <strong>Profilingizda hozircha sovgʻalar yoʻq</strong>
-        <span>Doʻkon boʻlimidan <b>Coin Flip</b> sovgʻasini sotib oling, soʻng bu yerda Upgrade va Craft qiling!</span>
-        <button type="button" class="btn btn-primary btn-sm" id="btnGoToShopEmpty">Doʻkonga oʻtish</button>
+        <strong>${isOwn ? 'Bu boʻlimda hozircha sovgʻalar yoʻq' : `@${esc(profileUsername)} profilida hozircha sovgʻalar yoʻq`}</strong>
+        <span>${isOwn ? 'Doʻkon yoki Market boʻlimidan sovgʻa xarid qiling!' : 'Boshqa kolleksionerlarni «🏆 Odamlar & Jonli» boʻlimidan koʻrishingiz mumkin.'}</span>
+        ${isOwn ? `<button type="button" class="btn btn-primary btn-sm" id="btnGoToShopEmpty">Doʻkonga oʻtish</button>` : ''}
       </div>
     `;
     grid.querySelector('#btnGoToShopEmpty')?.addEventListener('click', () => switchTab('shop'));
     return;
   }
 
-  filtered.sort((a, b) => {
-    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-    if (a.state !== b.state) return a.state === 'regular' ? -1 : 1; // Show un-upgraded gifts ready to upgrade first or newest
-    return (b.boughtAt || '').localeCompare(a.boughtAt || '');
-  });
-
   for (const g of filtered) {
     grid.appendChild(buildGiftCard(g));
   }
 }
 
-function buildGiftCard(g) {
+function buildGiftCard(g, opts = {}) {
   const card = document.createElement('div');
   card.className = `gift-card ${g.state === 'regular' ? 'is-regular' : 'is-upgraded'}`;
 
@@ -532,8 +829,12 @@ function buildGiftCard(g) {
   const top = document.createElement('div');
   top.className = 'gift-card-top';
   if (g.state === 'upgraded') {
+    const leftBadges = [];
+    if (g.pinned && !opts.isMarketCard) leftBadges.push('📌');
+    if (g.worn && !opts.isMarketCard) leftBadges.push('👑');
+    if (g.salePrice > 0 && !opts.isMarketCard) leftBadges.push(`🏷 ⭐${fmtInt(g.salePrice)}`);
     top.innerHTML = `
-      <span></span>
+      <span class="gift-card-badge" style="${leftBadges.length ? '' : 'visibility:hidden'}">${leftBadges.join(' ') || '·'}</span>
       <span class="gift-card-num">#${fmtInt(g.number)}</span>
     `;
   } else {
@@ -553,7 +854,24 @@ function buildGiftCard(g) {
 
   const foot = document.createElement('div');
   foot.className = 'gift-card-foot';
-  if (g.state === 'upgraded') {
+  if (opts.isMarketCard) {
+    foot.innerHTML = `
+      <div class="gift-card-title">${esc(g.name)} #${fmtInt(g.number)}</div>
+      <div class="gift-card-sub">${esc(g.model?.name || '')}</div>
+      <div class="gift-card-seller">
+        <span>Egasi:</span>
+        <b data-seller="${esc(g.owner)}">@${esc(g.owner)}</b>
+      </div>
+      <button type="button" class="market-buy-pill">
+        ${svgStar(13)}
+        <span>${fmtInt(g.salePrice)}</span>
+      </button>
+    `;
+    foot.querySelector('[data-seller]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openUserProfile(g.owner);
+    });
+  } else if (g.state === 'upgraded') {
     foot.innerHTML = `
       <div class="gift-card-title">${esc(g.name)} #${fmtInt(g.number)}</div>
       <div class="gift-card-sub">${esc(g.model?.name || '')}</div>
@@ -570,8 +888,89 @@ function buildGiftCard(g) {
   return card;
 }
 
-// ---- Render Admin Panel ----
+// ---- Render Collectors Directory & Live Activity Feed ----
+function renderExplore() {
+  const colEl = document.getElementById('collectorsList');
+  const actEl = document.getElementById('activityList');
+  if (colEl) {
+    colEl.innerHTML = '';
+    if (!STATE.collectors.length) {
+      colEl.innerHTML = `<div class="empty-box" style="padding:24px;"><span>Hozircha kolleksionerlar topilmadi</span></div>`;
+    } else {
+      STATE.collectors.forEach((u, idx) => {
+        const row = document.createElement('div');
+        row.className = 'collector-row';
+        const init = (u.displayName || u.username || 'U').charAt(0).toUpperCase();
+        row.innerHTML = `
+          <div class="collector-left">
+            <span class="collector-rank">#${idx + 1}</span>
+            <span class="avatar avatar-sm">${esc(init)}</span>
+            <div class="collector-info">
+              <div class="collector-name">
+                <span>${esc(u.displayName || u.username)}</span>
+                ${u.wornGift?.model?.img ? `<img src="${esc(u.wornGift.model.img)}" title="👑 ${esc(u.wornGift.name)} #${u.wornGift.number}" />` : ''}
+              </div>
+              <div class="collector-sub">@${esc(u.username)} · ${fmtInt(u.stats?.totalGifts || 0)} ta sovgʻa · ⭐ ${fmtInt(u.stats?.collectionValue || 0)}</div>
+            </div>
+          </div>
+          <div class="collector-pins">
+            ${(u.pinnedPreviews || []).map(p => `<img src="${esc(p.img)}" title="📌 ${esc(p.name)} #${p.number}" />`).join('')}
+          </div>
+        `;
+        row.addEventListener('click', () => openUserProfile(u.username));
+        colEl.appendChild(row);
+      });
+    }
+  }
+
+  if (actEl) {
+    actEl.innerHTML = '';
+    if (!STATE.activity.length) {
+      actEl.innerHTML = `<div class="empty-box" style="padding:24px;"><span>Hozircha harakatlar tarixi boʻsh</span></div>`;
+    } else {
+      for (const a of STATE.activity) {
+        const row = document.createElement('div');
+        row.className = 'activity-row';
+        let descHtml = '';
+        if (a.type === 'upgrade') {
+          descHtml = `<b data-u="${esc(a.actor)}">@${esc(a.actor)}</b> oʻzining <b data-g="${esc(a.giftId)}">${esc(a.giftName)} #${fmtInt(a.giftNumber)}</b> sovgʻasini yaxshiladi (${esc(a.modelName || '')})`;
+        } else if (a.type === 'craft') {
+          descHtml = `🔨 <b data-u="${esc(a.actor)}">@${esc(a.actor)}</b> maxfiy <b data-g="${esc(a.giftId)}">${esc(a.giftName)} #${fmtInt(a.giftNumber)} (${esc(a.modelName || '')})</b> modelini Craft qildi!`;
+        } else if (a.type === 'market_sale') {
+          descHtml = `🏷 <b data-u="${esc(a.actor)}">@${esc(a.actor)}</b> Marketdan <b data-g="${esc(a.giftId)}">${esc(a.giftName)} #${fmtInt(a.giftNumber)}</b> ni <b>⭐ ${fmtInt(a.price)}</b> ga sotib oldi`;
+        } else if (a.type === 'transfer') {
+          descHtml = `🔄 <b data-u="${esc(a.actor)}">@${esc(a.actor)}</b> → <b data-u="${esc(a.target)}">@${esc(a.target)}</b> ga <b data-g="${esc(a.giftId)}">${esc(a.giftName)}${a.giftNumber ? ' #' + a.giftNumber : ''}</b> yubordi`;
+        } else {
+          descHtml = `🎁 <b data-u="${esc(a.actor)}">@${esc(a.actor)}</b> doʻkondan <b>${esc(a.giftName)}</b> xarid qildi`;
+        }
+
+        row.innerHTML = `
+          <div class="activity-left">
+            <img class="activity-thumb" src="${esc(a.thumb || '/a/coinflip/thumb.webp')}" alt="" />
+            <div class="activity-text">${descHtml}</div>
+          </div>
+        `;
+        row.querySelectorAll('[data-u]').forEach(el => {
+          el.addEventListener('click', () => openUserProfile(el.getAttribute('data-u')));
+        });
+        const openActGift = async (gid) => {
+          if (!gid) return;
+          const r = await api(`/api/gifts/${encodeURIComponent(gid)}`);
+          if (r.ok && r.gift) openGiftModal(r.gift, 'view');
+        };
+        row.querySelectorAll('[data-g]').forEach(el => {
+          el.addEventListener('click', () => openActGift(el.getAttribute('data-g')));
+        });
+        row.querySelector('.activity-thumb')?.addEventListener('click', () => openActGift(a.giftId));
+        actEl.appendChild(row);
+      }
+    }
+  }
+}
+
+// ---- Render Admin Panel (Strictly ID 100 Only) ----
 function renderAdminPanel() {
+  if (!STATE.user?.isAdmin) return;
   const statsRow = document.getElementById('adminStatsRow');
   const listEl = document.getElementById('adminList');
   if (!statsRow || !listEl) return;
@@ -587,8 +986,8 @@ function renderAdminPanel() {
       <span>Foydalanuvchilardagi faol sovgʻalar</span>
     </div>
     <div class="admin-stat-card">
-      <strong>${fmtInt(STATE.adminStats.burnedGifts)}</strong>
-      <span>Craftda yoqilgan (oʻchib ketgan) sovgʻalar</span>
+      <strong>${fmtInt(STATE.adminStats.marketCount || 0)}</strong>
+      <span>Marketda sotuvdagi sovgʻalar</span>
     </div>
     <div class="admin-stat-card">
       <strong>${fmtInt(STATE.adminStats.usersCount)}</strong>
@@ -650,7 +1049,9 @@ function renderAdminPanel() {
       });
       if (res.ok) {
         showToast(`${c.name} sozlamalari saqlandi!`);
-        await Promise.all([loadAdminData(), loadCollections(), loginUser(STATE.user?.displayName)]);
+        await Promise.all([loadAdminData(), loadCollections(), loginUser(STATE.user?.username)]);
+      } else {
+        showToast(res.error || 'Xatolik');
       }
     });
 
@@ -662,6 +1063,8 @@ function renderAdminPanel() {
       if (res.ok) {
         showToast(`${c.name}: ${!c.enabled ? 'Doʻkonda yoqildi' : 'Doʻkondan oʻchirildi'}`);
         await Promise.all([loadAdminData(), loadCollections()]);
+      } else {
+        showToast(res.error || 'Xatolik');
       }
     });
 
@@ -716,6 +1119,9 @@ function renderGiftViewDialog(gift, head, body) {
   head.innerHTML = `
     <div class="modal-head-spacer"></div>
     ${isUpgraded && isMine ? `
+      <button class="icon-btn" id="gvBtnPin" title="${gift.pinned ? 'Profil qadashdan olish' : 'Profilga qadab qoʻyish (📌)'}" style="${gift.pinned ? 'background:rgba(251,191,36,0.28);color:#fde68a;' : ''}">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="${gift.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+      </button>
       <button class="icon-btn" id="gvBtnCraft" title="Sovgʻa tayyorlash (Craft)">
         ${svgCraftIcon(22)}
       </button>
@@ -736,7 +1142,7 @@ function renderGiftViewDialog(gift, head, body) {
     </button>
   `;
 
-  const ownerInitial = (gift.ownerDisplayName || 'M').charAt(0).toUpperCase();
+  const ownerInitial = (gift.ownerDisplayName || gift.owner || 'M').charAt(0).toUpperCase();
   const modelRarityLabel = gift.crafted && gift.model?.tier
     ? (TIER_LABELS[gift.model.tier] || gift.model.tier)
     : fmtPct(gift.model?.rarity);
@@ -788,13 +1194,20 @@ function renderGiftViewDialog(gift, head, body) {
         ` : ''}
       `}
 
+      ${!isMine && gift.salePrice > 0 ? `
+        <button type="button" class="btn btn-primary gv-btn" id="gvBtnBuyMarket" style="margin:12px 16px 2px;width:calc(100% - 32px);background:linear-gradient(135deg,#f59e0b,#d97706);">
+          <span>🏪 Sotib olish · ${svgStar(15)} ${fmtInt(gift.salePrice)}</span>
+        </button>
+      ` : ''}
+
       <dl class="gv-table">
         <div>
           <dt>Egasi</dt>
           <dd>
-            <button type="button" class="gv-from gv-owner">
+            <button type="button" class="gv-from gv-owner" id="gvOwnerProfileBtn" title="@${esc(gift.owner)} profilini koʻrish">
               <span class="avatar">${esc(ownerInitial)}</span>
-              <span>${esc(gift.ownerDisplayName || 'Muhammadiso')}</span>
+              <span>${esc(gift.ownerDisplayName || gift.owner)}</span>
+              <span style="font-size:12px;opacity:0.65;">@${esc(gift.owner)} ›</span>
             </button>
           </dd>
         </div>
@@ -826,10 +1239,10 @@ function renderGiftViewDialog(gift, head, body) {
           </div>
         ` : ''}
         <div>
-          <dt>Qiymati</dt>
+          <dt>${gift.salePrice ? 'Sotuv narxi' : 'Qiymati'}</dt>
           <dd class="gv-stars">
             ${svgStar(16)}
-            <span>${fmtInt(gift.valueStars)}</span>
+            <span>${fmtInt(gift.salePrice || gift.valueStars)}</span>
           </dd>
         </div>
         ${!isUpgraded ? `
@@ -901,8 +1314,20 @@ function renderGiftViewDialog(gift, head, body) {
   }
 
   document.getElementById('gvBtnClose')?.addEventListener('click', closeGiftModal);
-  document.getElementById('gvBtnCraft')?.addEventListener('click', () => openGiftModal(gift, 'craft'));
+  document.getElementById('gvBtnPin')?.addEventListener('click', async () => {
+    await performGiftAction(gift, 'pin');
+    showToast(gift.pinned ? 'Qadashdan olindi' : '📌 Profilga qadab qoʻyildi!');
+  });
+  document.getElementById('gvBtnCraft')?.addEventListener('click', () => {
+    if (gift.salePrice > 0) return showToast('Craft qilish uchun avval sovgʻani sotuvdan oling');
+    openGiftModal(gift, 'craft');
+  });
   document.getElementById('gvBtnOpenUpgrade')?.addEventListener('click', () => openGiftModal(gift, 'upgrade'));
+  document.getElementById('gvBtnBuyMarket')?.addEventListener('click', () => buyMarketGift(gift));
+  document.getElementById('gvOwnerProfileBtn')?.addEventListener('click', () => {
+    closeGiftModal();
+    openUserProfile(gift.owner);
+  });
 
   document.getElementById('gvBtnMore')?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -917,11 +1342,16 @@ function renderGiftViewDialog(gift, head, body) {
           ${svgCraftIcon(18)}
           <span>Tayyorlash (Craft)</span>
         </button>
-      ` : ''}
-      <button class="ctx-item" id="ctxPin">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
-        <span>${gift.pinned ? 'Qadashdan olish' : 'Qadab qoʻyish'}</span>
-      </button>
+        <button class="ctx-item" id="ctxPin">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+          <span>${gift.pinned ? 'Qadashdan olish' : '📌 Profilga qadab qoʻyish'}</span>
+        </button>
+      ` : `
+        <button class="ctx-item" id="ctxTransferReg">
+          ${svgActionIcon('transfer', 18)}
+          <span>Boshqa profilga oʻtkazish</span>
+        </button>
+      `}
       <button class="ctx-item" id="ctxHide">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         <span>${gift.hidden ? 'Profilda koʻrsatish' : 'Sovgʻani yashirish'}</span>
@@ -937,18 +1367,29 @@ function renderGiftViewDialog(gift, head, body) {
       menu.remove();
       await performGiftAction(gift, 'pin');
     });
+    menu.querySelector('#ctxTransferReg')?.addEventListener('click', () => {
+      menu.remove();
+      openTransferPrompt(gift);
+    });
     menu.querySelector('#ctxHide')?.addEventListener('click', async () => {
       menu.remove();
       await performGiftAction(gift, 'hide');
     });
   });
 
-  document.getElementById('gvActWear')?.addEventListener('click', () => performGiftAction(gift, 'wear'));
+  document.getElementById('gvActWear')?.addEventListener('click', async () => {
+    await performGiftAction(gift, 'wear');
+    showToast(gift.worn ? 'Taqishdan olindi' : '👑 Profil sarlavhasiga taqildi!');
+  });
   document.getElementById('gvToggleHide')?.addEventListener('click', () => performGiftAction(gift, 'hide'));
   document.getElementById('gvActTransfer')?.addEventListener('click', () => openTransferPrompt(gift));
   document.getElementById('gvActSell')?.addEventListener('click', () => {
-    if (gift.salePrice) performGiftAction(gift, 'sell', { price: null });
-    else openSellPrompt(gift);
+    if (gift.salePrice) {
+      performGiftAction(gift, 'sell', { price: null });
+      showToast('Sovgʻa Marketdan olindi');
+    } else {
+      openSellPrompt(gift);
+    }
   });
 
   STATE.cleanupModal = () => {
@@ -971,7 +1412,7 @@ async function performGiftAction(gift, action, extra = {}) {
     showToast(res.error || 'Xatolik yuz berdi');
     return;
   }
-  await loginUser(STATE.user.displayName);
+  await Promise.all([loginUser(STATE.user.username), loadMarket()]);
   const updated = STATE.inventory.find(i => i.id === gift.id);
   if (updated && STATE.activeGift && STATE.activeGift.id === gift.id) {
     openGiftModal(updated, 'view');
@@ -1878,6 +2319,9 @@ function openBuyCollectionSheet(c) {
       <button type="button" class="btn btn-primary gv-btn" id="btnBuyRegularOnly" ${c.remainingToBuy <= 0 ? 'disabled' : ''}>
         <span>${hasEnough ? `Sotib olish · ${svgStar(15)} ${fmtInt(c.base)}` : `PaxtaGram Stars orqali olish · ${svgStar(15)} ${fmtInt(deficit)}`}</span>
       </button>
+      <button type="button" class="btn btn-tonal gv-btn" id="btnPreviewModelsList" style="height:40px;font-size:13.5px;">
+        <span>👁 Modellar va % ehtimolliklarni koʻrish (${c.modelsCount || 28} oddiy · ${c.craftModelsCount || 13} craft)</span>
+      </button>
     </div>
   `, (body) => {
     mountLottieOrImg(body.querySelector('#buyPreviewLottie'), {
@@ -1886,6 +2330,10 @@ function openBuyCollectionSheet(c) {
       size: 136,
       loop: true,
       autoplay: true
+    });
+
+    body.querySelector('#btnPreviewModelsList')?.addEventListener('click', () => {
+      openCollectionModelsExplorer(c);
     });
 
     body.querySelector('#btnBuyRegularOnly')?.addEventListener('click', async (e) => {
@@ -1898,8 +2346,9 @@ function openBuyCollectionSheet(c) {
             body: JSON.stringify({ username: STATE.user.username, slug: c.slug })
           });
           if (buyRes.ok) {
-            await Promise.all([loginUser(STATE.user.displayName), loadCollections()]);
+            await Promise.all([loginUser(STATE.user.username), loadCollections()]);
             showToast(`${c.name} sotib olindi! Endi uni yaxshilashingiz mumkin.`);
+            STATE.viewedProfile = null;
             switchTab('inventory');
             openGiftModal(buyRes.gift, 'view');
           }
@@ -1921,46 +2370,167 @@ function openBuyCollectionSheet(c) {
         return showToast(res.error);
       }
       closeSubModal();
-      await Promise.all([loginUser(STATE.user.displayName), loadCollections()]);
+      await Promise.all([loginUser(STATE.user.username), loadCollections()]);
       showToast(`${c.name} sotib olindi! Endi uni yaxshilashingiz mumkin.`);
+      STATE.viewedProfile = null;
       switchTab('inventory');
       openGiftModal(res.gift, 'view');
     });
   });
 }
 
-function openTransferPrompt(gift) {
-  openSubModal('Sovgʻani oʻtkazish', `
+async function openCollectionModelsExplorer(c) {
+  openSubModal(`${c.name} — Modellar katalogi`, `<div style="text-align:center;padding:24px;color:var(--text-2);">Yuklanmoqda...</div>`, async (body) => {
+    const res = await api(`/api/collections/${encodeURIComponent(c.slug)}`);
+    if (!res.ok || !res.collection) {
+      body.innerHTML = `<div style="padding:20px;color:#ff8585;">Xatolik yuz berdi</div>`;
+      return;
+    }
+    const col = res.collection;
+    const regModels = col.models || [];
+    const craftModels = col.craftModels || [];
+
+    body.innerHTML = `
+      <div class="form-stack">
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="filter-chip active" id="expTabReg">✨ Oddiy Upgrade (${regModels.length})</button>
+          <button type="button" class="filter-chip" id="expTabCraft">🔨 Maxfiy Craft (${craftModels.length})</button>
+        </div>
+        <div class="models-explorer-grid" id="expGrid"></div>
+        <button type="button" class="btn btn-tonal gv-btn" id="btnBackToBuySheet" style="height:40px;">← Orqaga qaytish</button>
+      </div>
+    `;
+
+    const grid = body.querySelector('#expGrid');
+    const renderItems = (items, isCraft) => {
+      grid.innerHTML = items.map(m => `
+        <div class="model-preview-card">
+          <img src="${esc(m.img)}" alt="${esc(m.name)}" loading="lazy" />
+          <strong>${esc(m.name)}</strong>
+          <span>${isCraft && m.tier ? esc(TIER_LABELS[m.tier] || m.tier) : fmtPct(m.rarity)}</span>
+        </div>
+      `).join('');
+    };
+
+    renderItems(regModels, false);
+
+    body.querySelector('#expTabReg')?.addEventListener('click', (e) => {
+      e.currentTarget.classList.add('active');
+      body.querySelector('#expTabCraft')?.classList.remove('active');
+      renderItems(regModels, false);
+    });
+    body.querySelector('#expTabCraft')?.addEventListener('click', (e) => {
+      e.currentTarget.classList.add('active');
+      body.querySelector('#expTabReg')?.classList.remove('active');
+      renderItems(craftModels, true);
+    });
+    body.querySelector('#btnBackToBuySheet')?.addEventListener('click', () => {
+      openBuyCollectionSheet(c);
+    });
+  });
+}
+
+function openListMyGiftPickerModal() {
+  const candidates = STATE.inventory.filter(g => g.state === 'upgraded' && !g.salePrice);
+  if (!candidates.length) {
+    showToast('Sotuvga qoʻyish uchun avval sovgʻangizni Upgrade qiling!');
+    STATE.viewedProfile = null;
+    switchTab('inventory');
+    return;
+  }
+  openSubModal('Marketga sovgʻa chiqarish', `
     <div class="form-stack">
-      <p style="margin:0;color:var(--text-2);font-size:14px;"><b>${esc(gift.name)} #${fmtInt(gift.number)}</b> sovgʻasini qaysi PaxtaGram foydalanuvchisiga yubormoqchisiz?</p>
+      <p style="margin:0;color:var(--text-2);font-size:13.5px;">Sotuvga qoʻymoqchi boʻlgan noyob sovgʻangizni tanlang:</p>
+      <div class="models-explorer-grid">
+        ${candidates.map(g => `
+          <div class="model-preview-card" data-pick-sell="${esc(g.id)}" style="cursor:pointer;">
+            <img src="${esc(g.model?.img || g.thumb)}" alt="" />
+            <strong>${esc(g.name)} #${fmtInt(g.number)}</strong>
+            <span>${esc(g.model?.name || '')}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `, (body) => {
+    body.querySelectorAll('[data-pick-sell]').forEach(el => {
+      el.addEventListener('click', () => {
+        const gid = el.getAttribute('data-pick-sell');
+        const g = candidates.find(x => x.id === gid);
+        if (g) openSellPrompt(g);
+      });
+    });
+  });
+}
+
+function openEditBioModal() {
+  openSubModal('Profil maʼlumotlarini tahrirlash', `
+    <div class="form-stack">
+      <label style="font-size:12.5px;color:var(--text-2);font-weight:600;">Koʻrinadigan ism:</label>
+      <div class="form-field">
+        <input type="text" id="inpEditDispName" value="${esc(STATE.user?.displayName || '')}" maxlength="32" />
+      </div>
+      <label style="font-size:12.5px;color:var(--text-2);font-weight:600;">Profil bio (status matni):</label>
+      <div class="form-field">
+        <input type="text" id="inpEditBioText" value="${esc(STATE.user?.bio || '')}" placeholder="Masalan: Kolleksioner · Noyob sovgʻalar savdosi" maxlength="140" />
+      </div>
+      <button type="button" class="btn btn-primary gv-btn" id="btnSaveBio">Saqlash</button>
+    </div>
+  `, (body) => {
+    body.querySelector('#btnSaveBio')?.addEventListener('click', async () => {
+      const displayName = body.querySelector('#inpEditDispName').value.trim();
+      const bio = body.querySelector('#inpEditBioText').value.trim();
+      const res = await api('/api/user/profile', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: STATE.user.username,
+          displayName,
+          bio
+        })
+      });
+      if (res.ok) {
+        STATE.user = res.user;
+        STATE.myProfile = res.profile;
+        closeSubModal();
+        renderHeaderUser();
+        renderProfileView();
+        showToast('Profil yangilandi!');
+      }
+    });
+  });
+}
+
+function openTransferPrompt(gift) {
+  openSubModal('Sovgʻani boshqa profilga oʻtkazish', `
+    <div class="form-stack">
+      <p style="margin:0;color:var(--text-2);font-size:14px;"><b>${esc(gift.name)}${gift.number ? ' #' + fmtInt(gift.number) : ''}</b> sovgʻasini qaysi foydalanuvchining profiliga oʻtkazmoqchisiz?</p>
       <div class="form-field">
         <span>@</span>
-        <input type="text" id="inpTransferTo" placeholder="username" autocomplete="off" />
+        <input type="text" id="inpTransferTo" placeholder="username kiriting..." autocomplete="off" />
       </div>
-      <button type="button" class="btn btn-primary gv-btn" id="btnConfirmTransfer">Oʻtkazish</button>
+      <button type="button" class="btn btn-primary gv-btn" id="btnConfirmTransfer">🔄 Oʻtkazish</button>
     </div>
   `, (body) => {
     const inp = body.querySelector('#inpTransferTo');
     inp.focus();
     body.querySelector('#btnConfirmTransfer').addEventListener('click', async () => {
-      const toUsername = inp.value.trim();
-      if (!toUsername) return showToast('Username kiriting');
+      const toUsername = inp.value.trim().replace(/^@/, '');
+      if (!toUsername) return showToast('Qabul qiluvchi username kiriting');
       closeSubModal();
       await performGiftAction(gift, 'transfer', { toUsername });
-      showToast(`Sovgʻa @${toUsername} ga oʻtkazildi!`);
+      showToast(`🎁 Sovgʻa @${toUsername} profiliga oʻtkazildi!`);
     });
   });
 }
 
 function openSellPrompt(gift) {
-  openSubModal('Sovgʻani sotuvga qoʻyish', `
+  openSubModal('🏪 Marketda sotuvga qoʻyish', `
     <div class="form-stack">
-      <p style="margin:0;color:var(--text-2);font-size:14px;"><b>${esc(gift.name)} #${fmtInt(gift.number)}</b> uchun yulduzlar narxini belgilang:</p>
+      <p style="margin:0;color:var(--text-2);font-size:14px;"><b>${esc(gift.name)} #${fmtInt(gift.number)} (${esc(gift.model?.name || '')})</b> uchun yulduzlar narxini belgilang. Xaridor topilishi bilan yulduzlar balansingizga tushadi:</p>
       <div class="form-field">
         <span style="color:var(--saffron)">${svgStar(18)}</span>
-        <input type="number" id="inpSellPrice" value="${gift.valueStars || 250}" min="1" />
+        <input type="number" id="inpSellPrice" value="${gift.salePrice || gift.valueStars || 350}" min="1" />
       </div>
-      <button type="button" class="btn btn-primary gv-btn" id="btnConfirmSell">Sotuvga qoʻyish</button>
+      <button type="button" class="btn btn-primary gv-btn" id="btnConfirmSell">🏷 Marketga chiqarish</button>
     </div>
   `, (body) => {
     const inp = body.querySelector('#inpSellPrice');
@@ -1970,7 +2540,7 @@ function openSellPrompt(gift) {
       if (!(price > 0)) return showToast('Narxni toʻgʻri kiriting');
       closeSubModal();
       await performGiftAction(gift, 'sell', { price });
-      showToast(`Sotuvga qoʻyildi: ⭐ ${fmtInt(price)}`);
+      showToast(`🏷 Marketga chiqarildi: ⭐ ${fmtInt(price)}`);
     });
   });
 }
@@ -2042,11 +2612,9 @@ function openAddStarsModal(defaultAmount = 250, purpose = '', onPaid = null) {
       waitBox.hidden = false;
       lnkOpen.href = res.webInvoiceUrl;
 
-      // 1. If inside PaxtaGram Mini App iframe, trigger native InvoiceDialog overlay!
       if (isInsidePaxtaMiniApp() && res.slug) {
         notifyPaxtaMiniApp('web_app_open_invoice', { slug: res.slug });
       } else {
-        // 2. If in standalone browser, open PaxtaGram with ?invoice=<slug>
         window.open(res.webInvoiceUrl, '_blank', 'noopener');
       }
 
@@ -2087,49 +2655,110 @@ function openAddStarsModal(defaultAmount = 250, purpose = '', onPaid = null) {
 function openSwitchUserModal() {
   openSubModal('PaxtaGram Profil', `
     <div class="form-stack">
-      <p style="margin:0;color:var(--text-2);font-size:14px;">PaxtaGram username yoki ismingiz:</p>
+      <p style="margin:0;color:var(--text-2);font-size:14px;">PaxtaGram username orqali kirish (avvalgi barcha sovgʻa va yulduzlaringiz saqlanadi):</p>
       <div class="form-field">
-        <input type="text" id="inpUserName" value="${esc(STATE.user?.displayName || 'Muhammadiso')}" />
+        <span>@</span>
+        <input type="text" id="inpUserName" value="${esc(STATE.user?.username || 'Muhammadiso')}" />
       </div>
-      <button type="button" class="btn btn-primary gv-btn" id="btnSaveUser">Kirish / Saqlash</button>
+      <button type="button" class="btn btn-primary gv-btn" id="btnSaveUser">Kirish</button>
     </div>
   `, (body) => {
     const inp = body.querySelector('#inpUserName');
     inp.focus();
     body.querySelector('#btnSaveUser').addEventListener('click', async () => {
-      const val = inp.value.trim();
+      const val = inp.value.trim().replace(/^@/, '');
       if (!val) return;
       closeSubModal();
+      STATE.viewedProfile = null;
       await loginUser(val);
-      showToast(`Profil: ${val}`);
+      showToast(`Profil: @${STATE.user?.username || val}`);
     });
   });
 }
 
 function switchTab(tab) {
+  if (tab === 'admin' && !STATE.user?.isAdmin) {
+    return showToast('Admin panel faqat ID 100 uchun ochiq');
+  }
   STATE.activeTab = tab;
   document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.getElementById('paneShop').hidden = tab !== 'shop';
+  document.getElementById('paneMarket').hidden = tab !== 'market';
   document.getElementById('paneInventory').hidden = tab !== 'inventory';
+  document.getElementById('paneExplore').hidden = tab !== 'explore';
   document.getElementById('paneAdmin').hidden = tab !== 'admin';
-  if (tab === 'admin') loadAdminData();
+
   if (tab === 'shop') loadCollections();
+  if (tab === 'market') loadMarket();
+  if (tab === 'inventory') renderProfileView();
+  if (tab === 'explore') loadExploreData();
+  if (tab === 'admin') loadAdminData();
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.main-tab').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tab === 'inventory') {
+        STATE.viewedProfile = null;
+      }
+      switchTab(btn.dataset.tab);
+    });
   });
 
+  document.getElementById('brandHome')?.addEventListener('click', () => switchTab('shop'));
+
+  // Profile filters
   document.querySelectorAll('#paneInventory .filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('#paneInventory .filter-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       STATE.invFilter = chip.dataset.filter;
-      renderInventory();
+      renderProfileView();
     });
   });
 
+  document.getElementById('btnBackToMyProfile')?.addEventListener('click', () => {
+    STATE.viewedProfile = null;
+    renderProfileView();
+  });
+  document.getElementById('btnEditBio')?.addEventListener('click', openEditBioModal);
+  document.getElementById('btnShareProfile')?.addEventListener('click', async () => {
+    const profUser = (STATE.viewedProfile || STATE.user)?.username || 'user';
+    const url = `${window.location.origin}/?profile=${encodeURIComponent(profUser)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast(`🔗 @${profUser} profil havolasi nusxalandi!`);
+    } catch {
+      showToast(url);
+    }
+  });
+
+  // Market filters & search
+  document.querySelectorAll('#paneMarket .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#paneMarket .filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      STATE.marketFilter = chip.dataset.mfilter;
+      renderMarket();
+    });
+  });
+  document.getElementById('marketSearch')?.addEventListener('input', (e) => {
+    STATE.marketQuery = e.target.value;
+    renderMarket();
+  });
+  document.getElementById('btnGoListMyGift')?.addEventListener('click', openListMyGiftPickerModal);
+
+  // Explore / Collectors search
+  const dirInp = document.getElementById('userDirectorySearch');
+  dirInp?.addEventListener('input', (e) => {
+    loadExploreData(e.target.value);
+  });
+  document.getElementById('btnOpenSearchedProfile')?.addEventListener('click', () => {
+    const v = dirInp?.value.trim().replace(/^@/, '');
+    if (v) openUserProfile(v);
+  });
+
+  // Admin filters & actions
   document.querySelectorAll('#paneAdmin .filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('#paneAdmin .filter-chip').forEach(c => c.classList.remove('active'));
@@ -2169,5 +2798,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   notifyPaxtaMiniApp('web_app_ready');
   notifyPaxtaMiniApp('web_app_expand');
-  await Promise.all([loginUser(), loadCollections()]);
+  await Promise.all([loginUser(), loadCollections(), loadMarket()]);
+
+  // Support deep-linking to any user's profile via ?profile=username
+  const urlParams = new URLSearchParams(window.location.search);
+  const deepProfile = urlParams.get('profile');
+  if (deepProfile) {
+    openUserProfile(deepProfile);
+  }
 });
