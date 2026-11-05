@@ -2,7 +2,7 @@
 <html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Paxta Gifts — Doʻkon, Market, Profil, Upgrade va Craft</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,14 +12,14 @@
 </head>
 <body>
   <div class="app-shell">
-    <!-- Top Navigation Bar -->
+    <!-- Top iOS Liquid Glass Navigation Bar -->
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand" id="brandHome" style="cursor:pointer;">
           <div class="brand-logo">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/>
-              <rect x="2" y="7" width="20" height="5" rx="1"/>
+              <rect x="2" y="7" width="20" height="5" rx="1.5"/>
               <path d="M12 22V7"/>
               <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
               <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
@@ -27,29 +27,45 @@
           </div>
           <div class="brand-text">
             <strong>Paxta Gifts</strong>
-            <span>PaxtaGram Kolleksiyaviy Sovgʻalar</span>
+            <span>Collectible Gifts</span>
           </div>
         </div>
 
-        <nav class="main-tabs" role="tablist">
+        <!-- Desktop Segmented iOS Glass Tabs -->
+        <nav class="main-tabs desktop-tabs" role="tablist">
           <button class="main-tab active" data-tab="shop" id="tabShop">
-            <span>🎁 Doʻkon</span>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span>Doʻkon</span>
             <b class="tab-badge" id="shopCountBadge">1</b>
           </button>
           <button class="main-tab" data-tab="market" id="tabMarket">
-            <span>🏪 Market</span>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+            <span>Market</span>
             <b class="tab-badge" id="marketCountBadge">0</b>
           </button>
           <button class="main-tab" data-tab="inventory" id="tabInventory">
-            <span>👤 Profil</span>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Profil</span>
             <b class="tab-badge" id="invCountBadge">0</b>
           </button>
           <button class="main-tab" data-tab="explore" id="tabExplore">
-            <span>🏆 Odamlar & Jonli</span>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+            </svg>
+            <span>Reyting</span>
           </button>
           <!-- STRICTLY HIDDEN UNLESS PAXTAGRAM USER ID === 100 -->
           <button class="main-tab" data-tab="admin" id="tabAdmin" hidden>
-            <span>⚙️ Admin</span>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Admin</span>
           </button>
         </nav>
 
@@ -63,7 +79,7 @@
           </button>
           <button class="user-pill" id="btnSwitchUser" title="PaxtaGram profil">
             <span class="avatar avatar-sm" id="userAvatar">M</span>
-            <span id="userDisplayName">Foydalanuvchi</span>
+            <span id="userDisplayName">Profil</span>
           </button>
         </div>
       </div>
@@ -71,41 +87,38 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      <!-- TAB 1: Do'kon (Official Shop — Buy regular gifts, then Upgrade & Craft in Profile) -->
+      <!-- TAB 1: Do'kon (Official Shop) -->
       <section class="tab-pane active" id="paneShop">
-        <div class="profile-banner">
-          <div class="profile-banner-left">
-            <div class="brand-logo" style="width:48px;height:48px;border-radius:15px;">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10.5h5M9.5 13.5h5"/></svg>
-            </div>
-            <div class="profile-meta">
-              <div class="profile-name-row">
-                <h1>Rasmiy Sovgʻalar Doʻkoni</h1>
-              </div>
-              <p class="profile-sub">Cheklangan tirajdagi sovgʻalarni xarid qiling, <b>Profil</b> boʻlimida <b>Upgrade</b> va <b>Craft</b> qiling yoki <b>Market</b>da soting</p>
-            </div>
+        <div class="ios-hero-banner">
+          <div class="ios-hero-icon">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><rect x="2" y="7" width="20" height="5" rx="1.5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <div class="ios-hero-text">
+            <h1>Sovgʻalar Doʻkoni</h1>
+            <p>Cheklangan tirajdagi sovgʻalarni xarid qiling, <b>Profil</b> boʻlimida <b>Upgrade</b> va <b>Craft</b> qiling yoki <b>Market</b>da soting</p>
           </div>
         </div>
         <div class="catalog-grid" id="catalogGrid"></div>
       </section>
 
-      <!-- TAB 2: Market (Secondary Resale Marketplace for Upgraded & Crafted Gifts) -->
+      <!-- TAB 2: Market (Secondary Resale Marketplace) -->
       <section class="tab-pane" id="paneMarket" hidden>
-        <div class="profile-banner">
-          <div class="profile-banner-left">
-            <div class="brand-logo" style="width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#f59e0b,#d97706);">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM6.5 8C5.67 8 5 7.33 5 6.5S5.67 5 6.5 5 8 5.67 8 6.5 7.33 8 6.5 8z"/></svg>
-            </div>
-            <div class="profile-meta">
-              <div class="profile-name-row">
-                <h1>🏪 Qayta Sotuv Bozori (Market)</h1>
-              </div>
-              <p class="profile-sub">Foydalanuvchilar tomonidan Upgrade va Craft qilingan noyob sovgʻalarni xarid qiling yoki oʻz sovgʻangizni sotuvga qoʻying</p>
-            </div>
+        <div class="ios-hero-banner">
+          <div class="ios-hero-icon market-accent">
+            <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
           </div>
-          <div class="profile-filters">
-            <button class="btn btn-tonal btn-sm" id="btnGoListMyGift">+ Sovgʻamni sotuvga qoʻyish</button>
+          <div class="ios-hero-text">
+            <h1>Qayta Sotuv Bozori</h1>
+            <p>Foydalanuvchilar tomonidan Upgrade va Craft qilingan noyob sovgʻalarni xarid qiling yoki oʻz sovgʻangizni sotuvga qoʻying</p>
           </div>
+          <button class="btn btn-primary btn-sm ios-pill-btn" id="btnGoListMyGift">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Sotuvga qoʻyish</span>
+          </button>
         </div>
 
         <div class="shop-toolbar">
@@ -113,88 +126,121 @@
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
             </svg>
-            <input type="text" id="marketSearch" placeholder="Model nomi, #raqam yoki @sotuvchi boʻyicha qidirish..." />
+            <input type="text" id="marketSearch" placeholder="Model nomi, #raqam yoki @sotuvchi..." />
           </div>
           <div class="shop-sort">
             <button class="filter-chip active" data-mfilter="all">Barchasi</button>
-            <button class="filter-chip" data-mfilter="crafted">🔨 Craft modellar</button>
-            <button class="filter-chip" data-mfilter="price_asc">Arzonroq ⭐↑</button>
-            <button class="filter-chip" data-mfilter="price_desc">Qimmatroq ⭐↓</button>
-            <button class="filter-chip" data-mfilter="num_asc">Raqam #1↑</button>
+            <button class="filter-chip" data-mfilter="crafted">Craft modellar</button>
+            <button class="filter-chip" data-mfilter="price_asc">Arzonroq ↑</button>
+            <button class="filter-chip" data-mfilter="price_desc">Qimmatroq ↓</button>
+            <button class="filter-chip" data-mfilter="num_asc">Raqam #1 ↑</button>
           </div>
         </div>
 
         <div class="gift-grid" id="marketGrid"></div>
       </section>
 
-      <!-- TAB 3: Telegram-Style Collectible Profile (Own Profile OR Visiting Another User's Profile) -->
+      <!-- TAB 3: Authentic 1:1 Telegram iOS Collectible Profile -->
       <section class="tab-pane" id="paneInventory" hidden>
-        <div class="tg-profile-card" id="tgProfileCard">
-          <canvas class="tg-profile-bg" id="profileBannerCanvas"></canvas>
-          <!-- Floating Pinned Showcase Icons in Banner -->
-          <div class="tg-profile-floating-pins" id="profileFloatingPins"></div>
+        <div class="tg-ios-profile" id="tgProfileCard">
+          <!-- Dynamic Backdrop Canvas from Worn or Pinned Gift -->
+          <div class="tg-ios-cover">
+            <canvas class="tg-profile-bg" id="profileBannerCanvas"></canvas>
+            <div class="tg-ios-cover-fade"></div>
 
-          <div class="tg-profile-top-actions" id="profileTopActions">
-            <button class="btn btn-tonal btn-sm" id="btnBackToMyProfile" hidden>← Mening profilimga qaytish</button>
-            <div style="display:flex;gap:8px;margin-left:auto;">
-              <button class="btn btn-tonal btn-sm" id="btnEditBio">✏️ Bio</button>
-              <button class="btn btn-tonal btn-sm" id="btnShareProfile">🔗 Ulashish</button>
+            <!-- Orbiting Pinned Collectible Gifts around Avatar (Telegram Collectible Cover style) -->
+            <div class="tg-profile-floating-pins" id="profileFloatingPins"></div>
+
+            <!-- Back button when visiting another user's profile -->
+            <div class="tg-ios-cover-bar">
+              <button class="ios-glass-pill" id="btnBackToMyProfile" hidden>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <span>Mening profilim</span>
+              </button>
+            </div>
+
+            <!-- Centered Avatar + Name + Worn Status Icon + @username -->
+            <div class="tg-ios-identity">
+              <div class="tg-avatar-wrap">
+                <div class="avatar avatar-xl" id="profileAvatar">M</div>
+                <span class="tg-avatar-crown" id="profileAvatarCrown" hidden title="Taqilgan sovgʻa">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3.5 18.5h17v2h-17v-2Zm.4-1.5L2.5 7.5l5.2 3.6L12 4.5l4.3 6.6 5.2-3.6-1.4 9.5H3.9Z"/></svg>
+                </span>
+              </div>
+
+              <div class="tg-name-row">
+                <h1 id="profileName">Muhammadiso</h1>
+                <!-- Collectible Status Gift Icon right next to Name (1:1 Telegram style) -->
+                <button class="profile-worn-badge" id="profileWornBadge" hidden title="Taqilgan sovgʻani koʻrish"></button>
+              </div>
+
+              <div class="tg-username-row" id="profileUsernameHandle">@muhammadiso</div>
+              <p class="tg-bio" id="profileBioText"></p>
+
+              <!-- 1:1 Telegram iOS Frosted Glass Action Buttons Row -->
+              <div class="tg-ios-action-grid" id="profileActionGrid">
+                <button type="button" class="tg-ios-action-btn" id="profActShop">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><rect x="2" y="7" width="20" height="5" rx="1.5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                  <span>Doʻkon</span>
+                </button>
+                <button type="button" class="tg-ios-action-btn" id="profActStars">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 1.8l2.9 6.2 6.8.8-5 4.6 1.4 6.7L12 16.7 5.9 20.1l1.4-6.7-5-4.6 6.8-.8z"/></svg>
+                  <span>Yulduz +</span>
+                </button>
+                <button type="button" class="tg-ios-action-btn" id="btnEditBio">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  <span>Tahrirlash</span>
+                </button>
+                <button type="button" class="tg-ios-action-btn" id="btnShareProfile">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  <span>Ulashish</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="tg-profile-center">
-            <div class="tg-avatar-wrap">
-              <div class="avatar avatar-xl" id="profileAvatar">M</div>
-              <span class="tg-avatar-crown" id="profileAvatarCrown" hidden title="Taqilgan sovgʻa">👑</span>
-            </div>
-            <div class="tg-name-row">
-              <h1 id="profileName">Muhammadiso</h1>
-              <button class="profile-worn-badge" id="profileWornBadge" hidden title="Taqilgan sovgʻani koʻrish"></button>
-            </div>
-            <div class="tg-username-row" id="profileUsernameHandle">@muhammadiso</div>
-            <p class="tg-bio" id="profileBioText">Sovgʻani bosing — Upgrade, Craft, profilga qadash (📌) yoki boshqa profilga oʻtkazish uchun</p>
-
-            <div class="tg-stats-row" id="profileStatsRow"></div>
-          </div>
+          <!-- iOS Glass Stats Strip -->
+          <div class="tg-stats-row" id="profileStatsRow"></div>
         </div>
 
         <!-- Pinned Gifts Showcase Section (Telegram-style Pinned Showcase) -->
         <div class="pinned-showcase-section" id="pinnedShowcaseSection" hidden>
           <div class="section-head">
-            <h3>📌 Profilga qadalgan sovgʻalar</h3>
+            <div class="section-head-title">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+              <h3>Profilga qadalgan sovgʻalar</h3>
+            </div>
             <span id="pinnedCountLabel">0 / 6</span>
           </div>
           <div class="pinned-grid" id="pinnedGiftsGrid"></div>
         </div>
 
-        <!-- Profile Inventory Toolbar & Grid -->
-        <div class="shop-toolbar" style="margin-top:14px;">
+        <!-- Telegram iOS Segmented Profile Filter Tabs -->
+        <div class="tg-profile-tabs-wrap">
           <div class="profile-filters">
             <button class="filter-chip active" data-filter="all">Barchasi</button>
-            <button class="filter-chip" data-filter="pinned">📌 Qadalganlar</button>
-            <button class="filter-chip" data-filter="upgraded">✨ Noyob (Upgraded)</button>
-            <button class="filter-chip" data-filter="crafted">🔨 Tayyorlangan (Craft)</button>
-            <button class="filter-chip" data-filter="regular" id="filterBtnRegular">🎁 Oddiy (Upgrade uchun)</button>
-            <button class="filter-chip" data-filter="sale">🏷 Sotuvda</button>
+            <button class="filter-chip" data-filter="pinned">Qadalganlar</button>
+            <button class="filter-chip" data-filter="upgraded">Noyob (Upgraded)</button>
+            <button class="filter-chip" data-filter="crafted">Craft</button>
+            <button class="filter-chip" data-filter="regular" id="filterBtnRegular">Oddiy (Upgrade)</button>
+            <button class="filter-chip" data-filter="sale">Sotuvda</button>
           </div>
         </div>
 
-        <div class="gift-grid" id="inventoryGrid"></div>
+        <div class="gift-grid tg-profile-gift-grid" id="inventoryGrid"></div>
       </section>
 
-      <!-- TAB 4: Odamlar & Jonli (Collectors Directory, Search Any Profile & Live Activity Feed) -->
+      <!-- TAB 4: Reyting & Jonli (Collectors Directory, Search Any Profile & Live Activity Feed) -->
       <section class="tab-pane" id="paneExplore" hidden>
-        <div class="profile-banner">
-          <div class="profile-banner-left">
-            <div class="brand-logo" style="width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#8b5cf6,#6366f1);">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <div class="profile-meta">
-              <div class="profile-name-row">
-                <h1>🏆 Kolleksionerlar va Jonli Faollik</h1>
-              </div>
-              <p class="profile-sub">Istalgan foydalanuvchining profiliga kiring, taqilgan (👑) va qadalgan (📌) sovgʻalarini koʻring yoki jonli Upgrade va savdolarni kuzating</p>
-            </div>
+        <div class="ios-hero-banner">
+          <div class="ios-hero-icon explore-accent">
+            <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="ios-hero-text">
+            <h1>Kolleksionerlar va Jonli Faollik</h1>
+            <p>Istalgan foydalanuvchining profiliga kiring, taqilgan va qadalgan sovgʻalarini koʻring yoki jonli savdolarni kuzating</p>
           </div>
         </div>
 
@@ -203,21 +249,29 @@
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
             </svg>
-            <input type="text" id="userDirectorySearch" placeholder="@username kiriting (boshqalar profilini koʻrish uchun)..." />
+            <input type="text" id="userDirectorySearch" placeholder="@username kiriting (profilini koʻrish uchun)..." />
           </div>
-          <button class="btn btn-primary btn-sm" id="btnOpenSearchedProfile">Profilni ochish</button>
+          <button class="btn btn-primary btn-sm ios-pill-btn" id="btnOpenSearchedProfile">Profilni ochish</button>
         </div>
 
         <div class="explore-columns">
           <div class="explore-col">
             <div class="section-head">
-              <h3>👑 Top Kolleksionerlar (Profilni koʻrish uchun bosing)</h3>
+              <div class="section-head-title">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                <h3>Top Kolleksionerlar</h3>
+              </div>
+              <span>Profilga kirish</span>
             </div>
             <div class="collectors-list" id="collectorsList"></div>
           </div>
           <div class="explore-col">
             <div class="section-head">
-              <h3>⚡ Soʻnggi harakatlar (Upgrade, Craft, Market, Oʻtkazmalar)</h3>
+              <div class="section-head-title">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <h3>Soʻnggi harakatlar</h3>
+              </div>
+              <span>Jonli</span>
             </div>
             <div class="activity-list" id="activityList"></div>
           </div>
@@ -226,18 +280,17 @@
 
       <!-- TAB 5: Admin Panel (Strictly only visible & accessible to PaxtaGram User ID 100) -->
       <section class="tab-pane" id="paneAdmin" hidden>
-        <div class="profile-banner">
-          <div class="profile-banner-left">
-            <div class="profile-meta">
-              <div class="profile-name-row">
-                <h1>⚙️ Admin Boshqaruv Paneli (ID: 100)</h1>
-              </div>
-              <p class="profile-sub">Faqat ID 100 egasi uchun: istalgan sovgʻani doʻkonda yoqish/oʻchirish, narxini, upgrade narxini va tirajini oʻzgartirish</p>
-            </div>
+        <div class="ios-hero-banner">
+          <div class="ios-hero-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </div>
-          <div class="profile-filters">
-            <button class="btn btn-tonal btn-sm" id="adminBtnOnlyCoinflip">Faqat Coin Flip qoldirish</button>
-            <button class="btn btn-primary btn-sm" id="adminBtnEnableAll">Barcha 125 ta giftni yoqish</button>
+          <div class="ios-hero-text">
+            <h1>Admin Boshqaruv Paneli (ID: 100)</h1>
+            <p>Istalgan sovgʻani doʻkonda yoqish/oʻchirish, narxini, upgrade narxini va tirajini oʻzgartirish</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-tonal btn-sm" id="adminBtnOnlyCoinflip">Faqat Coin Flip</button>
+            <button class="btn btn-primary btn-sm" id="adminBtnEnableAll">125 ta giftni yoqish</button>
           </div>
         </div>
 
@@ -260,6 +313,50 @@
         <div class="admin-list" id="adminList"></div>
       </section>
     </main>
+
+    <!-- Mobile iOS Liquid Glass Bottom Tab Bar -->
+    <nav class="ios-bottom-nav" role="tablist" aria-label="Asosiy menyu">
+      <button class="ios-tab-item main-tab active" data-tab="shop">
+        <span class="ios-tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </span>
+        <span class="ios-tab-label">Doʻkon</span>
+      </button>
+      <button class="ios-tab-item main-tab" data-tab="market">
+        <span class="ios-tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+        </span>
+        <span class="ios-tab-label">Market</span>
+      </button>
+      <button class="ios-tab-item main-tab" data-tab="inventory">
+        <span class="ios-tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </span>
+        <span class="ios-tab-label">Profil</span>
+      </button>
+      <button class="ios-tab-item main-tab" data-tab="explore">
+        <span class="ios-tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+          </svg>
+        </span>
+        <span class="ios-tab-label">Reyting</span>
+      </button>
+      <button class="ios-tab-item main-tab" data-tab="admin" id="tabAdminMobile" hidden>
+        <span class="ios-tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </span>
+        <span class="ios-tab-label">Admin</span>
+      </button>
+    </nav>
   </div>
 
   <!-- 1:1 paxta.online GiftViewDialog / GiftUpgradePanel / GiftCraftPanel Modal -->

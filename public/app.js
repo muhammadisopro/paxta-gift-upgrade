@@ -431,11 +431,11 @@ async function loginUser(username) {
 
     // Strictly hide/show Admin Tab ONLY for PaxtaGram ID === 100
     const adminTabBtn = document.getElementById('tabAdmin');
-    if (adminTabBtn) {
-      adminTabBtn.hidden = !STATE.user.isAdmin;
-      if (!STATE.user.isAdmin && STATE.activeTab === 'admin') {
-        switchTab('shop');
-      }
+    const adminTabMobileBtn = document.getElementById('tabAdminMobile');
+    if (adminTabBtn) adminTabBtn.hidden = !STATE.user.isAdmin;
+    if (adminTabMobileBtn) adminTabMobileBtn.hidden = !STATE.user.isAdmin;
+    if (!STATE.user.isAdmin && STATE.activeTab === 'admin') {
+      switchTab('shop');
     }
 
     // If currently viewing own profile, keep it synced
@@ -663,11 +663,15 @@ function renderProfileView() {
   document.getElementById('profileUsernameHandle').textContent = `@${prof.username}`;
   document.getElementById('profileBioText').textContent =
     prof.bio || (isOwn
-      ? 'Sovgʻani bosing — Upgrade, Craft, profilga qadash (📌), taqish (👑) yoki boshqa profilga oʻtkazish uchun'
+      ? 'Sovgʻani bosing — Upgrade, Craft, profilga qadash, sarlavhaga taqish yoki boshqa profilga oʻtkazish uchun'
       : `@${prof.username} ning rasmiy Paxta Gifts kolleksiyasi`);
 
   document.getElementById('btnBackToMyProfile').hidden = isOwn;
   document.getElementById('btnEditBio').hidden = !isOwn;
+  const profActShop = document.getElementById('profActShop');
+  const profActStars = document.getElementById('profActStars');
+  if (profActShop) profActShop.hidden = !isOwn;
+  if (profActStars) profActStars.hidden = !isOwn;
   const regFilterBtn = document.getElementById('filterBtnRegular');
   if (regFilterBtn) regFilterBtn.hidden = !isOwn;
 
@@ -694,9 +698,9 @@ function renderProfileView() {
       requestAnimationFrame(() => drawUniqueBackdrop(bannerCanvas, heroGift.backdrop, heroGift.symbol));
     } else {
       requestAnimationFrame(() => drawUniqueBackdrop(bannerCanvas, {
-        center: '#242b3d',
-        edge: '#10141f',
-        pattern: '#2d3748'
+        center: '#283048',
+        edge: '#111522',
+        pattern: '#323c59'
       }, null));
     }
   }
@@ -706,12 +710,12 @@ function renderProfileView() {
   if (floatWrap) {
     floatWrap.innerHTML = '';
     const pinPositions = [
-      { top: '18%', left: '6%', delay: '0s' },
-      { top: '56%', left: '10%', delay: '0.7s' },
-      { top: '18%', right: '6%', delay: '0.35s' },
-      { top: '56%', right: '10%', delay: '1.1s' },
-      { top: '36%', left: '18%', delay: '0.5s' },
-      { top: '36%', right: '18%', delay: '0.9s' }
+      { top: '16%', left: '6%', delay: '0s' },
+      { top: '52%', left: '10%', delay: '0.7s' },
+      { top: '16%', right: '6%', delay: '0.35s' },
+      { top: '52%', right: '10%', delay: '1.1s' },
+      { top: '34%', left: '18%', delay: '0.5s' },
+      { top: '34%', right: '18%', delay: '0.9s' }
     ];
     (prof.pinnedGifts || []).slice(0, 6).forEach((pg, idx) => {
       const pos = pinPositions[idx % pinPositions.length];
@@ -721,7 +725,7 @@ function renderProfileView() {
       if (pos.left) pinEl.style.left = pos.left;
       if (pos.right) pinEl.style.right = pos.right;
       pinEl.style.animationDelay = pos.delay;
-      pinEl.title = `📌 ${pg.name} #${pg.number}`;
+      pinEl.title = `${pg.name} #${pg.number}`;
       pinEl.innerHTML = `<img src="${esc(pg.model?.img || pg.thumb)}" alt="" />`;
       pinEl.addEventListener('click', () => openGiftModal(pg, 'view'));
       floatWrap.appendChild(pinEl);
@@ -739,15 +743,15 @@ function renderProfileView() {
       </div>
       <div class="tg-stat-pill">
         <strong>${fmtInt(stats.upgradedCount || 0)}</strong>
-        <span>✨ Noyob</span>
+        <span>Noyob (Upgraded)</span>
       </div>
       <div class="tg-stat-pill">
         <strong>${fmtInt(stats.craftedCount || 0)}</strong>
-        <span>🔨 Craft</span>
+        <span>Maxfiy Craft</span>
       </div>
       <div class="tg-stat-pill">
-        <strong>⭐ ${fmtInt(stats.collectionValue || 0)}</strong>
-        <span>Qiymati</span>
+        <strong style="color:var(--saffron);">${svgStar(14)} ${fmtInt(stats.collectionValue || 0)}</strong>
+        <span>Kolleksiya qiymati</span>
       </div>
     `;
   }
@@ -2626,10 +2630,21 @@ function openAddStarsModal(defaultAmount = 250, purpose = '', onPaid = null) {
             clearInterval(activeInvoicePollTimer);
             activeInvoicePollTimer = 0;
             STATE.user.stars = st.stars;
+            if (st.authToken) {
+              STATE.authToken = st.authToken;
+              localStorage.setItem('paxta_gift_auth_token', st.authToken);
+            }
+            if (st.isAdmin) {
+              STATE.user.isAdmin = true;
+              const adminTabBtn = document.getElementById('tabAdmin');
+              const adminTabMobileBtn = document.getElementById('tabAdminMobile');
+              if (adminTabBtn) adminTabBtn.hidden = false;
+              if (adminTabMobileBtn) adminTabMobileBtn.hidden = false;
+            }
             renderHeaderUser();
             closeSubModal();
             launchEdgeConfetti();
-            showToast(`✅ +⭐ ${fmtInt(st.amount)} PaxtaGram Stars hisobingizga tushdi!`);
+            showToast(`+${fmtInt(st.amount)} PaxtaGram Stars hisobingizga tushdi!`);
             if (typeof onPaid === 'function') onPaid();
           }
         } catch {}
@@ -2681,7 +2696,7 @@ function switchTab(tab) {
     return showToast('Admin panel faqat ID 100 uchun ochiq');
   }
   STATE.activeTab = tab;
-  document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.main-tab, .ios-tab-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.getElementById('paneShop').hidden = tab !== 'shop';
   document.getElementById('paneMarket').hidden = tab !== 'market';
   document.getElementById('paneInventory').hidden = tab !== 'inventory';
@@ -2696,7 +2711,7 @@ function switchTab(tab) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  document.querySelectorAll('.main-tab').forEach(btn => {
+  document.querySelectorAll('.main-tab, .ios-tab-item').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tab === 'inventory') {
         STATE.viewedProfile = null;
@@ -2721,13 +2736,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     STATE.viewedProfile = null;
     renderProfileView();
   });
+  document.getElementById('profActShop')?.addEventListener('click', () => switchTab('shop'));
+  document.getElementById('profActStars')?.addEventListener('click', () => openAddStarsModal(250));
   document.getElementById('btnEditBio')?.addEventListener('click', openEditBioModal);
   document.getElementById('btnShareProfile')?.addEventListener('click', async () => {
     const profUser = (STATE.viewedProfile || STATE.user)?.username || 'user';
     const url = `${window.location.origin}/?profile=${encodeURIComponent(profUser)}`;
     try {
       await navigator.clipboard.writeText(url);
-      showToast(`🔗 @${profUser} profil havolasi nusxalandi!`);
+      showToast(`@${profUser} profil havolasi nusxalandi!`);
     } catch {
       showToast(url);
     }

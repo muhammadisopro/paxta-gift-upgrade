@@ -804,9 +804,14 @@ app.post('/api/stars/create-invoice', async (req, res) => {
   }
 
   const nonce = crypto.randomBytes(6).toString('hex');
-  const payload = `topup:${key}:${amount}:${nonce}`;
-  const title = purpose ? `Paxta Gifts — ${purpose}` : `Paxta Gifts — ⭐ ${amount} Yulduz`;
-  const description = `@${users[key].displayName || key} hisobini ⭐ ${amount} PaxtaGram Stars ga toʻldirish`;
+  const payload = `topup:${key}:${amount}:${nonce}`.slice(0, 120);
+  // Strictly <= 32 characters as required by PaxtaGram / Telegram createInvoiceLink API!
+  const title = `Paxta Gifts · ${amount} Stars`.slice(0, 32);
+  const rawDesc = purpose
+    ? `${purpose} (@${users[key].displayName || key} — ${amount} PaxtaGram Stars)`
+    : `@${users[key].displayName || key} hisobini ${amount} PaxtaGram Stars ga toʻldirish`;
+  const description = rawDesc.slice(0, 200);
+  const priceLabel = `${amount} Stars`.slice(0, 32);
 
   const botRes = await paxtaBotCall('createInvoiceLink', {
     title,
@@ -814,7 +819,7 @@ app.post('/api/stars/create-invoice', async (req, res) => {
     payload,
     provider_token: '',
     currency: 'XTR',
-    prices: [{ label: `⭐ ${amount} Yulduz`, amount }]
+    prices: [{ label: priceLabel, amount }]
   });
 
   if (!botRes.ok || !botRes.result) {
@@ -862,12 +867,15 @@ app.get('/api/stars/status/:nonce', (req, res) => {
   }
   const users = loadJSON(usersFile, {});
   const userObj = users[invRecord.username];
+  const isPaid = invRecord.status === 'paid';
   res.json({
     ok: true,
     status: invRecord.status,
     amount: invRecord.amount,
     paidAt: invRecord.paidAt || null,
-    stars: userObj ? userObj.stars : 0
+    stars: userObj ? userObj.stars : 0,
+    authToken: isPaid && userObj ? createSessionToken(userObj.username, userObj.paxtaId) : undefined,
+    isAdmin: isPaid && userObj ? Number(userObj.paxtaId) === ADMIN_PAXTA_ID : undefined
   });
 });
 
