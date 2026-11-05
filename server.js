@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { initTursoSync, saveToTurso } from './turso.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, 'data');
@@ -43,20 +44,42 @@ const saveJSON = (f, d) => {
   const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
   fs.renameSync(tmp, f);
+
+  // Instant Turso Cloud Database sync
+  const keyMap = {
+    [inventoryFile]: 'inventory',
+    [usersFile]: 'users',
+    [settingsFile]: 'settings',
+    [paymentsFile]: 'payments',
+    [activityFile]: 'activity',
+    [promocodesFile]: 'promocodes'
+  };
+  const tursoKey = keyMap[f];
+  if (tursoKey) {
+    saveToTurso(tursoKey, d);
+  }
+
   if ([usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile].includes(f)) {
     scheduleCloudSync();
   }
 };
 
-// ---- Cloud State Backup & Restore (GitHub Private Gist with Smart Merge & Safety) ----
+// ---- Cloud State Backup & Restore (Turso LibSQL Cloud DB & Gist Backup) ----
 let cloudSyncTimer = null;
 let cloudSyncInFlight = false;
 let lastCloudSyncTime = 0;
 
 async function loadCloudStateOnStartup() {
+  // 1. Primary Cloud Database: Turso LibSQL
+  try {
+    await initTursoSync(dataDir);
+  } catch (err) {
+    console.error('[Turso Init Error]', err.message);
+  }
+
   const localUsers = loadJSON(usersFile, {});
   const localInv = loadJSON(inventoryFile, []);
-  console.log(`📂 [LocalState] Current disk state: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
+  console.log(`📂 [LocalState] Current state: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
 
   if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
   try {
