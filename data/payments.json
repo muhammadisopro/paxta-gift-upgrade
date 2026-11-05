@@ -1,1 +1,744 @@
-{"invoices":{},"charges":{},"lastUpdateId":80864}
+{
+  "invoices": {
+    "66c905c8f7f5": {
+      "nonce": "66c905c8f7f5",
+      "slug": "h0eatZKHbpwAXCeOQxov",
+      "username": "muhammadiso",
+      "amount": 250,
+      "payload": "topup:muhammadiso:250:66c905c8f7f5",
+      "invoiceLink": "https://paxta.online/invoice/h0eatZKHbpwAXCeOQxov",
+      "webInvoiceUrl": "https://paxta.online/?invoice=h0eatZKHbpwAXCeOQxov",
+      "status": "pending",
+      "createdAt": "2026-11-05T10:30:09.305Z"
+    },
+    "81ead03a8298": {
+      "nonce": "81ead03a8298",
+      "slug": "sKu9KaZ2JeizKsPu0fdP",
+      "username": "moon",
+      "amount": 250,
+      "payload": "topup:moon:250:81ead03a8298",
+      "invoiceLink": "https://paxta.online/invoice/sKu9KaZ2JeizKsPu0fdP",
+      "webInvoiceUrl": "https://paxta.online/?invoice=sKu9KaZ2JeizKsPu0fdP",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:31:22.577Z",
+      "paidAt": "2026-11-05T10:31:26.190Z",
+      "paidBy": "moon",
+      "chargeId": "stxp_MFDDVwXDGmY9WkynKnXzUM0IzuahHzSf"
+    },
+    "4334877ad9fa": {
+      "nonce": "4334877ad9fa",
+      "slug": "a4zYJrPVIfIA75xKHrdl",
+      "username": "moon",
+      "amount": 100,
+      "payload": "topup:moon:100:4334877ad9fa",
+      "invoiceLink": "https://paxta.online/invoice/a4zYJrPVIfIA75xKHrdl",
+      "webInvoiceUrl": "https://paxta.online/?invoice=a4zYJrPVIfIA75xKHrdl",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:31:32.922Z",
+      "paidAt": "2026-11-05T10:31:36.442Z",
+      "paidBy": "moon",
+      "chargeId": "stxp_we15qzh2u2gtQoF34RHC0Nu3QWx4LceF"
+    },
+    "59a2df4934cf": {
+      "nonce": "59a2df4934cf",
+      "slug": "lAcBn6aP0EomcD9magj2",
+      "username": "gift",
+      "amount": 250,
+      "payload": "topup:gift:250:59a2df4934cf",
+      "invoiceLink": "https://paxta.online/invoice/lAcBn6aP0EomcD9magj2",
+      "webInvoiceUrl": "https://paxta.online/?invoice=lAcBn6aP0EomcD9magj2",
+      "status": "pending",
+      "createdAt": "2026-11-05T10:35:21.268Z"
+    },
+    "d1f6f058c46e": {
+      "nonce": "d1f6f058c46e",
+      "slug": "nDw1c4Hb4gc0mpSlGHzP",
+      "username": "gift",
+      "amount": 50,
+      "payload": "topup:gift:50:d1f6f058c46e",
+      "invoiceLink": "https://paxta.online/invoice/nDw1c4Hb4gc0mpSlGHzP",
+      "webInvoiceUrl": "https://paxta.online/?invoice=nDw1c4Hb4gc0mpSlGHzP",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:35:27.169Z",
+      "paidAt": "2026-11-05T10:35:33.569Z",
+      "paidBy": "gift",
+      "chargeId": "stxp_gEKvMiC6rxfKD59RjWS6hFgHdGro3rEt"
+    },
+    "49dab2c271c0": {
+      "nonce": "49dab2c271c0",
+      "slug": "zGYKqreN0NDZM4oRw4Zq",
+      "username": "tungi",
+      "amount": 250,
+      "payload": "topup:tungi:250:49dab2c271c0",
+      "invoiceLink": "https://paxta.online/invoice/zGYKqreN0NDZM4oRw4Zq",
+      "webInvoiceUrl": "https://paxta.online/?invoice=zGYKqreN0NDZM4oRw4Zq",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:50:29.365Z",
+      "paidAt": "2026-11-05T10:50:33.124Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_q1J3fcWGqhIbcH3i5OiLRmvav5BU7r63"
+    },
+    "9f1f278e409b": {
+      "nonce": "9f1f278e409b",
+      "slug": "RREUzSkIB8pYiNzh2cec",
+      "username": "tungi",
+      "amount": 100,
+      "payload": "topup:tungi:100:9f1f278e409b",
+      "invoiceLink": "https://paxta.online/invoice/RREUzSkIB8pYiNzh2cec",
+      "webInvoiceUrl": "https://paxta.online/?invoice=RREUzSkIB8pYiNzh2cec",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:50:44.844Z",
+      "paidAt": "2026-11-05T10:50:48.356Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_K6AOK94BsNZwaWNENQ0FvqE2T7eNx8AN"
+    },
+    "a4e5170cd051": {
+      "nonce": "a4e5170cd051",
+      "slug": "fyXyhnWFfNyBodzpThxw",
+      "username": "tungi",
+      "amount": 500,
+      "payload": "topup:tungi:500:a4e5170cd051",
+      "invoiceLink": "https://paxta.online/invoice/fyXyhnWFfNyBodzpThxw",
+      "webInvoiceUrl": "https://paxta.online/?invoice=fyXyhnWFfNyBodzpThxw",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:51:25.437Z",
+      "paidAt": "2026-11-05T10:51:28.984Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_H5W4IEAqmmef1ZxQCjwjnt30vxRzDo0o"
+    },
+    "4964a465d9c8": {
+      "nonce": "4964a465d9c8",
+      "slug": "JXG6FtZnvnkUUQbaeqDg",
+      "username": "tungi",
+      "amount": 250,
+      "payload": "topup:tungi:250:4964a465d9c8",
+      "invoiceLink": "https://paxta.online/invoice/JXG6FtZnvnkUUQbaeqDg",
+      "webInvoiceUrl": "https://paxta.online/?invoice=JXG6FtZnvnkUUQbaeqDg",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:51:41.070Z",
+      "paidAt": "2026-11-05T10:51:43.284Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_20T9bKFlw2l4Mt4U34EhhMMNiFPMfy3N"
+    },
+    "133348942dff": {
+      "nonce": "133348942dff",
+      "slug": "fmaWYvSqIuVVU1LZAiTt",
+      "username": "tungi",
+      "amount": 500,
+      "payload": "topup:tungi:500:133348942dff",
+      "invoiceLink": "https://paxta.online/invoice/fmaWYvSqIuVVU1LZAiTt",
+      "webInvoiceUrl": "https://paxta.online/?invoice=fmaWYvSqIuVVU1LZAiTt",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:52:43.608Z",
+      "paidAt": "2026-11-05T10:52:47.553Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_0MNIcco2DfJsWWaeAWiNsr0k2k6Am95J"
+    },
+    "464296d55382": {
+      "nonce": "464296d55382",
+      "slug": "cExnsrghPZCJcmiw6rTi",
+      "username": "moon",
+      "amount": 250,
+      "payload": "topup:moon:250:464296d55382",
+      "invoiceLink": "https://paxta.online/invoice/cExnsrghPZCJcmiw6rTi",
+      "webInvoiceUrl": "https://paxta.online/?invoice=cExnsrghPZCJcmiw6rTi",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:52:45.756Z",
+      "paidAt": "2026-11-05T10:52:49.073Z",
+      "paidBy": "moon",
+      "chargeId": "stxp_iBkgpgOH3OSFcbmPNBZhrPfAeylyN5vg"
+    },
+    "93ced190d257": {
+      "nonce": "93ced190d257",
+      "slug": "xG0W81gLyxGT8llEnv4d",
+      "username": "tungi",
+      "amount": 250,
+      "payload": "topup:tungi:250:93ced190d257",
+      "invoiceLink": "https://paxta.online/invoice/xG0W81gLyxGT8llEnv4d",
+      "webInvoiceUrl": "https://paxta.online/?invoice=xG0W81gLyxGT8llEnv4d",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:53:48.671Z",
+      "paidAt": "2026-11-05T10:53:52.533Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_mqIRhHA3xIklmL5RiPnBynYPO6nKGA2e"
+    },
+    "2931b697f25a": {
+      "nonce": "2931b697f25a",
+      "slug": "xrNCVPtCD4SwEYTKf4KD",
+      "username": "tungi",
+      "amount": 350,
+      "payload": "topup:tungi:350:2931b697f25a",
+      "invoiceLink": "https://paxta.online/invoice/xrNCVPtCD4SwEYTKf4KD",
+      "webInvoiceUrl": "https://paxta.online/?invoice=xrNCVPtCD4SwEYTKf4KD",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:54:48.625Z",
+      "paidAt": "2026-11-05T10:54:51.600Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_NfpVTfO3PgQk14AMdLnyqFUpsYJZk02Y"
+    },
+    "83743fd11ca8": {
+      "nonce": "83743fd11ca8",
+      "slug": "43yNNOr9WGujn5zo2TGg",
+      "username": "tungi",
+      "amount": 60,
+      "payload": "topup:tungi:60:83743fd11ca8",
+      "invoiceLink": "https://paxta.online/invoice/43yNNOr9WGujn5zo2TGg",
+      "webInvoiceUrl": "https://paxta.online/?invoice=43yNNOr9WGujn5zo2TGg",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:55:06.348Z",
+      "paidAt": "2026-11-05T10:55:08.960Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_D9rZ84DQt7YnAhWTTsQR7q3Ksi7rNVG6"
+    },
+    "764d0b2ab025": {
+      "nonce": "764d0b2ab025",
+      "slug": "5ZKVK1sGuCcFKc93WuDv",
+      "username": "tungi",
+      "amount": 250,
+      "payload": "topup:tungi:250:764d0b2ab025",
+      "invoiceLink": "https://paxta.online/invoice/5ZKVK1sGuCcFKc93WuDv",
+      "webInvoiceUrl": "https://paxta.online/?invoice=5ZKVK1sGuCcFKc93WuDv",
+      "status": "pending",
+      "createdAt": "2026-11-05T10:55:12.129Z"
+    },
+    "1376bd1d9ed6": {
+      "nonce": "1376bd1d9ed6",
+      "slug": "AbojnTGAW0M2YMdywbey",
+      "username": "tungi",
+      "amount": 25,
+      "payload": "topup:tungi:25:1376bd1d9ed6",
+      "invoiceLink": "https://paxta.online/invoice/AbojnTGAW0M2YMdywbey",
+      "webInvoiceUrl": "https://paxta.online/?invoice=AbojnTGAW0M2YMdywbey",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:55:20.729Z",
+      "paidAt": "2026-11-05T10:55:25.582Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_uN5HJUXaV4LYxj1WBdmLeERxirneaWpd"
+    },
+    "fbbb3a1a595d": {
+      "nonce": "fbbb3a1a595d",
+      "slug": "7UB22nvMwP3CyaCfhjtq",
+      "username": "tungi",
+      "amount": 1000,
+      "payload": "topup:tungi:1000:fbbb3a1a595d",
+      "invoiceLink": "https://paxta.online/invoice/7UB22nvMwP3CyaCfhjtq",
+      "webInvoiceUrl": "https://paxta.online/?invoice=7UB22nvMwP3CyaCfhjtq",
+      "status": "paid",
+      "createdAt": "2026-11-05T10:55:42.071Z",
+      "paidAt": "2026-11-05T10:55:45.952Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_y8nhNrhbQ973bmGW06o4dDL3rHiyg9i3"
+    },
+    "3f5a05fec3e6": {
+      "nonce": "3f5a05fec3e6",
+      "slug": "CgPcPiSFZklsuqPdVNfS",
+      "username": "tungi",
+      "amount": 985,
+      "payload": "topup:tungi:985:3f5a05fec3e6",
+      "invoiceLink": "https://paxta.online/invoice/CgPcPiSFZklsuqPdVNfS",
+      "webInvoiceUrl": "https://paxta.online/?invoice=CgPcPiSFZklsuqPdVNfS",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:00:40.136Z",
+      "paidAt": "2026-11-05T11:00:43.537Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_Exk4InbL1w9zYCiHsQlqtaZY5eL1B1D4"
+    },
+    "e56ccd38e439": {
+      "nonce": "e56ccd38e439",
+      "slug": "HyEe4gf1ipZQnH2uGeMx",
+      "username": "tungi",
+      "amount": 1000,
+      "payload": "topup:tungi:1000:e56ccd38e439",
+      "invoiceLink": "https://paxta.online/invoice/HyEe4gf1ipZQnH2uGeMx",
+      "webInvoiceUrl": "https://paxta.online/?invoice=HyEe4gf1ipZQnH2uGeMx",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:00:47.515Z",
+      "paidAt": "2026-11-05T11:00:50.927Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_iGcKEfHC7YlBQbjKhslr7xf5KUhMpTMz"
+    },
+    "ea1000bcaa83": {
+      "nonce": "ea1000bcaa83",
+      "slug": "UGB0VxKuhSTvR4TV13pF",
+      "username": "tolipov",
+      "amount": 2500,
+      "payload": "topup:tolipov:2500:ea1000bcaa83",
+      "invoiceLink": "https://paxta.online/invoice/UGB0VxKuhSTvR4TV13pF",
+      "webInvoiceUrl": "https://paxta.online/?invoice=UGB0VxKuhSTvR4TV13pF",
+      "status": "pending",
+      "createdAt": "2026-11-05T11:01:00.761Z"
+    },
+    "ef7fa6b348e3": {
+      "nonce": "ef7fa6b348e3",
+      "slug": "qq5tSBR735Tj7ZDJizW7",
+      "username": "tungi",
+      "amount": 500,
+      "payload": "topup:tungi:500:ef7fa6b348e3",
+      "invoiceLink": "https://paxta.online/invoice/qq5tSBR735Tj7ZDJizW7",
+      "webInvoiceUrl": "https://paxta.online/?invoice=qq5tSBR735Tj7ZDJizW7",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:01:13.458Z",
+      "paidAt": "2026-11-05T11:01:17.151Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_2LSYrBvcW3tLaXZeFuLcz1SFvIES2TUG"
+    },
+    "79e3611cd470": {
+      "nonce": "79e3611cd470",
+      "slug": "9EjzQ5DrvE0O0GGRDfXM",
+      "username": "tungi",
+      "amount": 500,
+      "payload": "topup:tungi:500:79e3611cd470",
+      "invoiceLink": "https://paxta.online/invoice/9EjzQ5DrvE0O0GGRDfXM",
+      "webInvoiceUrl": "https://paxta.online/?invoice=9EjzQ5DrvE0O0GGRDfXM",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:01:21.640Z",
+      "paidAt": "2026-11-05T11:01:24.685Z",
+      "paidBy": "tungi",
+      "chargeId": "stxp_NJBgFCckDdLZjzXQ5TH8QhqpdA4JAaEh"
+    },
+    "5508a2fa2f7a": {
+      "nonce": "5508a2fa2f7a",
+      "slug": "PpqyG2v2snJSxemx5AKP",
+      "username": "moon",
+      "amount": 160,
+      "payload": "topup:moon:160:5508a2fa2f7a",
+      "invoiceLink": "https://paxta.online/invoice/PpqyG2v2snJSxemx5AKP",
+      "webInvoiceUrl": "https://paxta.online/?invoice=PpqyG2v2snJSxemx5AKP",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:05:43.671Z",
+      "paidAt": "2026-11-05T11:05:47.574Z",
+      "paidBy": "moon",
+      "chargeId": "stxp_DjWlRte8P9Y8Ewp6OxhcZMBEwGo3b6rl"
+    },
+    "4190aba73ddb": {
+      "nonce": "4190aba73ddb",
+      "slug": "8VHVrplqfgBhqN4nU6H7",
+      "username": "moon",
+      "amount": 2500,
+      "payload": "topup:moon:2500:4190aba73ddb",
+      "invoiceLink": "https://paxta.online/invoice/8VHVrplqfgBhqN4nU6H7",
+      "webInvoiceUrl": "https://paxta.online/?invoice=8VHVrplqfgBhqN4nU6H7",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:05:55.386Z",
+      "paidAt": "2026-11-05T11:05:59.060Z",
+      "paidBy": "moon",
+      "chargeId": "stxp_vCdSy4LwPoYBuZEYhp5deT12JSpCt7SA"
+    },
+    "9ebde433b8fc": {
+      "nonce": "9ebde433b8fc",
+      "slug": "aiwipauozMTvfGQ1RZ6m",
+      "username": "abdusalomov",
+      "amount": 100,
+      "payload": "topup:abdusalomov:100:9ebde433b8fc",
+      "invoiceLink": "https://paxta.online/invoice/aiwipauozMTvfGQ1RZ6m",
+      "webInvoiceUrl": "https://paxta.online/?invoice=aiwipauozMTvfGQ1RZ6m",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:13:47.037Z",
+      "paidAt": "2026-11-05T11:13:50.167Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_rVywa7zmXhERjKpAIQuWwjZWdYnyZJzp"
+    },
+    "d00c545edb0a": {
+      "nonce": "d00c545edb0a",
+      "slug": "r6HEglrMPvghWeAx47kd",
+      "username": "abdusalomov",
+      "amount": 250,
+      "payload": "topup:abdusalomov:250:d00c545edb0a",
+      "invoiceLink": "https://paxta.online/invoice/r6HEglrMPvghWeAx47kd",
+      "webInvoiceUrl": "https://paxta.online/?invoice=r6HEglrMPvghWeAx47kd",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:13:56.638Z",
+      "paidAt": "2026-11-05T11:14:03.679Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_pPLkdemzh3ztRFX51FpkVWBUvoKrJxFl"
+    },
+    "e9eddf368909": {
+      "nonce": "e9eddf368909",
+      "slug": "DVpa74IvecbWClNDBEzR",
+      "username": "abdusalomov",
+      "amount": 50,
+      "payload": "topup:abdusalomov:50:e9eddf368909",
+      "invoiceLink": "https://paxta.online/invoice/DVpa74IvecbWClNDBEzR",
+      "webInvoiceUrl": "https://paxta.online/?invoice=DVpa74IvecbWClNDBEzR",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:14:24.076Z",
+      "paidAt": "2026-11-05T11:14:27.415Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_tHpjZmovUZdaduomOOy1uNBHcN84gGYR"
+    },
+    "3e1278d4fc2a": {
+      "nonce": "3e1278d4fc2a",
+      "slug": "SCvHCBoy67nhYwrgZamM",
+      "username": "abdusalomov",
+      "amount": 10,
+      "payload": "topup:abdusalomov:10:3e1278d4fc2a",
+      "invoiceLink": "https://paxta.online/invoice/SCvHCBoy67nhYwrgZamM",
+      "webInvoiceUrl": "https://paxta.online/?invoice=SCvHCBoy67nhYwrgZamM",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:14:37.104Z",
+      "paidAt": "2026-11-05T11:14:39.884Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_DuIyEqB65jMN7x732WmODUGSqjs7luxK"
+    },
+    "5cbafea2a6cf": {
+      "nonce": "5cbafea2a6cf",
+      "slug": "eOkc3enjIBFybbrYT84l",
+      "username": "abdusalomov",
+      "amount": 1000,
+      "payload": "topup:abdusalomov:1000:5cbafea2a6cf",
+      "invoiceLink": "https://paxta.online/invoice/eOkc3enjIBFybbrYT84l",
+      "webInvoiceUrl": "https://paxta.online/?invoice=eOkc3enjIBFybbrYT84l",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:15:15.199Z",
+      "paidAt": "2026-11-05T11:15:24.091Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_QsIkZSMeNtS8woZSIoINeZ75qo6WKjAg"
+    },
+    "b1020d4d9c16": {
+      "nonce": "b1020d4d9c16",
+      "slug": "vZoyDssk9d6WEIc4Qybf",
+      "username": "abdusalomov",
+      "amount": 2500,
+      "payload": "topup:abdusalomov:2500:b1020d4d9c16",
+      "invoiceLink": "https://paxta.online/invoice/vZoyDssk9d6WEIc4Qybf",
+      "webInvoiceUrl": "https://paxta.online/?invoice=vZoyDssk9d6WEIc4Qybf",
+      "status": "pending",
+      "createdAt": "2026-11-05T11:17:47.245Z"
+    },
+    "1913296e7cfa": {
+      "nonce": "1913296e7cfa",
+      "slug": "19tpkrVKTLy05b7rqIBe",
+      "username": "abdusalomov",
+      "amount": 1000,
+      "payload": "topup:abdusalomov:1000:1913296e7cfa",
+      "invoiceLink": "https://paxta.online/invoice/19tpkrVKTLy05b7rqIBe",
+      "webInvoiceUrl": "https://paxta.online/?invoice=19tpkrVKTLy05b7rqIBe",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:17:49.938Z",
+      "paidAt": "2026-11-05T11:17:53.251Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_QZO8PDAQGKuZHhGPlpNkUvuGhiEQmPV5"
+    },
+    "7f49b20a4512": {
+      "nonce": "7f49b20a4512",
+      "slug": "KHyoqg2BgW3OnmZRhVDH",
+      "username": "abdusalomov",
+      "amount": 5,
+      "payload": "topup:abdusalomov:5:7f49b20a4512",
+      "invoiceLink": "https://paxta.online/invoice/KHyoqg2BgW3OnmZRhVDH",
+      "webInvoiceUrl": "https://paxta.online/?invoice=KHyoqg2BgW3OnmZRhVDH",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:19:33.102Z",
+      "paidAt": "2026-11-05T11:19:36.384Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_UMSnyCyjXC8vbzZVM87WzCZxNtaQWzlj"
+    },
+    "dfdae24a716b": {
+      "nonce": "dfdae24a716b",
+      "slug": "vuW261Fd5jhXcMgQHGEZ",
+      "username": "metauz",
+      "amount": 25,
+      "payload": "topup:metauz:25:dfdae24a716b",
+      "invoiceLink": "https://paxta.online/invoice/vuW261Fd5jhXcMgQHGEZ",
+      "webInvoiceUrl": "https://paxta.online/?invoice=vuW261Fd5jhXcMgQHGEZ",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:28:27.643Z",
+      "paidAt": "2026-11-05T11:28:32.088Z",
+      "paidBy": "metauz",
+      "chargeId": "stxp_9aGSGg8XJzfMpY5itxrpvIKUOzUk4PS4"
+    },
+    "1fa3378433f7": {
+      "nonce": "1fa3378433f7",
+      "slug": "vTlJs5KW9TqXeKQM2RnW",
+      "username": "metauz",
+      "amount": 25,
+      "payload": "topup:metauz:25:1fa3378433f7",
+      "invoiceLink": "https://paxta.online/invoice/vTlJs5KW9TqXeKQM2RnW",
+      "webInvoiceUrl": "https://paxta.online/?invoice=vTlJs5KW9TqXeKQM2RnW",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:28:41.406Z",
+      "paidAt": "2026-11-05T11:28:45.485Z",
+      "paidBy": "metauz",
+      "chargeId": "stxp_6QMNpb2PuPeYLL7HlbqueXnhUwhL5ca0"
+    },
+    "2f8aa092bedc": {
+      "nonce": "2f8aa092bedc",
+      "slug": "tTctFvEV53ykd2lMyfeW",
+      "username": "metauz",
+      "amount": 25,
+      "payload": "topup:metauz:25:2f8aa092bedc",
+      "invoiceLink": "https://paxta.online/invoice/tTctFvEV53ykd2lMyfeW",
+      "webInvoiceUrl": "https://paxta.online/?invoice=tTctFvEV53ykd2lMyfeW",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:29:13.288Z",
+      "paidAt": "2026-11-05T11:29:17.730Z",
+      "paidBy": "metauz",
+      "chargeId": "stxp_ViVDif0BFTSGhBqgQYKXBQPlJ1YYuUR8"
+    },
+    "d29230d6e63d": {
+      "nonce": "d29230d6e63d",
+      "slug": "MFl5eUK9QUwDyhSCIKjR",
+      "username": "metauz",
+      "amount": 50,
+      "payload": "topup:metauz:50:d29230d6e63d",
+      "invoiceLink": "https://paxta.online/invoice/MFl5eUK9QUwDyhSCIKjR",
+      "webInvoiceUrl": "https://paxta.online/?invoice=MFl5eUK9QUwDyhSCIKjR",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:29:32.394Z",
+      "paidAt": "2026-11-05T11:29:37.051Z",
+      "paidBy": "metauz",
+      "chargeId": "stxp_SZCDLvSCiRwlKdtzjLBX0HR1qvlFRPCT"
+    },
+    "9505a410c8ea": {
+      "nonce": "9505a410c8ea",
+      "slug": "tcd8oDq41N9tgwcsgbvC",
+      "username": "metauz",
+      "amount": 500,
+      "payload": "topup:metauz:500:9505a410c8ea",
+      "invoiceLink": "https://paxta.online/invoice/tcd8oDq41N9tgwcsgbvC",
+      "webInvoiceUrl": "https://paxta.online/?invoice=tcd8oDq41N9tgwcsgbvC",
+      "status": "pending",
+      "createdAt": "2026-11-05T11:29:38.815Z"
+    },
+    "758ed7888953": {
+      "nonce": "758ed7888953",
+      "slug": "Kyw40uY8pmheoQAufDhg",
+      "username": "abdusalomov",
+      "amount": 1000,
+      "payload": "topup:abdusalomov:1000:758ed7888953",
+      "invoiceLink": "https://paxta.online/invoice/Kyw40uY8pmheoQAufDhg",
+      "webInvoiceUrl": "https://paxta.online/?invoice=Kyw40uY8pmheoQAufDhg",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:29:51.421Z",
+      "paidAt": "2026-11-05T11:29:54.356Z",
+      "paidBy": "abdusalomov",
+      "chargeId": "stxp_RKA90rrRUdSPeQNFrF0eU6C3wwrHRLBv"
+    },
+    "ed6f96da95ea": {
+      "nonce": "ed6f96da95ea",
+      "slug": "a1f76YqFaBFkApBaJZJN",
+      "username": "metauz",
+      "amount": 50,
+      "payload": "topup:metauz:50:ed6f96da95ea",
+      "invoiceLink": "https://paxta.online/invoice/a1f76YqFaBFkApBaJZJN",
+      "webInvoiceUrl": "https://paxta.online/?invoice=a1f76YqFaBFkApBaJZJN",
+      "status": "pending",
+      "createdAt": "2026-11-05T11:30:01.905Z"
+    },
+    "69d180770eb4": {
+      "nonce": "69d180770eb4",
+      "slug": "tzJLkPUJxcbMsHVEbR7U",
+      "username": "metauz",
+      "amount": 50,
+      "payload": "topup:metauz:50:69d180770eb4",
+      "invoiceLink": "https://paxta.online/invoice/tzJLkPUJxcbMsHVEbR7U",
+      "webInvoiceUrl": "https://paxta.online/?invoice=tzJLkPUJxcbMsHVEbR7U",
+      "status": "paid",
+      "createdAt": "2026-11-05T11:30:05.518Z",
+      "paidAt": "2026-11-05T11:30:09.814Z",
+      "paidBy": "metauz",
+      "chargeId": "stxp_r72MANCnbtV3RGMN9q1J0udxM5daFWm8"
+    }
+  },
+  "charges": {
+    "stxp_MFDDVwXDGmY9WkynKnXzUM0IzuahHzSf": {
+      "targetKey": "moon",
+      "amount": 250,
+      "nonce": "81ead03a8298",
+      "paidAt": "2026-11-05T10:31:26.190Z"
+    },
+    "stxp_we15qzh2u2gtQoF34RHC0Nu3QWx4LceF": {
+      "targetKey": "moon",
+      "amount": 100,
+      "nonce": "4334877ad9fa",
+      "paidAt": "2026-11-05T10:31:36.442Z"
+    },
+    "stxp_gEKvMiC6rxfKD59RjWS6hFgHdGro3rEt": {
+      "targetKey": "gift",
+      "amount": 50,
+      "nonce": "d1f6f058c46e",
+      "paidAt": "2026-11-05T10:35:33.569Z"
+    },
+    "stxp_q1J3fcWGqhIbcH3i5OiLRmvav5BU7r63": {
+      "targetKey": "tungi",
+      "amount": 250,
+      "nonce": "49dab2c271c0",
+      "paidAt": "2026-11-05T10:50:33.124Z"
+    },
+    "stxp_K6AOK94BsNZwaWNENQ0FvqE2T7eNx8AN": {
+      "targetKey": "tungi",
+      "amount": 100,
+      "nonce": "9f1f278e409b",
+      "paidAt": "2026-11-05T10:50:48.356Z"
+    },
+    "stxp_H5W4IEAqmmef1ZxQCjwjnt30vxRzDo0o": {
+      "targetKey": "tungi",
+      "amount": 500,
+      "nonce": "a4e5170cd051",
+      "paidAt": "2026-11-05T10:51:28.984Z"
+    },
+    "stxp_20T9bKFlw2l4Mt4U34EhhMMNiFPMfy3N": {
+      "targetKey": "tungi",
+      "amount": 250,
+      "nonce": "4964a465d9c8",
+      "paidAt": "2026-11-05T10:51:43.284Z"
+    },
+    "stxp_0MNIcco2DfJsWWaeAWiNsr0k2k6Am95J": {
+      "targetKey": "tungi",
+      "amount": 500,
+      "nonce": "133348942dff",
+      "paidAt": "2026-11-05T10:52:47.553Z"
+    },
+    "stxp_iBkgpgOH3OSFcbmPNBZhrPfAeylyN5vg": {
+      "targetKey": "moon",
+      "amount": 250,
+      "nonce": "464296d55382",
+      "paidAt": "2026-11-05T10:52:49.073Z"
+    },
+    "stxp_mqIRhHA3xIklmL5RiPnBynYPO6nKGA2e": {
+      "targetKey": "tungi",
+      "amount": 250,
+      "nonce": "93ced190d257",
+      "paidAt": "2026-11-05T10:53:52.533Z"
+    },
+    "stxp_NfpVTfO3PgQk14AMdLnyqFUpsYJZk02Y": {
+      "targetKey": "tungi",
+      "amount": 350,
+      "nonce": "2931b697f25a",
+      "paidAt": "2026-11-05T10:54:51.600Z"
+    },
+    "stxp_D9rZ84DQt7YnAhWTTsQR7q3Ksi7rNVG6": {
+      "targetKey": "tungi",
+      "amount": 60,
+      "nonce": "83743fd11ca8",
+      "paidAt": "2026-11-05T10:55:08.960Z"
+    },
+    "stxp_uN5HJUXaV4LYxj1WBdmLeERxirneaWpd": {
+      "targetKey": "tungi",
+      "amount": 25,
+      "nonce": "1376bd1d9ed6",
+      "paidAt": "2026-11-05T10:55:25.582Z"
+    },
+    "stxp_y8nhNrhbQ973bmGW06o4dDL3rHiyg9i3": {
+      "targetKey": "tungi",
+      "amount": 1000,
+      "nonce": "fbbb3a1a595d",
+      "paidAt": "2026-11-05T10:55:45.952Z"
+    },
+    "stxp_Exk4InbL1w9zYCiHsQlqtaZY5eL1B1D4": {
+      "targetKey": "tungi",
+      "amount": 985,
+      "nonce": "3f5a05fec3e6",
+      "paidAt": "2026-11-05T11:00:43.537Z"
+    },
+    "stxp_iGcKEfHC7YlBQbjKhslr7xf5KUhMpTMz": {
+      "targetKey": "tungi",
+      "amount": 1000,
+      "nonce": "e56ccd38e439",
+      "paidAt": "2026-11-05T11:00:50.927Z"
+    },
+    "stxp_2LSYrBvcW3tLaXZeFuLcz1SFvIES2TUG": {
+      "targetKey": "tungi",
+      "amount": 500,
+      "nonce": "ef7fa6b348e3",
+      "paidAt": "2026-11-05T11:01:17.151Z"
+    },
+    "stxp_NJBgFCckDdLZjzXQ5TH8QhqpdA4JAaEh": {
+      "targetKey": "tungi",
+      "amount": 500,
+      "nonce": "79e3611cd470",
+      "paidAt": "2026-11-05T11:01:24.685Z"
+    },
+    "stxp_DjWlRte8P9Y8Ewp6OxhcZMBEwGo3b6rl": {
+      "targetKey": "moon",
+      "amount": 160,
+      "nonce": "5508a2fa2f7a",
+      "paidAt": "2026-11-05T11:05:47.574Z"
+    },
+    "stxp_vCdSy4LwPoYBuZEYhp5deT12JSpCt7SA": {
+      "targetKey": "moon",
+      "amount": 2500,
+      "nonce": "4190aba73ddb",
+      "paidAt": "2026-11-05T11:05:59.060Z"
+    },
+    "stxp_rVywa7zmXhERjKpAIQuWwjZWdYnyZJzp": {
+      "targetKey": "abdusalomov",
+      "amount": 100,
+      "nonce": "9ebde433b8fc",
+      "paidAt": "2026-11-05T11:13:50.167Z"
+    },
+    "stxp_pPLkdemzh3ztRFX51FpkVWBUvoKrJxFl": {
+      "targetKey": "abdusalomov",
+      "amount": 250,
+      "nonce": "d00c545edb0a",
+      "paidAt": "2026-11-05T11:14:03.679Z"
+    },
+    "stxp_tHpjZmovUZdaduomOOy1uNBHcN84gGYR": {
+      "targetKey": "abdusalomov",
+      "amount": 50,
+      "nonce": "e9eddf368909",
+      "paidAt": "2026-11-05T11:14:27.415Z"
+    },
+    "stxp_DuIyEqB65jMN7x732WmODUGSqjs7luxK": {
+      "targetKey": "abdusalomov",
+      "amount": 10,
+      "nonce": "3e1278d4fc2a",
+      "paidAt": "2026-11-05T11:14:39.884Z"
+    },
+    "stxp_QsIkZSMeNtS8woZSIoINeZ75qo6WKjAg": {
+      "targetKey": "abdusalomov",
+      "amount": 1000,
+      "nonce": "5cbafea2a6cf",
+      "paidAt": "2026-11-05T11:15:24.091Z"
+    },
+    "stxp_QZO8PDAQGKuZHhGPlpNkUvuGhiEQmPV5": {
+      "targetKey": "abdusalomov",
+      "amount": 1000,
+      "nonce": "1913296e7cfa",
+      "paidAt": "2026-11-05T11:17:53.251Z"
+    },
+    "stxp_UMSnyCyjXC8vbzZVM87WzCZxNtaQWzlj": {
+      "targetKey": "abdusalomov",
+      "amount": 5,
+      "nonce": "7f49b20a4512",
+      "paidAt": "2026-11-05T11:19:36.384Z"
+    },
+    "stxp_9aGSGg8XJzfMpY5itxrpvIKUOzUk4PS4": {
+      "targetKey": "metauz",
+      "amount": 25,
+      "nonce": "dfdae24a716b",
+      "paidAt": "2026-11-05T11:28:32.088Z"
+    },
+    "stxp_6QMNpb2PuPeYLL7HlbqueXnhUwhL5ca0": {
+      "targetKey": "metauz",
+      "amount": 25,
+      "nonce": "1fa3378433f7",
+      "paidAt": "2026-11-05T11:28:45.485Z"
+    },
+    "stxp_ViVDif0BFTSGhBqgQYKXBQPlJ1YYuUR8": {
+      "targetKey": "metauz",
+      "amount": 25,
+      "nonce": "2f8aa092bedc",
+      "paidAt": "2026-11-05T11:29:17.730Z"
+    },
+    "stxp_SZCDLvSCiRwlKdtzjLBX0HR1qvlFRPCT": {
+      "targetKey": "metauz",
+      "amount": 50,
+      "nonce": "d29230d6e63d",
+      "paidAt": "2026-11-05T11:29:37.051Z"
+    },
+    "stxp_RKA90rrRUdSPeQNFrF0eU6C3wwrHRLBv": {
+      "targetKey": "abdusalomov",
+      "amount": 1000,
+      "nonce": "758ed7888953",
+      "paidAt": "2026-11-05T11:29:54.356Z"
+    },
+    "stxp_r72MANCnbtV3RGMN9q1J0udxM5daFWm8": {
+      "targetKey": "metauz",
+      "amount": 50,
+      "nonce": "69d180770eb4",
+      "paidAt": "2026-11-05T11:30:09.814Z"
+    }
+  },
+  "lastUpdateId": 81008
+}

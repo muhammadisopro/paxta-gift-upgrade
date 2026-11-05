@@ -231,6 +231,11 @@ function mountLottieOrImg(container, { imgUrl, jsonUrl, size = 132, loop = false
   fallbackImg.style.width = `${size}px`;
   fallbackImg.style.height = `${size}px`;
   fallbackImg.style.objectFit = 'contain';
+  fallbackImg.onerror = () => {
+    if (fallbackImg.src.includes('/a/imperialcrown/') && !fallbackImg.src.endsWith('/thumb.svg')) {
+      fallbackImg.src = '/a/imperialcrown/thumb.svg';
+    }
+  };
   container.appendChild(fallbackImg);
 
   let anim = null;
@@ -854,6 +859,11 @@ function buildGiftCard(g, opts = {}) {
   img.src = g.state === 'upgraded' && g.model ? g.model.img : g.thumb;
   img.alt = g.name;
   img.loading = 'lazy';
+  img.onerror = () => {
+    if (g.thumb && img.src !== g.thumb) {
+      img.src = g.thumb;
+    }
+  };
   card.appendChild(img);
 
   const foot = document.createElement('div');

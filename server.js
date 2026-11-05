@@ -46,11 +46,16 @@ const saveJSON = (f, d) => {
   }
 };
 
-// ---- Cloud State Backup & Restore (GitHub Private Gist) ----
+// ---- Cloud State Backup & Restore (GitHub Private Gist with Smart Merge & Safety) ----
 let cloudSyncTimer = null;
 let cloudSyncInFlight = false;
+let lastCloudSyncTime = 0;
 
 async function loadCloudStateOnStartup() {
+  const localUsers = loadJSON(usersFile, {});
+  const localInv = loadJSON(inventoryFile, []);
+  console.log(`📂 [LocalState] Current disk state: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
+
   if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
   try {
     const res = await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
@@ -60,27 +65,52 @@ async function loadCloudStateOnStartup() {
         'User-Agent': 'PaxtaGiftsServer'
       }
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      console.warn(`Cloud state fetch status: ${res.status} (keeping disk state safe)`);
+      return;
+    }
     const gist = await res.json();
     const raw = gist.files?.['paxta_gifts_state.json']?.content;
     if (!raw) return;
     const parsed = JSON.parse(raw);
-    if (parsed.users && Object.keys(parsed.users).length > 0) {
-      fs.writeFileSync(usersFile, JSON.stringify(parsed.users, null, 2));
+
+    // Smart Merge for Users
+    const mergedUsers = { ...localUsers, ...(parsed.users || {}) };
+    if (Object.keys(mergedUsers).length > 0) {
+      fs.writeFileSync(usersFile, JSON.stringify(mergedUsers, null, 2));
     }
-    if (Array.isArray(parsed.inventory) && parsed.inventory.length > 0) {
-      fs.writeFileSync(inventoryFile, JSON.stringify(parsed.inventory, null, 2));
+
+    // Smart Merge for Inventory (By Gift ID: never lose any gift!)
+    const invMap = new Map();
+    for (const g of localInv) if (g && g.id) invMap.set(g.id, g);
+    for (const g of (parsed.inventory || [])) if (g && g.id) {
+      // If gift exists in both, prefer the one with later upgraded/crafted status
+      const existing = invMap.get(g.id);
+      if (!existing || (g.state === 'upgraded' && existing.state === 'regular')) {
+        invMap.set(g.id, g);
+      }
     }
+    const mergedInv = Array.from(invMap.values());
+    if (mergedInv.length > 0) {
+      fs.writeFileSync(inventoryFile, JSON.stringify(mergedInv, null, 2));
+    }
+
     if (parsed.settings && parsed.settings.collections) {
       fs.writeFileSync(settingsFile, JSON.stringify(parsed.settings, null, 2));
     }
     if (parsed.payments && parsed.payments.lastUpdateId) {
-      fs.writeFileSync(paymentsFile, JSON.stringify(parsed.payments, null, 2));
+      const curPayments = loadJSON(paymentsFile, {});
+      const maxOffset = Math.max(curPayments.lastUpdateId || 0, parsed.payments.lastUpdateId || 0);
+      fs.writeFileSync(paymentsFile, JSON.stringify({ ...curPayments, ...parsed.payments, lastUpdateId: maxOffset }, null, 2));
     }
     if (Array.isArray(parsed.activity) && parsed.activity.length > 0) {
-      fs.writeFileSync(activityFile, JSON.stringify(parsed.activity, null, 2));
+      const curAct = loadJSON(activityFile, []);
+      const actMap = new Map();
+      for (const a of curAct) if (a && a.id) actMap.set(a.id, a);
+      for (const a of parsed.activity) if (a && a.id) actMap.set(a.id, a);
+      fs.writeFileSync(activityFile, JSON.stringify(Array.from(actMap.values()).slice(-200), null, 2));
     }
-    console.log(`☁️ [CloudState] Restored state from Gist (${Object.keys(parsed.users || {}).length} users, ${(parsed.inventory || []).length} gifts)`);
+    console.log(`☁️ [CloudState] Successfully synced state (${Object.keys(mergedUsers).length} users, ${mergedInv.length} gifts)`);
   } catch (err) {
     console.error('Cloud state restore warning:', err.message);
   }
@@ -89,19 +119,32 @@ async function loadCloudStateOnStartup() {
 function scheduleCloudSync() {
   if (!STATE_GIST_ID || !STATE_GH_TOKEN) return;
   if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+
+  // Debounce to 5000ms and respect 10s minimum interval to avoid GitHub API 403 Rate Limits
   cloudSyncTimer = setTimeout(async () => {
     if (cloudSyncInFlight) return scheduleCloudSync();
+    const now = Date.now();
+    if (now - lastCloudSyncTime < 10000) {
+      return scheduleCloudSync();
+    }
     cloudSyncInFlight = true;
     try {
+      const curInv = loadJSON(inventoryFile, []);
+      const curUsers = loadJSON(usersFile, {});
+      // SAFETY CHECK: NEVER overwrite cloud with empty or wiped inventory!
+      if (!Array.isArray(curInv) || curInv.length === 0) {
+        console.warn('⚠️ [CloudSync] Refusing to sync empty inventory to cloud!');
+        return;
+      }
       const payload = {
         updatedAt: new Date().toISOString(),
-        users: loadJSON(usersFile, {}),
-        inventory: loadJSON(inventoryFile, []),
+        users: curUsers,
+        inventory: curInv,
         settings: loadJSON(settingsFile, null),
         payments: loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: 80860 }),
         activity: loadJSON(activityFile, []).slice(-200)
       };
-      await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
+      const res = await fetch(`https://api.github.com/gists/${STATE_GIST_ID}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${STATE_GH_TOKEN}`,
@@ -117,10 +160,13 @@ function scheduleCloudSync() {
           }
         })
       });
+      if (res.ok) {
+        lastCloudSyncTime = Date.now();
+      }
     } catch {} finally {
       cloudSyncInFlight = false;
     }
-  }, 1500);
+  }, 5000);
 }
 
 function logActivity(entry) {
@@ -200,6 +246,21 @@ function normalizeTgsToJson(slug, url) {
 
 function formatModelForClient(slug, m) {
   if (!m) return null;
+  let img = normalizeUrl(slug, m.img);
+  let tgs = normalizeTgsToJson(slug, m.tgs || m.img);
+
+  // Auto-healing for Imperial Crown and dynamic collections: ensure valid model image & tgs
+  if (slug === 'imperialcrown') {
+    const c = loadCollection('imperialcrown');
+    if (c && c.models) {
+      const match = c.models.find(x => x.id === m.id || x.name === m.name);
+      if (match) {
+        img = normalizeUrl(slug, match.img);
+        tgs = normalizeTgsToJson(slug, match.tgs);
+      }
+    }
+  }
+
   const rarity = m.rarity || m.permille || Math.max(1, Math.round((m.pct || 1.5) * 10));
   return {
     id: m.id || m.name,
@@ -208,8 +269,8 @@ function formatModelForClient(slug, m) {
     pct: +(rarity / 10).toFixed(1),
     crafted: !!m.crafted,
     tier: m.tier || null,
-    img: normalizeUrl(slug, m.img),
-    tgs: normalizeTgsToJson(slug, m.tgs || m.img)
+    img,
+    tgs
   };
 }
 
