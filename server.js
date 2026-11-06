@@ -1298,27 +1298,17 @@ app.post('/api/gifts/burn', (req, res) => {
   }
 
   const now = new Date().toISOString();
-  let totalRefund = 0;
   const burnedNames = [];
 
   for (const g of targetGifts) {
-    // 85% cashback / refund on base price + upgrade price
-    const baseCost = g.paid || 250;
-    const upCost = g.upgradePaid || 0;
-    const refund = Math.max(10, Math.round((baseCost + upCost) * 0.85));
-    totalRefund += refund;
-
     g.state = 'burned';
     g.burnedAt = now;
     g.worn = false;
     g.pinned = false;
     g.salePrice = null;
-    g.burnedRefund = refund;
     burnedNames.push(g.name + (g.number ? ` #${g.number}` : ''));
   }
 
-  users[key].stars += totalRefund;
-  saveJSON(usersFile, users);
   saveJSON(inventoryFile, inv);
 
   logActivity({
@@ -1326,14 +1316,12 @@ app.post('/api/gifts/burn', (req, res) => {
     actor: key,
     actorName: users[key]?.displayName || key,
     count: targetGifts.length,
-    giftName: targetGifts.length === 1 ? burnedNames[0] : `${targetGifts.length} ta sovgʻa`,
-    refund: totalRefund
+    giftName: targetGifts.length === 1 ? burnedNames[0] : `${targetGifts.length} ta sovgʻa`
   });
 
   res.json({
     ok: true,
     burnedCount: targetGifts.length,
-    refund: totalRefund,
     newBalance: users[key].stars,
     burnedNames
   });
@@ -1800,27 +1788,20 @@ app.post('/api/gifts/action', (req, res) => {
     return res.json({ ok: true, converted: true, refund, newBalance: users[key].stars });
   } else if (action === 'burn') {
     if (gift.salePrice && gift.salePrice > 0) return res.status(400).json({ ok: false, error: 'Sotuvdagi sovgʻani yoqib boʻlmaydi' });
-    const baseCost = gift.paid || 250;
-    const upCost = gift.upgradePaid || 0;
-    const refund = Math.max(10, Math.round((baseCost + upCost) * 0.85));
     gift.state = 'burned';
     gift.burnedAt = new Date().toISOString();
     gift.worn = false;
     gift.pinned = false;
     gift.salePrice = null;
-    gift.burnedRefund = refund;
-    users[key].stars += refund;
-    saveJSON(usersFile, users);
     saveJSON(inventoryFile, inv);
     logActivity({
       type: 'burn',
       actor: key,
       actorName: users[key]?.displayName || key,
       count: 1,
-      giftName: gift.name + (gift.number ? ` #${gift.number}` : ''),
-      refund
+      giftName: gift.name + (gift.number ? ` #${gift.number}` : '')
     });
-    return res.json({ ok: true, burned: true, refund, newBalance: users[key].stars });
+    return res.json({ ok: true, burned: true, newBalance: users[key].stars });
   }
 
   saveJSON(inventoryFile, inv);

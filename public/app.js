@@ -948,17 +948,8 @@ function updateBatchBurnBar(giftsList) {
 
   if (countEl) countEl.textContent = `${count} / 10`;
 
-  let totalRefund = 0;
-  for (const g of giftsList) {
-    if (STATE.selectedGiftIds.has(g.id)) {
-      const baseCost = g.paid || 250;
-      const upCost = g.upgradePaid || 0;
-      totalRefund += Math.max(10, Math.round((baseCost + upCost) * 0.85));
-    }
-  }
-
   if (refundEl) {
-    refundEl.innerHTML = `Qaytariladi: <b class="batch-burn-stars">⭐ ${fmtInt(totalRefund)}</b>`;
+    refundEl.innerHTML = count > 0 ? `<span style="color:#ff8585;font-weight:600;">Butunlay yoʻq qilish</span>` : `Sovgʻalarni tanlang`;
   }
   if (submitBtn) {
     submitBtn.disabled = count === 0;
@@ -972,14 +963,10 @@ async function executeBatchBurn() {
 
   const prof = STATE.viewedProfile || STATE.myProfile || {};
   const allGifts = prof.gifts || [];
-  let totalRefund = 0;
   const selectedNames = [];
 
   for (const g of allGifts) {
     if (STATE.selectedGiftIds.has(g.id)) {
-      const baseCost = g.paid || 250;
-      const upCost = g.upgradePaid || 0;
-      totalRefund += Math.max(10, Math.round((baseCost + upCost) * 0.85));
       selectedNames.push(g.name + (g.number ? ` #${g.number}` : ''));
     }
   }
@@ -989,16 +976,13 @@ async function executeBatchBurn() {
       <div style="font-size:46px;margin:4px 0;animation:burnPulse 1s infinite alternate;">🔥</div>
       <h3 style="margin:0;font-size:18px;">${count} ta sovgʻani yoqmoqchimisiz?</h3>
       <p style="font-size:13px;color:var(--text-2);line-height:1.45;margin:4px 0 10px 0;">
-        Tanlangan sovgʻalar <b>butunlay yoʻq qilinadi</b> va ularning <b>85%</b> yulduzlari hisobingizga keshbek sifatida qaytariladi:
+        Diqqat: Tanlangan sovgʻalar <b>butunlay yoʻq qilinadi (burn qilinadi)</b> va muomaladan chiqariladi. Bu amalni ortga qaytarib boʻlmaydi.
       </p>
       <div style="background:rgba(255,255,255,0.06);padding:10px 14px;border-radius:12px;width:100%;text-align:left;max-height:130px;overflow-y:auto;font-size:12.5px;">
         ${selectedNames.map(n => `<div style="padding:4px 0;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.05);"><span>${esc(n)}</span><span style="color:#ff8585;font-weight:600;">🔥 Yoqiladi</span></div>`).join('')}
       </div>
-      <div style="font-size:16px;margin:8px 0;color:var(--saffron);">
-        Keshbek summasi: <b>⭐ ${fmtInt(totalRefund)} Stars</b>
-      </div>
-      <button type="button" class="btn btn-danger gv-btn" id="btnConfirmBatchBurn" style="height:44px;font-size:15px;">
-        🔥 Ha, butunlay yoqish (+⭐ ${fmtInt(totalRefund)})
+      <button type="button" class="btn btn-danger gv-btn" id="btnConfirmBatchBurn" style="height:44px;font-size:15px;margin-top:10px;">
+        🔥 Ha, butunlay yoqish (${count} ta)
       </button>
       <button type="button" class="btn btn-secondary gv-btn" id="btnCancelBatchBurn" style="height:38px;">
         Bekor qilish
@@ -1032,7 +1016,7 @@ async function executeBatchBurn() {
       if (bBar) bBar.hidden = true;
 
       await loginUser(STATE.user.username);
-      showToast(`🔥 ${res.burnedCount} ta sovgʻa yoqildi! Balansingizga ⭐ ${fmtInt(res.refund)} qaytarildi.`);
+      showToast(`🔥 ${res.burnedCount} ta sovgʻa butunlay yoqildi!`);
       renderProfileView();
     });
   });
@@ -2026,22 +2010,16 @@ function renderGiftViewDialog(gift, head, body) {
     });
     menu.querySelector('#ctxBurnSingle')?.addEventListener('click', () => {
       menu.remove();
-      const baseCost = gift.paid || 250;
-      const upCost = gift.upgradePaid || 0;
-      const refund = Math.max(10, Math.round((baseCost + upCost) * 0.85));
 
       openSubModal(`🔥 Sovgʻani yoqish (Burn)`, `
         <div class="form-stack" style="text-align:center;align-items:center;">
           <div style="font-size:46px;margin:4px 0;animation:burnPulse 1s infinite alternate;">🔥</div>
           <h3 style="margin:0;font-size:18px;">${esc(gift.name)}${gift.number ? ` #${gift.number}` : ''} yoqilsinmi?</h3>
           <p style="font-size:13px;color:var(--text-2);line-height:1.45;margin:6px 0 12px 0;">
-            Bu sovgʻa <b>butunlay yoʻq qilinadi</b> va balansingizga <b>85% keshbek</b> qaytariladi:
+            Diqqat: Bu sovgʻa <b>butunlay yoʻq qilinadi (burn qilinadi)</b> va muomaladan chiqariladi. Bu amalni ortga qaytarib boʻlmaydi.
           </p>
-          <div style="font-size:17px;color:var(--saffron);margin-bottom:12px;">
-            Keshbek: <b>⭐ ${fmtInt(refund)} Stars</b>
-          </div>
-          <button type="button" class="btn btn-danger gv-btn" id="btnConfirmSingleBurn" style="height:44px;font-size:15px;">
-            🔥 Ha, butunlay yoqish (+⭐ ${fmtInt(refund)})
+          <button type="button" class="btn btn-danger gv-btn" id="btnConfirmSingleBurn" style="height:44px;font-size:15px;margin-top:6px;">
+            🔥 Ha, butunlay yoqish
           </button>
           <button type="button" class="btn btn-secondary gv-btn" id="btnCancelSingleBurn" style="height:38px;">
             Bekor qilish
@@ -2062,7 +2040,7 @@ function renderGiftViewDialog(gift, head, body) {
           closeSubModal();
           closeGiftModal();
           await loginUser(STATE.user.username);
-          showToast(`🔥 Sovgʻa yoqildi! Balansga ⭐ ${fmtInt(res.refund)} qaytarildi.`);
+          showToast(`🔥 Sovgʻa butunlay yoqildi!`);
           renderProfileView();
         });
       });
