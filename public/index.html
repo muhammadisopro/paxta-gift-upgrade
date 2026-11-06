@@ -344,9 +344,32 @@
             <button class="filter-chip" data-filter="regular" id="filterBtnRegular">✨ Oddiy</button>
             <button class="filter-chip" data-filter="sale">🏷 Sotuvda</button>
           </div>
+          <button type="button" class="profile-select-mode-btn" id="btnToggleSelectMode" title="Sovgʻalarni tanlash (1-10 ta)">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span id="btnToggleSelectModeText">Tanlash</span>
+          </button>
         </div>
 
         <div class="gift-grid tg-profile-gift-grid" id="inventoryGrid"></div>
+
+        <!-- Floating Batch Burn Action Bar (1-10 ta sovg'ani tanlab yoqish) -->
+        <div class="batch-burn-bar" id="batchBurnBar" hidden>
+          <div class="batch-burn-info">
+            <div class="batch-burn-count-wrap">
+              <span class="batch-burn-badge" id="batchBurnCount">0 / 10</span>
+              <span class="batch-burn-label">sovgʻa tanlandi</span>
+            </div>
+            <div class="batch-burn-refund" id="batchBurnRefund">
+              Qaytariladi: <span class="batch-burn-stars">⭐ 0</span>
+            </div>
+          </div>
+          <div class="batch-burn-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="btnCancelSelectMode">Bekor qilish</button>
+            <button type="button" class="btn btn-danger btn-sm btn-burn-submit" id="btnBatchBurnSubmit" disabled>
+              🔥 Yoqish (Burn)
+            </button>
+          </div>
+        </div>
       </section>
 
       <!-- TAB 4: Reyting & Jonli (Collectors Directory, Search Any Profile & Live Activity Feed) -->

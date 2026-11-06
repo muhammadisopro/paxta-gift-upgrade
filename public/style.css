@@ -4118,3 +4118,338 @@ button, input, textarea {
   border-radius: 14px !important;
   margin-top: 6px;
 }
+
+
+/* ============================================================================
+   MULTI-BUY QUANTITY SELECTOR (Do'konda birdaniga bir nechta sovg'a sotib olish)
+   ============================================================================ */
+.buy-qty-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.buy-qty-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.buy-qty-stock-hint {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: normal;
+}
+
+.buy-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.qty-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.qty-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.qty-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.qty-input {
+  width: 70px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.qty-input:focus {
+  border-color: var(--saffron);
+}
+
+.buy-qty-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.qty-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qty-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.qty-chip.active {
+  background: var(--saffron);
+  color: #0b0c10;
+  border-color: var(--saffron);
+  font-weight: 750;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.buy-summary-box {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* ============================================================================
+   PROFILE SELECT MODE & BATCH BURN (Sovg'alarni 1-10 ta tanlab yoqish)
+   ============================================================================ */
+.tg-profile-tabs-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.profile-select-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.profile-select-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.profile-select-mode-btn.active {
+  background: #ff4757;
+  color: #fff;
+  border-color: #ff4757;
+  box-shadow: 0 0 12px rgba(255, 71, 87, 0.45);
+}
+
+.gift-card.is-select-mode {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gift-card-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(18, 20, 28, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: transparent;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gift-card.is-selected {
+  border-color: #ff4757 !important;
+  box-shadow: 0 0 16px rgba(255, 71, 87, 0.45) !important;
+  transform: scale(0.96);
+}
+
+.gift-card.is-selected .gift-card-check {
+  background: #ff4757;
+  border-color: #ff4757;
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 71, 87, 0.6);
+}
+
+/* Floating Batch Burn Bar */
+.batch-burn-bar {
+  position: fixed;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  left: 12px;
+  right: 12px;
+  max-width: 580px;
+  margin: 0 auto;
+  z-index: 100;
+  background: rgba(18, 20, 30, 0.88);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 71, 87, 0.35);
+  border-radius: 20px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 20px rgba(255, 71, 87, 0.2);
+  animation: slideUpBatch 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 821px) {
+  .batch-burn-bar {
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 540px;
+  }
+}
+
+@keyframes slideUpBatch {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes burnPulse {
+  from {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px #ff4757);
+  }
+  to {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 14px #ff6b81);
+  }
+}
+
+.batch-burn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.batch-burn-count-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.batch-burn-badge {
+  background: #ff4757;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+
+.batch-burn-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.batch-burn-refund {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.batch-burn-stars {
+  color: var(--saffron);
+  font-weight: 700;
+}
+
+.batch-burn-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-burn-submit {
+  background: linear-gradient(135deg, #ff4757, #ee5253) !important;
+  color: #fff !important;
+  border: none !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 14px rgba(255, 71, 87, 0.4) !important;
+  transition: all 0.15s ease;
+}
+
+.btn-burn-submit:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-burn-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-burn-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}

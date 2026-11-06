@@ -25,7 +25,9 @@ const STATE = {
   adminQuery: '',
   activeGift: null,
   modalView: 'view',
-  cleanupModal: null
+  cleanupModal: null,
+  selectMode: false,
+  selectedGiftIds: new Set()
 };
 
 const TIER_LABELS = {
@@ -870,6 +872,20 @@ function renderInventoryGrid(giftsList, isOwn, profileUsername) {
   if (!grid) return;
   grid.innerHTML = '';
 
+  const selectBtn = document.getElementById('btnToggleSelectMode');
+  const selectText = document.getElementById('btnToggleSelectModeText');
+  const batchBar = document.getElementById('batchBurnBar');
+
+  if (selectBtn) {
+    selectBtn.style.display = isOwn ? 'inline-flex' : 'none';
+    selectBtn.classList.toggle('active', STATE.selectMode);
+    if (selectText) selectText.textContent = STATE.selectMode ? 'Bekor qilish' : 'Tanlash';
+  }
+
+  if (batchBar) {
+    batchBar.hidden = !(STATE.selectMode && isOwn);
+  }
+
   const filtered = giftsList.filter(g => {
     if (STATE.invFilter === 'worn') return !!g.worn;
     if (STATE.invFilter === 'pinned') return !!g.pinned;
@@ -879,6 +895,10 @@ function renderInventoryGrid(giftsList, isOwn, profileUsername) {
     if (STATE.invFilter === 'sale') return g.salePrice > 0;
     return true;
   });
+
+  if (STATE.selectMode && isOwn) {
+    updateBatchBurnBar(filtered);
+  }
 
   if (!filtered.length) {
     grid.innerHTML = `
@@ -893,13 +913,145 @@ function renderInventoryGrid(giftsList, isOwn, profileUsername) {
   }
 
   for (const g of filtered) {
-    grid.appendChild(buildGiftCard(g));
+    grid.appendChild(buildGiftCard(g, {
+      isSelectMode: STATE.selectMode && isOwn,
+      isSelected: STATE.selectedGiftIds.has(g.id),
+      onToggleSelect: (gift) => handleToggleGiftSelection(gift, filtered)
+    }));
   }
+}
+
+function handleToggleGiftSelection(g, allGifts) {
+  if (g.salePrice && g.salePrice > 0) {
+    return showToast('Sotuvda turgan sovgʻani yoqib boʻlmaydi. Avval sotuvdan oling.');
+  }
+
+  if (STATE.selectedGiftIds.has(g.id)) {
+    STATE.selectedGiftIds.delete(g.id);
+  } else {
+    if (STATE.selectedGiftIds.size >= 10) {
+      return showToast('⚠️ Bir vaqtda koʻpi bilan 10 ta sovgʻa tanlash mumkin');
+    }
+    STATE.selectedGiftIds.add(g.id);
+  }
+  updateBatchBurnBar(allGifts);
+  renderInventory();
+}
+
+function updateBatchBurnBar(giftsList) {
+  const bar = document.getElementById('batchBurnBar');
+  if (!bar) return;
+  const count = STATE.selectedGiftIds.size;
+  const countEl = document.getElementById('batchBurnCount');
+  const refundEl = document.getElementById('batchBurnRefund');
+  const submitBtn = document.getElementById('btnBatchBurnSubmit');
+
+  if (countEl) countEl.textContent = `${count} / 10`;
+
+  let totalRefund = 0;
+  for (const g of giftsList) {
+    if (STATE.selectedGiftIds.has(g.id)) {
+      const baseCost = g.paid || 250;
+      const upCost = g.upgradePaid || 0;
+      totalRefund += Math.max(10, Math.round((baseCost + upCost) * 0.85));
+    }
+  }
+
+  if (refundEl) {
+    refundEl.innerHTML = `Qaytariladi: <b class="batch-burn-stars">⭐ ${fmtInt(totalRefund)}</b>`;
+  }
+  if (submitBtn) {
+    submitBtn.disabled = count === 0;
+    submitBtn.innerHTML = count > 0 ? `🔥 Yoqish (${count} ta)` : '🔥 Yoqish (Burn)';
+  }
+}
+
+async function executeBatchBurn() {
+  const count = STATE.selectedGiftIds.size;
+  if (!count) return;
+
+  const prof = STATE.viewedProfile || STATE.myProfile || {};
+  const allGifts = prof.gifts || [];
+  let totalRefund = 0;
+  const selectedNames = [];
+
+  for (const g of allGifts) {
+    if (STATE.selectedGiftIds.has(g.id)) {
+      const baseCost = g.paid || 250;
+      const upCost = g.upgradePaid || 0;
+      totalRefund += Math.max(10, Math.round((baseCost + upCost) * 0.85));
+      selectedNames.push(g.name + (g.number ? ` #${g.number}` : ''));
+    }
+  }
+
+  openSubModal(`🔥 Sovgʻalarni yoqish (Burn)`, `
+    <div class="form-stack" style="text-align:center;align-items:center;">
+      <div style="font-size:46px;margin:4px 0;animation:burnPulse 1s infinite alternate;">🔥</div>
+      <h3 style="margin:0;font-size:18px;">${count} ta sovgʻani yoqmoqchimisiz?</h3>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.45;margin:4px 0 10px 0;">
+        Tanlangan sovgʻalar <b>butunlay yoʻq qilinadi</b> va ularning <b>85%</b> yulduzlari hisobingizga keshbek sifatida qaytariladi:
+      </p>
+      <div style="background:rgba(255,255,255,0.06);padding:10px 14px;border-radius:12px;width:100%;text-align:left;max-height:130px;overflow-y:auto;font-size:12.5px;">
+        ${selectedNames.map(n => `<div style="padding:4px 0;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.05);"><span>${esc(n)}</span><span style="color:#ff8585;font-weight:600;">🔥 Yoqiladi</span></div>`).join('')}
+      </div>
+      <div style="font-size:16px;margin:8px 0;color:var(--saffron);">
+        Keshbek summasi: <b>⭐ ${fmtInt(totalRefund)} Stars</b>
+      </div>
+      <button type="button" class="btn btn-danger gv-btn" id="btnConfirmBatchBurn" style="height:44px;font-size:15px;">
+        🔥 Ha, butunlay yoqish (+⭐ ${fmtInt(totalRefund)})
+      </button>
+      <button type="button" class="btn btn-secondary gv-btn" id="btnCancelBatchBurn" style="height:38px;">
+        Bekor qilish
+      </button>
+    </div>
+  `, (body) => {
+    body.querySelector('#btnCancelBatchBurn')?.addEventListener('click', closeSubModal);
+    body.querySelector('#btnConfirmBatchBurn')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.textContent = 'Yoqilmoqda...';
+
+      const res = await api('/api/gifts/burn', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: STATE.user.username,
+          giftIds: Array.from(STATE.selectedGiftIds)
+        })
+      });
+
+      if (!res.ok) {
+        btn.disabled = false;
+        btn.textContent = 'Qayta urinish';
+        return showToast(res.error || 'Xatolik yuz berdi');
+      }
+
+      closeSubModal();
+      STATE.selectMode = false;
+      STATE.selectedGiftIds.clear();
+      const bBar = document.getElementById('batchBurnBar');
+      if (bBar) bBar.hidden = true;
+
+      await loginUser(STATE.user.username);
+      showToast(`🔥 ${res.burnedCount} ta sovgʻa yoqildi! Balansingizga ⭐ ${fmtInt(res.refund)} qaytarildi.`);
+      renderProfileView();
+    });
+  });
 }
 
 function buildGiftCard(g, opts = {}) {
   const card = document.createElement('div');
   card.className = `gift-card ${g.state === 'regular' ? 'is-regular' : 'is-upgraded'}`;
+
+  if (opts.isSelectMode) {
+    card.classList.add('is-select-mode');
+    const isSel = !!opts.isSelected;
+    if (isSel) card.classList.add('is-selected');
+
+    const check = document.createElement('div');
+    check.className = 'gift-card-check';
+    check.innerHTML = isSel ? '✓' : '';
+    card.appendChild(check);
+  }
 
   if (g.state === 'upgraded' && g.backdrop) {
     const cvs = document.createElement('canvas');
@@ -985,7 +1137,15 @@ function buildGiftCard(g, opts = {}) {
   }
   card.appendChild(foot);
 
-  card.addEventListener('click', () => openGiftModal(g, 'view'));
+  if (opts.isSelectMode) {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      opts.onToggleSelect && opts.onToggleSelect(g);
+    });
+  } else {
+    card.addEventListener('click', () => openGiftModal(g, 'view'));
+  }
+
   return card;
 }
 
@@ -1841,6 +2001,10 @@ function renderGiftViewDialog(gift, head, body) {
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         <span>${gift.hidden ? 'Profilda koʻrsatish' : 'Sovgʻani yashirish'}</span>
       </button>
+      <button class="ctx-item" id="ctxBurnSingle" style="color:#ff8585;">
+        <span style="font-size:16px;">🔥</span>
+        <span>Sovgʻani yoqish (Burn)</span>
+      </button>
     `;
     document.getElementById('giftModalPanel').appendChild(menu);
 
@@ -1859,6 +2023,49 @@ function renderGiftViewDialog(gift, head, body) {
     menu.querySelector('#ctxHide')?.addEventListener('click', async () => {
       menu.remove();
       await performGiftAction(gift, 'hide');
+    });
+    menu.querySelector('#ctxBurnSingle')?.addEventListener('click', () => {
+      menu.remove();
+      const baseCost = gift.paid || 250;
+      const upCost = gift.upgradePaid || 0;
+      const refund = Math.max(10, Math.round((baseCost + upCost) * 0.85));
+
+      openSubModal(`🔥 Sovgʻani yoqish (Burn)`, `
+        <div class="form-stack" style="text-align:center;align-items:center;">
+          <div style="font-size:46px;margin:4px 0;animation:burnPulse 1s infinite alternate;">🔥</div>
+          <h3 style="margin:0;font-size:18px;">${esc(gift.name)}${gift.number ? ` #${gift.number}` : ''} yoqilsinmi?</h3>
+          <p style="font-size:13px;color:var(--text-2);line-height:1.45;margin:6px 0 12px 0;">
+            Bu sovgʻa <b>butunlay yoʻq qilinadi</b> va balansingizga <b>85% keshbek</b> qaytariladi:
+          </p>
+          <div style="font-size:17px;color:var(--saffron);margin-bottom:12px;">
+            Keshbek: <b>⭐ ${fmtInt(refund)} Stars</b>
+          </div>
+          <button type="button" class="btn btn-danger gv-btn" id="btnConfirmSingleBurn" style="height:44px;font-size:15px;">
+            🔥 Ha, butunlay yoqish (+⭐ ${fmtInt(refund)})
+          </button>
+          <button type="button" class="btn btn-secondary gv-btn" id="btnCancelSingleBurn" style="height:38px;">
+            Bekor qilish
+          </button>
+        </div>
+      `, (sBody) => {
+        sBody.querySelector('#btnCancelSingleBurn')?.addEventListener('click', closeSubModal);
+        sBody.querySelector('#btnConfirmSingleBurn')?.addEventListener('click', async (eBtn) => {
+          eBtn.currentTarget.disabled = true;
+          const res = await api('/api/gifts/burn', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.user.username, giftIds: [gift.id] })
+          });
+          if (!res.ok) {
+            eBtn.currentTarget.disabled = false;
+            return showToast(res.error || 'Xatolik yuz berdi');
+          }
+          closeSubModal();
+          closeGiftModal();
+          await loginUser(STATE.user.username);
+          showToast(`🔥 Sovgʻa yoqildi! Balansga ⭐ ${fmtInt(res.refund)} qaytarildi.`);
+          renderProfileView();
+        });
+      });
     });
   });
 
@@ -2785,26 +2992,70 @@ function closeSubModal() {
 }
 
 function openBuyCollectionSheet(c) {
-  const hasEnough = (STATE.user?.stars || 0) >= c.base;
-  const deficit = Math.max(0, c.base - (STATE.user?.stars || 0));
+  let qty = 1;
+  const maxBuy = Math.min(100, Math.max(1, c.remainingToBuy || 1));
+
+  function calc(q) {
+    const totalCost = (c.base || c.price || 250) * q;
+    const userStars = STATE.user?.stars || 0;
+    const hasEnough = userStars >= totalCost;
+    const deficit = Math.max(0, totalCost - userStars);
+    return { totalCost, userStars, hasEnough, deficit };
+  }
+
+  const initial = calc(qty);
+
   openSubModal(`${c.name} sotib olish`, `
     <div class="form-stack" style="text-align:center;align-items:center;">
-      <div style="width:170px;height:170px;position:relative;display:grid;place-items:center;">
-        <div class="gift-glow" style="width:170px;height:170px;background:radial-gradient(circle, rgba(255,190,70,0.38) 0%, rgba(255,150,40,0) 70%);"></div>
-        <div id="buyPreviewLottie" style="width:136px;height:136px;position:relative;z-index:1;"></div>
+      <div style="width:150px;height:150px;position:relative;display:grid;place-items:center;">
+        <div class="gift-glow" style="width:150px;height:150px;background:radial-gradient(circle, rgba(255,190,70,0.38) 0%, rgba(255,150,40,0) 70%);"></div>
+        <div id="buyPreviewLottie" style="width:120px;height:120px;position:relative;z-index:1;"></div>
       </div>
-      <div style="font-size:13.5px;color:var(--text-2);line-height:1.45;">
-        Qolgan tiraj: <b>${fmtInt(c.remainingToBuy)} / ${fmtInt(c.supply)}</b><br>
-        Sotib olgach, <b>Profil</b> boʻlimida uni <b>⭐ ${fmtInt(c.upgrade)}</b> evaziga noyob modelga yaxshilashingiz (upgrade) mumkin.
+      <div style="font-size:13px;color:var(--text-2);line-height:1.4;">
+        Qolgan tiraj: <b>${fmtInt(c.remainingToBuy)} / ${fmtInt(c.supply)}</b> · Bitta narxi: <b>${svgStar(14)} ${fmtInt(c.base || c.price || 250)}</b>
       </div>
-      <div style="font-size:12.5px;color:var(--text-2);">
-        Joriy balans: <b style="color:var(--saffron);">⭐ ${fmtInt(STATE.user?.stars || 0)}</b>
-        ${!hasEnough ? ` · Yetmayapti: <b style="color:#ff8585;">⭐ ${fmtInt(deficit)}</b>` : ''}
+
+      <!-- Quantity Stepper & Presets -->
+      <div class="buy-qty-card">
+        <div class="buy-qty-head">
+          <span>Sotib olish miqdori:</span>
+          <span class="buy-qty-stock-hint">(Maks: ${maxBuy} dona)</span>
+        </div>
+        <div class="buy-qty-row">
+          <button type="button" class="qty-btn" id="btnQtyMinus" ${qty <= 1 ? 'disabled' : ''}>−</button>
+          <input type="number" class="qty-input" id="inputBuyQty" value="${qty}" min="1" max="${maxBuy}" />
+          <button type="button" class="qty-btn" id="btnQtyPlus" ${qty >= maxBuy ? 'disabled' : ''}>+</button>
+        </div>
+        <div class="buy-qty-chips">
+          <button type="button" class="qty-chip ${qty === 1 ? 'active' : ''}" data-q="1">1x</button>
+          <button type="button" class="qty-chip ${qty === 2 ? 'active' : ''}" data-q="2">2x</button>
+          <button type="button" class="qty-chip ${qty === 3 ? 'active' : ''}" data-q="3">3x</button>
+          <button type="button" class="qty-chip ${qty === 4 ? 'active' : ''}" data-q="4">4x</button>
+          <button type="button" class="qty-chip ${qty === 5 ? 'active' : ''}" data-q="5">5x</button>
+          <button type="button" class="qty-chip ${qty === 10 ? 'active' : ''}" data-q="10">10x</button>
+          <button type="button" class="qty-chip ${qty === maxBuy ? 'active' : ''}" data-q="${maxBuy}">Maks</button>
+        </div>
       </div>
+
+      <!-- Price & Balance Summary -->
+      <div class="buy-summary-box">
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:14px;">
+          <span>Jami toʻlov (<span id="buyQtyLabel">${qty}</span> dona):</span>
+          <b id="buyTotalAmount" style="color:var(--saffron);">${svgStar(15)} ${fmtInt(initial.totalCost)}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:12.5px;color:var(--text-2);margin-top:4px;">
+          <span>Balansingiz:</span>
+          <b>⭐ ${fmtInt(initial.userStars)}</b>
+        </div>
+        <div id="buyDeficitWrap" style="font-size:12px;color:#ff8585;margin-top:4px;${initial.hasEnough ? 'display:none;' : ''}">
+          Yetmayapti: <b id="buyDeficitAmount">⭐ ${fmtInt(initial.deficit)}</b>
+        </div>
+      </div>
+
       <button type="button" class="btn btn-primary gv-btn" id="btnBuyRegularOnly" ${c.remainingToBuy <= 0 ? 'disabled' : ''}>
-        <span>${hasEnough ? `Sotib olish · ${svgStar(15)} ${fmtInt(c.base)}` : `PaxtaGram Stars orqali olish · ${svgStar(15)} ${fmtInt(deficit)}`}</span>
+        <span id="btnBuyLabel">${initial.hasEnough ? `Sotib olish (${qty} dona) · ${svgStar(15)} ${fmtInt(initial.totalCost)}` : `Stars orqali olish · ${svgStar(15)} ${fmtInt(initial.deficit)}`}</span>
       </button>
-      <button type="button" class="btn btn-tonal gv-btn" id="btnPreviewModelsList" style="height:40px;font-size:13.5px;">
+      <button type="button" class="btn btn-tonal gv-btn" id="btnPreviewModelsList" style="height:38px;font-size:13px;">
         <span>👁 Modellar va % ehtimolliklarni koʻrish (${c.modelsCount || 28} model${c.craftModelsCount ? ` · ${c.craftModelsCount} craft` : ''})</span>
       </button>
     </div>
@@ -2812,9 +3063,52 @@ function openBuyCollectionSheet(c) {
     mountLottieOrImg(body.querySelector('#buyPreviewLottie'), {
       imgUrl: c.thumb,
       jsonUrl: c.baseTgs,
-      size: 136,
+      size: 120,
       loop: true,
       autoplay: true
+    });
+
+    const minusBtn = body.querySelector('#btnQtyMinus');
+    const plusBtn = body.querySelector('#btnQtyPlus');
+    const inputQty = body.querySelector('#inputBuyQty');
+    const chips = body.querySelectorAll('.qty-chip');
+    const qtyLbl = body.querySelector('#buyQtyLabel');
+    const totalAmt = body.querySelector('#buyTotalAmount');
+    const deficitWrap = body.querySelector('#buyDeficitWrap');
+    const deficitAmt = body.querySelector('#buyDeficitAmount');
+    const buyBtnLabel = body.querySelector('#btnBuyLabel');
+
+    function updateQty(newQ) {
+      qty = Math.max(1, Math.min(maxBuy, parseInt(newQ, 10) || 1));
+      if (inputQty) inputQty.value = qty;
+      if (minusBtn) minusBtn.disabled = qty <= 1;
+      if (plusBtn) plusBtn.disabled = qty >= maxBuy;
+
+      chips.forEach(ch => {
+        const qVal = parseInt(ch.getAttribute('data-q'), 10);
+        ch.classList.toggle('active', qVal === qty);
+      });
+
+      const { totalCost, hasEnough, deficit } = calc(qty);
+      if (qtyLbl) qtyLbl.textContent = qty;
+      if (totalAmt) totalAmt.innerHTML = `${svgStar(15)} ${fmtInt(totalCost)}`;
+      if (deficitWrap) deficitWrap.style.display = hasEnough ? 'none' : 'block';
+      if (deficitAmt) deficitAmt.textContent = `⭐ ${fmtInt(deficit)}`;
+      if (buyBtnLabel) {
+        buyBtnLabel.innerHTML = hasEnough
+          ? `Sotib olish (${qty} dona) · ${svgStar(15)} ${fmtInt(totalCost)}`
+          : `Stars orqali olish · ${svgStar(15)} ${fmtInt(deficit)}`;
+      }
+    }
+
+    minusBtn?.addEventListener('click', () => updateQty(qty - 1));
+    plusBtn?.addEventListener('click', () => updateQty(qty + 1));
+    inputQty?.addEventListener('input', (e) => updateQty(e.target.value));
+    chips.forEach(ch => {
+      ch.addEventListener('click', () => {
+        const qVal = parseInt(ch.getAttribute('data-q'), 10);
+        updateQty(qVal);
+      });
     });
 
     body.querySelector('#btnPreviewModelsList')?.addEventListener('click', () => {
@@ -2823,19 +3117,21 @@ function openBuyCollectionSheet(c) {
 
     body.querySelector('#btnBuyRegularOnly')?.addEventListener('click', async (e) => {
       const btn = e.currentTarget;
-      if ((STATE.user?.stars || 0) < c.base) {
-        const need = Math.max(1, c.base - (STATE.user?.stars || 0));
-        openAddStarsModal(need, `${c.name} sotib olish`, async () => {
+      const { totalCost, hasEnough, deficit } = calc(qty);
+
+      if (!hasEnough) {
+        const need = Math.max(1, deficit);
+        openAddStarsModal(need, `${c.name} (${qty} dona) sotib olish`, async () => {
           const buyRes = await api('/api/gifts/buy', {
             method: 'POST',
-            body: JSON.stringify({ username: STATE.user.username, slug: c.slug })
+            body: JSON.stringify({ username: STATE.user.username, slug: c.slug, count: qty })
           });
           if (buyRes.ok) {
             await Promise.all([loginUser(STATE.user.username), loadCollections()]);
-            showToast(`${c.name} sotib olindi! Endi uni yaxshilashingiz mumkin.`);
+            showToast(`🎉 ${qty} ta ${c.name} sotib olindi!`);
             STATE.viewedProfile = null;
             switchTab('inventory');
-            openGiftModal(buyRes.gift, 'view');
+            if (buyRes.gift) openGiftModal(buyRes.gift, 'view');
           }
         });
         return;
@@ -2844,22 +3140,24 @@ function openBuyCollectionSheet(c) {
       btn.disabled = true;
       const res = await api('/api/gifts/buy', {
         method: 'POST',
-        body: JSON.stringify({ username: STATE.user.username, slug: c.slug })
+        body: JSON.stringify({ username: STATE.user.username, slug: c.slug, count: qty })
       });
+
       if (!res.ok) {
         btn.disabled = false;
         if (res.needStars) {
-          openAddStarsModal(res.deficit || c.base, `${c.name} sotib olish`);
+          openAddStarsModal(res.deficit || totalCost, `${c.name} (${qty} dona) sotib olish`);
           return;
         }
-        return showToast(res.error);
+        return showToast(res.error || 'Xarid amalga oshmadi');
       }
+
       closeSubModal();
       await Promise.all([loginUser(STATE.user.username), loadCollections()]);
-      showToast(`${c.name} sotib olindi! Endi uni yaxshilashingiz mumkin.`);
+      showToast(`🎉 ${qty} ta ${c.name} sotib olindi!`);
       STATE.viewedProfile = null;
       switchTab('inventory');
-      openGiftModal(res.gift, 'view');
+      if (res.gift) openGiftModal(res.gift, 'view');
     });
   });
 }
@@ -3220,6 +3518,13 @@ function switchTab(tab) {
   document.getElementById('paneExplore').hidden = tab !== 'explore';
   document.getElementById('paneAdmin').hidden = tab !== 'admin';
 
+  if (tab !== 'inventory') {
+    STATE.selectMode = false;
+    STATE.selectedGiftIds.clear();
+    const bBar = document.getElementById('batchBurnBar');
+    if (bBar) bBar.hidden = true;
+  }
+
   if (tab === 'shop') loadCollections();
   if (tab === 'market') loadMarket();
   if (tab === 'inventory') renderProfileView();
@@ -3375,6 +3680,25 @@ window.addEventListener('DOMContentLoaded', async () => {
       STATE.invFilter = chip.dataset.filter;
       renderProfileView();
     });
+  });
+
+  // Profile Select Mode & Batch Burn listeners
+  document.getElementById('btnToggleSelectMode')?.addEventListener('click', () => {
+    STATE.selectMode = !STATE.selectMode;
+    if (!STATE.selectMode) {
+      STATE.selectedGiftIds.clear();
+    }
+    renderProfileView();
+  });
+
+  document.getElementById('btnCancelSelectMode')?.addEventListener('click', () => {
+    STATE.selectMode = false;
+    STATE.selectedGiftIds.clear();
+    renderProfileView();
+  });
+
+  document.getElementById('btnBatchBurnSubmit')?.addEventListener('click', () => {
+    executeBatchBurn();
   });
 
   document.getElementById('btnBackToMyProfile')?.addEventListener('click', () => {

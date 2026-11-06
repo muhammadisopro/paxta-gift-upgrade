@@ -1187,12 +1187,13 @@ app.get('/api/stars/status/:nonce', (req, res) => {
   });
 });
 
-// ---- Buy a regular (un-upgraded) gift from Official Shop ----
+// ---- Buy a regular (un-upgraded) gift from Official Shop (Supports multi-buy) ----
 app.post('/api/gifts/buy', (req, res) => {
   const key = cleanKey(req.body.username);
   const c = loadCollection(req.body.slug);
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
+  const count = Math.max(1, Math.min(parseInt(req.body.count || req.body.quantity || 1, 10), 100));
 
   if (!c) return res.status(404).json({ ok: false, error: 'Kolleksiya topilmadi' });
   if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
@@ -1204,54 +1205,138 @@ app.post('/api/gifts/buy', (req, res) => {
   if (stats.remainingToBuy <= 0) {
     return res.status(400).json({ ok: false, error: `Bu sovgʻa tugagan (${stats.supply} / ${stats.supply} sotib boʻlingan)` });
   }
-  if (users[key].stars < stats.price) {
+  if (stats.remainingToBuy < count) {
+    return res.status(400).json({ ok: false, error: `Faqat ${stats.remainingToBuy} ta sovgʻa qolgan, siz ${count} ta soʻradingiz` });
+  }
+
+  const totalCost = stats.price * count;
+  if (users[key].stars < totalCost) {
     return res.status(400).json({
       ok: false,
       needStars: true,
-      deficit: stats.price - users[key].stars,
-      required: stats.price,
+      deficit: totalCost - users[key].stars,
+      required: totalCost,
       balance: users[key].stars,
-      error: `Yulduzlar yetarli emas: ⭐ ${stats.price} kerak (balans: ⭐ ${users[key].stars})`
+      error: `Yulduzlar yetarli emas: ⭐ ${totalCost} kerak (balans: ⭐ ${users[key].stars})`
     });
   }
 
-  users[key].stars -= stats.price;
-  const gift = {
-    id: `g_${Date.now().toString(36)}${crypto.randomBytes(3).toString('hex')}`,
-    owner: key,
-    ownerName: users[key].displayName || key,
-    slug: c.slug,
-    name: c.name,
-    thumb: normalizeUrl(c.slug, c.thumb),
-    baseTgs: normalizeTgsToJson(c.slug, c.baseTgs || c.thumb),
-    supply: stats.supply,
-    state: 'regular',
-    crafted: false,
-    hidden: false,
-    worn: false,
-    pinned: false,
-    salePrice: null,
-    paid: stats.price,
-    boughtAt: new Date().toISOString()
-  };
+  users[key].stars -= totalCost;
+  const newGifts = [];
+  const now = new Date().toISOString();
 
-  inv.push(gift);
+  for (let i = 0; i < count; i++) {
+    const gift = {
+      id: `g_${Date.now().toString(36)}${crypto.randomBytes(3).toString('hex')}_${i}`,
+      owner: key,
+      ownerName: users[key].displayName || key,
+      slug: c.slug,
+      name: c.name,
+      thumb: normalizeUrl(c.slug, c.thumb),
+      baseTgs: normalizeTgsToJson(c.slug, c.baseTgs || c.thumb),
+      supply: stats.supply,
+      state: 'regular',
+      crafted: false,
+      hidden: false,
+      worn: false,
+      pinned: false,
+      salePrice: null,
+      paid: stats.price,
+      boughtAt: now
+    };
+    inv.push(gift);
+    newGifts.push(gift);
+  }
+
   saveJSON(usersFile, users);
   saveJSON(inventoryFile, inv);
 
-  const enriched = enrichGift(gift, inv, users);
+  const enrichedFirst = enrichGift(newGifts[0], inv, users);
   logActivity({
     type: 'buy',
     actor: key,
     actorName: users[key].displayName || key,
-    giftId: gift.id,
-    giftName: gift.name,
-    slug: gift.slug,
-    thumb: enriched.thumb,
-    price: stats.price
+    giftId: newGifts[0].id,
+    giftName: count > 1 ? `${c.name} (${count}x)` : c.name,
+    slug: c.slug,
+    thumb: enrichedFirst.thumb,
+    price: totalCost,
+    count
   });
 
-  res.json({ ok: true, gift: enriched, newBalance: users[key].stars });
+  res.json({
+    ok: true,
+    count,
+    gifts: newGifts.map(g => enrichGift(g, inv, users)),
+    gift: enrichedFirst,
+    newBalance: users[key].stars
+  });
+});
+
+// ---- Batch Burn Gifts (Tanlab turib 1 tadan 10 tagacha yoqish) ----
+app.post('/api/gifts/burn', (req, res) => {
+  const key = cleanKey(req.body.username);
+  const giftIds = Array.isArray(req.body.giftIds) ? req.body.giftIds : (req.body.giftId ? [req.body.giftId] : []);
+  const users = loadJSON(usersFile, {});
+  const inv = loadJSON(inventoryFile, []);
+
+  if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
+  if (!giftIds.length) return res.status(400).json({ ok: false, error: 'Kamida 1 ta sovgʻa tanlang' });
+  if (giftIds.length > 10) return res.status(400).json({ ok: false, error: 'Bir vaqtda koʻpi bilan 10 ta sovgʻani yoqish mumkin' });
+
+  // Find user gifts
+  const targetGifts = [];
+  for (const gid of giftIds) {
+    const g = inv.find(i => i.id === gid && i.owner === key && i.state !== 'burned' && i.state !== 'converted');
+    if (!g) {
+      return res.status(404).json({ ok: false, error: `Sovgʻa topilmadi yoki allaqachon yoqilgan` });
+    }
+    if (g.salePrice && g.salePrice > 0) {
+      return res.status(400).json({ ok: false, error: `«${g.name}» sotuvda turibdi. Avval sotuvdan oling` });
+    }
+    targetGifts.push(g);
+  }
+
+  const now = new Date().toISOString();
+  let totalRefund = 0;
+  const burnedNames = [];
+
+  for (const g of targetGifts) {
+    // 85% cashback / refund on base price + upgrade price
+    const baseCost = g.paid || 250;
+    const upCost = g.upgradePaid || 0;
+    const refund = Math.max(10, Math.round((baseCost + upCost) * 0.85));
+    totalRefund += refund;
+
+    g.state = 'burned';
+    g.burnedAt = now;
+    g.worn = false;
+    g.pinned = false;
+    g.salePrice = null;
+    g.burnedRefund = refund;
+    burnedNames.push(g.name + (g.number ? ` #${g.number}` : ''));
+  }
+
+  users[key].stars += totalRefund;
+  saveJSON(usersFile, users);
+  saveJSON(inventoryFile, inv);
+
+  logActivity({
+    type: 'burn',
+    actor: key,
+    actorName: users[key]?.displayName || key,
+    count: targetGifts.length,
+    giftName: targetGifts.length === 1 ? burnedNames[0] : `${targetGifts.length} ta sovgʻa`,
+    refund: totalRefund
+  });
+
+  res.json({
+    ok: true,
+    burnedCount: targetGifts.length,
+    refund: totalRefund,
+    newBalance: users[key].stars,
+    burnedNames
+  });
 });
 
 // ---- Secondary Resale Market (Qayta sotuv bozori) ----
@@ -1713,6 +1798,29 @@ app.post('/api/gifts/action', (req, res) => {
     saveJSON(usersFile, users);
     saveJSON(inventoryFile, inv);
     return res.json({ ok: true, converted: true, refund, newBalance: users[key].stars });
+  } else if (action === 'burn') {
+    if (gift.salePrice && gift.salePrice > 0) return res.status(400).json({ ok: false, error: 'Sotuvdagi sovgʻani yoqib boʻlmaydi' });
+    const baseCost = gift.paid || 250;
+    const upCost = gift.upgradePaid || 0;
+    const refund = Math.max(10, Math.round((baseCost + upCost) * 0.85));
+    gift.state = 'burned';
+    gift.burnedAt = new Date().toISOString();
+    gift.worn = false;
+    gift.pinned = false;
+    gift.salePrice = null;
+    gift.burnedRefund = refund;
+    users[key].stars += refund;
+    saveJSON(usersFile, users);
+    saveJSON(inventoryFile, inv);
+    logActivity({
+      type: 'burn',
+      actor: key,
+      actorName: users[key]?.displayName || key,
+      count: 1,
+      giftName: gift.name + (gift.number ? ` #${gift.number}` : ''),
+      refund
+    });
+    return res.json({ ok: true, burned: true, refund, newBalance: users[key].stars });
   }
 
   saveJSON(inventoryFile, inv);
