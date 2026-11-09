@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>$HOLD — Web3 Tap, Morze Cipher & Real NFT Vault</title>
+  <link rel="stylesheet" href="/hold/style.css?v=2" />
+</head>
+<body class="skin-gold">
+  <!-- Background Ambient Glows -->
+  <div class="ambient-bg">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-grid"></div>
+  </div>
+
+  <div class="hold-app" id="holdApp">
+    <!-- TOP BAR: User, Profit/Hour, Stars & Sound -->
+    <header class="hold-topbar">
+      <div class="topbar-user" id="btnSwitchHoldUser" title="Foydalanuvchi">
+        <div class="user-avatar" id="uiAvatar">H</div>
+        <div class="user-meta">
+          <div class="user-name" id="uiDisplayName">Holder</div>
+          <div class="user-league" id="uiLeagueBadge">🥉 Bronze Holder</div>
+        </div>
+      </div>
+
+      <div class="topbar-stats">
+        <div class="stat-pill pph-pill" title="Soatlik passiv daromad">
+          <span class="stat-lbl">Soatiga</span>
+          <strong class="stat-val" id="uiPph">+0</strong>
+        </div>
+
+        <button type="button" class="stat-pill stars-pill" id="btnTopAddStars" title="Stars balansni toʻldirish">
+          <span>⭐</span>
+          <strong id="uiStars">0</strong>
+          <span class="pill-plus">+</span>
+        </button>
+
+        <button type="button" class="icon-btn" id="btnToggleSound" title="Ovoz effektlari">🔊</button>
+        <button type="button" class="icon-btn" id="btnOpenAdminModal" hidden title="Admin Panel (ID 100)">👑</button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT PANES -->
+    <main class="hold-main">
+      <!-- ==================== TAB 1: ARENA (TAP + MORSE CIPHER) ==================== -->
+      <section class="hold-pane active" id="paneArena">
+        <!-- Quick Action Strip: Daily Morse Cipher, Daily Combo, NFT Vault -->
+        <div class="daily-widgets-row">
+          <button type="button" class="daily-widget widget-morse" id="btnToggleMorseMode">
+            <div class="dw-badge" id="uiMorseStatusBadge">+1,000,000</div>
+            <div class="dw-icon">🕵️‍♂️</div>
+            <div class="dw-title">Kunlik Morze</div>
+            <div class="dw-sub">• — Shifrni toping</div>
+          </button>
+
+          <button type="button" class="daily-widget widget-combo" id="btnGoCombo">
+            <div class="dw-badge" id="uiComboStatusBadge">+3,000,000</div>
+            <div class="dw-icon">🃏</div>
+            <div class="dw-title">Kunlik Kombo</div>
+            <div class="dw-sub" id="uiComboCountSub">0 / 3 karta</div>
+          </button>
+
+          <button type="button" class="daily-widget widget-vault" id="btnGoVaultQuick">
+            <div class="dw-badge badge-green" id="uiVaultCountBadge">187 NFT</div>
+            <div class="dw-icon">🎁</div>
+            <div class="dw-title">NFT Vault</div>
+            <div class="dw-sub">Kalendar & Medal</div>
+          </button>
+        </div>
+
+        <!-- Balance Display -->
+        <div class="balance-hero">
+          <div class="balance-row">
+            <span class="coin-glyph">🪙</span>
+            <h1 class="balance-num" id="uiHoldBalance">0</h1>
+          </div>
+          <div class="league-progress-wrap">
+            <div class="league-progress-head">
+              <span id="uiLeagueNameText">🥉 Bronze Holder</span>
+              <span id="uiTapPowerText">👆 +1 / tap</span>
+            </div>
+            <div class="league-bar-bg">
+              <div class="league-bar-fill" id="uiLeagueBarFill" style="width: 10%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAILY MORSE CIPHER PANEL (Visible when Morse Mode is toggled) -->
+        <div class="morse-cipher-panel" id="morseCipherPanel" hidden>
+          <div class="morse-panel-head">
+            <div>
+              <span class="morse-tag">🔴 MAXFIY MORZE REJIMI</span>
+              <p class="morse-hint" id="uiMorseHint">Maslahat: Loyihamizning 4 harfli nomi</p>
+            </div>
+            <button type="button" class="btn-morse-guide" id="btnToggleMorseGuide">📖 Alifbo</button>
+          </div>
+
+          <!-- Decoded Letter Slots -->
+          <div class="morse-word-slots" id="morseWordSlots"></div>
+
+          <!-- Current Morse Symbol Buffer -->
+          <div class="morse-live-buffer">
+            <span class="buffer-label">Joriy harf signali:</span>
+            <strong class="buffer-symbols" id="uiMorseBuffer">Tangani bosing (qisqa = • , uzoq = —)</strong>
+            <button type="button" class="btn-clear-morse" id="btnResetMorseWord" title="Qayta boshlash">↺ Tozalash</button>
+          </div>
+
+          <!-- Direct Dot / Dash Helper Buttons (Makes Morse effortless on any phone!) -->
+          <div class="morse-quick-controls">
+            <button type="button" class="morse-btn morse-btn-dot" id="btnMorseDot">
+              <span class="m-sym">•</span>
+              <span class="m-txt">Nuqta (Qisqa)</span>
+            </button>
+            <button type="button" class="morse-btn morse-btn-dash" id="btnMorseDash">
+              <span class="m-sym">—</span>
+              <span class="m-txt">Chiziq (Uzoq)</span>
+            </button>
+          </div>
+
+          <!-- Collapsible Morse Alphabet Reference & Secret Code Input -->
+          <div class="morse-guide-drawer" id="morseGuideDrawer" hidden>
+            <div class="morse-guide-title">📡 Morze Alifbosi Jadvali va Maxfiy Kodlar:</div>
+            <div class="morse-alphabet-grid" id="morseAlphabetGrid"></div>
+            <div class="secret-code-row">
+              <input type="text" id="secretCodeInput" placeholder="Maxfiy soʻzni yozish (masalan: WAKEUP, MEDAL)..." maxlength="16" />
+              <button type="button" class="btn-primary-sm" id="btnSubmitSecretWord">Tekshirish</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D CENTRAL $HOLD COIN STAGE -->
+        <div class="coin-stage" id="coinStage">
+          <div class="turbo-aura" id="turboAura" hidden></div>
+          <button type="button" class="hold-coin-3d" id="holdCoinBtn" aria-label="Tap $HOLD Coin">
+            <div class="coin-outer-ring">
+              <div class="coin-inner-face">
+                <div class="coin-shine"></div>
+                <div class="coin-crown-icon" id="coinCenterIcon">👑</div>
+                <div class="coin-brand-text">$HOLD</div>
+                <div class="coin-sub-tag" id="coinSubTag">PAXTA WEB3</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Floating Rocket Button when available -->
+          <button type="button" class="floating-rocket-btn" id="btnTriggerRocket" title="7x Raketa Turbo!">
+            🚀 <span>7x TURBO (<b id="uiRocketCount">3</b>)</span>
+          </button>
+        </div>
+
+        <!-- BOTTOM ENERGY & BOOST BAR -->
+        <div class="arena-footer">
+          <div class="energy-box">
+            <div class="energy-top">
+              <span class="energy-bolt">⚡</span>
+              <strong id="uiEnergyText">1500 / 1500</strong>
+            </div>
+            <div class="energy-bar-bg">
+              <div class="energy-bar-fill" id="uiEnergyBarFill" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <div class="arena-actions">
+            <button type="button" class="arena-btn btn-boosts" id="btnOpenBoostSheet">
+              🚀 <span>Boostlar</span>
+            </button>
+            <button type="button" class="arena-btn btn-vip-stars" id="btnOpenVipSheet">
+              💎 <span>VIP X5</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: MINE & DAILY COMBO ==================== -->
+      <section class="hold-pane" id="paneMine" hidden>
+        <!-- Daily 3-Card Combo Banner -->
+        <div class="combo-banner-card">
+          <div class="combo-head">
+            <div>
+              <h3>🃏 Kunlik Maxfiy Kombo</h3>
+              <p>Bugungi 3 ta yashirin kartani kuchaytiring va <b>+3,000,000 $HOLD</b> yuting!</p>
+            </div>
+            <div class="combo-prize-pill">🪙 +3,000,000</div>
+          </div>
+          <div class="combo-slots-row" id="comboSlotsRow">
+            <div class="combo-slot">❓</div>
+            <div class="combo-slot">❓</div>
+            <div class="combo-slot">❓</div>
+          </div>
+        </div>
+
+        <!-- Mine Category Tabs -->
+        <div class="mine-cat-tabs" id="mineCatTabs">
+          <button type="button" class="mine-cat-btn active" data-mcat="all">Barchasi</button>
+          <button type="button" class="mine-cat-btn" data-mcat="ecosystem">🖥️ Ekotizim</button>
+          <button type="button" class="mine-cat-btn" data-mcat="web3">🐋 Web3</button>
+          <button type="button" class="mine-cat-btn" data-mcat="mystery">🕵️‍♂️ Maxfiy Lab</button>
+          <button type="button" class="mine-cat-btn" data-mcat="vip">👑 VIP & NFT</button>
+        </div>
+
+        <div class="mine-cards-grid" id="mineCardsGrid"></div>
+      </section>
+
+      <!-- ==================== TAB 3: REAL NFT VAULT (CALENDARS & MEDALS) ==================== -->
+      <section class="hold-pane" id="paneVault" hidden>
+        <!-- Beta Test Top-3 Free NFT Banner -->
+        <div class="vault-hero-card">
+          <div class="vh-badge">🔥 RASMIY PAXTAGRAM NFT OMBORI</div>
+          <h2>🎁 $HOLD yigʻing va Real NFTlarni oling!</h2>
+          <p>
+            Kanalimizdagi haqiqiy <b>Desk Calendar (900+ ⭐)</b> va <b>Victory Medal (700+ ⭐)</b> NFTlarini yigʻgan <b>$HOLD</b> tangalaringiz evaziga 3 barobar arzon transfer badali bilan darhol PaxtaGram profilingizga oʻtkazing!
+          </p>
+          <div class="vh-free-promo">
+            🏆 <b>BETA TEST KONKURSI:</b> Reytingda Top-3 oʻrinni egallagan ishtirokchilarga Desk Calendar va Victory Medal <b>0 ⭐ (100% BEPUL)</b> topshiriladi!
+          </div>
+        </div>
+
+        <!-- Vault Filter & Search -->
+        <div class="vault-toolbar">
+          <input type="text" class="vault-search" id="vaultSearchInput" placeholder="Qidirish: #raqam, model (Pepe, Genius, Golden Puck)..." />
+          <div class="vault-filters" id="vaultFilterChips">
+            <button type="button" class="v-chip active" data-vfilter="all">Barchasi (<span id="vCountAll">187</span>)</button>
+            <button type="button" class="v-chip" data-vfilter="medal">🏅 Victory Medal (59)</button>
+            <button type="button" class="v-chip" data-vfilter="calendar">📅 Desk Calendar (128)</button>
+            <button type="button" class="v-chip" data-vfilter="black">🖤 Black / Onyx</button>
+            <button type="button" class="v-chip" data-vfilter="craft">🔨 Craft Modellar</button>
+            <button type="button" class="v-chip" data-vfilter="top100">👑 Top #100</button>
+          </div>
+        </div>
+
+        <div class="vault-nft-grid" id="vaultNftGrid"></div>
+      </section>
+
+      <!-- ==================== TAB 4: QUESTS, FRIENDS & SQUADS ==================== -->
+      <section class="hold-pane" id="paneEarn" hidden>
+        <!-- Referral Invite Card -->
+        <div class="referral-card">
+          <div class="ref-head">
+            <span class="ref-icon">👥</span>
+            <div>
+              <h3>Doʻstlarni Taklif Qiling!</h3>
+              <p>Har bir taklif qilingan doʻstingiz uchun sizga <b>+50,000 $HOLD</b>, doʻstingizga <b>+25,000 $HOLD</b> beriladi!</p>
+            </div>
+          </div>
+          <div class="ref-stats-bar">
+            <span>Taklif qilingan doʻstlar: <b id="uiRefCount">0 ta</b></span>
+            <span>Top-3 bepul NFT uchun doʻst chaqiring!</span>
+          </div>
+          <div class="ref-btn-row">
+            <button type="button" class="btn-gold-full" id="btnCopyRefLink">🔗 Referal Havolani Nusxalash</button>
+          </div>
+        </div>
+
+        <!-- Quests List -->
+        <div class="section-block">
+          <h3 class="sec-title">🎯 Vazifalar va Mukofotlar</h3>
+          <div class="quests-list" id="questsList"></div>
+        </div>
+
+        <!-- Squads (Channels Battle) -->
+        <div class="section-block">
+          <h3 class="sec-title">⚔️ Squadlar Jangi (Kanallar Musobaqasi)</h3>
+          <div class="squads-list" id="squadsList"></div>
+        </div>
+
+        <!-- Top Holders Leaderboard -->
+        <div class="section-block">
+          <h3 class="sec-title">🏆 Top $HOLD Kitlari (Beta Test Reytingi)</h3>
+          <div class="leaderboard-list" id="holdLeaderboardList"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <nav class="hold-bottom-nav">
+      <button type="button" class="hnav-btn active" data-htab="arena">
+        <span class="hnav-ico">🪙</span>
+        <span class="hnav-lbl">Arena</span>
+      </button>
+      <button type="button" class="hnav-btn" data-htab="mine">
+        <span class="hnav-ico">⛏️</span>
+        <span class="hnav-lbl">Mine & Kombo</span>
+      </button>
+      <button type="button" class="hnav-btn hnav-vault" data-htab="vault">
+        <span class="hnav-ico">🎁</span>
+        <span class="hnav-lbl">NFT Vault</span>
+        <span class="hnav-dot">LIVE</span>
+      </button>
+      <button type="button" class="hnav-btn" data-htab="earn">
+        <span class="hnav-ico">🏆</span>
+        <span class="hnav-lbl">Vazifa & Top</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- UNIVERSAL MODAL SHEET -->
+  <div class="hold-modal-backdrop" id="holdModalBackdrop" hidden>
+    <div class="hold-modal-sheet">
+      <div class="hold-modal-head">
+        <h3 id="holdModalTitle">Modal</h3>
+        <button type="button" class="hold-modal-close" id="btnCloseHoldModal">✕</button>
+      </div>
+      <div class="hold-modal-body" id="holdModalBody"></div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="hold-toast" id="holdToast" hidden></div>
+
+  <script src="/hold/app.js?v=2"></script>
+</body>
+</html>

@@ -91,7 +91,7 @@ export async function initTursoSync(dataDir) {
 
   console.log(`[Turso] Found ${remoteMap.size} remote keys stored in Turso.`);
 
-  const keys = ['inventory', 'users', 'settings', 'payments', 'activity', 'promocodes'];
+  const keys = ['inventory', 'users', 'settings', 'payments', 'activity', 'promocodes', 'hold_state', 'channel_calendars', 'channel_medals'];
 
   for (const k of keys) {
     const localFile = path.join(dataDir, `${k}.json`);

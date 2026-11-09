@@ -6,6 +6,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { initTursoSync, saveToTurso } from './turso.js';
+import { registerHoldEngine } from './hold-engine.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, 'data');
@@ -19,18 +20,23 @@ const paymentsFile = path.join(dataDir, 'payments.json');
 const activityFile = path.join(dataDir, 'activity.json');
 const promocodesFile = path.join(dataDir, 'promocodes.json');
 const channelCalendarsFile = path.join(dataDir, 'channel_calendars.json');
+const channelMedalsFile = path.join(dataDir, 'channel_medals.json');
+const holdStateFile = path.join(dataDir, 'hold_state.json');
 
 // STRICT HARDWARE-LEVEL PROTECTION FOR THE 4 FORBIDDEN NFTs (NEVER TOUCH OR TRANSFER!)
 const FORBIDDEN_GIFT_IDS = new Set([6068, 4226, 3015, 6095]);
 
-// PaxtaGram @UpgradeBot (Forge, ID: 682) configuration
+// PaxtaGram @UpgradeBot (Forge, ID: 682) & @HOLDbot (Notcoin/$HOLD, ID: 118) configuration
 const PAXTA_BOT_TOKEN = process.env.PAXTA_BOT_TOKEN || '682:OSWsBqK5LZHWlGJmzeONb9iIjE-UV7QBQY_';
+const HOLD_BOT_TOKEN = process.env.HOLD_BOT_TOKEN || '135:RNksEDbLLA3F1fJOXrAQZHN3Vs44NAD_Tac';
 const PAXTA_API_BASE = process.env.PAXTA_API_BASE || 'https://paxta.online';
 const PUBLIC_APP_URL = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_APP_URL || 'https://paxta-gift-upgrade.onrender.com';
 const ADMIN_PAXTA_ID = 100; // Strictly ONLY PaxtaGram User ID 100 has admin access
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
 const MOON_USERNAME = process.env.MOON_USERNAME || 'shade';
 const MOON_PASSWORD = process.env.MOON_PASSWORD || 'urRFEbgx5mgbWib';
+const MILLIYBEK_USERNAME = process.env.MILLIYBEK_USERNAME || 'Milliybek';
+const MILLIYBEK_PASSWORD = process.env.MILLIYBEK_PASSWORD || 'YHT2NCsKPXgLE2d';
 
 // Cloud Gist Persistence (ensures Render restarts/redeploys never lose user data)
 const STATE_GIST_ID = process.env.STATE_GIST_ID || '0f1aac885e21df6b689d54e0e373a1e0';
@@ -42,6 +48,7 @@ if (!fs.existsSync(inventoryFile)) fs.writeFileSync(inventoryFile, '[]');
 if (!fs.existsSync(paymentsFile)) fs.writeFileSync(paymentsFile, '{"invoices":{},"charges":{},"lastUpdateId":80860}');
 if (!fs.existsSync(activityFile)) fs.writeFileSync(activityFile, '[]');
 if (!fs.existsSync(promocodesFile)) fs.writeFileSync(promocodesFile, '{}');
+if (!fs.existsSync(holdStateFile)) fs.writeFileSync(holdStateFile, '{}');
 
 // ---- High-Speed In-Memory RAM Cache + Non-Blocking Async Disk Persistence ----
 const memStore = new Map();
@@ -49,7 +56,7 @@ const diskWriteTimers = new Map();
 let invStatsVersion = 1;
 
 function hydrateMemoryFromDisk() {
-  for (const f of [usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile, indexFile, channelCalendarsFile]) {
+  for (const f of [usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile, indexFile, channelCalendarsFile, channelMedalsFile, holdStateFile]) {
     if (fs.existsSync(f)) {
       try {
         memStore.set(f, JSON.parse(fs.readFileSync(f, 'utf8')));
@@ -94,7 +101,10 @@ const saveJSON = (f, d) => {
     [settingsFile]: 'settings',
     [paymentsFile]: 'payments',
     [activityFile]: 'activity',
-    [promocodesFile]: 'promocodes'
+    [promocodesFile]: 'promocodes',
+    [holdStateFile]: 'hold_state',
+    [channelCalendarsFile]: 'channel_calendars',
+    [channelMedalsFile]: 'channel_medals'
   };
   const tursoKey = keyMap[f];
   if (tursoKey) {
@@ -356,10 +366,12 @@ function verifyWebAppInitData(initDataRaw) {
       }
       pairs.sort();
       const dataCheckString = pairs.join('\n');
-      const secretKey = crypto.createHmac('sha256', 'WebAppData').update(PAXTA_BOT_TOKEN).digest();
-      const computedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-      if (computedHash === hash) {
-        return { ...userObj, verified: true };
+      for (const tok of [PAXTA_BOT_TOKEN, HOLD_BOT_TOKEN]) {
+        const secretKey = crypto.createHmac('sha256', 'WebAppData').update(tok).digest();
+        const computedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+        if (computedHash === hash) {
+          return { ...userObj, verified: true };
+        }
       }
     }
     return { ...userObj, verified: true };
@@ -379,7 +391,7 @@ function isRequestAdmin(req) {
   return false;
 }
 
-// ---- PaxtaGram Bot API Helper ----
+// ---- PaxtaGram Bot API Helpers ----
 async function paxtaBotCall(method, body = {}) {
   try {
     const res = await fetch(`${PAXTA_API_BASE}/bot${PAXTA_BOT_TOKEN}/${method}`, {
@@ -397,9 +409,29 @@ async function paxtaBotCall(method, body = {}) {
   }
 }
 
-// ---- @moon PaxtaGram Client (Transfers Real Channel Desk Calendar NFTs) ----
+async function holdBotCall(method, body = {}) {
+  try {
+    const res = await fetch(`${PAXTA_API_BASE}/bot${HOLD_BOT_TOKEN}/${method}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': BROWSER_UA
+      },
+      body: JSON.stringify(body)
+    });
+    return await res.json();
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}
+
+// ---- PaxtaGram Account Client (Transfers Real Channel Desk Calendar & Victory Medal NFTs) ----
 class MoonPaxtaClient {
-  constructor() {
+  constructor(username = MOON_USERNAME, password = MOON_PASSWORD, loginAliases = [MOON_USERNAME, 'moon', 'shade']) {
+    this.username = username;
+    this.password = password;
+    this.loginAliases = loginAliases;
     this.cookies = new Map();
     this.isLoggedIn = false;
     this.user = null;
@@ -475,22 +507,22 @@ class MoonPaxtaClient {
       });
       this.updateCookies(csrfRes.headers);
 
-      for (const uname of [MOON_USERNAME, 'moon', 'shade']) {
+      for (const uname of this.loginAliases) {
         const loginRes = await this.request('/auth/login', {
           method: 'POST',
-          body: { username: uname, password: MOON_PASSWORD }
+          body: { username: uname, password: this.password }
         });
         if (loginRes.ok) {
           const data = await loginRes.json();
           this.user = data.user;
           this.isLoggedIn = true;
           this.lastLoginAt = Date.now();
-          console.log(`[@moon Client] Logged in as @${this.user?.username} (ID: ${this.user?.id})`);
+          console.log(`[PaxtaClient] Logged in as @${this.user?.username} (ID: ${this.user?.id})`);
           return true;
         }
       }
     } catch (err) {
-      console.error('[@moon Login Error]', err.message);
+      console.error(`[PaxtaClient Login Error @${this.username}]`, err.message);
     }
     return false;
   }
@@ -530,7 +562,8 @@ class MoonPaxtaClient {
   }
 }
 
-const moonClient = new MoonPaxtaClient();
+const moonClient = new MoonPaxtaClient(MOON_USERNAME, MOON_PASSWORD, [MOON_USERNAME, 'moon', 'shade']);
+const milliybekClient = new MoonPaxtaClient(MILLIYBEK_USERNAME, MILLIYBEK_PASSWORD, [MILLIYBEK_USERNAME, 'Milliybek']);
 
 const app = express();
 app.use(cors());
@@ -2610,11 +2643,34 @@ async function startPaxtaBotLoop() {
   }
 }
 
+const { startHoldBotLoop } = registerHoldEngine(app, {
+  publicDir: path.join(__dirname, 'public'),
+  usersFile,
+  holdStateFile,
+  channelCalendarsFile,
+  channelMedalsFile,
+  loadJSON,
+  saveJSON,
+  cleanKey,
+  cleanName,
+  verifySessionToken,
+  verifyWebAppInitData,
+  createSessionToken,
+  isRequestAdmin,
+  ADMIN_PAXTA_ID,
+  PUBLIC_APP_URL,
+  HOLD_BOT_TOKEN,
+  holdBotCall,
+  moonClient,
+  milliybekClient
+});
+
 const PORT = process.env.PORT || 4000;
 loadCloudStateOnStartup().then(() => {
   app.listen(PORT, () => {
-    console.log(`\n🚀 Paxta Gifts — Shop, Market, Profiles, Upgrade, Craft & Admin (ID 100) | http://localhost:${PORT}\n`);
+    console.log(`\n🚀 Paxta Gifts & $HOLD Coin (@HOLDbot) | http://localhost:${PORT}\n`);
     startPaxtaBotLoop();
+    startHoldBotLoop();
 
     if (process.env.RENDER_EXTERNAL_URL) {
       setInterval(() => {
