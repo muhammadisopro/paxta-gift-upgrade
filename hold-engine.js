@@ -21,11 +21,115 @@ export const REVERSE_MORSE = Object.fromEntries(
 );
 
 export const HOLD_LEAGUES = [
-  { id: 'bronze',   name: 'Bronze',   icon: 'trophy', minHold: 0,          bonusTap: 0, color: '#cd7f32' },
-  { id: 'silver',   name: 'Silver',   icon: 'trophy', minHold: 250_000,    bonusTap: 1, color: '#c0c0c0' },
-  { id: 'gold',     name: 'Gold',     icon: 'trophy', minHold: 1_000_000,  bonusTap: 2, color: '#ffd700' },
-  { id: 'diamond',  name: 'Diamond',  icon: 'trophy', minHold: 4_000_000,  bonusTap: 4, color: '#38bdf8' },
-  { id: 'obsidian', name: 'Obsidian', icon: 'trophy', minHold: 10_000_000, bonusTap: 7, color: '#60a5fa' }
+  { id: 'bronze',   name: 'Bronze',   icon: 'trophy', minHold: 0,          bonusTap: 0, color: '#cd7f32', glow: 'rgba(205, 127, 50, 0.45)' },
+  { id: 'silver',   name: 'Silver',   icon: 'trophy', minHold: 250_000,    bonusTap: 1, color: '#cbd5e1', glow: 'rgba(203, 213, 225, 0.45)' },
+  { id: 'gold',     name: 'Gold',     icon: 'trophy', minHold: 1_000_000,  bonusTap: 2, color: '#fbbf24', glow: 'rgba(251, 191, 36, 0.50)' },
+  { id: 'platinum', name: 'Platinum', icon: 'trophy', minHold: 2_500_000,  bonusTap: 3, color: '#e2e8f0', glow: 'rgba(148, 163, 184, 0.50)' },
+  { id: 'diamond',  name: 'Diamond',  icon: 'trophy', minHold: 5_000_000,  bonusTap: 5, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.55)' },
+  { id: 'obsidian', name: 'Obsidian', icon: 'trophy', minHold: 10_000_000, bonusTap: 8, color: '#818cf8', glow: 'rgba(129, 140, 248, 0.60)' }
+];
+
+export const HOLD_SKINS = [
+  {
+    id: 'basic',
+    name: 'Basic',
+    subtitle: 'You own it',
+    img: '/hold/skins/skin-4.png',
+    priceHold: 0,
+    reqQuest: null,
+    theme: {
+      accent: '#38b6ff',
+      secondary: '#0066ff',
+      glow1: 'rgba(0, 132, 255, 0.60)',
+      glow2: 'rgba(0, 68, 204, 0.34)',
+      bgBottom: '#041b4d'
+    }
+  },
+  {
+    id: 'chrome',
+    name: 'Du Rove Chrome',
+    subtitle: '500,000 HOLD',
+    img: '/hold/skins/skin-2.png',
+    priceHold: 500_000,
+    reqQuest: null,
+    theme: {
+      accent: '#e2e8f0',
+      secondary: '#64748b',
+      glow1: 'rgba(226, 232, 240, 0.45)',
+      glow2: 'rgba(100, 116, 139, 0.28)',
+      bgBottom: '#0f172a'
+    }
+  },
+  {
+    id: 'paxta_neon',
+    name: 'Paxta Blossom',
+    subtitle: '1,500,000 HOLD',
+    img: '/hold/skins/skin-3.png',
+    priceHold: 1_500_000,
+    reqQuest: null,
+    theme: {
+      accent: '#c084fc',
+      secondary: '#7c3aed',
+      glow1: 'rgba(192, 132, 252, 0.55)',
+      glow2: 'rgba(124, 58, 237, 0.32)',
+      bgBottom: '#1e0938'
+    }
+  },
+  {
+    id: 'pizza',
+    name: 'Pizza',
+    subtitle: '750,000 HOLD',
+    img: '/hold/skins/skin-5.png',
+    priceHold: 750_000,
+    reqQuest: null,
+    theme: {
+      accent: '#fb923c',
+      secondary: '#ea580c',
+      glow1: 'rgba(251, 146, 60, 0.55)',
+      glow2: 'rgba(234, 88, 12, 0.32)',
+      bgBottom: '#2b0f04'
+    }
+  },
+  {
+    id: 'cookie',
+    name: 'Cookie',
+    subtitle: '350,000 HOLD',
+    img: '/hold/skins/skin-1.webp',
+    priceHold: 350_000,
+    reqQuest: null,
+    theme: {
+      accent: '#fbbf24',
+      secondary: '#d97706',
+      glow1: 'rgba(251, 191, 36, 0.52)',
+      glow2: 'rgba(217, 119, 6, 0.30)',
+      bgBottom: '#291503'
+    }
+  },
+  {
+    id: 'cyber_lonely',
+    name: 'You look lonely',
+    subtitle: '2,500,000 HOLD',
+    img: '/hold/skins/skin-6.png',
+    priceHold: 2_500_000,
+    reqQuest: null,
+    theme: {
+      accent: '#f472b6',
+      secondary: '#db2777',
+      glow1: 'rgba(244, 114, 182, 0.58)',
+      glow2: 'rgba(219, 39, 119, 0.34)',
+      bgBottom: '#2d0620'
+    }
+  }
+];
+
+export const DAILY_STREAK_REWARDS = [
+  { day: 1, reward: 25_000,    label: 'Day 1' },
+  { day: 2, reward: 50_000,    label: 'Day 2' },
+  { day: 3, reward: 100_000,   label: 'Day 3' },
+  { day: 4, reward: 200_000,   label: 'Day 4' },
+  { day: 5, reward: 350_000,   label: 'Day 5' },
+  { day: 6, reward: 500_000,   label: 'Day 6' },
+  { day: 7, reward: 1_000_000, label: 'Day 7' }
 ];
 
 export const HOLD_MINE_CARDS = [
@@ -337,6 +441,7 @@ export function registerHoldEngine(app, deps) {
         lastEnergyAt: Date.now(),
         tapLevel: 1,
         energyLevel: 1,
+        rechargingSpeedLevel: 1,
         autoBotEnabled: false,
         fullTankCount: 3,
         rocketCount: 3,
@@ -352,7 +457,10 @@ export function registerHoldEngine(app, deps) {
         squadId: null,
         tasksCompleted: [],
         claimedNfts: [],
-        skin: 'gold',
+        ownedSkins: ['basic'],
+        skin: 'basic',
+        streakDay: 0,
+        lastStreakClaimDay: null,
         createdAt: new Date().toISOString()
       };
 
@@ -396,7 +504,7 @@ export function registerHoldEngine(app, deps) {
     u.maxEnergy = maxE;
     const elapsedSec = Math.max(0, Math.floor((now - (u.lastEnergyAt || now)) / 1000));
     if (elapsedSec > 0) {
-      const regenRate = 3 + Math.floor((u.energyLevel || 1) / 2);
+      const regenRate = 3 + Math.floor((u.energyLevel || 1) / 2) + ((u.rechargingSpeedLevel || 1) - 1) * 2;
       u.energy = Math.min(maxE, (u.energy || 0) + elapsedSec * regenRate);
       u.lastEnergyAt = now;
     }
@@ -437,6 +545,12 @@ export function registerHoldEngine(app, deps) {
     const comboIds = st.config?.dailyCombo?.cardIds || [];
     const todayComboProgress = u.comboProgress?.[today] || [];
 
+    if (!Array.isArray(u.ownedSkins) || !u.ownedSkins.includes('basic')) {
+      u.ownedSkins = Array.from(new Set(['basic', ...(u.ownedSkins || [])]));
+    }
+    const activeSkinId = HOLD_SKINS.some(s => s.id === u.skin) ? u.skin : 'basic';
+    const rSpeedLvl = u.rechargingSpeedLevel || 1;
+
     return {
       username: u.username,
       displayName: u.displayName,
@@ -454,6 +568,9 @@ export function registerHoldEngine(app, deps) {
       maxEnergy: u.maxEnergy,
       energyLevel: u.energyLevel || 1,
       nextEnergyUpgradeCost: Math.round(2_000 * Math.pow(1.65, (u.energyLevel || 1) - 1)),
+      rechargingSpeedLevel: rSpeedLvl,
+      rechargingSpeedMax: 5,
+      nextRechargingUpgradeCost: rSpeedLvl >= 5 ? 0 : Math.round(2_500 * Math.pow(1.8, rSpeedLvl - 1)),
       autoBotEnabled: !!u.autoBotEnabled,
       autoBotCost: 150_000,
       fullTankCount: u.fullTankCount ?? 3,
@@ -462,9 +579,18 @@ export function registerHoldEngine(app, deps) {
       ogDetails: u.ogDetails,
       league,
       allLeagues: HOLD_LEAGUES,
-      skin: u.skin || 'gold',
+      skin: activeSkinId,
+      ownedSkins: u.ownedSkins,
+      allSkins: HOLD_SKINS,
+      streak: {
+        currentDay: u.streakDay || 0,
+        claimedToday: u.lastStreakClaimDay === today,
+        rewards: DAILY_STREAK_REWARDS
+      },
       morse: {
         wordLength: morseWord.length,
+        word: morseWord,
+        secretWords: Object.keys(SECRET_BONUS_CODES),
         hint: st.config?.dailyMorse?.hint || 'Maxfiy soʻzni Morze alifbosida tering',
         reward: st.config?.dailyMorse?.reward || 1_000_000,
         solvedToday: (u.morseSolvedDays || []).includes(today),
@@ -666,6 +792,21 @@ export function registerHoldEngine(app, deps) {
       return res.json({ ok: true, message: `Energiya sigʻimi ${u.maxEnergy} ga oshirildi`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
+    if (type === 'recharging_speed') {
+      const curLvl = u.rechargingSpeedLevel || 1;
+      if (curLvl >= 5) {
+        return res.status(400).json({ ok: false, error: 'Max level reached' });
+      }
+      const cost = Math.round(2_500 * Math.pow(1.8, curLvl - 1));
+      if (u.holdBalance < cost) {
+        return res.status(400).json({ ok: false, error: `Yetarli HOLD yoʻq (${cost.toLocaleString()} HOLD)` });
+      }
+      u.holdBalance -= cost;
+      u.rechargingSpeedLevel = curLvl + 1;
+      saveHoldState(st);
+      return res.json({ ok: true, message: `Recharging speed Lv.${u.rechargingSpeedLevel}`, user: formatHoldUserResponse(st, u, mainUser) });
+    }
+
     if (type === 'autobot') {
       if (u.autoBotEnabled) {
         return res.status(400).json({ ok: false, error: 'Auto-Bot allaqachon faol' });
@@ -681,6 +822,74 @@ export function registerHoldEngine(app, deps) {
     }
 
     res.status(400).json({ ok: false, error: 'Nomaʼlum boost turi' });
+  });
+
+  // ---- 4B. Buy / Equip Coin Skin ----
+  app.post('/api/hold/skin', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const skinId = req.body?.skinId;
+    const skinDef = HOLD_SKINS.find(s => s.id === skinId);
+    if (!skinDef) {
+      return res.status(404).json({ ok: false, error: 'Skin topilmadi' });
+    }
+
+    if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
+
+    // If user already owns it, just equip it
+    if (u.ownedSkins.includes(skinId)) {
+      u.skin = skinId;
+      saveHoldState(st);
+      return res.json({
+        ok: true,
+        message: `${skinDef.name} yoqildi`,
+        user: formatHoldUserResponse(st, u, mainUser)
+      });
+    }
+
+    // Otherwise buy with HOLD
+    const cost = skinDef.priceHold || 0;
+    if (u.holdBalance < cost) {
+      return res.status(400).json({
+        ok: false,
+        error: `${skinDef.name} uchun ${cost.toLocaleString()} HOLD kerak`
+      });
+    }
+
+    u.holdBalance -= cost;
+    u.ownedSkins.push(skinId);
+    u.skin = skinId;
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      message: `${skinDef.name} ochildi va yoqildi`,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 4C. Claim Daily 7-Day Login Streak ----
+  app.post('/api/hold/claim-streak', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const today = todayStr();
+    if (u.lastStreakClaimDay === today) {
+      return res.status(400).json({ ok: false, error: 'Bugungi kunlik bonus allaqachon olingan' });
+    }
+
+    const nextDay = ((u.streakDay || 0) % 7) + 1;
+    const rewardObj = DAILY_STREAK_REWARDS.find(r => r.day === nextDay) || DAILY_STREAK_REWARDS[0];
+    u.streakDay = nextDay;
+    u.lastStreakClaimDay = today;
+    u.holdBalance += rewardObj.reward;
+    u.lifetimeHold += rewardObj.reward;
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      day: nextDay,
+      reward: rewardObj.reward,
+      message: `Day ${nextDay} bonusi: +${rewardObj.reward.toLocaleString()} HOLD`,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
   });
 
   // ---- 5. Upgrade Mine Card & Check Daily 3-Card Combo ----
