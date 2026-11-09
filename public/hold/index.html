@@ -4,58 +4,65 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=7" />
+  <link rel="stylesheet" href="/hold/style.css?v=8" />
 </head>
 <body>
   <div class="hold-app" id="holdApp">
 
-    <!-- ==================== MAIN ARENA ==================== -->
-    <section class="hold-view active" id="viewArena">
-      <!-- 1. Top Community Pill & Stars Pill -->
-      <div class="arena-top-bar">
-        <button type="button" class="community-pill" id="btnSquadPill">
-          <div class="cp-avatar" id="uiSquadAvatar">H</div>
-          <div class="cp-meta">
-            <div class="cp-name" id="uiSquadName">Hold Community</div>
-            <div class="cp-sub">
-              <img src="/hold/skins/skin-4.png" alt="" class="cp-mini-coin" id="uiTopMiniCoin" />
-              <span id="uiSquadScore">34,800,000</span>
-            </div>
-          </div>
-          <div class="cp-badge">
-            <span class="tg-emoji">🏆</span>
-            <span id="uiSquadRankName">Diamond</span>
-          </div>
-        </button>
-
-        <div class="top-mini-actions">
-          <button type="button" class="glass-mini-pill" id="btnOpenStarsTopup">
-            <span class="tg-emoji">⭐</span>
-            <span id="uiStars">0</span>
-            <span class="plus-mark">+</span>
-          </button>
-
-          <button type="button" class="glass-mini-pill" id="btnOpenAdminModal" hidden>
-            <span>⚙️</span>
-          </button>
-        </div>
+    <!-- ==================== 3-SLIDE ONBOARDING STORY (DOGS / NOTCOIN STYLE) ==================== -->
+    <section class="onboarding-story-overlay" id="onboardingStoryOverlay" hidden>
+      <div class="os-progress-bars">
+        <div class="os-bar-track"><div class="os-bar-fill" id="osBar0"></div></div>
+        <div class="os-bar-track"><div class="os-bar-fill" id="osBar1"></div></div>
+        <div class="os-bar-track"><div class="os-bar-fill" id="osBar2"></div></div>
       </div>
 
-      <!-- 2. Center Balance & League Trigger -->
+      <div class="os-slides-wrap" id="osSlidesWrap">
+        <!-- Populated dynamically by app.js for Slide 0, 1, 2 -->
+      </div>
+
+      <div class="os-bottom-wrap">
+        <p class="os-foot-note" id="osFootNote"></p>
+        <button type="button" class="os-continue-btn" id="btnOsContinue">Continue</button>
+      </div>
+    </section>
+
+    <!-- ==================== MAIN ARENA (EXACT SCREENSHOT 3 TOP & DOCK) ==================== -->
+    <section class="hold-view" id="viewArena">
+      <!-- 1. Top Squad Bar (Exact Screenshot 3: "Join Squad >" or Joined Squad Pill) -->
+      <div class="arena-top-bar">
+        <button type="button" class="not-squad-top-pill" id="btnSquadPill">
+          <!-- Rendered dynamically: either centered "Join Squad ›" or Squad details -->
+        </button>
+
+        <button type="button" class="admin-floating-gear" id="btnOpenAdminModal" hidden aria-label="Admin Studio">
+          ⚙️
+        </button>
+      </div>
+
+      <!-- 2. Center Balance & Rank + League Row (Exact Screenshot 3: 🌿 21,384th 🌿 · 🏆 Bronze ›) -->
       <div class="arena-balance-block">
         <div class="arena-balance-row">
-          <img src="/hold/skins/skin-4.png" alt="HOLD" class="balance-coin-icon" id="uiBalanceCoinIcon" />
+          <img src="/hold/skins/skin-4.png" alt="HOLD" class="balance-coin-icon" id="uiBalanceCoinIcon" draggable="false" />
           <h1 class="balance-number" id="uiHoldBalance">0</h1>
         </div>
-        <button type="button" class="arena-league-btn" id="btnOpenLeagues">
-          <span class="tg-emoji">🏆</span>
-          <span id="uiLeagueNameText">Bronze</span>
-          <span class="pph-tag" id="uiPphTop">+0/s</span>
-          <span class="chevron-txt">›</span>
+
+        <button type="button" class="arena-rank-league-row" id="btnOpenLeagues">
+          <span class="wreath-rank">
+            <svg class="wreath-svg left" viewBox="0 0 24 24"><path d="M17 21c-4-2-7-6-7-11 0-3 1.5-6 4-8-1 3-.5 6 1 8 1.5-2 2-5 1-8 2.5 2 4 5 4 8 0 5-3 9-3 11z" fill="currentColor" opacity="0.55"/></svg>
+            <span id="uiUserRankText">1st</span>
+            <svg class="wreath-svg right" viewBox="0 0 24 24"><path d="M7 21c4-2 7-6 7-11 0-3-1.5-6-4-8 1 3 .5 6-1 8-1.5-2-2-5-1-8-2.5 2-4 5-4 8 0 5 3 9 3 11z" fill="currentColor" opacity="0.55"/></svg>
+          </span>
+          <span class="rl-dot">·</span>
+          <span class="rl-league">
+            <img src="/hold/trophies/bronze.png" alt="" class="mini-league-cup" id="uiMiniLeagueCup" />
+            <span id="uiLeagueNameText">Bronze</span>
+            <span class="chevron-txt">›</span>
+          </span>
         </button>
       </div>
 
-      <!-- 3. Larger Center 3D Coin + Pure Mid-Air Floating Morse Letters -->
+      <!-- 3. Enlarged Center 3D Coin + Pure Mid-Air Floating Morse Letters -->
       <div class="arena-coin-stage" id="coinStage">
         <!-- Pure Mid-Air Floating Letters (Only appears in mid-air when 1st Morse letter is solved!) -->
         <div class="floating-midair-morse" id="floatingMidAirMorse" aria-hidden="true"></div>
@@ -66,11 +73,11 @@
         </button>
       </div>
 
-      <!-- 4. Bottom Energy & Clean Glass Dock -->
+      <!-- 4. Bottom Energy & Authentic 3-Item Notcoin Dock (Frens | Earn | Boosts) -->
       <div class="arena-bottom-area">
         <div class="arena-controls-row">
           <div class="arena-energy-stat">
-            <span class="tg-emoji bolt-emj">⚡</span>
+            <span class="bolt-emj">⚡</span>
             <div class="energy-nums">
               <strong id="uiEnergyNow">1500</strong>
               <small id="uiEnergyMax">/ 1500</small>
@@ -92,11 +99,6 @@
               <span class="dock-emj">🚀</span>
               <span class="dock-label">Boosts</span>
             </button>
-            <div class="dock-divider"></div>
-            <button type="button" class="dock-item" data-open-sheet="leagues">
-              <span class="dock-emj">🏆</span>
-              <span class="dock-label">Leagues</span>
-            </button>
           </div>
         </div>
 
@@ -106,24 +108,24 @@
       </div>
     </section>
 
-    <!-- ==================== SHEET 1: LEAGUES & TOP-10 PRIZES (SCREENSHOT 2) ==================== -->
+    <!-- ==================== SHEET 1: LEAGUES & 5 3D TROPHY CUPS ==================== -->
     <section class="apple-sheet league-showcase-sheet" id="sheetLeagues" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
-        <div class="players-stats-pill">
+        <div class="players-stats-pill" id="btnSwitchTop10Tab">
           <img src="/hold/skins/skin-4.png" alt="" class="mini-pill-coin" />
-          <span id="uiTotalPlayersCount">0</span> game players · <span class="stats-accent">Top 10 ›</span>
+          <span id="uiTotalPlayersCount">0</span> game players · <span class="stats-accent">Stats ›</span>
         </div>
-        <div style="width:48px;"></div>
+        <div style="width:52px;"></div>
       </div>
 
       <div class="sheet-content">
-        <!-- Trophy Carousel (Exact Screenshot 2 Design) -->
+        <!-- 3D Trophy Carousel (5 Generated 3D Trophy Cups) -->
         <div class="league-hero-stage" id="leagueHeroStage">
           <button type="button" class="league-nav-arrow left" id="btnPrevLeague" aria-label="Previous League">‹</button>
           <div class="league-trophy-wrap">
             <div class="league-trophy-glow" id="uiLeagueTrophyGlow"></div>
-            <div class="league-trophy-3d" id="uiLeagueTrophyIcon">🏆</div>
+            <img src="/hold/trophies/gold.png" alt="League Trophy" class="league-trophy-img" id="uiLeagueTrophyImg" draggable="false" />
           </div>
           <button type="button" class="league-nav-arrow right" id="btnNextLeague" aria-label="Next League">›</button>
         </div>
@@ -154,16 +156,18 @@
       </div>
     </section>
 
-    <!-- ==================== SHEET 2: BOOSTS & BUY SKINS (SCREENSHOT 1 & 3) ==================== -->
+    <!-- ==================== SHEET 2: BOOSTS & BUY SKINS ==================== -->
     <section class="apple-sheet" id="sheetBoosts" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
-        <span class="sheet-nav-title">Boosts & Skins</span>
-        <div style="width:48px;"></div>
+        <span class="sheet-nav-title">Boosts</span>
+        <button type="button" class="sheet-stars-pill" id="btnOpenStarsTopup">
+          ⭐ <span id="uiStars">0</span> +
+        </button>
       </div>
 
       <div class="sheet-content">
-        <!-- Top Balance Block (Exact Screenshot 3) -->
+        <!-- Top Balance Block -->
         <div class="boost-balance-header">
           <span class="bb-label">Your balance</span>
           <div class="bb-amount-row">
@@ -197,18 +201,18 @@
         <h3 class="not-section-heading">Boosters</h3>
         <div class="dark-group-box" id="boostUpgradesList"></div>
 
-        <!-- Buy Skins Section (Exact Screenshot 1) -->
+        <!-- Buy Skins Section -->
         <h3 class="not-section-heading">Buy Skins</h3>
         <div class="dark-group-box" id="skinsListContainer"></div>
       </div>
     </section>
 
-    <!-- ==================== SHEET 3: EARN MORE COINS + MINE COMBO (SCREENSHOT 4) ==================== -->
+    <!-- ==================== SHEET 3: EARN MORE COINS ==================== -->
     <section class="apple-sheet" id="sheetEarn" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
         <span class="sheet-nav-title">Earn</span>
-        <div style="width:48px;"></div>
+        <div style="width:52px;"></div>
       </div>
 
       <div class="sheet-content">
@@ -217,7 +221,7 @@
           <button type="button" class="bb-link-btn" id="btnOpenEarnGuide">Full guide</button>
         </div>
 
-        <!-- 1. Invite Bonus Card (Screenshot 4) -->
+        <!-- 1. Invite Bonus Card -->
         <div class="dark-group-box">
           <button type="button" class="not-row-item" id="btnEarnInviteCard">
             <div class="nri-icon-box">🧸</div>
@@ -229,66 +233,68 @@
           </button>
         </div>
 
-        <!-- Daily 7-Day Login Streak (High Retention Feature) -->
-        <h3 class="not-section-heading">Daily Streak (Har kuni kiring)</h3>
-        <div class="dark-group-box streak-box">
-          <div class="streak-days-row" id="streakDaysRow"></div>
-          <button type="button" class="btn-sapphire-primary" id="btnClaimDailyStreak">Kunlik bonusni olish</button>
-        </div>
-
-        <!-- 2. Onboarding Tasks (Screenshot 4) -->
+        <!-- 2. Onboarding Tasks -->
         <h3 class="not-section-heading">Onboarding</h3>
         <div class="dark-group-box" id="onboardingTasksList"></div>
 
-        <!-- 3. Specials & Stars Shop (Screenshot 4) -->
-        <h3 class="not-section-heading">Specials & Stars Shop</h3>
+        <!-- 3. Specials -->
+        <h3 class="not-section-heading">Specials</h3>
         <div class="dark-group-box" id="specialsTasksList"></div>
 
-        <!-- 4. Web3 World & Daily 3-Card Combo (Mine) -->
-        <div class="section-flex-head">
-          <h3 class="not-section-heading">Mine & Daily Combo</h3>
-          <span class="combo-reward-tag">+3,000,000 HOLD</span>
-        </div>
-        <div class="dark-group-box combo-pad-box">
-          <div class="combo-slots-row" id="comboSlotsRow"></div>
-          <div class="mine-cards-grid" id="mineCardsGrid"></div>
-        </div>
+        <!-- 4. Web3 world -->
+        <h3 class="not-section-heading">Web3 world</h3>
+        <div class="dark-group-box" id="web3TasksList"></div>
+
+        <!-- 5. Stars Power Packs -->
+        <h3 class="not-section-heading">Stars Boost Packs</h3>
+        <div class="dark-group-box" id="vipPacksList"></div>
       </div>
     </section>
 
-    <!-- ==================== SHEET 4: FRENS & SQUADS ==================== -->
+    <!-- ==================== SHEET 4: INVITE FRENS & SQUADS ==================== -->
     <section class="apple-sheet" id="sheetFrens" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
         <span class="sheet-nav-title">Frens</span>
-        <div style="width:48px;"></div>
+        <div style="width:52px;"></div>
       </div>
 
       <div class="sheet-content">
-        <div class="earn-hero-header">
-          <h2>Invite Frens</h2>
-          <p class="sheet-sub">Har bir doʻstingiz uchun +50,000 HOLD, doʻstingizga +25,000 HOLD</p>
+        <div class="frens-hero-header">
+          <h2 id="uiFrensHeroCount">0 Frens</h2>
+          <button type="button" class="bb-link-btn" id="btnReplayOnboarding">View my Pioneer status ✦</button>
         </div>
 
-        <div class="dark-group-box" style="padding:14px;display:flex;flex-direction:column;gap:12px;">
-          <div class="not-row-item" style="padding:0;">
+        <!-- Invite Bonus Tiers Box -->
+        <div class="frens-reward-banner">
+          <div class="frb-title">+50,000 HOLD for invite</div>
+          <div class="not-row-item" style="padding:6px 0;">
             <div class="nri-icon-box">🧸</div>
             <div class="nri-center">
               <div class="nri-title">Invite a fren</div>
-              <div class="nri-sub">+50,000 <img src="/hold/skins/skin-4.png" class="inline-c" alt="" /> for you and fren</div>
+              <div class="nri-sub"><span style="color:#facc15;font-weight:700;">+25,000</span> <img src="/hold/skins/skin-4.png" class="inline-c" alt="" /> for you and fren</div>
             </div>
           </div>
-          <div class="clean-stat-line">
-            <span>Invited frens</span>
-            <strong id="uiRefCount">0</strong>
+          <div class="not-row-item" style="padding:6px 0;">
+            <div class="nri-icon-box">⭐</div>
+            <div class="nri-center">
+              <div class="nri-title">Fren with Verified PaxtaGram</div>
+              <div class="nri-sub"><span style="color:#facc15;font-weight:700;">+50,000</span> <img src="/hold/skins/skin-4.png" class="inline-c" alt="" /> for you and fren</div>
+            </div>
           </div>
-          <button type="button" class="btn-sapphire-primary" id="btnCopyRefLink">Invite a fren (Copy link)</button>
         </div>
 
-        <h3 class="not-section-heading">Stars Power Packs (Boost HOLD)</h3>
-        <div class="dark-group-box" id="vipPacksList"></div>
+        <button type="button" class="btn-sapphire-primary" id="btnCopyRefLink">Invite a fren</button>
 
-        <h3 class="not-section-heading">Squads</h3>
+        <!-- Frens List -->
+        <h3 class="not-section-heading">Frens list</h3>
+        <div class="dark-group-box" id="frensInvitedList"></div>
+
+        <!-- Official PaxtaGram Squads -->
+        <div class="section-flex-head">
+          <h3 class="not-section-heading">Squads (PaxtaGram Channels)</h3>
+          <button type="button" class="bb-link-btn" id="btnAddCustomSquad">+ Add channel</button>
+        </div>
         <div class="dark-group-box" id="squadsList"></div>
       </div>
     </section>
@@ -309,6 +315,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=7"></script>
+  <script src="/hold/app.js?v=8"></script>
 </body>
 </html>

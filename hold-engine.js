@@ -21,12 +21,51 @@ export const REVERSE_MORSE = Object.fromEntries(
 );
 
 export const HOLD_LEAGUES = [
-  { id: 'bronze',   name: 'Bronze',   icon: 'trophy', minHold: 0,          bonusTap: 0, color: '#cd7f32', glow: 'rgba(205, 127, 50, 0.45)' },
-  { id: 'silver',   name: 'Silver',   icon: 'trophy', minHold: 250_000,    bonusTap: 1, color: '#cbd5e1', glow: 'rgba(203, 213, 225, 0.45)' },
-  { id: 'gold',     name: 'Gold',     icon: 'trophy', minHold: 1_000_000,  bonusTap: 2, color: '#fbbf24', glow: 'rgba(251, 191, 36, 0.50)' },
-  { id: 'platinum', name: 'Platinum', icon: 'trophy', minHold: 2_500_000,  bonusTap: 3, color: '#e2e8f0', glow: 'rgba(148, 163, 184, 0.50)' },
-  { id: 'diamond',  name: 'Diamond',  icon: 'trophy', minHold: 5_000_000,  bonusTap: 5, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.55)' },
-  { id: 'obsidian', name: 'Obsidian', icon: 'trophy', minHold: 10_000_000, bonusTap: 8, color: '#818cf8', glow: 'rgba(129, 140, 248, 0.60)' }
+  {
+    id: 'bronze',
+    name: 'Bronze',
+    trophyImg: '/hold/trophies/bronze.png',
+    minHold: 0,
+    bonusTap: 0,
+    color: '#d97706',
+    glow: 'rgba(217, 119, 6, 0.42)'
+  },
+  {
+    id: 'silver',
+    name: 'Silver',
+    trophyImg: '/hold/trophies/silver.png',
+    minHold: 200_000,
+    bonusTap: 1,
+    color: '#cbd5e1',
+    glow: 'rgba(203, 213, 225, 0.42)'
+  },
+  {
+    id: 'gold',
+    name: 'Gold',
+    trophyImg: '/hold/trophies/gold.png',
+    minHold: 1_000_000,
+    bonusTap: 2,
+    color: '#fbbf24',
+    glow: 'rgba(251, 191, 36, 0.48)'
+  },
+  {
+    id: 'platinum',
+    name: 'Platinum',
+    trophyImg: '/hold/trophies/platinum.png',
+    minHold: 2_500_000,
+    bonusTap: 4,
+    color: '#94a3b8',
+    glow: 'rgba(148, 163, 184, 0.46)'
+  },
+  {
+    id: 'diamond',
+    name: 'Diamond',
+    trophyImg: '/hold/trophies/diamond.png',
+    minHold: 5_000_000,
+    bonusTap: 6,
+    color: '#38bdf8',
+    glow: 'rgba(56, 189, 248, 0.52)'
+  }
 ];
 
 export const HOLD_SKINS = [
@@ -36,12 +75,11 @@ export const HOLD_SKINS = [
     subtitle: 'You own it',
     img: '/hold/skins/skin-4.png',
     priceHold: 0,
-    reqQuest: null,
     theme: {
       accent: '#38b6ff',
       secondary: '#0066ff',
-      glow1: 'rgba(0, 132, 255, 0.60)',
-      glow2: 'rgba(0, 68, 204, 0.34)',
+      glow1: 'rgba(0, 132, 255, 0.58)',
+      glow2: 'rgba(0, 68, 204, 0.30)',
       bgBottom: '#041b4d'
     }
   },
@@ -51,12 +89,11 @@ export const HOLD_SKINS = [
     subtitle: '500,000 HOLD',
     img: '/hold/skins/skin-2.png',
     priceHold: 500_000,
-    reqQuest: null,
     theme: {
       accent: '#e2e8f0',
       secondary: '#64748b',
       glow1: 'rgba(226, 232, 240, 0.45)',
-      glow2: 'rgba(100, 116, 139, 0.28)',
+      glow2: 'rgba(100, 116, 139, 0.25)',
       bgBottom: '#0f172a'
     }
   },
@@ -66,12 +103,11 @@ export const HOLD_SKINS = [
     subtitle: '1,500,000 HOLD',
     img: '/hold/skins/skin-3.png',
     priceHold: 1_500_000,
-    reqQuest: null,
     theme: {
       accent: '#c084fc',
       secondary: '#7c3aed',
-      glow1: 'rgba(192, 132, 252, 0.55)',
-      glow2: 'rgba(124, 58, 237, 0.32)',
+      glow1: 'rgba(192, 132, 252, 0.54)',
+      glow2: 'rgba(124, 58, 237, 0.30)',
       bgBottom: '#1e0938'
     }
   },
@@ -81,12 +117,11 @@ export const HOLD_SKINS = [
     subtitle: '750,000 HOLD',
     img: '/hold/skins/skin-5.png',
     priceHold: 750_000,
-    reqQuest: null,
     theme: {
       accent: '#fb923c',
       secondary: '#ea580c',
-      glow1: 'rgba(251, 146, 60, 0.55)',
-      glow2: 'rgba(234, 88, 12, 0.32)',
+      glow1: 'rgba(251, 146, 60, 0.52)',
+      glow2: 'rgba(234, 88, 12, 0.28)',
       bgBottom: '#2b0f04'
     }
   },
@@ -96,12 +131,11 @@ export const HOLD_SKINS = [
     subtitle: '350,000 HOLD',
     img: '/hold/skins/skin-1.webp',
     priceHold: 350_000,
-    reqQuest: null,
     theme: {
       accent: '#fbbf24',
       secondary: '#d97706',
-      glow1: 'rgba(251, 191, 36, 0.52)',
-      glow2: 'rgba(217, 119, 6, 0.30)',
+      glow1: 'rgba(251, 191, 36, 0.50)',
+      glow2: 'rgba(217, 119, 6, 0.28)',
       bgBottom: '#291503'
     }
   },
@@ -111,159 +145,38 @@ export const HOLD_SKINS = [
     subtitle: '2,500,000 HOLD',
     img: '/hold/skins/skin-6.png',
     priceHold: 2_500_000,
-    reqQuest: null,
     theme: {
       accent: '#f472b6',
       secondary: '#db2777',
-      glow1: 'rgba(244, 114, 182, 0.58)',
-      glow2: 'rgba(219, 39, 119, 0.34)',
+      glow1: 'rgba(244, 114, 182, 0.56)',
+      glow2: 'rgba(219, 39, 119, 0.30)',
       bgBottom: '#2d0620'
     }
   }
 ];
 
-export const DAILY_STREAK_REWARDS = [
-  { day: 1, reward: 25_000,    label: 'Day 1' },
-  { day: 2, reward: 50_000,    label: 'Day 2' },
-  { day: 3, reward: 100_000,   label: 'Day 3' },
-  { day: 4, reward: 200_000,   label: 'Day 4' },
-  { day: 5, reward: 350_000,   label: 'Day 5' },
-  { day: 6, reward: 500_000,   label: 'Day 6' },
-  { day: 7, reward: 1_000_000, label: 'Day 7' }
-];
-
-export const HOLD_MINE_CARDS = [
-  // Category: ecosystem
-  {
-    id: 'paxta_node',
-    cat: 'ecosystem',
-    name: 'Paxta Node',
-    desc: 'Tarmoq serveridan soatlik passiv HOLD daromad',
-    icon: 'server',
-    baseCost: 5_000,
-    baseProfit: 1_200
-  },
-  {
-    id: 'hold_verify_hub',
-    cat: 'ecosystem',
-    name: 'Verification Hub',
-    desc: 'Rasmiy tasdiqlash markazi ulushi',
-    icon: 'shield',
-    baseCost: 12_000,
-    baseProfit: 2_800
-  },
-  {
-    id: 'stars_liquidity',
-    cat: 'ecosystem',
-    name: 'Stars Pool',
-    desc: 'Stars likvidlik hovuzidan doimiy ulush',
-    icon: 'star',
-    baseCost: 25_000,
-    baseProfit: 5_400
-  },
-  // Category: web3
-  {
-    id: 'nft_floor_sniper',
-    cat: 'web3',
-    name: 'Floor Sniper',
-    desc: 'Avtomatik bozor snayperi algoritmi',
-    icon: 'target',
-    baseCost: 18_000,
-    baseProfit: 4_100
-  },
-  {
-    id: 'whale_staking',
-    cat: 'web3',
-    name: 'Whale Staking',
-    desc: 'Yirik fond bilan birgalikda staking',
-    icon: 'layers',
-    baseCost: 45_000,
-    baseProfit: 9_500
-  },
-  {
-    id: 'p2p_arbitrage',
-    cat: 'web3',
-    name: 'P2P Arbitrage',
-    desc: 'Bozor savdosidan avtomatik daromad',
-    icon: 'chart',
-    baseCost: 75_000,
-    baseProfit: 15_000
-  },
-  // Category: mystery
-  {
-    id: 'morse_ai_decoder',
-    cat: 'mystery',
-    name: 'Signal Decoder',
-    desc: 'Yashirin signallarni tahlil qilish markazi',
-    icon: 'radio',
-    baseCost: 15_000,
-    baseProfit: 3_600
-  },
-  {
-    id: 'enigma_cipher',
-    cat: 'mystery',
-    name: 'Enigma Core',
-    desc: 'Kriptografik bloklar tahlili',
-    icon: 'lock',
-    baseCost: 38_000,
-    baseProfit: 8_200
-  },
-  {
-    id: 'quantum_reactor',
-    cat: 'mystery',
-    name: 'Quantum Core',
-    desc: 'Yuqori tezlikdagi kvant hisoblash',
-    icon: 'cpu',
-    baseCost: 90_000,
-    baseProfit: 18_500
-  },
-  // Category: vip
-  {
-    id: 'victory_medal_mint',
-    cat: 'vip',
-    name: 'Medal Mint',
-    desc: 'Victory Medal fondidan passiv oqim',
-    icon: 'award',
-    baseCost: 30_000,
-    baseProfit: 6_800
-  },
-  {
-    id: 'desk_calendar_vault',
-    cat: 'vip',
-    name: 'Calendar Vault',
-    desc: 'Desk Calendar fondidan passiv oqim',
-    icon: 'calendar',
-    baseCost: 60_000,
-    baseProfit: 13_200
-  },
-  {
-    id: 'obsidian_genesis',
-    cat: 'vip',
-    name: 'Obsidian Pass',
-    desc: 'Elit klubning eng yuqori daromad kartasi',
-    icon: 'diamond',
-    baseCost: 150_000,
-    baseProfit: 32_000
-  }
-];
-
-export const SECRET_BONUS_CODES = {
-  WAKEUP:   { reward: 500_000,   title: 'WAKEUP kodi ochildi', skin: 'obsidian' },
-  PAXTA:    { reward: 600_000,   title: 'PAXTA kodi ochildi' },
+export const DEFAULT_SECRET_CODES = {
+  WAKEUP:   { reward: 500_000,   title: 'WAKEUP kodi ochildi', skin: 'cyber_lonely' },
+  PAXTA:    { reward: 600_000,   title: 'PAXTA kodi ochildi',  skin: 'paxta_neon' },
   MEDAL:    { reward: 750_000,   title: 'MEDAL kodi ochildi' },
-  OBSIDIAN: { reward: 1_000_000, title: 'OBSIDIAN kodi ochildi' },
+  OBSIDIAN: { reward: 1_000_000, title: 'OBSIDIAN kodi ochildi', skin: 'chrome' },
   MOON:     { reward: 888_888,   title: 'MOON kodi ochildi' }
 };
 
-export const HOLD_QUESTS = [
-  { id: 'daily_checkin',     title: 'Kunlik kirish bonusi',          reward: 50_000,  type: 'instant',      icon: 'calendar' },
-  { id: 'solve_first_morse', title: 'Yashirin shifrni topish',       reward: 250_000, type: 'check_morse',  icon: 'radio' },
-  { id: 'join_squad',        title: 'Jamoaga qoʻshilish',            reward: 100_000, type: 'check_squad',  icon: 'shield' },
-  { id: 'upgrade_3_cards',   title: '3 ta Mine kartani ochish',      reward: 200_000, type: 'check_cards',  icon: 'cpu' },
-  { id: 'invite_1_friend',   title: '1 ta doʻstni taklif qilish',    reward: 150_000, type: 'check_ref_1',  icon: 'users' },
-  { id: 'invite_3_friends',  title: '3 ta doʻstni taklif qilish',    reward: 500_000, type: 'check_ref_3',  icon: 'users' },
-  { id: 'reach_silver',      title: 'Silver darajasiga chiqish',     reward: 300_000, type: 'check_silver', icon: 'trophy' },
-  { id: 'reach_gold',        title: 'Gold darajasiga chiqish',       reward: 750_000, type: 'check_gold',   icon: 'trophy' }
+export const DEFAULT_HOLD_QUESTS = [
+  // Onboarding
+  { id: 'join_squad',        cat: 'onboarding', title: 'Join Squad',                reward: 100_000, type: 'check_squad',  icon: '🛡️', link: '' },
+  { id: 'earn_1000_hold',    cat: 'onboarding', title: 'Earn 1,000 HOLD',           reward: 50_000,  type: 'check_1k',     icon: '🐣', link: '' },
+  { id: 'invite_10_frens',   cat: 'onboarding', title: 'Invite 10 frens',           reward: 500_000, type: 'check_ref_10', icon: '🧸', link: '' },
+  // Specials
+  { id: 'join_insider_ch',   cat: 'specials',   title: 'Insider Official Channel',  reward: 150_000, type: 'link',         icon: '📢', link: 'https://paxta.online/insider' },
+  { id: 'join_medal_ch',     cat: 'specials',   title: 'Welcome to MEDAL NFT',      reward: 200_000, type: 'link',         icon: '🖼️', link: 'https://paxta.online/MEDAL' },
+  { id: 'join_kalendar_ch',  cat: 'specials',   title: 'Desk Calendar Collectors',  reward: 200_000, type: 'link',         icon: '📅', link: 'https://paxta.online/Kalendar' },
+  { id: 'solve_first_morse', cat: 'specials',   title: 'Secret Morse Master',       reward: 250_000, type: 'check_morse',  icon: '📡', link: '' },
+  // Web3 world
+  { id: 'reach_silver',      cat: 'web3',       title: 'Silver League Holder',      reward: 300_000, type: 'check_silver', icon: '🥈', link: '' },
+  { id: 'reach_gold',        cat: 'web3',       title: 'Gold League Whale',         reward: 750_000, type: 'check_gold',   icon: '🏆', link: '' },
+  { id: 'upgrade_Verify',    cat: 'web3',       title: 'Paxta Gift Upgrade',        reward: 150_000, type: 'link',         icon: '⭐', link: 'https://paxta.online/UpgradeBot' }
 ];
 
 export const STARS_VIP_PACKS = [
@@ -274,8 +187,7 @@ export const STARS_VIP_PACKS = [
     starsPrice: 49,
     holdGrant: 1_000_000,
     tapBoost: 2,
-    enableAutoBot: false,
-    badge: 'START'
+    enableAutoBot: false
   },
   {
     id: 'god_mode',
@@ -284,8 +196,7 @@ export const STARS_VIP_PACKS = [
     starsPrice: 99,
     holdGrant: 3_000_000,
     tapBoost: 5,
-    enableAutoBot: true,
-    badge: 'POPULAR'
+    enableAutoBot: true
   },
   {
     id: 'whale_pack',
@@ -294,18 +205,16 @@ export const STARS_VIP_PACKS = [
     starsPrice: 199,
     holdGrant: 7_500_000,
     tapBoost: 10,
-    enableAutoBot: true,
-    badge: '2X VALUE'
+    enableAutoBot: true
   },
   {
     id: 'obsidian_pack',
-    name: '20,000,000 HOLD · Obsidian Max',
+    name: '20,000,000 HOLD · Diamond Max',
     desc: '+20,000,000 HOLD · Multitap +18 · Top-10 Boost',
     starsPrice: 399,
     holdGrant: 20_000_000,
     tapBoost: 18,
-    enableAutoBot: true,
-    badge: 'VIP MAX'
+    enableAutoBot: true
   }
 ];
 
@@ -319,29 +228,6 @@ export function getLeagueForHold(lifetimeHold) {
     if (lifetimeHold >= lg.minHold) current = lg;
   }
   return current;
-}
-
-export function computeCardUpgradeCost(cardDef, currentLevel = 0) {
-  return Math.round(cardDef.baseCost * Math.pow(1.55, currentLevel));
-}
-
-export function computeCardProfit(cardDef, level = 0) {
-  if (level <= 0) return 0;
-  let total = 0;
-  for (let i = 1; i <= level; i++) {
-    total += Math.round(cardDef.baseProfit * Math.pow(1.22, i - 1));
-  }
-  return total;
-}
-
-export function computeUserProfitPerHour(u) {
-  const cards = u.cards || {};
-  let pph = 0;
-  for (const cDef of HOLD_MINE_CARDS) {
-    const lvl = cards[cDef.id] || 0;
-    if (lvl > 0) pph += computeCardProfit(cDef, lvl);
-  }
-  return pph;
 }
 
 export function registerHoldEngine(app, deps) {
@@ -361,7 +247,6 @@ export function registerHoldEngine(app, deps) {
     isRequestAdmin,
     ADMIN_PAXTA_ID,
     PUBLIC_APP_URL,
-    HOLD_BOT_TOKEN,
     holdBotCall,
     moonClient,
     milliybekClient
@@ -373,6 +258,8 @@ export function registerHoldEngine(app, deps) {
       if (!st.soldMedals) st.soldMedals = {};
       if (!Array.isArray(st.nftClaims)) st.nftClaims = [];
       if (!st.payments) st.payments = { invoices: {}, charges: {}, lastUpdateId: 0 };
+      if (!st.config.secretCodes) st.config.secretCodes = { ...DEFAULT_SECRET_CODES };
+      if (!Array.isArray(st.config.customQuests)) st.config.customQuests = [...DEFAULT_HOLD_QUESTS];
       return st;
     }
     const initial = {
@@ -383,16 +270,14 @@ export function registerHoldEngine(app, deps) {
           reward: 1_000_000,
           hint: 'Loyihamizning asosiy 4 harfli nomi (H-O-L-D)'
         },
-        dailyCombo: {
-          cardIds: ['hold_verify_hub', 'morse_ai_decoder', 'victory_medal_mint'],
-          reward: 3_000_000
-        }
+        secretCodes: { ...DEFAULT_SECRET_CODES },
+        customQuests: [...DEFAULT_HOLD_QUESTS]
       },
       squads: {
-        insider:  { id: 'insider',  name: 'Insider Official', icon: 'zap',      members: 42, totalHold: 28_500_000 },
-        medal:    { id: 'medal',    name: 'MEDAL Collectors', icon: 'award',    members: 31, totalHold: 19_400_000 },
-        kalendar: { id: 'kalendar', name: 'Kalendar Whales',  icon: 'calendar', members: 27, totalHold: 16_200_000 },
-        hold_vip: { id: 'hold_vip', name: 'Hold Verified Club', icon: 'shield', members: 54, totalHold: 34_800_000 }
+        insider:  { id: 'insider',  handle: 'insider',  name: 'Insider Official',   members: 42, totalHold: 28_500_000, verified: true, link: 'https://paxta.online/insider' },
+        medal:    { id: 'medal',    handle: 'MEDAL',    name: 'MEDAL Collectors',   members: 31, totalHold: 19_400_000, verified: true, link: 'https://paxta.online/MEDAL' },
+        kalendar: { id: 'kalendar', handle: 'Kalendar', name: 'Kalendar Whales',    members: 27, totalHold: 16_200_000, verified: true, link: 'https://paxta.online/Kalendar' },
+        hold_vip: { id: 'hold_vip', handle: 'hold',     name: 'Hold Verified Club', members: 54, totalHold: 34_800_000, verified: true, link: 'https://paxta.online/HOLDbot' }
       },
       soldMedals: {},
       nftClaims: [],
@@ -404,6 +289,73 @@ export function registerHoldEngine(app, deps) {
 
   function saveHoldState(st) {
     saveJSON(holdStateFile, st);
+  }
+
+  // Verify a real PaxtaGram user or channel on paxta.online
+  async function verifyOnPaxtaGram(handleRaw) {
+    const clean = String(handleRaw || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, '').trim();
+    if (!clean) return null;
+
+    // 1. Try Bot API getChat
+    try {
+      const chatRes = await holdBotCall('getChat', { chat_id: `@${clean}` });
+      if (chatRes && chatRes.ok && chatRes.result) {
+        const ch = chatRes.result;
+        return {
+          id: ch.id,
+          username: ch.username || clean,
+          title: ch.title || ch.first_name || clean,
+          type: ch.type || 'channel',
+          verified: true
+        };
+      }
+    } catch {}
+
+    // 2. Try MoonClient resolveUserByUsername
+    try {
+      const u = await moonClient.resolveUserByUsername(clean);
+      if (u && u.id) {
+        return {
+          id: u.id,
+          username: u.username || clean,
+          title: u.name || u.first_name || u.username || clean,
+          avatar: u.avatar_url || null,
+          isVerified: !!u.is_verified,
+          isPremium: !!u.is_premium,
+          createdAt: u.created_at || null,
+          type: 'user',
+          verified: true
+        };
+      }
+    } catch {}
+
+    // 3. Try checking public PaxtaGram page
+    try {
+      const res = await fetch(`https://paxta.online/${encodeURIComponent(clean)}`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(4000)
+      });
+      if (res.ok) {
+        const html = await res.text();
+        const titleMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/i) || html.match(/<title>([^<]+)<\/title>/i);
+        const title = titleMatch ? titleMatch[1].replace(/\s*[-|]\s*PaxtaGram.*/i, '').trim() : clean;
+        return {
+          id: null,
+          username: clean,
+          title: title || clean,
+          type: 'channel',
+          verified: true
+        };
+      }
+    } catch {}
+
+    return null;
+  }
+
+  function computeUserRank(st, usernameKey) {
+    const sorted = Object.values(st.users || {}).sort((a, b) => (b.lifetimeHold || 0) - (a.lifetimeHold || 0));
+    const idx = sorted.findIndex(u => u.username === usernameKey);
+    return idx >= 0 ? idx + 1 : sorted.length + 1;
   }
 
   function getOrCreateHoldUser(usernameRaw, displayNameRaw, paxtaId = null, refCode = null) {
@@ -432,6 +384,7 @@ export function registerHoldEngine(app, deps) {
         username: key,
         displayName: cleanName(displayNameRaw || mainUsers[key]?.displayName || key),
         paxtaId: resolvedPaxtaId,
+        paxtaVerified: !!resolvedPaxtaId,
         holdBalance: 0,
         lifetimeHold: 0,
         ogBonusClaimed: false,
@@ -446,11 +399,9 @@ export function registerHoldEngine(app, deps) {
         fullTankCount: 3,
         rocketCount: 3,
         lastBoostResetDay: todayStr(),
-        cards: {},
-        lastPassiveClaimAt: Date.now(),
+        lastAutoBotClaimAt: Date.now(),
         morseSolvedDays: [],
-        comboProgress: {},
-        comboSolvedDays: [],
+        lastSolvedMorseWord: '',
         secretCodesClaimed: [],
         referrals: [],
         referredBy: null,
@@ -459,8 +410,6 @@ export function registerHoldEngine(app, deps) {
         claimedNfts: [],
         ownedSkins: ['basic'],
         skin: 'basic',
-        streakDay: 0,
-        lastStreakClaimDay: null,
         createdAt: new Date().toISOString()
       };
 
@@ -482,6 +431,7 @@ export function registerHoldEngine(app, deps) {
     } else {
       if (resolvedPaxtaId && !st.users[key].paxtaId) {
         st.users[key].paxtaId = resolvedPaxtaId;
+        st.users[key].paxtaVerified = true;
       }
       if (displayNameRaw && st.users[key].displayName === st.users[key].username) {
         st.users[key].displayName = cleanName(displayNameRaw);
@@ -509,13 +459,13 @@ export function registerHoldEngine(app, deps) {
       u.lastEnergyAt = now;
     }
 
-    // Calculate passive profit earned while offline (up to 12 hours)
-    const pph = computeUserProfitPerHour(u);
+    // Auto Tap Bot offline earnings (if autoBotEnabled)
     let passiveEarned = 0;
-    const passiveElapsedMs = Math.max(0, now - (u.lastPassiveClaimAt || now));
-    if (pph > 0 && passiveElapsedMs >= 15_000) {
-      const cappedHours = Math.min(12, passiveElapsedMs / (3600 * 1000));
-      passiveEarned = Math.floor(pph * cappedHours);
+    const botElapsedMs = Math.max(0, now - (u.lastAutoBotClaimAt || now));
+    if (u.autoBotEnabled && botElapsedMs >= 30_000) {
+      const cappedHours = Math.min(12, botElapsedMs / (3600 * 1000));
+      const hourlyRate = ((u.tapLevel || 1) * 1800);
+      passiveEarned = Math.floor(hourlyRate * cappedHours);
       if (passiveEarned > 0) {
         u.holdBalance += passiveEarned;
         u.lifetimeHold += passiveEarned;
@@ -523,9 +473,9 @@ export function registerHoldEngine(app, deps) {
           st.squads[u.squadId].totalHold += passiveEarned;
         }
       }
-      u.lastPassiveClaimAt = now;
-    } else if (passiveElapsedMs >= 15_000) {
-      u.lastPassiveClaimAt = now;
+      u.lastAutoBotClaimAt = now;
+    } else if (botElapsedMs >= 30_000) {
+      u.lastAutoBotClaimAt = now;
     }
 
     return { st, u, mainUser: mainUsers[key], passiveEarned };
@@ -533,7 +483,6 @@ export function registerHoldEngine(app, deps) {
 
   function formatHoldUserResponse(st, u, mainUser, passiveEarned = 0) {
     const today = todayStr();
-    const pph = computeUserProfitPerHour(u);
     const league = getLeagueForHold(u.lifetimeHold || 0);
     const tapPower = (u.tapLevel || 1) + (league.bonusTap || 0);
     const morseWord = (st.config?.dailyMorse?.word || 'HOLD').toUpperCase();
@@ -542,35 +491,42 @@ export function registerHoldEngine(app, deps) {
       morse: MORSE_MAP[ch] || '.-'
     }));
 
-    const comboIds = st.config?.dailyCombo?.cardIds || [];
-    const todayComboProgress = u.comboProgress?.[today] || [];
-
     if (!Array.isArray(u.ownedSkins) || !u.ownedSkins.includes('basic')) {
       u.ownedSkins = Array.from(new Set(['basic', ...(u.ownedSkins || [])]));
     }
     const activeSkinId = HOLD_SKINS.some(s => s.id === u.skin) ? u.skin : 'basic';
     const rSpeedLvl = u.rechargingSpeedLevel || 1;
+    const rank = computeUserRank(st, u.username);
+
+    const pid = Number(u.paxtaId) || 999;
+    const topPct = pid <= 150 ? 1 : pid <= 500 ? 5 : pid <= 1500 ? 10 : 25;
+    const yearsEquivalent = pid <= 200 ? 3 : pid <= 800 ? 2 : 1;
+
+    const solvedToday = (u.morseSolvedDays || []).includes(today) && u.lastSolvedMorseWord === morseWord;
 
     return {
       username: u.username,
       displayName: u.displayName,
       paxtaId: u.paxtaId,
+      paxtaVerified: !!u.paxtaVerified,
+      rank,
+      topPct,
+      yearsEquivalent,
       isAdmin: Number(u.paxtaId) === ADMIN_PAXTA_ID || u.username === 'moon' || u.username === 'shade',
       stars: mainUser?.stars || 0,
       holdBalance: Math.floor(u.holdBalance || 0),
       lifetimeHold: Math.floor(u.lifetimeHold || 0),
-      profitPerHour: pph,
       passiveEarnedJustNow: passiveEarned,
       tapPower,
       tapLevel: u.tapLevel || 1,
-      nextTapUpgradeCost: Math.round(2_000 * Math.pow(1.65, (u.tapLevel || 1) - 1)),
+      nextTapUpgradeCost: Math.round(1_000 * Math.pow(1.65, (u.tapLevel || 1) - 1)),
       energy: u.energy,
       maxEnergy: u.maxEnergy,
       energyLevel: u.energyLevel || 1,
-      nextEnergyUpgradeCost: Math.round(2_000 * Math.pow(1.65, (u.energyLevel || 1) - 1)),
+      nextEnergyUpgradeCost: Math.round(1_000 * Math.pow(1.65, (u.energyLevel || 1) - 1)),
       rechargingSpeedLevel: rSpeedLvl,
       rechargingSpeedMax: 5,
-      nextRechargingUpgradeCost: rSpeedLvl >= 5 ? 0 : Math.round(2_500 * Math.pow(1.8, rSpeedLvl - 1)),
+      nextRechargingUpgradeCost: rSpeedLvl >= 5 ? 0 : Math.round(2_000 * Math.pow(1.8, rSpeedLvl - 1)),
       autoBotEnabled: !!u.autoBotEnabled,
       autoBotCost: 150_000,
       fullTankCount: u.fullTankCount ?? 3,
@@ -582,41 +538,29 @@ export function registerHoldEngine(app, deps) {
       skin: activeSkinId,
       ownedSkins: u.ownedSkins,
       allSkins: HOLD_SKINS,
-      streak: {
-        currentDay: u.streakDay || 0,
-        claimedToday: u.lastStreakClaimDay === today,
-        rewards: DAILY_STREAK_REWARDS
-      },
       morse: {
         wordLength: morseWord.length,
         word: morseWord,
-        secretWords: Object.keys(SECRET_BONUS_CODES),
+        secretWords: Object.keys(st.config?.secretCodes || DEFAULT_SECRET_CODES),
+        secretCodesMap: st.config?.secretCodes || DEFAULT_SECRET_CODES,
         hint: st.config?.dailyMorse?.hint || 'Maxfiy soʻzni Morze alifbosida tering',
         reward: st.config?.dailyMorse?.reward || 1_000_000,
-        solvedToday: (u.morseSolvedDays || []).includes(today),
+        solvedToday,
         lettersGuide: morseOverlay
       },
-      combo: {
-        reward: st.config?.dailyCombo?.reward || 3_000_000,
-        solvedToday: (u.comboSolvedDays || []).includes(today),
-        foundCardIds: todayComboProgress,
-        totalRequired: 3
-      },
-      cards: HOLD_MINE_CARDS.map(cDef => {
-        const lvl = u.cards?.[cDef.id] || 0;
-        return {
-          ...cDef,
-          level: lvl,
-          currentProfit: computeCardProfit(cDef, lvl),
-          nextProfitDelta: computeCardProfit(cDef, lvl + 1) - computeCardProfit(cDef, lvl),
-          upgradeCost: computeCardUpgradeCost(cDef, lvl)
-        };
-      }),
       squadId: u.squadId,
       squads: Object.values(st.squads || {}).sort((a, b) => b.totalHold - a.totalHold),
-      referrals: u.referrals || [],
+      referrals: (u.referrals || []).map(rKey => {
+        const rUser = st.users[rKey];
+        return {
+          username: rKey,
+          displayName: rUser?.displayName || rKey,
+          lifetimeHold: Math.floor(rUser?.lifetimeHold || 0),
+          league: getLeagueForHold(rUser?.lifetimeHold || 0).name
+        };
+      }),
       tasksCompleted: u.tasksCompleted || [],
-      quests: HOLD_QUESTS,
+      quests: st.config?.customQuests || DEFAULT_HOLD_QUESTS,
       vipPacks: STARS_VIP_PACKS,
       claimedNfts: u.claimedNfts || [],
       secretCodesClaimed: u.secretCodesClaimed || []
@@ -628,8 +572,8 @@ export function registerHoldEngine(app, deps) {
     res.sendFile(path.join(publicDir, 'hold', 'index.html'));
   });
 
-  // ---- 1. Login / Sync User State ----
-  app.post('/api/hold/sync', (req, res) => {
+  // ---- 1. Login / Sync User State (With Real PaxtaGram Profile Resolution) ----
+  app.post('/api/hold/sync', async (req, res) => {
     let resolvedUsername = req.body?.username;
     let resolvedDisplayName = req.body?.displayName;
     let resolvedPaxtaId = req.body?.paxtaId ? Number(req.body.paxtaId) : null;
@@ -650,6 +594,18 @@ export function registerHoldEngine(app, deps) {
       resolvedPaxtaId = Number(webAppUser.id);
     }
 
+    // If we have a real username (not auto-generated holder_XXX) and no paxtaId yet, resolve on PaxtaGram
+    if (resolvedUsername && !resolvedUsername.startsWith('holder_') && !resolvedPaxtaId) {
+      try {
+        const pUser = await moonClient.resolveUserByUsername(resolvedUsername);
+        if (pUser && pUser.id) {
+          resolvedPaxtaId = Number(pUser.id);
+          resolvedUsername = pUser.username || resolvedUsername;
+          resolvedDisplayName = pUser.name || pUser.first_name || resolvedDisplayName;
+        }
+      } catch {}
+    }
+
     const { st, u, mainUser, passiveEarned } = getOrCreateHoldUser(
       resolvedUsername || 'holder',
       resolvedDisplayName,
@@ -666,7 +622,7 @@ export function registerHoldEngine(app, deps) {
     });
   });
 
-  // ---- 2. Claim Initial OG Snapshot Bonus ----
+  // ---- 2. Claim Initial Onboarding Snapshot Bonus ----
   app.post('/api/hold/claim-og', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     if (u.ogBonusClaimed) {
@@ -674,10 +630,10 @@ export function registerHoldEngine(app, deps) {
     }
 
     const pid = Number(u.paxtaId) || 999;
-    let tierName = 'Paxta Holder';
+    let tierName = 'Verified Holder';
     let idBonus = 50_000;
     if (pid <= 150) {
-      tierName = 'Genesis OG';
+      tierName = 'Legendary Pioneer';
       idBonus = 250_000;
     } else if (pid <= 600) {
       tierName = 'Early Pioneer';
@@ -743,7 +699,7 @@ export function registerHoldEngine(app, deps) {
     });
   });
 
-  // ---- 4. Boosts (Full Tank, Rocket, Multitap, Energy Limit, Auto-Bot) ----
+  // ---- 4. Boosts (Full Tank, Rocket, Multitap, Energy Limit, Recharging Speed, Auto-Bot) ----
   app.post('/api/hold/boost', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const type = req.body?.type;
@@ -756,7 +712,7 @@ export function registerHoldEngine(app, deps) {
       u.energy = u.maxEnergy;
       u.lastEnergyAt = Date.now();
       saveHoldState(st);
-      return res.json({ ok: true, message: 'Energiya 100% toʻldirildi', user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: '⚡ Full Energy activated!', user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'rocket') {
@@ -765,31 +721,31 @@ export function registerHoldEngine(app, deps) {
       }
       u.rocketCount--;
       saveHoldState(st);
-      return res.json({ ok: true, turboDurationMs: 10_000, message: '7X Turbo yoqildi (10 soniya)', user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, turboDurationMs: 10_000, message: '🚀 7x Turbo activated (10s)!', user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'multitap') {
-      const cost = Math.round(2_000 * Math.pow(1.65, (u.tapLevel || 1) - 1));
+      const cost = Math.round(1_000 * Math.pow(1.65, (u.tapLevel || 1) - 1));
       if (u.holdBalance < cost) {
-        return res.status(400).json({ ok: false, error: `Yetarli HOLD yoʻq (${cost.toLocaleString()} HOLD)` });
+        return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
       u.holdBalance -= cost;
       u.tapLevel = (u.tapLevel || 1) + 1;
       saveHoldState(st);
-      return res.json({ ok: true, message: `Multitap Lv.${u.tapLevel}`, user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: `☝️ Multitap · ${u.tapLevel} level`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'energy_limit') {
-      const cost = Math.round(2_000 * Math.pow(1.65, (u.energyLevel || 1) - 1));
+      const cost = Math.round(1_000 * Math.pow(1.65, (u.energyLevel || 1) - 1));
       if (u.holdBalance < cost) {
-        return res.status(400).json({ ok: false, error: `Yetarli HOLD yoʻq (${cost.toLocaleString()} HOLD)` });
+        return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
       u.holdBalance -= cost;
       u.energyLevel = (u.energyLevel || 1) + 1;
       u.maxEnergy = 1000 + u.energyLevel * 500;
       u.energy = u.maxEnergy;
       saveHoldState(st);
-      return res.json({ ok: true, message: `Energiya sigʻimi ${u.maxEnergy} ga oshirildi`, user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: `🔋 Energy Limit · ${u.energyLevel} level`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'recharging_speed') {
@@ -797,31 +753,32 @@ export function registerHoldEngine(app, deps) {
       if (curLvl >= 5) {
         return res.status(400).json({ ok: false, error: 'Max level reached' });
       }
-      const cost = Math.round(2_500 * Math.pow(1.8, curLvl - 1));
+      const cost = Math.round(2_000 * Math.pow(1.8, curLvl - 1));
       if (u.holdBalance < cost) {
-        return res.status(400).json({ ok: false, error: `Yetarli HOLD yoʻq (${cost.toLocaleString()} HOLD)` });
+        return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
       u.holdBalance -= cost;
       u.rechargingSpeedLevel = curLvl + 1;
       saveHoldState(st);
-      return res.json({ ok: true, message: `Recharging speed Lv.${u.rechargingSpeedLevel}`, user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: `⚡ Recharging speed · ${u.rechargingSpeedLevel} level`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'autobot') {
       if (u.autoBotEnabled) {
-        return res.status(400).json({ ok: false, error: 'Auto-Bot allaqachon faol' });
+        return res.status(400).json({ ok: false, error: 'Auto tap bot already active' });
       }
       const cost = 150_000;
       if (u.holdBalance < cost) {
-        return res.status(400).json({ ok: false, error: `Auto-Bot uchun ${cost.toLocaleString()} HOLD kerak` });
+        return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
       u.holdBalance -= cost;
       u.autoBotEnabled = true;
+      u.lastAutoBotClaimAt = Date.now();
       saveHoldState(st);
-      return res.json({ ok: true, message: '24/7 Auto-Bot faollashtirildi', user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: '🤖 Auto tap bot enabled!', user: formatHoldUserResponse(st, u, mainUser) });
     }
 
-    res.status(400).json({ ok: false, error: 'Nomaʼlum boost turi' });
+    res.status(400).json({ ok: false, error: 'Unknown boost type' });
   });
 
   // ---- 4B. Buy / Equip Coin Skin ----
@@ -830,28 +787,26 @@ export function registerHoldEngine(app, deps) {
     const skinId = req.body?.skinId;
     const skinDef = HOLD_SKINS.find(s => s.id === skinId);
     if (!skinDef) {
-      return res.status(404).json({ ok: false, error: 'Skin topilmadi' });
+      return res.status(404).json({ ok: false, error: 'Skin not found' });
     }
 
     if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
 
-    // If user already owns it, just equip it
     if (u.ownedSkins.includes(skinId)) {
       u.skin = skinId;
       saveHoldState(st);
       return res.json({
         ok: true,
-        message: `${skinDef.name} yoqildi`,
+        message: `${skinDef.name} enabled`,
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
 
-    // Otherwise buy with HOLD
     const cost = skinDef.priceHold || 0;
     if (u.holdBalance < cost) {
       return res.status(400).json({
         ok: false,
-        error: `${skinDef.name} uchun ${cost.toLocaleString()} HOLD kerak`
+        error: `Need ${cost.toLocaleString()} HOLD for ${skinDef.name}`
       });
     }
 
@@ -862,84 +817,7 @@ export function registerHoldEngine(app, deps) {
 
     res.json({
       ok: true,
-      message: `${skinDef.name} ochildi va yoqildi`,
-      user: formatHoldUserResponse(st, u, mainUser)
-    });
-  });
-
-  // ---- 4C. Claim Daily 7-Day Login Streak ----
-  app.post('/api/hold/claim-streak', (req, res) => {
-    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
-    const today = todayStr();
-    if (u.lastStreakClaimDay === today) {
-      return res.status(400).json({ ok: false, error: 'Bugungi kunlik bonus allaqachon olingan' });
-    }
-
-    const nextDay = ((u.streakDay || 0) % 7) + 1;
-    const rewardObj = DAILY_STREAK_REWARDS.find(r => r.day === nextDay) || DAILY_STREAK_REWARDS[0];
-    u.streakDay = nextDay;
-    u.lastStreakClaimDay = today;
-    u.holdBalance += rewardObj.reward;
-    u.lifetimeHold += rewardObj.reward;
-    saveHoldState(st);
-
-    res.json({
-      ok: true,
-      day: nextDay,
-      reward: rewardObj.reward,
-      message: `Day ${nextDay} bonusi: +${rewardObj.reward.toLocaleString()} HOLD`,
-      user: formatHoldUserResponse(st, u, mainUser)
-    });
-  });
-
-  // ---- 5. Upgrade Mine Card & Check Daily 3-Card Combo ----
-  app.post('/api/hold/upgrade-card', (req, res) => {
-    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
-    const cardId = req.body?.cardId;
-    const cardDef = HOLD_MINE_CARDS.find(c => c.id === cardId);
-    if (!cardDef) return res.status(404).json({ ok: false, error: 'Karta topilmadi' });
-
-    if (!u.cards) u.cards = {};
-    const curLvl = u.cards[cardId] || 0;
-    const cost = computeCardUpgradeCost(cardDef, curLvl);
-    if (u.holdBalance < cost) {
-      return res.status(400).json({ ok: false, error: `Yetarli HOLD yoʻq (${cost.toLocaleString()} HOLD)` });
-    }
-
-    u.holdBalance -= cost;
-    u.cards[cardId] = curLvl + 1;
-
-    // Check if this card is part of today's Daily Combo
-    const today = todayStr();
-    const comboCardIds = st.config?.dailyCombo?.cardIds || [];
-    const comboReward = st.config?.dailyCombo?.reward || 3_000_000;
-    let comboJustFound = false;
-    let comboCompletedJustNow = false;
-
-    if (!u.comboProgress) u.comboProgress = {};
-    if (!Array.isArray(u.comboProgress[today])) u.comboProgress[today] = [];
-    if (!Array.isArray(u.comboSolvedDays)) u.comboSolvedDays = [];
-
-    if (comboCardIds.includes(cardId) && !u.comboProgress[today].includes(cardId)) {
-      u.comboProgress[today].push(cardId);
-      comboJustFound = true;
-
-      if (u.comboProgress[today].length >= 3 && !u.comboSolvedDays.includes(today)) {
-        u.comboSolvedDays.push(today);
-        u.holdBalance += comboReward;
-        u.lifetimeHold += comboReward;
-        comboCompletedJustNow = true;
-      }
-    }
-
-    saveHoldState(st);
-    res.json({
-      ok: true,
-      cardId,
-      newLevel: u.cards[cardId],
-      comboJustFound,
-      comboCompletedJustNow,
-      comboReward: comboCompletedJustNow ? comboReward : 0,
+      message: `${skinDef.name} unlocked & enabled!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -949,22 +827,34 @@ export function registerHoldEngine(app, deps) {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const wordInput = String(req.body?.word || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (!wordInput) {
-      return res.status(400).json({ ok: false, error: 'Soʻz kiritilmadi' });
+      return res.status(400).json({ ok: false, error: 'Empty code' });
     }
 
     const today = todayStr();
     const dailyWord = (st.config?.dailyMorse?.word || 'HOLD').toUpperCase();
     const dailyReward = st.config?.dailyMorse?.reward || 1_000_000;
+    const secretMap = st.config?.secretCodes || DEFAULT_SECRET_CODES;
 
     if (!Array.isArray(u.morseSolvedDays)) u.morseSolvedDays = [];
     if (!Array.isArray(u.secretCodesClaimed)) u.secretCodesClaimed = [];
 
     // 1. Check Daily Morse Word
     if (wordInput === dailyWord) {
-      if (u.morseSolvedDays.includes(today)) {
-        return res.status(400).json({ ok: false, error: 'Bugungi shifr allaqachon yechilgan' });
+      const alreadyDoneForThisWord = u.morseSolvedDays.includes(today) && u.lastSolvedMorseWord === dailyWord;
+      if (alreadyDoneForThisWord) {
+        return res.json({
+          ok: true,
+          alreadyClaimed: true,
+          word: dailyWord,
+          reward: 0,
+          message: `✨ "${dailyWord}" shifri bugun olingan!`,
+          user: formatHoldUserResponse(st, u, mainUser)
+        });
       }
-      u.morseSolvedDays.push(today);
+      if (!u.morseSolvedDays.includes(today)) {
+        u.morseSolvedDays.push(today);
+      }
+      u.lastSolvedMorseWord = dailyWord;
       u.holdBalance += dailyReward;
       u.lifetimeHold += dailyReward;
       if (u.squadId && st.squads[u.squadId]) {
@@ -976,28 +866,39 @@ export function registerHoldEngine(app, deps) {
         type: 'daily_morse',
         word: dailyWord,
         reward: dailyReward,
-        message: `Shifr topildi ("${dailyWord}") · +${dailyReward.toLocaleString()} HOLD`,
+        message: `✨ "${dailyWord}" · +${dailyReward.toLocaleString()} HOLD!`,
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
 
-    // 2. Check Secret Bonus Mystery Words (WAKEUP, PAXTA, MEDAL, OBSIDIAN, MOON)
-    const secret = SECRET_BONUS_CODES[wordInput];
+    // 2. Check Secret Bonus Mystery Words (WAKEUP, PAXTA, MEDAL, OBSIDIAN, MOON, or Admin added codes)
+    const secret = secretMap[wordInput];
     if (secret) {
       if (u.secretCodesClaimed.includes(wordInput)) {
-        return res.status(400).json({ ok: false, error: `"${wordInput}" kodi allaqachon olingan` });
+        return res.json({
+          ok: true,
+          alreadyClaimed: true,
+          word: wordInput,
+          reward: 0,
+          message: `"${wordInput}" kodi allaqachon olingan`,
+          user: formatHoldUserResponse(st, u, mainUser)
+        });
       }
       u.secretCodesClaimed.push(wordInput);
       u.holdBalance += secret.reward;
       u.lifetimeHold += secret.reward;
-      if (secret.skin) u.skin = secret.skin;
+      if (secret.skin) {
+        if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
+        if (!u.ownedSkins.includes(secret.skin)) u.ownedSkins.push(secret.skin);
+        u.skin = secret.skin;
+      }
       saveHoldState(st);
       return res.json({
         ok: true,
         type: 'secret_code',
         word: wordInput,
         reward: secret.reward,
-        message: `${secret.title} · +${secret.reward.toLocaleString()} HOLD`,
+        message: `✨ ${secret.title || wordInput} · +${secret.reward.toLocaleString()} HOLD!`,
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
@@ -1008,12 +909,37 @@ export function registerHoldEngine(app, deps) {
     });
   });
 
-  // ---- 7. Join Squad ----
-  app.post('/api/hold/join-squad', (req, res) => {
+  // ---- 7. Join Squad (or Verify & Create Squad from Official PaxtaGram Channel) ----
+  app.post('/api/hold/join-squad', async (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
-    const squadId = req.body?.squadId;
+    let squadId = req.body?.squadId;
+    const channelHandle = req.body?.channelHandle;
+
+    // Allow joining/adding any real PaxtaGram channel as a Squad!
+    if (channelHandle && !squadId) {
+      const cleanH = cleanKey(String(channelHandle).replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, ''));
+      if (st.squads[cleanH]) {
+        squadId = cleanH;
+      } else {
+        const verifiedCh = await verifyOnPaxtaGram(cleanH);
+        if (!verifiedCh) {
+          return res.status(404).json({ ok: false, error: `@${cleanH} rasmiy PaxtaGram kanali topilmadi` });
+        }
+        st.squads[cleanH] = {
+          id: cleanH,
+          handle: verifiedCh.username || cleanH,
+          name: verifiedCh.title || `@${cleanH}`,
+          members: 1,
+          totalHold: Math.floor(u.lifetimeHold || 0),
+          verified: true,
+          link: `https://paxta.online/${verifiedCh.username || cleanH}`
+        };
+        squadId = cleanH;
+      }
+    }
+
     if (!st.squads[squadId]) {
-      return res.status(404).json({ ok: false, error: 'Jamoa topilmadi' });
+      return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
     }
     if (u.squadId !== squadId) {
       u.squadId = squadId;
@@ -1022,43 +948,41 @@ export function registerHoldEngine(app, deps) {
     }
     res.json({
       ok: true,
-      message: `${st.squads[squadId].name} jamoasiga qoʻshildingiz`,
+      message: `Joined ${st.squads[squadId].name}!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
 
-  // ---- 8. Complete Quests ----
+  // ---- 8. Complete Quests (Earn More Coins) ----
   app.post('/api/hold/claim-quest', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const questId = req.body?.questId;
-    const quest = HOLD_QUESTS.find(q => q.id === questId);
-    if (!quest) return res.status(404).json({ ok: false, error: 'Vazifa topilmadi' });
+    const allQuests = st.config?.customQuests || DEFAULT_HOLD_QUESTS;
+    const quest = allQuests.find(q => q.id === questId);
+    if (!quest) return res.status(404).json({ ok: false, error: 'Task not found' });
 
     if (!Array.isArray(u.tasksCompleted)) u.tasksCompleted = [];
     if (u.tasksCompleted.includes(questId)) {
-      return res.status(400).json({ ok: false, error: 'Mukofot allaqachon olingan' });
+      return res.status(400).json({ ok: false, error: 'Completed' });
     }
 
     if (quest.type === 'check_morse' && (!u.morseSolvedDays || u.morseSolvedDays.length === 0) && (!u.secretCodesClaimed || u.secretCodesClaimed.length === 0)) {
-      return res.status(400).json({ ok: false, error: 'Avval yashirin shifrni toping' });
+      return res.status(400).json({ ok: false, error: 'Avval tangada yashirin Morze soʻzini tering' });
     }
     if (quest.type === 'check_squad' && !u.squadId) {
-      return res.status(400).json({ ok: false, error: 'Avval jamoaga qoʻshiling' });
+      return res.status(400).json({ ok: false, error: 'Avval Squad (jamoa)ga qoʻshiling' });
     }
-    if (quest.type === 'check_cards' && Object.keys(u.cards || {}).length < 3) {
-      return res.status(400).json({ ok: false, error: 'Avval 3 ta Mine kartani oching' });
+    if (quest.type === 'check_1k' && (u.lifetimeHold || 0) < 1_000) {
+      return res.status(400).json({ ok: false, error: 'Avval 1,000 HOLD yigʻing' });
     }
-    if (quest.type === 'check_ref_1' && (u.referrals || []).length < 1) {
-      return res.status(400).json({ ok: false, error: 'Avval 1 ta doʻstingizni taklif qiling' });
+    if (quest.type === 'check_ref_10' && (u.referrals || []).length < 10) {
+      return res.status(400).json({ ok: false, error: `10 ta doʻst taklif qiling (${(u.referrals || []).length}/10)` });
     }
-    if (quest.type === 'check_ref_3' && (u.referrals || []).length < 3) {
-      return res.status(400).json({ ok: false, error: 'Avval 3 ta doʻstingizni taklif qiling' });
-    }
-    if (quest.type === 'check_silver' && (u.lifetimeHold || 0) < 250_000) {
-      return res.status(400).json({ ok: false, error: 'Avval Silver darajasiga (250,000 HOLD) yeting' });
+    if (quest.type === 'check_silver' && (u.lifetimeHold || 0) < 200_000) {
+      return res.status(400).json({ ok: false, error: 'Avval Silver ligaga (200K HOLD) chiqing' });
     }
     if (quest.type === 'check_gold' && (u.lifetimeHold || 0) < 1_000_000) {
-      return res.status(400).json({ ok: false, error: 'Avval Gold darajasiga (1,000,000 HOLD) yeting' });
+      return res.status(400).json({ ok: false, error: 'Avval Gold ligaga (1M HOLD) chiqing' });
     }
 
     u.tasksCompleted.push(questId);
@@ -1079,7 +1003,7 @@ export function registerHoldEngine(app, deps) {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const packId = req.body?.packId;
     const pack = STARS_VIP_PACKS.find(p => p.id === packId);
-    if (!pack) return res.status(404).json({ ok: false, error: 'Paket topilmadi' });
+    if (!pack) return res.status(404).json({ ok: false, error: 'Pack not found' });
 
     const users = loadJSON(usersFile, {});
     const userRecord = users[u.username];
@@ -1091,7 +1015,7 @@ export function registerHoldEngine(app, deps) {
         needStars: true,
         deficit: pack.starsPrice - currentStars,
         required: pack.starsPrice,
-        error: `Hisobingizda yetarli Stars yoʻq (${pack.starsPrice} Stars)`
+        error: `Need ${pack.starsPrice} Stars`
       });
     }
 
@@ -1106,7 +1030,7 @@ export function registerHoldEngine(app, deps) {
 
     res.json({
       ok: true,
-      message: `${pack.name} faollashtirildi · +${pack.holdGrant.toLocaleString()} HOLD`,
+      message: `${pack.name} · +${pack.holdGrant.toLocaleString()} HOLD`,
       user: formatHoldUserResponse(st, u, userRecord)
     });
   });
@@ -1126,11 +1050,7 @@ export function registerHoldEngine(app, deps) {
       .map(m => {
         const bLow = String(m.backdrop || '').toLowerCase();
         const isBlack = bLow.includes('black') || bLow.includes('onyx') || bLow.includes('gunmetal');
-        const holdRequired = isBlack ? 5_000_000 : 1_500_000;
-        const starsFee = isBlack ? 890 : 320;
-        const marketValue = isBlack ? 2_200 : 750;
         const soldInfo = soldMedals[m.giftId] || null;
-
         return {
           vaultId: `medal_${m.giftId}`,
           giftId: Number(m.giftId),
@@ -1139,20 +1059,13 @@ export function registerHoldEngine(app, deps) {
           number: Number(m.number),
           model: m.model || 'Victory',
           backdrop: m.backdrop || 'Classic',
-          pattern: m.pattern || '',
           centerColor: m.centerColor || '#3b82f6',
           edgeColor: m.edgeColor || '#1d4ed8',
-          textColor: m.textColor || '#ffffff',
           img: m.localImg || m.imageUrl,
           link: m.link || `https://paxta.online/nft/VictoryMedal-${m.number}`,
           isBlack,
           crafted: false,
-          tierBadge: isBlack ? 'Black Medal' : 'Victory Medal',
-          holdRequired,
-          starsFee,
-          marketValue,
-          sold: !!soldInfo,
-          buyer: soldInfo?.buyer || null
+          sold: !!soldInfo
         };
       });
 
@@ -1162,35 +1075,6 @@ export function registerHoldEngine(app, deps) {
         const bLow = String(c.backdrop || '').toLowerCase();
         const isBlack = bLow.includes('black') || bLow.includes('onyx') || bLow.includes('obsidian');
         const isCraft = !!c.crafted;
-        const isTop100 = Number(c.number) < 100;
-
-        let holdRequired = 3_000_000;
-        let starsFee = 360;
-        let marketValue = 950;
-        let tierBadge = 'Desk Calendar';
-
-        if (isBlack && isCraft) {
-          holdRequired = 12_000_000;
-          starsFee = 1_250;
-          marketValue = 2_500;
-          tierBadge = 'Black Craft';
-        } else if (isCraft) {
-          holdRequired = 8_000_000;
-          starsFee = 690;
-          marketValue = 1_650;
-          tierBadge = 'Craft Calendar';
-        } else if (isBlack) {
-          holdRequired = 10_000_000;
-          starsFee = 990;
-          marketValue = 1_950;
-          tierBadge = 'Black Calendar';
-        } else if (isTop100) {
-          holdRequired = 5_000_000;
-          starsFee = 520;
-          marketValue = 1_350;
-          tierBadge = 'Top #100';
-        }
-
         const soldInfo = soldCalendars[c.id] || soldCalendars[c.giftId] || null;
         return {
           vaultId: `cal_${c.id}`,
@@ -1201,20 +1085,13 @@ export function registerHoldEngine(app, deps) {
           number: Number(c.number),
           model: c.model || 'Classic',
           backdrop: c.backdrop || 'Standard',
-          pattern: c.pattern || '',
           centerColor: c.backdropColors?.center || c.centerColor || '#363738',
           edgeColor: c.backdropColors?.edge || c.edgeColor || '#0e0f0f',
-          textColor: c.backdropColors?.text || c.textColor || '#ffffff',
           img: c.image || c.localImg || c.imageUrl,
           link: c.link || `https://paxta.online/nft/DeskCalendar-${c.number}`,
           isBlack,
           crafted: isCraft,
-          tierBadge,
-          holdRequired,
-          starsFee,
-          marketValue,
-          sold: !!soldInfo,
-          buyer: soldInfo?.buyer || null
+          sold: !!soldInfo
         };
       });
 
@@ -1236,16 +1113,8 @@ export function registerHoldEngine(app, deps) {
     };
 
     const holdBonusByRank = [
-      10_000_000,
-      7_500_000,
-      5_000_000,
-      3_500_000,
-      2_500_000,
-      2_000_000,
-      1_500_000,
-      1_000_000,
-      750_000,
-      500_000
+      10_000_000, 7_500_000, 5_000_000, 3_500_000, 2_500_000,
+      2_000_000, 1_500_000, 1_000_000, 750_000, 500_000
     ];
 
     const selected = [
@@ -1309,147 +1178,18 @@ export function registerHoldEngine(app, deps) {
     });
   });
 
-  // ---- 11. Claim Real NFT from Vault ($HOLD + Discounted Stars Fee -> Auto PaxtaGram Delivery!) ----
-  app.post('/api/hold/claim-nft', async (req, res) => {
-    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
-    const vaultId = req.body?.vaultId;
-    const recipientUsername = cleanName(req.body?.recipientUsername || u.username);
-
-    const allItems = getVaultItems();
-    const item = allItems.find(x => x.vaultId === vaultId);
-    if (!item) return res.status(404).json({ ok: false, error: 'NFT topilmadi' });
-    if (item.sold) return res.status(400).json({ ok: false, error: 'Ushbu NFT allaqachon boshqa ishtirokchi tomonidan olingan!' });
-
-    if (u.holdBalance < item.holdRequired) {
-      return res.status(400).json({
-        ok: false,
-        needHold: true,
-        deficitHold: item.holdRequired - Math.floor(u.holdBalance),
-        error: `Ushbu NFT uchun kamida ${item.holdRequired.toLocaleString()} $HOLD kerak! (Yoki VIP Boost oling)`
-      });
-    }
-
-    const users = loadJSON(usersFile, {});
-    const userRecord = users[u.username];
-    const currentStars = userRecord?.stars || 0;
-
-    if (currentStars < item.starsFee) {
-      return res.status(400).json({
-        ok: false,
-        needStars: true,
-        deficit: item.starsFee - currentStars,
-        required: item.starsFee,
-        error: `Transfer va aktivatsiya badali uchun ⭐ ${item.starsFee} kerak (Bozor narxi: ⭐ ${item.marketValue})`
-      });
-    }
-
-    // Resolve recipient on PaxtaGram
-    const activeClient = item.nftType === 'medal' ? milliybekClient : moonClient;
-    let targetPaxtaId = u.paxtaId || null;
-    if (!targetPaxtaId || recipientUsername.toLowerCase() !== u.username.toLowerCase()) {
-      const resolved = await activeClient.resolveUserByUsername(recipientUsername);
-      if (resolved && resolved.id) {
-        targetPaxtaId = resolved.id;
-      }
-    }
-
-    if (!targetPaxtaId) {
-      return res.status(400).json({
-        ok: false,
-        error: `@${recipientUsername} PaxtaGram foydalanuvchisi topilmadi. Username toʻgʻriligini tekshiring!`
-      });
-    }
-
-    // Deduct $HOLD & Stars
-    u.holdBalance -= item.holdRequired;
-    userRecord.stars -= item.starsFee;
-    saveJSON(usersFile, users);
-
-    // Mark as sold
-    if (item.nftType === 'medal') {
-      st.soldMedals[item.giftId] = {
-        buyer: u.username,
-        recipientUsername,
-        targetPaxtaId,
-        claimedAt: new Date().toISOString()
-      };
-    } else {
-      const settingsPath = path.join(path.dirname(usersFile), 'settings.json');
-      const settings = loadJSON(settingsPath, { collections: {}, soldCalendars: {} });
-      if (!settings.soldCalendars) settings.soldCalendars = {};
-      settings.soldCalendars[item.calId] = {
-        buyer: u.username,
-        recipientUsername,
-        targetPaxtaId,
-        soldAt: new Date().toISOString()
-      };
-      saveJSON(settingsPath, settings);
-    }
-
-    // Attempt automated transfer on PaxtaGram
-    let deliveryStatus = 'pending_admin';
-    try {
-      const transferRes = await activeClient.transferNftGift({
-        giftId: item.giftId,
-        targetUserId: targetPaxtaId
-      });
-      if (transferRes.ok) {
-        deliveryStatus = 'delivered';
-      }
-    } catch {}
-
-    const claimRecord = {
-      id: `claim_${Date.now().toString(36)}`,
-      vaultId: item.vaultId,
-      giftId: item.giftId,
-      title: item.title,
-      model: item.model,
-      backdrop: item.backdrop,
-      img: item.img,
-      link: item.link,
-      buyer: u.username,
-      recipientUsername,
-      targetPaxtaId,
-      holdSpent: item.holdRequired,
-      starsSpent: item.starsFee,
-      deliveryStatus,
-      claimedAt: new Date().toISOString()
-    };
-
-    if (!Array.isArray(u.claimedNfts)) u.claimedNfts = [];
-    u.claimedNfts.unshift(claimRecord);
-    st.nftClaims.unshift(claimRecord);
-    saveHoldState(st);
-
-    // Notify Admin (ID 100) via @HOLDbot
-    holdBotCall('sendMessage', {
-      chat_id: ADMIN_PAXTA_ID,
-      text: `🪙 *$HOLD NFT VAULT XARIDI!*\n\n🎁 NFT: *${item.title}* (${item.model} / ${item.backdrop})\n👤 Foydalanuvchi: *@${u.username}* -> *@${recipientUsername}* (ID: \`${targetPaxtaId}\`)\n🪙 Sarflandi: *${item.holdRequired.toLocaleString()} $HOLD* + *⭐ ${item.starsFee}*\n📦 Holat: *${deliveryStatus === 'delivered' ? '✅ Avtomatik yuborildi!' : '⏳ Navbatda (Admin tasdigʻi / Trade lock)'}*`,
-      parse_mode: 'Markdown'
-    }).catch(() => {});
-
-    res.json({
-      ok: true,
-      claim: claimRecord,
-      message: deliveryStatus === 'delivered'
-        ? `🎉 Tabriklaymiz! ${item.title} toʻgʻridan-toʻgʻri @${recipientUsername} PaxtaGram profiliga oʻtkazildi!`
-        : `🎉 Tabriklaymiz! ${item.title} sizning nomingizga band qilindi va @${recipientUsername} profiliga yetkazish navbatiga qoʻyildi!`,
-      user: formatHoldUserResponse(st, u, userRecord)
-    });
-  });
-
   // ---- 12. Create Stars Invoice via @HOLDbot ----
   app.post('/api/hold/create-invoice', async (req, res) => {
     const { st, u } = getOrCreateHoldUser(req.body?.username);
     const amount = Math.max(1, Math.min(100_000, parseInt(req.body?.amount, 10) || 100));
-    const title = String(req.body?.title || `$HOLD VIP & NFT Balance (+${amount} ⭐)`).slice(0, 32);
+    const title = String(req.body?.title || `HOLD Boost (+${amount} ⭐)`).slice(0, 32);
 
     const invoiceId = `holdinv_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
     const payload = `holdstars:${u.username}:${amount}:${invoiceId}`;
 
     const apiRes = await holdBotCall('createInvoiceLink', {
       title,
-      description: `@${u.username} hisobiga +${amount} PaxtaGram Stars qoʻshish ($HOLD Coin & NFT Vault)`,
+      description: `@${u.username} hisobiga +${amount} Stars qoʻshish (HOLD)`,
       payload,
       provider_token: '',
       currency: 'XTR',
@@ -1459,7 +1199,7 @@ export function registerHoldEngine(app, deps) {
     if (!apiRes || !apiRes.ok || !apiRes.result) {
       return res.status(502).json({
         ok: false,
-        error: apiRes?.description || 'Stars hisob-fakturasini yaratishda xatolik'
+        error: apiRes?.description || 'Invoice error'
       });
     }
 
@@ -1480,26 +1220,139 @@ export function registerHoldEngine(app, deps) {
     });
   });
 
-  // ---- 13. Admin Config for Daily Morse & Combo (ID 100) ----
-  app.post('/api/hold/admin-config', (req, res) => {
-    const { st, u } = getOrCreateHoldUser(req.body?.username);
+  // ---- 13. Comprehensive Admin Studio API (ID 100 / @shade / @moon) ----
+  app.post('/api/hold/admin-config', async (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const isAdmin = isRequestAdmin(req) || Number(u.paxtaId) === ADMIN_PAXTA_ID || u.username === 'moon' || u.username === 'shade';
     if (!isAdmin) return res.status(403).json({ ok: false, error: 'Faqat Admin (ID 100) uchun!' });
 
-    if (req.body?.morseWord) {
-      st.config.dailyMorse.word = String(req.body.morseWord).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const action = req.body?.action || 'save_morse';
+
+    if (action === 'save_morse') {
+      if (req.body?.morseWord) {
+        st.config.dailyMorse.word = String(req.body.morseWord).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      }
+      if (req.body?.morseReward) {
+        st.config.dailyMorse.reward = Math.max(1_000, parseInt(req.body.morseReward, 10) || 1_000_000);
+      }
+      saveHoldState(st);
+      return res.json({ ok: true, message: 'Kunlik Morze yangilandi', user: formatHoldUserResponse(st, u, mainUser) });
     }
-    if (req.body?.morseHint) {
-      st.config.dailyMorse.hint = String(req.body.morseHint).trim();
+
+    if (action === 'add_secret_code') {
+      const code = String(req.body?.code || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const reward = Math.max(1_000, parseInt(req.body?.reward, 10) || 500_000);
+      const skin = req.body?.skin || null;
+      if (!code) return res.status(400).json({ ok: false, error: 'Kod kiriting' });
+      if (!st.config.secretCodes) st.config.secretCodes = { ...DEFAULT_SECRET_CODES };
+      st.config.secretCodes[code] = {
+        reward,
+        title: `${code} kodi ochildi`,
+        ...(skin ? { skin } : {})
+      };
+      saveHoldState(st);
+      return res.json({ ok: true, message: `Maxfiy kod "${code}" qoʻshildi`, user: formatHoldUserResponse(st, u, mainUser) });
     }
-    if (req.body?.morseReward) {
-      st.config.dailyMorse.reward = Math.max(10_000, parseInt(req.body.morseReward, 10) || 1_000_000);
+
+    if (action === 'delete_secret_code') {
+      const code = String(req.body?.code || '').trim().toUpperCase();
+      if (st.config.secretCodes && st.config.secretCodes[code]) {
+        delete st.config.secretCodes[code];
+        saveHoldState(st);
+      }
+      return res.json({ ok: true, message: `Kod "${code}" oʻchirildi`, user: formatHoldUserResponse(st, u, mainUser) });
     }
-    if (Array.isArray(req.body?.comboCardIds) && req.body.comboCardIds.length === 3) {
-      st.config.dailyCombo.cardIds = req.body.comboCardIds;
+
+    if (action === 'add_quest') {
+      const title = String(req.body?.title || '').trim();
+      const cat = ['onboarding', 'specials', 'web3'].includes(req.body?.cat) ? req.body.cat : 'specials';
+      const reward = Math.max(1_000, parseInt(req.body?.reward, 10) || 100_000);
+      let link = String(req.body?.link || '').trim();
+      if (link && link.startsWith('@')) {
+        link = `https://paxta.online/${link.slice(1)}`;
+      }
+      const icon = String(req.body?.icon || '⭐').trim() || '⭐';
+      if (!title) return res.status(400).json({ ok: false, error: 'Vazifa nomini kiriting' });
+
+      if (!Array.isArray(st.config.customQuests)) st.config.customQuests = [...DEFAULT_HOLD_QUESTS];
+      st.config.customQuests.push({
+        id: `q_${Date.now().toString(36)}`,
+        cat,
+        title,
+        reward,
+        type: link ? 'link' : 'instant',
+        icon,
+        link
+      });
+      saveHoldState(st);
+      return res.json({ ok: true, message: `Vazifa "${title}" qoʻshildi`, user: formatHoldUserResponse(st, u, mainUser) });
     }
-    saveHoldState(st);
-    res.json({ ok: true, config: st.config });
+
+    if (action === 'delete_quest') {
+      const qId = req.body?.questId;
+      if (Array.isArray(st.config.customQuests)) {
+        st.config.customQuests = st.config.customQuests.filter(q => q.id !== qId);
+        saveHoldState(st);
+      }
+      return res.json({ ok: true, message: 'Vazifa oʻchirildi', user: formatHoldUserResponse(st, u, mainUser) });
+    }
+
+    if (action === 'add_squad') {
+      const rawHandle = String(req.body?.handle || '').trim();
+      const customName = String(req.body?.name || '').trim();
+      const cleanH = cleanKey(rawHandle.replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, ''));
+      if (!cleanH) return res.status(400).json({ ok: false, error: 'Kanal @username kiriting' });
+
+      const verified = await verifyOnPaxtaGram(cleanH);
+      st.squads[cleanH] = {
+        id: cleanH,
+        handle: verified?.username || cleanH,
+        name: customName || verified?.title || `@${cleanH}`,
+        members: st.squads[cleanH]?.members || 1,
+        totalHold: st.squads[cleanH]?.totalHold || 100_000,
+        verified: !!verified,
+        link: `https://paxta.online/${verified?.username || cleanH}`
+      };
+      saveHoldState(st);
+      return res.json({
+        ok: true,
+        message: verified ? `✅ @${cleanH} PaxtaGramda tasdiqlandi va Squad qoʻshildi` : `Squad @${cleanH} qoʻshildi`,
+        user: formatHoldUserResponse(st, u, mainUser)
+      });
+    }
+
+    if (action === 'delete_squad') {
+      const sqId = req.body?.squadId;
+      if (sqId && st.squads[sqId]) {
+        delete st.squads[sqId];
+        saveHoldState(st);
+      }
+      return res.json({ ok: true, message: 'Squad oʻchirildi', user: formatHoldUserResponse(st, u, mainUser) });
+    }
+
+    if (action === 'user_grant') {
+      const targetKey = cleanKey(req.body?.targetUsername || u.username);
+      const holdDelta = parseInt(req.body?.holdDelta, 10) || 0;
+      const targetUser = st.users[targetKey];
+      if (!targetUser) return res.status(404).json({ ok: false, error: `@${targetKey} topilmadi` });
+
+      if (holdDelta !== 0) {
+        targetUser.holdBalance = Math.max(0, (targetUser.holdBalance || 0) + holdDelta);
+        if (holdDelta > 0) targetUser.lifetimeHold = (targetUser.lifetimeHold || 0) + holdDelta;
+      }
+      if (req.body?.resetOnboarding) {
+        targetUser.ogBonusClaimed = false;
+      }
+      if (req.body?.resetMorse) {
+        targetUser.morseSolvedDays = [];
+        targetUser.lastSolvedMorseWord = '';
+        targetUser.secretCodesClaimed = [];
+      }
+      saveHoldState(st);
+      return res.json({ ok: true, message: `@${targetKey} yangilandi`, user: formatHoldUserResponse(st, u, mainUser) });
+    }
+
+    res.json({ ok: true, user: formatHoldUserResponse(st, u, mainUser) });
   });
 
   // ---- 14. @HOLDbot Polling Loop (Handles /start, Referrals & Stars Payments) ----
@@ -1527,7 +1380,6 @@ export function registerHoldEngine(app, deps) {
             const fromUser = item.pre_checkout_query?.from || item.message?.from;
             const uKey = fromUser ? cleanKey(fromUser.username || fromUser.first_name || `user_${fromUser.id}`) : null;
 
-            // 1. PreCheckoutQuery
             if (item.pre_checkout_query) {
               await holdBotCall('answerPreCheckoutQuery', {
                 pre_checkout_query_id: item.pre_checkout_query.id,
@@ -1535,7 +1387,6 @@ export function registerHoldEngine(app, deps) {
               });
             }
 
-            // 2. Successful Stars Payment in @HOLDbot
             if (item.message?.successful_payment) {
               const sp = item.message.successful_payment;
               const chargeId = sp.telegram_payment_charge_id;
@@ -1573,7 +1424,6 @@ export function registerHoldEngine(app, deps) {
               }
             }
 
-            // 3. Handle /start (with optional referral parameter)
             const txt = (item.message?.text || '').trim();
             if (txt.startsWith('/start') || txt.startsWith('/hold') || txt.startsWith('/play')) {
               const parts = txt.split(/\s+/);

@@ -1,5 +1,5 @@
 // ============================================================================
-// HOLD — Official Web3 Mini App (Skins Theme Engine, Mid-Air Morse, Leagues)
+// HOLD — Official Web3 Mini App (3D Trophies, Mid-Air Morse, Onboarding, Admin)
 // ============================================================================
 
 const MORSE_MAP = {
@@ -16,21 +16,6 @@ const REVERSE_MORSE = Object.fromEntries(
   Object.entries(MORSE_MAP).map(([k, v]) => [v, k])
 );
 
-const CARD_EMOJIS = {
-  server: '🖥️',
-  shield: '🛡️',
-  star: '⭐',
-  target: '🎯',
-  layers: '💎',
-  chart: '📈',
-  radio: '📡',
-  lock: '🔐',
-  cpu: '⚡',
-  award: '🏅',
-  calendar: '📅',
-  diamond: '💠'
-};
-
 const STATE = {
   user: null,
   authToken: localStorage.getItem('hold_auth_token') || '',
@@ -41,12 +26,15 @@ const STATE = {
   viewedLeagueIdx: 0,
   leagueMainTab: 'miners',
   leagueTimePeriod: 'day',
+  onboardingStep: 0,
+  adminTab: 'morse',
   // Pure Invisible Mid-Air Morse State
   morseSignal: '',
   morseDecodedLetters: [],
   morseMatchedWords: [],
   morseLetterTimer: null,
   morseClearAirTimer: null,
+  dashFeedbackTimer: null,
   pointerDownTime: 0,
   pendingTaps: 0,
   tapSyncTimer: null,
@@ -62,13 +50,20 @@ function haptic(style = 'light') {
 const fmtInt = (n) => Math.floor(Number(n) || 0).toLocaleString('en-US');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+function fmtOrdinal(n) {
+  const num = parseInt(n, 10) || 1;
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = num % 100;
+  return fmtInt(num) + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 function showToast(msg) {
   const el = document.getElementById('holdToast');
   if (!el) return;
   el.textContent = msg;
   el.hidden = false;
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => { el.hidden = true; }, 2800);
+  showToast._t = setTimeout(() => { el.hidden = true; }, 2900);
 }
 
 function openModal(title, html, onMount) {
@@ -98,7 +93,10 @@ function openSheet(sheetName) {
   const targetId = map[sheetName];
   if (targetId) {
     const el = document.getElementById(targetId);
-    if (el) el.hidden = false;
+    if (el) {
+      el.hidden = false;
+      document.body.classList.add('sheet-open');
+    }
     if (sheetName === 'leagues') {
       const leagues = STATE.user?.allLeagues || [];
       const curIdx = leagues.findIndex(l => l.id === STATE.user?.league?.id);
@@ -111,6 +109,7 @@ function openSheet(sheetName) {
 
 function closeAllSheets() {
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
+  document.body.classList.remove('sheet-open');
 }
 
 // ---- API Helper ----
@@ -144,8 +143,8 @@ function applyActiveSkinTheme() {
     theme: {
       accent: '#38b6ff',
       secondary: '#0066ff',
-      glow1: 'rgba(0, 132, 255, 0.60)',
-      glow2: 'rgba(0, 68, 204, 0.34)',
+      glow1: 'rgba(0, 132, 255, 0.58)',
+      glow2: 'rgba(0, 68, 204, 0.30)',
       bgBottom: '#041b4d'
     }
   };
@@ -160,8 +159,7 @@ function applyActiveSkinTheme() {
     root.style.setProperty('--theme-bg-bottom', t.bgBottom);
   }
 
-  // Update all coin images across the app to match the equipped skin
-  const coinIds = ['uiMainCoinImg', 'uiBalanceCoinIcon', 'uiTopMiniCoin', 'uiDockCoinImg', 'uiBoostBalanceCoin'];
+  const coinIds = ['uiMainCoinImg', 'uiBalanceCoinIcon', 'uiDockCoinImg', 'uiBoostBalanceCoin'];
   for (const id of coinIds) {
     const el = document.getElementById(id);
     if (el && el.getAttribute('src') !== activeSkin.img) {
@@ -210,68 +208,122 @@ async function syncHoldUser() {
     renderAll();
 
     if (data.user.passiveEarnedJustNow > 100 && data.user.ogBonusClaimed) {
-      showToast(`+${fmtInt(data.user.passiveEarnedJustNow)} HOLD (Offline mining)`);
+      showToast(`🤖 Auto-Bot: +${fmtInt(data.user.passiveEarnedJustNow)} HOLD`);
     }
 
     if (!data.user.ogBonusClaimed) {
-      setTimeout(openOgSnapshotModal, 350);
+      openOnboardingStory(0);
     }
   }
 }
 
-// ---- Initial OG Snapshot Modal ----
-function openOgSnapshotModal() {
-  openModal('Welcome to HOLD', `
-    <div style="text-align:center;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:14px;">
-      <img src="/hold/skins/skin-4.png" style="width:80px;height:80px;object-fit:contain;" />
-      <div>
-        <h3 style="font-size:20px;font-weight:800;">Nothing to sell. Just hold.</h3>
-        <p style="font-size:13.5px;color:var(--text-2);margin-top:4px;">
-          PaxtaGram profilingiz tekshirildi va boshlangʻich HOLD bonusingiz tayyor.
-        </p>
-      </div>
-      <div style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;">
-        <div style="display:flex;justify-content:space-between;">
-          <span style="color:var(--text-2);">Account</span>
-          <b>@${esc(STATE.user?.username)}</b>
-        </div>
-        <div style="display:flex;justify-content:space-between;">
-          <span style="color:var(--text-2);">Status</span>
-          <b style="color:var(--theme-accent);">${(STATE.user?.paxtaId && STATE.user.paxtaId <= 600) ? 'Early Pioneer' : 'Verified Holder'}</b>
-        </div>
-      </div>
-      <button type="button" class="btn-sapphire-primary" id="btnClaimOgNow">Claim HOLD Bonus</button>
-    </div>
-  `, (body) => {
-    body.querySelector('#btnClaimOgNow')?.addEventListener('click', async () => {
-      const res = await api('/api/hold/claim-og', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        haptic('medium');
-        closeModal();
-        renderAll();
-        showToast(`+${fmtInt(res.ogDetails?.totalBonus || 80000)} HOLD`);
-      }
-    });
+// ============================================================================
+// 3-SLIDE ONBOARDING STORY (INSPIRED BY SCREENSHOT 5)
+// ============================================================================
+function openOnboardingStory(step = 0) {
+  const overlay = document.getElementById('onboardingStoryOverlay');
+  if (!overlay) return;
+  STATE.onboardingStep = step;
+  overlay.hidden = false;
+  renderOnboardingSlide();
+}
+
+function renderOnboardingSlide() {
+  const u = STATE.user;
+  if (!u) return;
+  const step = STATE.onboardingStep;
+
+  [0, 1, 2].forEach(idx => {
+    const bar = document.getElementById(`osBar${idx}`);
+    if (bar) bar.style.width = idx <= step ? '100%' : '0%';
   });
+
+  const wrap = document.getElementById('osSlidesWrap');
+  const foot = document.getElementById('osFootNote');
+  const btn = document.getElementById('btnOsContinue');
+  if (!wrap || !foot || !btn) return;
+
+  const pid = u.paxtaId || 245;
+  const topPct = u.topPct || 5;
+  const years = u.yearsEquivalent || 2;
+  const totalReward = pid <= 150 ? 280_000 : pid <= 600 ? 180_000 : 80_000;
+
+  if (step === 0) {
+    wrap.innerHTML = `
+      <div class="os-top-headings">
+        <h1>${pid <= 500 ? 'Legendary status!' : 'Pioneer status!'}</h1>
+        <p>You've joined PaxtaGram</p>
+      </div>
+      <div class="os-center-hero">
+        <img src="/hold/skins/skin-4.png" class="os-watermark-bg" alt="" />
+        <div class="os-giant-num">${years}</div>
+        <div class="os-giant-label">${years === 1 ? 'year' : 'years'} ago</div>
+      </div>
+      <div></div>
+    `;
+    foot.innerHTML = `Your account number is #${pid}.<br/>You're in the Top ${topPct}% PaxtaGram users 🔥`;
+    btn.textContent = 'Continue';
+  } else if (step === 1) {
+    wrap.innerHTML = `
+      <div class="os-top-headings">
+        <h1>PaxtaGram Verified</h1>
+        <p>You know how to get the best</p>
+      </div>
+      <div class="os-center-hero">
+        <img src="/hold/skins/skin-4.png" class="os-emblem-img" alt="Verified" />
+        <div class="os-giant-label" style="margin-top:20px;">Verified Holder</div>
+      </div>
+      <div></div>
+    `;
+    foot.innerHTML = `Status confirmed for <b>@${esc(u.username)}</b> ✨`;
+    btn.textContent = 'Continue';
+  } else {
+    wrap.innerHTML = `
+      <div class="os-top-headings">
+        <h1>You are amazing!</h1>
+        <p>Here is your HOLD reward</p>
+      </div>
+      <div class="os-center-hero">
+        <img src="/hold/skins/skin-4.png" class="os-emblem-img" alt="HOLD" />
+        <div class="os-giant-label" style="font-size:38px;margin-top:18px;">${fmtInt(u.ogDetails?.totalBonus || totalReward)}</div>
+      </div>
+      <div></div>
+    `;
+    foot.innerHTML = `Thanks for your time on PaxtaGram 🤝`;
+    btn.textContent = 'Continue';
+  }
+}
+
+async function advanceOnboardingStory() {
+  haptic('medium');
+  if (STATE.onboardingStep < 2) {
+    STATE.onboardingStep++;
+    renderOnboardingSlide();
+    return;
+  }
+
+  const overlay = document.getElementById('onboardingStoryOverlay');
+  if (!STATE.user?.ogBonusClaimed) {
+    const res = await api('/api/hold/claim-og', {
+      method: 'POST',
+      body: JSON.stringify({ username: STATE.username })
+    });
+    if (res.ok && res.user) {
+      STATE.user = res.user;
+      renderAll();
+      showToast(`🎉 +${fmtInt(res.ogDetails?.totalBonus || 80000)} HOLD!`);
+    }
+  }
+  if (overlay) overlay.hidden = true;
 }
 
 // ============================================================================
-// PURE FLOATING MID-AIR MORSE CODE (ZERO INPUT BOX, FLOATS IN MID-AIR ONLY!)
+// PURE FLOATING MID-AIR MORSE CODE (100% RELIABLE, ZERO INPUT BOX!)
 // ============================================================================
 function getCandidateMorseWords() {
   const daily = (STATE.user?.morse?.word || 'HOLD').toUpperCase();
   const secrets = STATE.user?.morse?.secretWords || ['WAKEUP', 'PAXTA', 'MEDAL', 'OBSIDIAN', 'MOON'];
   return Array.from(new Set([daily, ...secrets]));
-}
-
-function recordCoinMorseSignal(symbol) {
-  STATE.morseSignal += symbol;
-  clearTimeout(STATE.morseLetterTimer);
-  STATE.morseLetterTimer = setTimeout(evaluateInvisibleMorseLetter, 680);
 }
 
 function renderMidAirFloatingLetters(isSolved = false) {
@@ -291,11 +343,40 @@ function renderMidAirFloatingLetters(isSolved = false) {
 }
 
 function clearMidAirMorse() {
+  clearTimeout(STATE.morseLetterTimer);
   clearTimeout(STATE.morseClearAirTimer);
   STATE.morseSignal = '';
   STATE.morseDecodedLetters = [];
   STATE.morseMatchedWords = [];
   renderMidAirFloatingLetters(false);
+}
+
+function recordCoinMorseSignal(symbol) {
+  STATE.morseSignal += symbol;
+  clearTimeout(STATE.morseLetterTimer);
+
+  // Determine expected next letters at current position so we never cut off the user mid-letter!
+  const allWords = getCandidateMorseWords();
+  const activePool = STATE.morseDecodedLetters.length > 0 ? STATE.morseMatchedWords : allWords;
+  const nextIdx = STATE.morseDecodedLetters.length;
+  const expectedNextChars = Array.from(new Set(activePool.map(w => w[nextIdx]).filter(Boolean)));
+  const expectedMorseCodes = expectedNextChars.map(ch => MORSE_MAP[ch]).filter(Boolean);
+
+  const exactMatchNow = expectedMorseCodes.includes(STATE.morseSignal);
+  const canGrowIntoAnotherExpected = expectedMorseCodes.some(
+    code => code.length > STATE.morseSignal.length && code.startsWith(STATE.morseSignal)
+  );
+
+  // If the signal already matches the exact expected letter (e.g. '....' for H) and can't grow further, lock it in quickly (520ms)!
+  // If it's a partial prefix of the expected letter (e.g. '..' on the way to '....'), give the user 1450ms!
+  let waitMs = 950;
+  if (exactMatchNow && !canGrowIntoAnotherExpected) {
+    waitMs = 520;
+  } else if (canGrowIntoAnotherExpected) {
+    waitMs = 1450;
+  }
+
+  STATE.morseLetterTimer = setTimeout(evaluateInvisibleMorseLetter, waitMs);
 }
 
 async function evaluateInvisibleMorseLetter() {
@@ -305,28 +386,26 @@ async function evaluateInvisibleMorseLetter() {
 
   const decodedChar = REVERSE_MORSE[sig];
   if (!decodedChar) {
-    if (STATE.morseDecodedLetters.length > 0) {
-      clearMidAirMorse();
-    }
+    // Invalid Morse sequence: if letters are already floating, keep them floating so the user can retry this letter!
     return;
   }
 
   const allWords = getCandidateMorseWords();
 
-  // Case 1: First letter — only show in mid-air if it matches the 1st letter of a valid code!
+  // Case 1: First letter — only materialize in mid-air if it matches the 1st letter of a valid code!
   if (STATE.morseDecodedLetters.length === 0) {
     const matching = allWords.filter(w => w.startsWith(decodedChar));
     if (matching.length === 0) {
-      // Normal tapping — do not show anything at all!
+      // Normal tapping — show nothing at all
       return;
     }
     STATE.morseDecodedLetters = [decodedChar];
     STATE.morseMatchedWords = matching;
-    haptic('medium');
+    haptic('heavy');
     renderMidAirFloatingLetters(false);
 
     clearTimeout(STATE.morseClearAirTimer);
-    STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 5500);
+    STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 8000);
     return;
   }
 
@@ -335,15 +414,21 @@ async function evaluateInvisibleMorseLetter() {
   const stillMatching = STATE.morseMatchedWords.filter(w => w.startsWith(nextPrefix));
 
   if (stillMatching.length === 0) {
-    // Check if the new letter itself starts a fresh code word
+    // If the user accidentally tapped a single dot '.' ('E') while thinking of the next letter, keep the floating letters alive!
+    if (sig === '.') {
+      clearTimeout(STATE.morseClearAirTimer);
+      STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 8000);
+      return;
+    }
+    // Check if the new letter starts a fresh word
     const freshMatch = allWords.filter(w => w.startsWith(decodedChar));
     if (freshMatch.length > 0) {
       STATE.morseDecodedLetters = [decodedChar];
       STATE.morseMatchedWords = freshMatch;
-      haptic('medium');
+      haptic('heavy');
       renderMidAirFloatingLetters(false);
       clearTimeout(STATE.morseClearAirTimer);
-      STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 5500);
+      STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 8000);
     } else {
       clearMidAirMorse();
     }
@@ -352,11 +437,11 @@ async function evaluateInvisibleMorseLetter() {
 
   STATE.morseDecodedLetters.push(decodedChar);
   STATE.morseMatchedWords = stillMatching;
-  haptic('medium');
+  haptic('heavy');
   renderMidAirFloatingLetters(false);
 
   clearTimeout(STATE.morseClearAirTimer);
-  STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 5500);
+  STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 8000);
 
   // Check if an exact word is now completed!
   const currentWord = STATE.morseDecodedLetters.join('');
@@ -372,12 +457,12 @@ async function evaluateInvisibleMorseLetter() {
 
     setTimeout(() => {
       clearMidAirMorse();
-    }, 1500);
+    }, 1800);
 
     if (res.ok && res.user) {
       STATE.user = res.user;
       renderAll();
-      showToast(`✨ ${currentWord} · +${fmtInt(res.reward)} HOLD!`);
+      showToast(res.message || `✨ ${currentWord} · +${fmtInt(res.reward)} HOLD!`);
     } else if (res.error) {
       showToast(res.error);
     }
@@ -396,30 +481,48 @@ function renderAll() {
   const isTurbo = Date.now() < STATE.turboActiveUntil;
   document.body.classList.toggle('turbo-active', isTurbo);
 
-  // 1. Top Community Pill
-  const squads = u.squads || [];
-  const activeSq = squads.find(s => s.id === u.squadId) || squads[0] || {
-    name: 'Hold Community',
-    totalHold: 34_800_000
-  };
-  const sqAvatar = document.getElementById('uiSquadAvatar');
-  const sqName = document.getElementById('uiSquadName');
-  const sqScore = document.getElementById('uiSquadScore');
-  const sqRank = document.getElementById('uiSquadRankName');
-  if (sqAvatar) sqAvatar.textContent = (activeSq.name || 'H').charAt(0).toUpperCase();
-  if (sqName) sqName.textContent = activeSq.name;
-  if (sqScore) sqScore.textContent = fmtInt(activeSq.totalHold);
-  if (sqRank) sqRank.textContent = u.league?.name || 'Bronze';
+  const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
-  // 2. Balance & League
+  // 1. Top Squad Pill (Exact Screenshot 3: "Join Squad ›" when not in squad, or Squad card when joined)
+  const sqPill = document.getElementById('btnSquadPill');
+  if (sqPill) {
+    const activeSq = (u.squads || []).find(s => s.id === u.squadId);
+    if (!activeSq) {
+      sqPill.innerHTML = `<div class="nst-join-empty">Join Squad <span>›</span></div>`;
+    } else {
+      sqPill.innerHTML = `
+        <div class="nst-joined-row">
+          <div class="nst-left">
+            <div class="cp-avatar">${esc((activeSq.name || 'S').charAt(0).toUpperCase())}</div>
+            <div class="cp-meta">
+              <div class="cp-name">${esc(activeSq.name)}</div>
+              <div class="cp-sub">
+                <img src="${esc(coinImg)}" alt="" class="cp-mini-coin" />
+                <span>${fmtInt(activeSq.totalHold)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="cp-badge">
+            <img src="${esc(u.league?.trophyImg || '/hold/trophies/bronze.png')}" class="mini-league-cup" alt="" />
+            <span>${esc(u.league?.name || 'Bronze')}</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // 2. Balance & Wreath Rank + League Row (Exact Screenshot 3)
   const balEl = document.getElementById('uiHoldBalance');
   if (balEl) balEl.textContent = fmtInt(u.holdBalance);
 
+  const rankEl = document.getElementById('uiUserRankText');
+  if (rankEl) rankEl.textContent = fmtOrdinal(u.rank || 1);
+
+  const miniCup = document.getElementById('uiMiniLeagueCup');
+  if (miniCup && u.league?.trophyImg) miniCup.src = u.league.trophyImg;
+
   const lgText = document.getElementById('uiLeagueNameText');
   if (lgText) lgText.textContent = u.league?.name || 'Bronze';
-
-  const pphTop = document.getElementById('uiPphTop');
-  if (pphTop) pphTop.textContent = `+${fmtInt(u.profitPerHour)}/h`;
 
   const starsEl = document.getElementById('uiStars');
   if (starsEl) starsEl.textContent = fmtInt(u.stars);
@@ -465,8 +568,6 @@ function handleCoinTap(clientX, clientY) {
   u.lifetimeHold += tapVal;
   STATE.pendingTaps++;
 
-  haptic('light');
-
   document.getElementById('uiHoldBalance').textContent = fmtInt(u.holdBalance);
   document.getElementById('uiEnergyNow').textContent = fmtInt(u.energy);
   document.getElementById('uiEnergyBarFill').style.width = `${Math.min(100, Math.round((u.energy / Math.max(1, u.maxEnergy)) * 100))}%`;
@@ -506,7 +607,7 @@ async function flushPendingTaps() {
 }
 
 // ============================================================================
-// SHEET 1: LEAGUES SHOWCASE & TOP-10 NFT PRIZES (SCREENSHOT 2)
+// SHEET 1: LEAGUES SHOWCASE & 5 3D TROPHY CUPS
 // ============================================================================
 async function loadLeaderboardData() {
   const res = await api('/api/hold/vault');
@@ -523,7 +624,7 @@ function renderLeaguesSheet() {
   if (!u) return;
 
   const totalEl = document.getElementById('uiTotalPlayersCount');
-  if (totalEl) totalEl.textContent = fmtInt(Math.max(1240, STATE.totalPlayers || STATE.leaderboard.length));
+  if (totalEl) totalEl.textContent = fmtInt(Math.max(1, STATE.totalPlayers || STATE.leaderboard.length));
 
   const leagues = u.allLeagues || [];
   if (!leagues.length) return;
@@ -534,8 +635,11 @@ function renderLeaguesSheet() {
 
   const sheetEl = document.getElementById('sheetLeagues');
   const glowEl = document.getElementById('uiLeagueTrophyGlow');
+  const trophyImgEl = document.getElementById('uiLeagueTrophyImg');
+
   if (sheetEl && lg.glow) sheetEl.style.setProperty('--league-glow', lg.glow);
   if (glowEl && lg.glow) glowEl.style.background = lg.glow;
+  if (trophyImgEl && lg.trophyImg) trophyImgEl.src = lg.trophyImg;
 
   const prevBtn = document.getElementById('btnPrevLeague');
   const nextBtn = document.getElementById('btnNextLeague');
@@ -556,8 +660,8 @@ function renderLeaguesSheet() {
     }
   }
   if (barEl) {
-    const target = nextLg ? nextLg.minHold : Math.max(10_000_000, u.lifetimeHold);
-    const pct = Math.min(100, Math.max(6, Math.round((u.lifetimeHold / Math.max(1, target)) * 100)));
+    const target = nextLg ? nextLg.minHold : Math.max(5_000_000, u.lifetimeHold);
+    const pct = Math.min(100, Math.max(5, Math.round((u.lifetimeHold / Math.max(1, target)) * 100)));
     barEl.style.width = `${pct}%`;
   }
 
@@ -574,12 +678,13 @@ function renderLeaguesSheet() {
       const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}`;
       const row = document.createElement('div');
       row.className = 'lb-row-item';
+      row.style.cursor = 'pointer';
       row.innerHTML = `
         <div class="lb-left">
           <div class="lb-medal-col">${medal}</div>
           <div class="lb-avatar-circle">${esc((sq.name || 'S').charAt(0))}</div>
           <div class="lb-user-meta">
-            <div class="lb-user-name">${esc(sq.name)}</div>
+            <div class="lb-user-name">${esc(sq.name)} ${sq.verified ? '✓' : ''}</div>
             <div class="lb-user-score">
               <img src="${esc(coinImg)}" class="inline-c" alt="" />
               <span>${fmtInt(sq.totalHold)}</span>
@@ -623,7 +728,7 @@ function renderLeaguesSheet() {
     return;
   }
 
-  // Default: Miners leaderboard
+  // Miners Leaderboard
   const players = STATE.leaderboard || [];
   players.slice(0, 50).forEach((p) => {
     const medal = p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : `${p.rank}`;
@@ -648,7 +753,7 @@ function renderLeaguesSheet() {
 }
 
 // ============================================================================
-// SHEET 2: BOOSTS & BUY SKINS (SCREENSHOT 1 & 3)
+// SHEET 2: BOOSTS & BUY SKINS
 // ============================================================================
 function renderBoostsAndSkinsSheet() {
   const u = STATE.user;
@@ -664,7 +769,7 @@ function renderBoostsAndSkinsSheet() {
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
-  // Permanent Boosters (Exact Screenshot 3 layout)
+  // Permanent Boosters
   const upgList = document.getElementById('boostUpgradesList');
   if (upgList) {
     const rMaxed = (u.rechargingSpeedLevel || 1) >= (u.rechargingSpeedMax || 5);
@@ -724,7 +829,7 @@ function renderBoostsAndSkinsSheet() {
     });
   }
 
-  // Buy Skins List (Exact Screenshot 1 layout)
+  // Buy Skins List
   const skinsWrap = document.getElementById('skinsListContainer');
   if (skinsWrap) {
     const owned = u.ownedSkins || ['basic'];
@@ -763,7 +868,7 @@ function renderBoostsAndSkinsSheet() {
           renderAll();
           showToast(res.message);
         } else {
-          showToast(res.error || 'Yetarli HOLD yoʻq');
+          showToast(res.error || 'Not enough HOLD');
         }
       });
     });
@@ -786,62 +891,20 @@ async function triggerBoost(type) {
     renderAll();
     showToast(res.message);
   } else {
-    showToast(res.error || 'Limit tugagan');
+    showToast(res.error || 'Limit reached');
   }
 }
 
 // ============================================================================
-// SHEET 3: EARN MORE COINS + DAILY STREAK + MINE COMBO (SCREENSHOT 4)
+// SHEET 3: EARN MORE COINS (ONBOARDING, SPECIALS, WEB3 WORLD)
 // ============================================================================
 function renderEarnSheet() {
   const u = STATE.user;
   if (!u) return;
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
-
-  // 1. Daily 7-Day Streak
-  const streakRow = document.getElementById('streakDaysRow');
-  const streakBtn = document.getElementById('btnClaimDailyStreak');
-  if (streakRow && u.streak) {
-    const curDay = u.streak.currentDay || 0;
-    const claimedToday = !!u.streak.claimedToday;
-    const nextDay = (curDay % 7) + 1;
-
-    streakRow.innerHTML = (u.streak.rewards || []).map(r => {
-      const isClaimed = r.day <= curDay;
-      const isNext = !claimedToday && r.day === nextDay;
-      return `
-        <div class="streak-day-pill ${isClaimed ? 'claimed' : ''} ${isNext ? 'next' : ''}">
-          <span>D${r.day}</span>
-          <strong>+${r.reward >= 1000000 ? '1M' : `${r.reward / 1000}K`}</strong>
-        </div>
-      `;
-    }).join('');
-
-    if (streakBtn) {
-      streakBtn.disabled = claimedToday;
-      streakBtn.style.opacity = claimedToday ? '0.5' : '1';
-      streakBtn.textContent = claimedToday ? 'Bugungi bonus olingan ✓' : `Day ${nextDay} bonusni olish`;
-    }
-  }
-
-  // 2. Onboarding Tasks & Specials (Screenshot 4)
   const done = u.tasksCompleted || [];
   const quests = u.quests || [];
-  const onboardingIds = ['daily_checkin', 'join_squad', 'invite_1_friend', 'upgrade_3_cards'];
-  const onboardingQuests = quests.filter(q => onboardingIds.includes(q.id));
-  const specialQuests = quests.filter(q => !onboardingIds.includes(q.id));
-
-  const qEmojiMap = {
-    daily_checkin: '🐣',
-    join_squad: '🛡️',
-    invite_1_friend: '🧸',
-    invite_3_friends: '🔥',
-    upgrade_3_cards: '⚡',
-    solve_first_morse: '📡',
-    reach_silver: '🥈',
-    reach_gold: '🏆'
-  };
 
   const renderQuestRows = (containerId, list) => {
     const el = document.getElementById(containerId);
@@ -852,9 +915,9 @@ function renderEarnSheet() {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'not-row-item';
-      btn.style.opacity = isDone ? '0.55' : '1';
+      btn.style.opacity = isDone ? '0.5' : '1';
       btn.innerHTML = `
-        <div class="nri-icon-box">${qEmojiMap[q.id] || '⭐'}</div>
+        <div class="nri-icon-box">${esc(q.icon || '⭐')}</div>
         <div class="nri-center">
           <div class="nri-title">${esc(q.title)}</div>
           <div class="nri-sub">
@@ -865,6 +928,9 @@ function renderEarnSheet() {
       `;
       if (!isDone) {
         btn.addEventListener('click', async () => {
+          if (q.link) {
+            window.open(q.link, '_blank');
+          }
           const res = await api('/api/hold/claim-quest', {
             method: 'POST',
             body: JSON.stringify({ username: STATE.username, questId: q.id })
@@ -875,7 +941,7 @@ function renderEarnSheet() {
             renderAll();
             showToast(`+${fmtInt(res.reward)} HOLD`);
           } else {
-            showToast(res.error || 'Shart hali bajarilmagan');
+            showToast(res.error || 'Task not completed yet');
           }
         });
       }
@@ -883,81 +949,11 @@ function renderEarnSheet() {
     }
   };
 
-  renderQuestRows('onboardingTasksList', onboardingQuests);
-  renderQuestRows('specialsTasksList', specialQuests);
+  renderQuestRows('onboardingTasksList', quests.filter(q => q.cat === 'onboarding'));
+  renderQuestRows('specialsTasksList', quests.filter(q => q.cat === 'specials' || !q.cat));
+  renderQuestRows('web3TasksList', quests.filter(q => q.cat === 'web3'));
 
-  // 3. Mine & Daily 3-Card Combo
-  const slotsRow = document.getElementById('comboSlotsRow');
-  if (slotsRow) {
-    const foundIds = u.combo?.foundCardIds || [];
-    slotsRow.innerHTML = '';
-    for (let i = 0; i < 3; i++) {
-      const cId = foundIds[i];
-      const cardObj = (u.cards || []).find(c => c.id === cId);
-      const slot = document.createElement('div');
-      slot.className = `combo-slot ${cardObj ? 'revealed' : ''}`;
-      slot.innerHTML = cardObj
-        ? `<span style="font-size:22px;">${CARD_EMOJIS[cardObj.icon] || '⚡'}</span><strong>${esc(cardObj.name)}</strong>`
-        : `<span style="font-size:20px;opacity:0.45;">🔒</span><span>${i + 1}-karta</span>`;
-      slotsRow.appendChild(slot);
-    }
-  }
-
-  const grid = document.getElementById('mineCardsGrid');
-  if (grid) {
-    grid.innerHTML = '';
-    for (const c of u.cards || []) {
-      const canAfford = (u.holdBalance || 0) >= c.upgradeCost;
-      const card = document.createElement('div');
-      card.className = 'mine-card';
-      card.innerHTML = `
-        <div class="mc-top">
-          <span style="font-size:24px;">${CARD_EMOJIS[c.icon] || '⚡'}</span>
-          <div>
-            <div class="mc-title">${esc(c.name)}</div>
-            <div class="mc-pph">+${fmtInt(c.nextProfitDelta)} / h</div>
-          </div>
-        </div>
-        <div class="mc-foot">
-          <span class="mc-lvl">Lv.${c.level}</span>
-          <button type="button" class="mc-buy-btn" style="${!canAfford ? 'opacity:0.45;' : ''}">${fmtInt(c.upgradeCost)}</button>
-        </div>
-      `;
-      card.querySelector('.mc-buy-btn')?.addEventListener('click', async () => {
-        const res = await api('/api/hold/upgrade-card', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, cardId: c.id })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          haptic('medium');
-          renderAll();
-          if (res.comboCompletedJustNow) {
-            showToast(`🎉 Daily Combo! +${fmtInt(res.comboReward)} HOLD`);
-          } else if (res.comboJustFound) {
-            showToast(`✨ Combo card found (${res.user.combo.foundCardIds.length}/3)`);
-          } else {
-            showToast(`${c.name} · Lv.${res.newLevel}`);
-          }
-        } else {
-          showToast(res.error || 'Yetarli HOLD yoʻq');
-        }
-      });
-      grid.appendChild(card);
-    }
-  }
-}
-
-// ============================================================================
-// SHEET 4: FRENS, STARS VIP PACKS & SQUADS
-// ============================================================================
-function renderFrensSheet() {
-  const u = STATE.user;
-  if (!u) return;
-
-  const refCountEl = document.getElementById('uiRefCount');
-  if (refCountEl) refCountEl.textContent = `${(u.referrals || []).length} frens`;
-
+  // Stars VIP Packs inside Earn
   const vipList = document.getElementById('vipPacksList');
   if (vipList) {
     vipList.innerHTML = (u.vipPacks || []).map(p => `
@@ -987,10 +983,42 @@ function renderFrensSheet() {
         } else if (res.needStars) {
           openTopUpStarsModal(res.deficit || res.required, packObj?.name || 'HOLD Boost');
         } else {
-          showToast(res.error || 'Xatolik');
+          showToast(res.error || 'Error');
         }
       });
     });
+  }
+}
+
+// ============================================================================
+// SHEET 4: INVITE FRENS & OFFICIAL PAXTAGRAM SQUADS
+// ============================================================================
+function renderFrensSheet() {
+  const u = STATE.user;
+  if (!u) return;
+
+  const refs = u.referrals || [];
+  const heroCount = document.getElementById('uiFrensHeroCount');
+  if (heroCount) heroCount.textContent = `${refs.length} ${refs.length === 1 ? 'Fren' : 'Frens'}`;
+
+  const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
+
+  const frensList = document.getElementById('frensInvitedList');
+  if (frensList) {
+    if (!refs.length) {
+      frensList.innerHTML = `<div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">No frens invited yet. Share your link to earn +50,000 HOLD!</div>`;
+    } else {
+      frensList.innerHTML = refs.map(r => `
+        <div class="not-row-item">
+          <div class="lb-avatar-circle">${esc((r.displayName || r.username || 'F').charAt(0).toUpperCase())}</div>
+          <div class="nri-center">
+            <div class="nri-title">${esc(r.displayName || r.username)}</div>
+            <div class="nri-sub">${esc(r.league || 'Bronze')} · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(r.lifetimeHold)}</div>
+          </div>
+          <span style="color:#facc15;font-size:13px;font-weight:700;">+50K</span>
+        </div>
+      `).join('');
+    }
   }
 
   const sList = document.getElementById('squadsList');
@@ -1001,12 +1029,12 @@ function renderFrensSheet() {
       const row = document.createElement('div');
       row.className = 'not-row-item';
       row.innerHTML = `
-        <div class="nri-icon-box">🛡️</div>
+        <div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>
         <div class="nri-center">
-          <div class="nri-title">${esc(sq.name)}</div>
-          <div class="nri-sub">${fmtInt(sq.members)} members · ${fmtInt(sq.totalHold)} HOLD</div>
+          <div class="nri-title">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
+          <div class="nri-sub">${fmtInt(sq.members)} members · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
         </div>
-        <span class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined' : 'Join'}</span>
+        <button type="button" class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined' : 'Join'}</button>
       `;
       if (!joined) {
         row.addEventListener('click', async () => {
@@ -1021,10 +1049,41 @@ function renderFrensSheet() {
             showToast(res.message);
           }
         });
+      } else if (sq.link) {
+        row.addEventListener('click', () => window.open(sq.link, '_blank'));
       }
       sList.appendChild(row);
     }
   }
+}
+
+function openAddPaxtaChannelSquadModal() {
+  openModal('Add PaxtaGram Channel Squad', `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <p style="font-size:13px;color:var(--text-2);line-height:1.45;">
+        Rasmiy PaxtaGram kanalingiz <b>@username</b> manzilini kiriting. Bot kanalning PaxtaGramda mavjudligini avtomatik tekshiradi va Squad sifatida qoʻshadi.
+      </p>
+      <input type="text" id="inpSquadHandle" placeholder="@kanal_nomi" class="apple-search-input" />
+      <button type="button" class="btn-sapphire-primary" id="btnVerifyAndJoinSquad">Tekshirish va Qoʻshish</button>
+    </div>
+  `, (body) => {
+    body.querySelector('#btnVerifyAndJoinSquad')?.addEventListener('click', async () => {
+      const channelHandle = body.querySelector('#inpSquadHandle')?.value.trim();
+      if (!channelHandle) return;
+      const res = await api('/api/hold/join-squad', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, channelHandle })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        closeModal();
+        renderAll();
+        showToast(res.message);
+      } else {
+        showToast(res.error || 'Kanal topilmadi');
+      }
+    });
+  });
 }
 
 // ---- Top Up Stars via @HOLDbot Invoice ----
@@ -1070,50 +1129,290 @@ function openTopUpStarsModal(defaultAmount = 250, reason = 'HOLD Boost') {
   });
 }
 
-// ---- Admin Panel Modal (ID 100) ----
+// ============================================================================
+// COMPREHENSIVE 4-TAB ADMIN STUDIO (MORSE, TASKS, SQUADS, USERS)
+// ============================================================================
 function openHoldAdminModal() {
   const u = STATE.user;
   if (!u?.isAdmin) return;
-  const curWord = u.morse?.word || 'HOLD';
 
-  openModal('Admin Config', `
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <div>
-        <label style="font-size:12px;color:var(--text-2);">Daily Morse Word</label>
-        <input type="text" id="admMorseWord" value="${esc(curWord)}" class="apple-search-input" style="margin-top:4px;" />
+  const renderAdminBody = (body) => {
+    const curUser = STATE.user;
+    const secretMap = curUser.morse?.secretCodesMap || {};
+    const quests = curUser.quests || [];
+    const squads = curUser.squads || [];
+
+    body.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="not-segmented-tabs">
+          <button type="button" class="nseg-btn ${STATE.adminTab === 'morse' ? 'active' : ''}" data-atab="morse">Morze</button>
+          <button type="button" class="nseg-btn ${STATE.adminTab === 'tasks' ? 'active' : ''}" data-atab="tasks">Tasks</button>
+          <button type="button" class="nseg-btn ${STATE.adminTab === 'squads' ? 'active' : ''}" data-atab="squads">Squads</button>
+          <button type="button" class="nseg-btn ${STATE.adminTab === 'users' ? 'active' : ''}" data-atab="users">Users</button>
+        </div>
+
+        ${STATE.adminTab === 'morse' ? `
+          <div class="dark-group-box" style="padding:12px;gap:10px;">
+            <strong style="font-size:13.5px;">Kunlik Morze Soʻzi</strong>
+            <input type="text" id="admMorseWord" value="${esc(curUser.morse?.word || 'HOLD')}" placeholder="Masalan: HOLD" class="apple-search-input" />
+            <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 1000000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+            <button type="button" class="btn-sapphire-primary" id="btnAdmSaveDailyMorse">Kunlik Morzeni Saqlash</button>
+          </div>
+
+          <div class="dark-group-box" style="padding:12px;gap:10px;">
+            <strong style="font-size:13.5px;">Yangi Maxfiy Morze Kod Qoʻshish</strong>
+            <input type="text" id="admSecCode" placeholder="Maxfiy soʻz (masalan: BONUS)" class="apple-search-input" />
+            <input type="number" id="admSecReward" value="500000" placeholder="HOLD mukofoti" class="apple-search-input" />
+            <button type="button" class="btn-sapphire-primary" id="btnAdmAddSecret">Maxfiy Kod Qoʻshish</button>
+          </div>
+
+          <div class="dark-group-box" style="padding:10px;">
+            ${Object.entries(secretMap).map(([code, info]) => `
+              <div class="not-row-item" style="padding:6px;">
+                <div class="nri-center">
+                  <div class="nri-title">${esc(code)}</div>
+                  <div class="nri-sub">+${fmtInt(info.reward)} HOLD</div>
+                </div>
+                <button type="button" class="skin-pill-btn" data-del-secret="${esc(code)}">Oʻchirish</button>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${STATE.adminTab === 'tasks' ? `
+          <div class="dark-group-box" style="padding:12px;gap:8px;">
+            <strong style="font-size:13.5px;">Yangi Vazifa (Task) Qoʻshish</strong>
+            <input type="text" id="admTaskTitle" placeholder="Vazifa nomi (masalan: Join @insider)" class="apple-search-input" />
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <select id="admTaskCat" class="apple-search-input">
+                <option value="specials">Specials</option>
+                <option value="onboarding">Onboarding</option>
+                <option value="web3">Web3 world</option>
+              </select>
+              <input type="text" id="admTaskIcon" value="📢" placeholder="Emoji (📢, ⭐, 🏆)" class="apple-search-input" />
+            </div>
+            <input type="number" id="admTaskReward" value="150000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+            <input type="text" id="admTaskLink" placeholder="Havola yoki @kanal (ixtiyoriy)" class="apple-search-input" />
+            <button type="button" class="btn-sapphire-primary" id="btnAdmAddTask">Vazifani Qoʻshish</button>
+          </div>
+
+          <div class="dark-group-box" style="padding:8px;max-height:220px;overflow-y:auto;">
+            ${quests.map(q => `
+              <div class="not-row-item" style="padding:6px;">
+                <div class="nri-center">
+                  <div class="nri-title">${esc(q.icon || '⭐')} ${esc(q.title)}</div>
+                  <div class="nri-sub">${esc(q.cat)} · +${fmtInt(q.reward)} HOLD</div>
+                </div>
+                <button type="button" class="skin-pill-btn" data-del-task="${esc(q.id)}">✕</button>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${STATE.adminTab === 'squads' ? `
+          <div class="dark-group-box" style="padding:12px;gap:8px;">
+            <strong style="font-size:13.5px;">Rasmiy PaxtaGram Kanal Qoʻshish</strong>
+            <input type="text" id="admSquadHandle" placeholder="@kanal_username" class="apple-search-input" />
+            <input type="text" id="admSquadName" placeholder="Kanal nomi (boʻsh qolsa avtomatik oladi)" class="apple-search-input" />
+            <button type="button" class="btn-sapphire-primary" id="btnAdmAddSquad">Tekshirish va Qoʻshish</button>
+          </div>
+
+          <div class="dark-group-box" style="padding:8px;">
+            ${squads.map(s => `
+              <div class="not-row-item" style="padding:6px;">
+                <div class="nri-center">
+                  <div class="nri-title">${esc(s.name)} ${s.verified ? '✓' : ''}</div>
+                  <div class="nri-sub">@${esc(s.handle || s.id)} · ${fmtInt(s.totalHold)} HOLD</div>
+                </div>
+                <button type="button" class="skin-pill-btn" data-del-squad="${esc(s.id)}">✕</button>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${STATE.adminTab === 'users' ? `
+          <div class="dark-group-box" style="padding:12px;gap:8px;">
+            <strong style="font-size:13.5px;">Foydalanuvchi Balansi va Test</strong>
+            <input type="text" id="admTargetUser" value="${esc(curUser.username)}" placeholder="@username" class="apple-search-input" />
+            <input type="number" id="admHoldDelta" value="500000" placeholder="Qoʻshiladigan HOLD miqdori" class="apple-search-input" />
+            <button type="button" class="btn-sapphire-primary" id="btnAdmGrantHold">HOLD Qoʻshish</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+              <button type="button" class="skin-pill-btn" id="btnAdmResetMorse" style="padding:10px;">Morzeni Reset</button>
+              <button type="button" class="skin-pill-btn" id="btnAdmResetOnboard" style="padding:10px;">Onboardingni Koʻrish</button>
+            </div>
+          </div>
+        ` : ''}
       </div>
-      <div>
-        <label style="font-size:12px;color:var(--text-2);">Reward (HOLD)</label>
-        <input type="number" id="admMorseReward" value="${u.morse?.reward || 1000000}" class="apple-search-input" style="margin-top:4px;" />
-      </div>
-      <button type="button" class="btn-sapphire-primary" id="btnSaveHoldAdmin">Save</button>
-    </div>
-  `, (body) => {
-    body.querySelector('#btnSaveHoldAdmin')?.addEventListener('click', async () => {
+    `;
+
+    // Wire Admin Tab Switches
+    body.querySelectorAll('[data-atab]').forEach(b => {
+      b.addEventListener('click', () => {
+        STATE.adminTab = b.dataset.atab;
+        renderAdminBody(body);
+      });
+    });
+
+    // Morse actions
+    body.querySelector('#btnAdmSaveDailyMorse')?.addEventListener('click', async () => {
       const morseWord = body.querySelector('#admMorseWord')?.value.trim();
       const morseReward = parseInt(body.querySelector('#admMorseReward')?.value, 10) || 1000000;
-
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
-        body: JSON.stringify({ username: STATE.username, morseWord, morseReward })
+        body: JSON.stringify({ username: STATE.username, action: 'save_morse', morseWord, morseReward })
       });
-      if (res.ok) {
-        await syncHoldUser();
-        closeModal();
-        showToast('Saved');
-      } else {
-        showToast(res.error || 'Error');
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        showToast(res.message);
       }
     });
-  });
+
+    body.querySelector('#btnAdmAddSecret')?.addEventListener('click', async () => {
+      const code = body.querySelector('#admSecCode')?.value.trim();
+      const reward = parseInt(body.querySelector('#admSecReward')?.value, 10) || 500000;
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'add_secret_code', code, reward })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        renderAdminBody(body);
+        showToast(res.message);
+      }
+    });
+
+    body.querySelectorAll('[data-del-secret]').forEach(b => {
+      b.addEventListener('click', async () => {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'delete_secret_code', code: b.dataset.delSecret })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          renderAll();
+          renderAdminBody(body);
+        }
+      });
+    });
+
+    // Task actions
+    body.querySelector('#btnAdmAddTask')?.addEventListener('click', async () => {
+      const title = body.querySelector('#admTaskTitle')?.value.trim();
+      const cat = body.querySelector('#admTaskCat')?.value;
+      const icon = body.querySelector('#admTaskIcon')?.value.trim();
+      const reward = parseInt(body.querySelector('#admTaskReward')?.value, 10) || 150000;
+      const link = body.querySelector('#admTaskLink')?.value.trim();
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'add_quest', title, cat, icon, reward, link })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        renderAdminBody(body);
+        showToast(res.message);
+      }
+    });
+
+    body.querySelectorAll('[data-del-task]').forEach(b => {
+      b.addEventListener('click', async () => {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'delete_quest', questId: b.dataset.delTask })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          renderAll();
+          renderAdminBody(body);
+        }
+      });
+    });
+
+    // Squad actions
+    body.querySelector('#btnAdmAddSquad')?.addEventListener('click', async () => {
+      const handle = body.querySelector('#admSquadHandle')?.value.trim();
+      const name = body.querySelector('#admSquadName')?.value.trim();
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'add_squad', handle, name })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        renderAdminBody(body);
+        showToast(res.message);
+      }
+    });
+
+    body.querySelectorAll('[data-del-squad]').forEach(b => {
+      b.addEventListener('click', async () => {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'delete_squad', squadId: b.dataset.delSquad })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          renderAll();
+          renderAdminBody(body);
+        }
+      });
+    });
+
+    // User actions
+    body.querySelector('#btnAdmGrantHold')?.addEventListener('click', async () => {
+      const targetUsername = body.querySelector('#admTargetUser')?.value.trim();
+      const holdDelta = parseInt(body.querySelector('#admHoldDelta')?.value, 10) || 0;
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, holdDelta })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        showToast(res.message);
+      }
+    });
+
+    body.querySelector('#btnAdmResetMorse')?.addEventListener('click', async () => {
+      const targetUsername = body.querySelector('#admTargetUser')?.value.trim();
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, resetMorse: true })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        closeModal();
+        showToast('Morze reset qilindi!');
+      }
+    });
+
+    body.querySelector('#btnAdmResetOnboard')?.addEventListener('click', () => {
+      closeModal();
+      openOnboardingStory(0);
+    });
+  };
+
+  openModal('Admin Studio', '<div></div>', renderAdminBody);
 }
 
-// ---- DOMContentLoaded Wiring ----
+// ============================================================================
+// DOMCONTENTLOADED WIRING
+// ============================================================================
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     window.Telegram?.WebApp?.ready?.();
     window.Telegram?.WebApp?.expand?.();
   } catch {}
+
+  // Onboarding Continue Button
+  document.getElementById('btnOsContinue')?.addEventListener('click', advanceOnboardingStory);
+  document.getElementById('btnReplayOnboarding')?.addEventListener('click', () => {
+    closeAllSheets();
+    openOnboardingStory(0);
+  });
 
   // Bottom Dock Sheet Triggers
   document.querySelectorAll('[data-open-sheet]').forEach(btn => {
@@ -1129,6 +1428,16 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnOpenStarsTopup')?.addEventListener('click', () => openTopUpStarsModal(250));
   document.getElementById('btnOpenAdminModal')?.addEventListener('click', openHoldAdminModal);
   document.getElementById('btnEarnInviteCard')?.addEventListener('click', () => openSheet('frens'));
+  document.getElementById('btnAddCustomSquad')?.addEventListener('click', openAddPaxtaChannelSquadModal);
+
+  // Switch to Top-10 NFT tab when clicking Stats pill in Leagues
+  document.getElementById('btnSwitchTop10Tab')?.addEventListener('click', () => {
+    document.querySelectorAll('#leagueMainTabs .nseg-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.ltab === 'prizes');
+    });
+    STATE.leagueMainTab = 'prizes';
+    renderLeaguesSheet();
+  });
 
   // How Boost Works & Earn Guide Modals
   document.getElementById('btnHowBoostWorks')?.addEventListener('click', () => {
@@ -1143,29 +1452,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('btnOpenEarnGuide')?.addEventListener('click', () => {
+    const curWord = STATE.user?.morse?.word || 'HOLD';
+    const morseHint = curWord.split('').map(c => `${c} (${(MORSE_MAP[c] || '').replace(/\./g, '•').replace(/-/g, '—')})`).join(' · ');
     openModal('Full guide', `
       <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:var(--text-2);line-height:1.5;">
-        <p><b style="color:#fff;">🪙 Tap & Hold:</b> Tangani bosib HOLD yigʻing. Tanga ustida qisqa (•) va uzun (—) bosish orqali yashirin Morze soʻzining 1-harfini topsangiz, harflar havoda muallaq paydo boʻladi (+1,000,000 HOLD).</p>
-        <p><b style="color:#fff;">⚡ Daily Combo:</b> Har kuni 3 ta yashirin Mine kartani yangilab +3,000,000 HOLD oling.</p>
+        <p><b style="color:#fff;">🪙 Havoda Muallaq Morze Shifri:</b> Markazdagi tangani qisqa bosing (<b>•</b>) yoki bosib ushlab turing (<b>—</b>). Birinchi harf toʻgʻri terilishi bilan harflar havoda muallaq paydo boʻladi!</p>
+        <p style="background:rgba(255,255,255,0.06);padding:10px;border-radius:12px;color:#fff;font-size:12.5px;">
+          Bugungi shifr: <b>${esc(morseHint)}</b>
+        </p>
         <p><b style="color:#fff;">🏆 Top-10 NFT:</b> Reytingda Top-10 oʻrinni egallagan ishtirokchilar haqiqiy NFT sovgʻalar va HOLD mukofotlarini qoʻlga kiritadilar.</p>
       </div>
     `);
-  });
-
-  // Daily Streak Claim
-  document.getElementById('btnClaimDailyStreak')?.addEventListener('click', async () => {
-    const res = await api('/api/hold/claim-streak', {
-      method: 'POST',
-      body: JSON.stringify({ username: STATE.username })
-    });
-    if (res.ok && res.user) {
-      STATE.user = res.user;
-      haptic('heavy');
-      renderAll();
-      showToast(res.message);
-    } else {
-      showToast(res.error || 'Bugun olingan');
-    }
   });
 
   // Leagues Carousel Arrows & Tabs
@@ -1207,33 +1504,48 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnBoostFullTank')?.addEventListener('click', () => triggerBoost('full_tank'));
   document.getElementById('btnBoostTurbo')?.addEventListener('click', () => triggerBoost('rocket'));
 
-  // Main 3D Coin Pointer Events (Handles BOTH Tapping AND Invisible Mid-Air Morse!)
+  // Main 3D Coin Pointer Events (100% Reliable Tap + Hold Dash Morse!)
   const coinBtn = document.getElementById('holdCoinBtn');
   if (coinBtn) {
+    // Prevent contextmenu on long-press so mobile browsers never cancel the hold!
+    coinBtn.addEventListener('contextmenu', (e) => e.preventDefault());
+    coinBtn.addEventListener('dragstart', (e) => e.preventDefault());
+
     coinBtn.addEventListener('pointerdown', (e) => {
+      try {
+        coinBtn.setPointerCapture(e.pointerId);
+      } catch {}
       STATE.pointerDownTime = Date.now();
+      haptic('light');
+
       const rect = coinBtn.getBoundingClientRect();
       const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       const dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       coinBtn.style.transform = `rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg) scale(0.955)`;
+
+      // Haptic & visual pulse right at 195ms so the user feels their press became a Dash (—)!
+      clearTimeout(STATE.dashFeedbackTimer);
+      STATE.dashFeedbackTimer = setTimeout(() => {
+        if (STATE.pointerDownTime > 0) {
+          haptic('medium');
+          coinBtn.style.transform = `rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg) scale(0.91)`;
+        }
+      }, 195);
     });
 
-    const releaseCoin = (e) => {
+    const finishCoinPress = (e) => {
+      clearTimeout(STATE.dashFeedbackTimer);
       coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
       if (!STATE.pointerDownTime) return;
       const heldMs = Date.now() - STATE.pointerDownTime;
       STATE.pointerDownTime = 0;
 
-      // Always award tap AND invisibly evaluate Morse signal (dot < 215ms, dash >= 215ms)
       handleCoinTap(e.clientX, e.clientY);
-      recordCoinMorseSignal(heldMs >= 215 ? '-' : '.');
+      recordCoinMorseSignal(heldMs >= 195 ? '-' : '.');
     };
 
-    coinBtn.addEventListener('pointerup', releaseCoin);
-    coinBtn.addEventListener('pointercancel', () => {
-      coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
-      STATE.pointerDownTime = 0;
-    });
+    coinBtn.addEventListener('pointerup', finishCoinPress);
+    coinBtn.addEventListener('pointercancel', finishCoinPress);
   }
 
   // Copy Referral Link
