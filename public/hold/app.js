@@ -1250,19 +1250,47 @@ function renderEarnSheet() {
       row.addEventListener('click', async () => {
         const packId = row.dataset.pack;
         const packObj = (u.vipPacks || []).find(x => x.id === packId);
-        const res = await api('/api/hold/buy-vip-pack', {
+        if (!packObj) return;
+
+        haptic('light');
+        showToast('Toʻlov oynasi ochilmoqda...');
+        const res = await api('/api/hold/create-invoice', {
           method: 'POST',
-          body: JSON.stringify({ username: STATE.username, packId })
+          body: JSON.stringify({
+            username: STATE.username,
+            amount: packObj.starsPrice,
+            title: packObj.name
+          })
         });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          haptic('heavy');
-          renderAll();
-          showToast(res.message);
-        } else if (res.needStars) {
-          openTopUpStarsModal(res.deficit || res.required, packObj?.name || 'HOLD Boost');
+
+        if (res.ok && res.invoiceUrl) {
+          const slug = res.slug || String(res.invoiceUrl).split('/').pop();
+          notifyPaxtaMiniApp('web_app_open_invoice', { slug, url: res.invoiceUrl });
+          try {
+            if (window.Telegram?.WebApp?.openInvoice) {
+              window.Telegram.WebApp.openInvoice(res.invoiceUrl, async (st) => {
+                if (st === 'paid') {
+                  await syncHoldUser();
+                  showToast(`🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`);
+                }
+              });
+            }
+          } catch {}
+
+          if (res.invoiceId) {
+            if (STATE.invoicePollTimer) clearInterval(STATE.invoicePollTimer);
+            STATE.invoicePollTimer = setInterval(async () => {
+              const stRes = await api(`/api/hold/invoice-status/${encodeURIComponent(res.invoiceId)}`);
+              if (stRes.ok && stRes.status === 'paid') {
+                clearInterval(STATE.invoicePollTimer);
+                STATE.invoicePollTimer = null;
+                await syncHoldUser();
+                showToast(`🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`);
+              }
+            }, 2000);
+          }
         } else {
-          showToast(res.error || 'Error');
+          showToast(res.error || 'Invoice ochilmadi');
         }
       });
     });

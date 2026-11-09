@@ -678,7 +678,7 @@ export function registerHoldEngine(app, deps) {
       topPct,
       yearsEquivalent,
       isAdmin: Number(u.paxtaId) === ADMIN_PAXTA_ID || u.username === 'moon' || u.username === 'shade' || u.username === 'muhammadiso',
-      stars: mainUser?.stars || 0,
+      stars: 0,
       holdBalance: Math.floor(u.holdBalance || 0),
       lifetimeHold: Math.floor(u.lifetimeHold || 0),
       dailyHoldToday: Math.floor(u.dailyHold?.[today] || 0),
@@ -2159,13 +2159,6 @@ export function registerHoldEngine(app, deps) {
                 const starsAdded = parseInt(sp.total_amount, 10) || parseInt(parts[2], 10) || 0;
                 const invId = parts[3] || '';
 
-                const users = loadJSON(usersFile, {});
-                if (!users[targetKey]) {
-                  users[targetKey] = { username: targetKey, displayName: targetKey, stars: 0 };
-                }
-                users[targetKey].stars = (users[targetKey].stars || 0) + starsAdded;
-                saveJSON(usersFile, users);
-
                 if (invId && st.payments.invoices[invId]) {
                   st.payments.invoices[invId].status = 'paid';
                 }
@@ -2175,16 +2168,29 @@ export function registerHoldEngine(app, deps) {
                   amount: starsAdded,
                   paidAt: new Date().toISOString()
                 };
+
+                // Direct HOLD Reward (1 Star = 1,000 HOLD) + Boosts (Direct from PaxtaGram, zero stars wallet needed!)
+                const targetHoldUser = st.users[targetKey];
+                const holdAward = starsAdded * 1_000;
+                if (targetHoldUser) {
+                  creditHold(targetHoldUser, st, holdAward);
+                  if (starsAdded >= 100) {
+                    targetHoldUser.tapLevel = (targetHoldUser.tapLevel || 1) + Math.floor(starsAdded / 100);
+                  }
+                  if (starsAdded >= 250) {
+                    targetHoldUser.autoBotEnabled = true;
+                  }
+                }
                 saveHoldState(st);
 
                 if (item.message.chat?.id) {
                   const token = createSessionToken(targetKey, fromUser?.id);
                   await holdBotCall('sendMessage', {
                     chat_id: item.message.chat.id,
-                    text: `Toʻlov tasdiqlandi. Balans: ${users[targetKey].stars} Stars.`,
+                    text: `✅ Toʻlov qabul qilindi!\n\nHisobingizga +${holdAward.toLocaleString()} HOLD qoʻshildi!`,
                     reply_markup: {
                       inline_keyboard: [
-                        [{ text: 'HOLD', web_app: { url: `${holdWebAppUrl}?auth=${encodeURIComponent(token)}` } }]
+                        [{ text: '🪙 HOLD ni ochish', web_app: { url: `${holdWebAppUrl}?auth=${encodeURIComponent(token)}` } }]
                       ]
                     }
                   });
