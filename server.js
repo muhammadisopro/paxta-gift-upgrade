@@ -2661,6 +2661,7 @@ const { startHoldBotLoop } = registerHoldEngine(app, {
   PUBLIC_APP_URL,
   HOLD_BOT_TOKEN,
   holdBotCall,
+  paxtaBotCall,
   moonClient,
   milliybekClient
 });

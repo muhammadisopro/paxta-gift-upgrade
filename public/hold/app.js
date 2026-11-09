@@ -16,10 +16,21 @@ const REVERSE_MORSE = Object.fromEntries(
   Object.entries(MORSE_MAP).map(([k, v]) => [v, k])
 );
 
+// Purge any legacy fake holder_XXX localStorage from earlier versions
+(() => {
+  const savedUser = localStorage.getItem('hold_username') || '';
+  if (/^(holder_|guest_)/i.test(savedUser)) {
+    localStorage.removeItem('hold_username');
+    localStorage.removeItem('hold_auth_token');
+  }
+})();
+
 const STATE = {
   user: null,
-  authToken: localStorage.getItem('hold_auth_token') || '',
+  authToken: localStorage.getItem('hold_auth_token') || localStorage.getItem('paxta_gift_auth_token') || '',
   username: localStorage.getItem('hold_username') || '',
+  webAppInitData: '',
+  webAppUser: null,
   totalPlayers: 0,
   top10Prizes: [],
   leaderboard: [],
@@ -29,7 +40,8 @@ const STATE = {
   leagueMainTab: 'miners',
   leagueTimePeriod: 'day',
   onboardingStep: 0,
-  adminTab: 'morse',
+  adminTab: 'overview',
+  adminUsersData: null,
   // Pure Invisible Mid-Air Morse State
   morseSignal: '',
   morseDecodedLetters: [],
@@ -40,13 +52,97 @@ const STATE = {
   pointerDownTime: 0,
   pendingTaps: 0,
   tapSyncTimer: null,
-  turboActiveUntil: 0
+  turboActiveUntil: 0,
+  invoicePollTimer: null
 };
+
+// ---- PaxtaGram Mini App PostMessage & InitData Parser (Zero External Tab Redirects) ----
+function notifyPaxtaMiniApp(eventType, eventData = {}) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(JSON.stringify({ eventType, eventData }), '*');
+    }
+    if (window.TelegramWebviewProxy?.postEvent) {
+      window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(eventData));
+    }
+  } catch {}
+}
+
+function parsePaxtaWebAppData() {
+  try {
+    // 1. Check standard Telegram.WebApp if populated
+    const tg = window.Telegram?.WebApp;
+    if (tg?.initData && tg?.initDataUnsafe?.user) {
+      STATE.webAppInitData = tg.initData;
+      STATE.webAppUser = tg.initDataUnsafe.user;
+      return;
+    }
+
+    // 2. Check #tgWebAppData in window.location.hash or search (How PaxtaGram Mini Apps pass user data!)
+    const rawHash = window.location.hash ? window.location.hash.slice(1) : '';
+    const hashParams = new URLSearchParams(rawHash);
+    const searchParams = new URLSearchParams(window.location.search);
+    const tgWebAppData = hashParams.get('tgWebAppData') || searchParams.get('tgWebAppData') || tg?.initData || '';
+
+    if (tgWebAppData) {
+      STATE.webAppInitData = tgWebAppData;
+      const innerParams = new URLSearchParams(tgWebAppData);
+      const userJson = innerParams.get('user');
+      if (userJson) {
+        STATE.webAppUser = JSON.parse(userJson);
+        return;
+      }
+      try {
+        const decoded = decodeURIComponent(tgWebAppData);
+        const inner2 = new URLSearchParams(decoded);
+        const userJson2 = inner2.get('user');
+        if (userJson2) {
+          STATE.webAppUser = JSON.parse(userJson2);
+          return;
+        }
+      } catch {}
+    }
+
+    // 3. Fallback to shared paxta_gift_user in same-origin localStorage
+    const sharedUserRaw = localStorage.getItem('paxta_gift_user');
+    if (sharedUserRaw) {
+      const parsed = JSON.parse(sharedUserRaw);
+      if (parsed?.username && !/^(holder_|guest_)/i.test(parsed.username)) {
+        STATE.webAppUser = {
+          id: parsed.paxtaId || parsed.id || null,
+          username: parsed.username,
+          first_name: parsed.displayName || parsed.username
+        };
+      }
+    }
+  } catch {}
+}
+
+function openInternalPaxtaChannel(linkOrHandle) {
+  const raw = String(linkOrHandle || '').trim();
+  if (!raw) return;
+  const cleanHandle = raw
+    .replace(/^https?:\/\/(www\.)?(paxta\.online|t\.me)\//i, '')
+    .replace(/^@/, '')
+    .split(/[/?#]/)[0]
+    .trim();
+
+  if (cleanHandle) {
+    // Tell PaxtaGram parent frame to navigate internally without opening a new tab
+    notifyPaxtaMiniApp('web_app_open_tg_link', { path_full: `/${cleanHandle}` });
+    try {
+      if (window.Telegram?.WebApp?.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink(`https://t.me/${cleanHandle}`);
+      }
+    } catch {}
+  }
+}
 
 function haptic(style = 'light') {
   try {
     window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.(style);
   } catch {}
+  notifyPaxtaMiniApp('web_app_trigger_haptic_feedback', { type: 'impact', impact_style: style });
 }
 
 const fmtInt = (n) => Math.floor(Number(n) || 0).toLocaleString('en-US');
@@ -80,6 +176,10 @@ function openModal(title, html, onMount) {
 }
 
 function closeModal() {
+  if (STATE.invoicePollTimer) {
+    clearInterval(STATE.invoicePollTimer);
+    STATE.invoicePollTimer = null;
+  }
   const bd = document.getElementById('holdModalBackdrop');
   if (bd) bd.hidden = true;
 }
@@ -89,7 +189,8 @@ function openSheet(sheetName) {
     frens: 'sheetFrens',
     earn: 'sheetEarn',
     boosts: 'sheetBoosts',
-    leagues: 'sheetLeagues'
+    leagues: 'sheetLeagues',
+    admin: 'sheetAdmin'
   };
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
   const targetId = map[sheetName];
@@ -104,7 +205,9 @@ function openSheet(sheetName) {
       const curIdx = leagues.findIndex(l => l.id === STATE.user?.league?.id);
       if (curIdx >= 0) STATE.viewedLeagueIdx = curIdx;
       renderLeaguesSheet();
-      if (!STATE.leaderboard.length) loadLeaderboardData();
+      loadLeaderboardData();
+    } else if (sheetName === 'admin') {
+      renderAdminSheet();
     }
   }
 }
@@ -116,6 +219,7 @@ function closeAllSheets() {
 
 // ---- API Helper ----
 function getWebAppInitData() {
+  if (STATE.webAppInitData) return STATE.webAppInitData;
   try {
     if (window.Telegram?.WebApp?.initData) return window.Telegram.WebApp.initData;
   } catch {}
@@ -170,34 +274,46 @@ function applyActiveSkinTheme() {
   }
 }
 
-// ---- Sync User State ----
+// ---- Sync User State (Official PaxtaGram Profile Only — Never Fake holder_XXX) ----
 async function syncHoldUser() {
+  parsePaxtaWebAppData();
+
   const params = new URLSearchParams(window.location.search);
-  const urlAuth = params.get('auth');
-  const urlRef = params.get('ref');
+  const hashParams = new URLSearchParams(window.location.hash ? window.location.hash.slice(1) : '');
+  const urlAuth = params.get('auth') || hashParams.get('auth');
+  const urlRef = params.get('ref') || hashParams.get('ref') || params.get('start') || hashParams.get('tgWebAppStartParam') || '';
+
   if (urlAuth) {
     STATE.authToken = urlAuth;
     localStorage.setItem('hold_auth_token', urlAuth);
   }
 
-  let tgUser = null;
-  try {
-    tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
-  } catch {}
-
-  const username = tgUser?.username || STATE.username || `holder_${Math.floor(100 + Math.random() * 899)}`;
-  const displayName = tgUser ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') : username;
+  const tgUser = STATE.webAppUser;
+  const candidateUsername = tgUser?.username || STATE.username || '';
+  const cleanCandidate = /^(holder_|guest_)/i.test(candidateUsername) ? '' : candidateUsername;
+  const displayName = tgUser
+    ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ')
+    : cleanCandidate;
   const paxtaId = tgUser?.id || null;
 
   const data = await api('/api/hold/sync', {
     method: 'POST',
     body: JSON.stringify({
-      username,
+      username: cleanCandidate,
       displayName,
       paxtaId,
-      ref: urlRef || null
+      ref: urlRef ? String(urlRef).replace(/^ref_/i, '') : null
     })
   });
+
+  const loginOverlay = document.getElementById('paxtaLoginOverlay');
+
+  if (data.needPaxtaLogin) {
+    if (loginOverlay) loginOverlay.hidden = false;
+    return;
+  }
+
+  if (loginOverlay) loginOverlay.hidden = true;
 
   if (data.ok && data.user) {
     STATE.user = data.user;
@@ -215,6 +331,64 @@ async function syncHoldUser() {
 
     if (!data.user.ogBonusClaimed) {
       openOnboardingStory(0);
+    }
+  }
+}
+
+async function handlePaxtaLoginSubmit() {
+  const inp = document.getElementById('inpPaxtaLoginUsername');
+  const errEl = document.getElementById('paxtaLoginError');
+  const btn = document.getElementById('btnPaxtaLoginSubmit');
+  const raw = (inp?.value || '').trim().replace(/^@/, '');
+  if (!raw) {
+    if (errEl) {
+      errEl.textContent = 'Iltimos, PaxtaGram @username kiriting';
+      errEl.hidden = false;
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Tekshirilmoqda...';
+  }
+  if (errEl) errEl.hidden = true;
+
+  const params = new URLSearchParams(window.location.search);
+  const urlRef = params.get('ref') || params.get('start') || '';
+
+  const res = await api('/api/hold/login-paxta', {
+    method: 'POST',
+    body: JSON.stringify({
+      username: raw,
+      ref: urlRef ? String(urlRef).replace(/^ref_/i, '') : null
+    })
+  });
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Davom etish';
+  }
+
+  if (res.ok && res.user) {
+    STATE.user = res.user;
+    STATE.username = res.user.username;
+    localStorage.setItem('hold_username', STATE.username);
+    if (res.authToken) {
+      STATE.authToken = res.authToken;
+      localStorage.setItem('hold_auth_token', res.authToken);
+    }
+    const loginOverlay = document.getElementById('paxtaLoginOverlay');
+    if (loginOverlay) loginOverlay.hidden = true;
+    renderAll();
+    loadLeaderboardData();
+    if (!res.user.ogBonusClaimed) {
+      openOnboardingStory(0);
+    }
+  } else {
+    if (errEl) {
+      errEl.textContent = res.error || 'PaxtaGram profil topilmadi';
+      errEl.hidden = false;
     }
   }
 }
@@ -263,36 +437,36 @@ function renderOnboardingSlide() {
       </div>
       <div></div>
     `;
-    foot.innerHTML = `Your account number is #${pid}.<br/>You're in the Top ${topPct}% PaxtaGram users 🔥`;
+    foot.innerHTML = `Account <b>@${esc(u.username)}</b> (#${pid}).<br/>You're in the Top ${topPct}% PaxtaGram users 🔥`;
     btn.textContent = 'Continue';
   } else if (step === 1) {
     wrap.innerHTML = `
       <div class="os-top-headings">
         <h1>PaxtaGram Verified</h1>
-        <p>You know how to get the best</p>
+        <p>Official profile connected</p>
       </div>
       <div class="os-center-hero">
         <img src="/hold/skins/skin-4.png" class="os-emblem-img" alt="Verified" />
-        <div class="os-giant-label" style="margin-top:20px;">Verified Holder</div>
+        <div class="os-giant-label" style="margin-top:20px;">@${esc(u.username)}</div>
       </div>
       <div></div>
     `;
-    foot.innerHTML = `Status confirmed for <b>@${esc(u.username)}</b> ✨`;
+    foot.innerHTML = `Official PaxtaGram identity confirmed for <b>${esc(u.displayName || u.username)}</b> ✨`;
     btn.textContent = 'Continue';
   } else {
     wrap.innerHTML = `
       <div class="os-top-headings">
         <h1>You are amazing!</h1>
-        <p>Here is your HOLD reward</p>
+        <p>Here is your HOLD welcome reward</p>
       </div>
       <div class="os-center-hero">
         <img src="/hold/skins/skin-4.png" class="os-emblem-img" alt="HOLD" />
-        <div class="os-giant-label" style="font-size:38px;margin-top:18px;">${fmtInt(u.ogDetails?.totalBonus || totalReward)}</div>
+        <div class="os-giant-label" style="font-size:38px;margin-top:18px;">+${fmtInt(u.ogDetails?.totalBonus || totalReward)}</div>
       </div>
       <div></div>
     `;
-    foot.innerHTML = `Thanks for your time on PaxtaGram 🤝`;
-    btn.textContent = 'Continue';
+    foot.innerHTML = `Welcome to the official $HOLD Arena 🤝`;
+    btn.textContent = 'Start Mining $HOLD';
   }
 }
 
@@ -313,6 +487,7 @@ async function advanceOnboardingStory() {
     if (res.ok && res.user) {
       STATE.user = res.user;
       renderAll();
+      loadLeaderboardData();
       showToast(`🎉 +${fmtInt(res.ogDetails?.totalBonus || 5500)} HOLD!`);
     }
   }
@@ -357,7 +532,6 @@ function recordCoinMorseSignal(symbol) {
   STATE.morseSignal += symbol;
   clearTimeout(STATE.morseLetterTimer);
 
-  // Determine expected next letters at current position so we never cut off the user mid-letter!
   const allWords = getCandidateMorseWords();
   const activePool = STATE.morseDecodedLetters.length > 0 ? STATE.morseMatchedWords : allWords;
   const nextIdx = STATE.morseDecodedLetters.length;
@@ -369,8 +543,6 @@ function recordCoinMorseSignal(symbol) {
     code => code.length > STATE.morseSignal.length && code.startsWith(STATE.morseSignal)
   );
 
-  // If the signal already matches the exact expected letter (e.g. '....' for H) and can't grow further, lock it in quickly (520ms)!
-  // If it's a partial prefix of the expected letter (e.g. '..' on the way to '....'), give the user 1450ms!
   let waitMs = 950;
   if (exactMatchNow && !canGrowIntoAnotherExpected) {
     waitMs = 520;
@@ -387,20 +559,13 @@ async function evaluateInvisibleMorseLetter() {
   if (!sig) return;
 
   const decodedChar = REVERSE_MORSE[sig];
-  if (!decodedChar) {
-    // Invalid Morse sequence: if letters are already floating, keep them floating so the user can retry this letter!
-    return;
-  }
+  if (!decodedChar) return;
 
   const allWords = getCandidateMorseWords();
 
-  // Case 1: First letter — only materialize in mid-air if it matches the 1st letter of a valid code!
   if (STATE.morseDecodedLetters.length === 0) {
     const matching = allWords.filter(w => w.startsWith(decodedChar));
-    if (matching.length === 0) {
-      // Normal tapping — show nothing at all
-      return;
-    }
+    if (matching.length === 0) return;
     STATE.morseDecodedLetters = [decodedChar];
     STATE.morseMatchedWords = matching;
     haptic('heavy');
@@ -411,18 +576,15 @@ async function evaluateInvisibleMorseLetter() {
     return;
   }
 
-  // Case 2: Subsequent letters
   const nextPrefix = STATE.morseDecodedLetters.join('') + decodedChar;
   const stillMatching = STATE.morseMatchedWords.filter(w => w.startsWith(nextPrefix));
 
   if (stillMatching.length === 0) {
-    // If the user accidentally tapped a single dot '.' ('E') while thinking of the next letter, keep the floating letters alive!
     if (sig === '.') {
       clearTimeout(STATE.morseClearAirTimer);
       STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 8000);
       return;
     }
-    // Check if the new letter starts a fresh word
     const freshMatch = allWords.filter(w => w.startsWith(decodedChar));
     if (freshMatch.length > 0) {
       STATE.morseDecodedLetters = [decodedChar];
@@ -445,7 +607,6 @@ async function evaluateInvisibleMorseLetter() {
   clearTimeout(STATE.morseClearAirTimer);
   STATE.morseClearAirTimer = setTimeout(clearMidAirMorse, 8000);
 
-  // Check if an exact word is now completed!
   const currentWord = STATE.morseDecodedLetters.join('');
   if (stillMatching.includes(currentWord)) {
     clearTimeout(STATE.morseClearAirTimer);
@@ -485,7 +646,7 @@ function renderAll() {
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
-  // 1. Top Squad Pill (Exact Screenshot 3: "Join Squad ›" when not in squad, or Squad card when joined)
+  // 1. Top Squad Pill
   const sqPill = document.getElementById('btnSquadPill');
   if (sqPill) {
     const activeSq = (u.squads || []).find(s => s.id === u.squadId);
@@ -513,7 +674,7 @@ function renderAll() {
     }
   }
 
-  // 2. Balance & Wreath Rank + League Row (Exact Screenshot 3)
+  // 2. Balance & Wreath Rank + League Row
   const balEl = document.getElementById('uiHoldBalance');
   if (balEl) balEl.textContent = fmtInt(u.holdBalance);
 
@@ -528,6 +689,22 @@ function renderAll() {
 
   const starsEl = document.getElementById('uiStars');
   if (starsEl) starsEl.textContent = fmtInt(u.stars);
+
+  // 2b. Arena Live Pills (Daily Streak & 2x Happy Hour)
+  const streakPill = document.getElementById('btnArenaStreakPill');
+  const streakText = document.getElementById('uiArenaStreakText');
+  if (streakPill && streakText && u.streak) {
+    const canClaim = u.streak.canClaimToday;
+    streakPill.classList.toggle('ready', !!canClaim);
+    streakText.textContent = canClaim
+      ? `Day ${u.streak.nextDay} Bonus!`
+      : `Day ${u.streak.currentDay || 1} Streak`;
+  }
+
+  const hhPill = document.getElementById('uiArenaHappyHourPill');
+  if (hhPill) {
+    hhPill.hidden = !u.happyHour?.active;
+  }
 
   // 3. Energy & Progress Bar
   const eNow = document.getElementById('uiEnergyNow');
@@ -556,7 +733,8 @@ function handleCoinTap(clientX, clientY) {
   if (!u) return;
 
   const isTurbo = Date.now() < STATE.turboActiveUntil;
-  const tapVal = isTurbo ? u.tapPower * 7 : u.tapPower;
+  const hhMult = u.happyHour?.active ? 2 : 1;
+  const tapVal = (isTurbo ? u.tapPower * 7 : u.tapPower) * hhMult;
 
   if (!isTurbo && u.energy < u.tapPower) {
     showToast('⚡ Energiya toʻlmoqda...');
@@ -609,7 +787,7 @@ async function flushPendingTaps() {
 }
 
 // ============================================================================
-// SHEET 1: LEAGUES SHOWCASE & 5 3D TROPHY CUPS
+// SHEET 1: LEAGUES SHOWCASE & 5 3D TROPHY CUPS (PER-LEAGUE FILTERED!)
 // ============================================================================
 async function loadLeaderboardData() {
   const res = await api('/api/hold/vault');
@@ -663,9 +841,16 @@ function renderLeaguesSheet() {
     }
   }
   if (barEl) {
-    const target = nextLg ? nextLg.minHold : Math.max(5_000_000, u.lifetimeHold);
-    const pct = Math.min(100, Math.max(5, Math.round((u.lifetimeHold / Math.max(1, target)) * 100)));
-    barEl.style.width = `${pct}%`;
+    if (lg.id === u.league?.id) {
+      const target = nextLg ? nextLg.minHold : Math.max(10_000_000, u.lifetimeHold);
+      const pct = Math.min(100, Math.max(4, Math.round((u.lifetimeHold / Math.max(1, target)) * 100)));
+      barEl.style.width = `${pct}%`;
+    } else if (u.lifetimeHold >= lg.minHold) {
+      barEl.style.width = '100%';
+    } else {
+      const pct = Math.min(100, Math.max(2, Math.round((u.lifetimeHold / Math.max(1, lg.minHold)) * 100)));
+      barEl.style.width = `${pct}%`;
+    }
   }
 
   const listWrap = document.getElementById('leagueBoardList');
@@ -690,11 +875,11 @@ function renderLeaguesSheet() {
             <div class="lb-user-name">${esc(sq.name)} ${sq.verified ? '✓' : ''}</div>
             <div class="lb-user-score">
               <img src="${esc(coinImg)}" class="inline-c" alt="" />
-              <span>${fmtInt(sq.totalHold)}</span>
+              <span>${fmtInt(sq.totalHold)} · ${fmtInt(sq.members || 0)} a'zo</span>
             </div>
           </div>
         </div>
-        <span class="nri-chevron">›</span>
+        ${rank === 1 ? `<span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;color:#facc15;">⚔️ #1 Squad</span>` : `<span class="nri-chevron">›</span>`}
       `;
       row.addEventListener('click', () => openSheet('frens'));
       listWrap.appendChild(row);
@@ -721,7 +906,7 @@ function renderLeaguesSheet() {
             <div class="lb-user-name">${nft ? esc(nft.title) : `Top #${p.rank} Prize`}</div>
             <div class="lb-user-score">
               <span style="color:var(--theme-accent);font-weight:700;">+${fmtInt(p.holdBonus)} HOLD</span>
-              <span>· ${holder ? `@${esc(holder.username)}` : 'Open'}</span>
+              <span>· ${holder ? `@${esc(holder.username)}` : 'Boʻsh oʻrin'}</span>
             </div>
           </div>
         </div>
@@ -731,29 +916,46 @@ function renderLeaguesSheet() {
     return;
   }
 
-  // Miners Leaderboard (Day vs All Time)
-  const players = STATE.leagueTimePeriod === 'day'
+  // Miners Leaderboard — STRICTLY FILTERED BY VIEWED LEAGUE (`lg.id`)
+  // When a user advances to Silver/Gold/Platinum/Diamond, they no longer appear in Bronze!
+  const sourceList = STATE.leagueTimePeriod === 'day'
     ? (STATE.leaderboardDay?.length ? STATE.leaderboardDay : STATE.leaderboard)
     : (STATE.leaderboard || []);
 
-  players.slice(0, 50).forEach((p) => {
-    const medal = p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : `${p.rank}`;
+  const leaguePlayers = sourceList.filter(p => (p.league?.id || 'bronze') === lg.id);
+
+  if (!leaguePlayers.length) {
+    listWrap.innerHTML = `
+      <div style="padding:26px 14px;text-align:center;color:var(--text-2);font-size:13.5px;">
+        Hozircha <b>${esc(lg.name)}</b> ligasida ishtirokchilar yoʻq.<br/>
+        <span style="font-size:12px;opacity:0.75;">Kerakli chegara: ${fmtInt(lg.minHold)} HOLD</span>
+      </div>
+    `;
+    return;
+  }
+
+  leaguePlayers.slice(0, 50).forEach((p, idxInLeague) => {
+    const pos = idxInLeague + 1;
+    const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}`;
     const scoreVal = STATE.leagueTimePeriod === 'day' ? (p.dailyHold ?? p.lifetimeHold) : p.lifetimeHold;
+    const isMe = p.username === u.username;
     const row = document.createElement('div');
     row.className = 'lb-row-item';
+    if (isMe) row.style.background = 'rgba(56, 182, 255, 0.10)';
+    row.style.borderRadius = '12px';
     row.innerHTML = `
       <div class="lb-left">
         <div class="lb-medal-col">${medal}</div>
         <div class="lb-avatar-circle">${esc((p.displayName || p.username || 'U').charAt(0).toUpperCase())}</div>
         <div class="lb-user-meta">
-          <div class="lb-user-name">${esc(p.displayName || p.username)}</div>
+          <div class="lb-user-name">${esc(p.displayName || p.username)} <span style="opacity:0.55;font-size:12px;">@${esc(p.username)}</span></div>
           <div class="lb-user-score">
             <img src="${esc(coinImg)}" class="inline-c" alt="" />
             <span>${fmtInt(scoreVal)}</span>
           </div>
         </div>
       </div>
-      ${p.rank <= 10 && p.prize?.nft ? `<span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;">🎁 ${esc(p.prize.nft.title)}</span>` : ''}
+      ${p.rank <= 10 && p.prize?.nft ? `<span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;">🎁 #${p.rank} ${esc(p.prize.nft.title)}</span>` : ''}
     `;
     listWrap.appendChild(row);
   });
@@ -776,7 +978,6 @@ function renderBoostsAndSkinsSheet() {
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
-  // Permanent Boosters
   const upgList = document.getElementById('boostUpgradesList');
   if (upgList) {
     const rMaxed = (u.rechargingSpeedLevel || 1) >= (u.rechargingSpeedMax || 5);
@@ -903,7 +1104,7 @@ async function triggerBoost(type) {
 }
 
 // ============================================================================
-// SHEET 3: EARN MORE COINS (ONBOARDING, SPECIALS, WEB3 WORLD)
+// SHEET 3: EARN MORE COINS (5 RETENTION FEATURES + 100% IN-APP VERIFICATION)
 // ============================================================================
 function renderEarnSheet() {
   const u = STATE.user;
@@ -913,55 +1114,99 @@ function renderEarnSheet() {
   const done = u.tasksCompleted || [];
   const quests = u.quests || [];
 
+  // 1. Render 7-Day Daily Streak Box (`#dailyStreakBox`)
+  const streakBox = document.getElementById('dailyStreakBox');
+  if (streakBox && u.streak) {
+    const st = u.streak;
+    const rewards = st.rewards || [];
+    streakBox.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <strong style="font-size:14.5px;">🔥 Kunlik Zanjir (Day ${st.currentDay || 0}/7)</strong>
+          <div style="font-size:12px;color:var(--text-2);margin-top:2px;">7-kuni +50,000 HOLD + Cookie Skin bepul!</div>
+        </div>
+        <button type="button" class="skin-pill-btn ${st.canClaimToday ? '' : 'enabled'}" id="btnClaimDailyStreak" ${st.canClaimToday ? '' : 'disabled'}>
+          ${st.canClaimToday ? `Olish (+${fmtInt(st.nextRewardHold)})` : 'Olindi ✓'}
+        </button>
+      </div>
+      <div class="streak-days-grid">
+        ${rewards.map(r => {
+          const isClaimed = !st.canClaimToday && r.day <= st.currentDay || (st.canClaimToday && r.day < st.nextDay);
+          const isToday = st.canClaimToday && r.day === st.nextDay;
+          return `
+            <div class="streak-day-cell ${isClaimed ? 'claimed' : ''} ${isToday ? 'today' : ''}">
+              <span class="streak-day-num">D${r.day}</span>
+              <span class="streak-day-val">${r.day === 7 ? '🍪50K' : `${Math.round(r.hold / 1000)}K`}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    streakBox.querySelector('#btnClaimDailyStreak')?.addEventListener('click', claimDailyStreakBonus);
+  }
+
+  // 2. Render Daily Events Box (`#dailyEventsBox`: Morse Hint + Happy Hour + Lucky Ticket + Squad Wars)
+  const eventsBox = document.getElementById('dailyEventsBox');
+  if (eventsBox) {
+    const m = u.morse || {};
+    const hh = u.happyHour || {};
+    const lt = u.luckyDraw || {};
+    eventsBox.innerHTML = `
+      <div class="not-row-item" style="cursor:default;">
+        <div class="nri-icon-box">🕵️</div>
+        <div class="nri-center">
+          <div class="nri-title">Kunlik Yashirin Morze (${m.length || 4} harf)</div>
+          <div class="nri-sub">${esc(m.hint || 'Asosiy 4 harfli nom')} · <b>+${fmtInt(m.reward || 25000)} HOLD</b></div>
+        </div>
+        <span class="skin-pill-btn ${m.solvedToday ? 'enabled' : ''}">${m.solvedToday ? 'Topildi ✓' : `${esc(m.firstLetter || 'H')}...`}</span>
+      </div>
+
+      <div class="not-row-item" style="cursor:default;">
+        <div class="nri-icon-box">⚡</div>
+        <div class="nri-center">
+          <div class="nri-title">Happy Hour (2x Tap)</div>
+          <div class="nri-sub">Har kuni ${esc(hh.scheduleText || '20:00 – 21:00')} da barcha bosishlar 2x!</div>
+        </div>
+        <span class="skin-pill-btn ${hh.active ? '' : 'enabled'}">${hh.active ? 'LIVE 2X' : '20:00'}</span>
+      </div>
+
+      <div class="not-row-item" style="cursor:default;">
+        <div class="nri-icon-box">🎟️</div>
+        <div class="nri-center">
+          <div class="nri-title">Haftalik Lucky Ticket</div>
+          <div class="nri-sub">Har bir topilgan Morze = +1 chipta (${esc(lt.prizeTitle || 'Victory Medal NFT + 100K HOLD')})</div>
+        </div>
+        <span class="skin-pill-btn">${fmtInt(lt.myTickets || 0)} 🎟️</span>
+      </div>
+    `;
+  }
+
+  // 3. Render Quests with 100% In-App Verification Modal (Zero New Browser Tab Redirects!)
   const renderQuestRows = (containerId, list) => {
     const el = document.getElementById(containerId);
     if (!el) return;
     el.innerHTML = '';
     for (const q of list) {
       const isDone = done.includes(q.id);
-      const isOpenedLink = !!STATE.openedQuestLinks[q.id];
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'not-row-item';
-      btn.style.opacity = isDone ? '0.5' : '1';
+      btn.style.opacity = isDone ? '0.55' : '1';
       btn.innerHTML = `
         <div class="nri-icon-box">${esc(q.icon || '⭐')}</div>
         <div class="nri-center">
           <div class="nri-title">${esc(q.title)}</div>
           <div class="nri-sub">
-            ${isDone ? 'Completed' : `+${fmtInt(q.reward)} <img src="${esc(coinImg)}" class="inline-c" alt="" />`}
+            ${isDone ? 'Bajarildi ✓' : `+${fmtInt(q.reward)} <img src="${esc(coinImg)}" class="inline-c" alt="" />`}
           </div>
         </div>
         ${isDone
           ? `<span class="nri-chevron">✓</span>`
-          : (q.link && isOpenedLink
-              ? `<span class="skin-pill-btn" style="font-size:11px;padding:5px 10px;">Check</span>`
-              : `<span class="nri-chevron">›</span>`
-            )
+          : `<span class="skin-pill-btn" style="font-size:11.5px;padding:5px 11px;">Bajarish</span>`
         }
       `;
       if (!isDone) {
-        btn.addEventListener('click', async () => {
-          if (q.link && !STATE.openedQuestLinks[q.id]) {
-            STATE.openedQuestLinks[q.id] = true;
-            window.open(q.link, '_blank');
-            renderEarnSheet();
-            showToast('Kanalga obuna boʻling va "Check" tugmasini bosing!');
-            return;
-          }
-          const res = await api('/api/hold/claim-quest', {
-            method: 'POST',
-            body: JSON.stringify({ username: STATE.username, questId: q.id })
-          });
-          if (res.ok && res.user) {
-            STATE.user = res.user;
-            haptic('medium');
-            renderAll();
-            showToast(`+${fmtInt(res.reward)} HOLD`);
-          } else {
-            showToast(res.error || 'Task not completed yet');
-          }
-        });
+        btn.addEventListener('click', () => openQuestVerificationModal(q));
       }
       el.appendChild(btn);
     }
@@ -971,7 +1216,7 @@ function renderEarnSheet() {
   renderQuestRows('specialsTasksList', quests.filter(q => q.cat === 'specials' || !q.cat));
   renderQuestRows('web3TasksList', quests.filter(q => q.cat === 'web3'));
 
-  // Stars VIP Packs inside Earn
+  // 4. Stars VIP Packs inside Earn
   const vipList = document.getElementById('vipPacksList');
   if (vipList) {
     vipList.innerHTML = (u.vipPacks || []).map(p => `
@@ -1008,8 +1253,132 @@ function renderEarnSheet() {
   }
 }
 
+async function claimDailyStreakBonus() {
+  const res = await api('/api/hold/claim-streak', {
+    method: 'POST',
+    body: JSON.stringify({ username: STATE.username })
+  });
+  if (res.ok && res.user) {
+    STATE.user = res.user;
+    haptic('heavy');
+    renderAll();
+    showToast(res.message || '🔥 Kunlik bonus olindi!');
+  } else {
+    showToast(res.error || 'Bugungi bonus olingan');
+  }
+}
+
+// ---- 100% Verified In-App Task Modal (Zero External Tab Redirect!) ----
+function openQuestVerificationModal(q) {
+  const cleanHandle = String(q.link || '')
+    .replace(/^https?:\/\/(www\.)?(paxta\.online|t\.me)\//i, '')
+    .replace(/^@/, '')
+    .split(/[/?#]/)[0]
+    .trim();
+
+  openModal(q.title, `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="dark-group-box" style="padding:14px;text-align:center;gap:6px;">
+        <div style="font-size:34px;">${esc(q.icon || '📢')}</div>
+        <div style="font-size:16px;font-weight:700;color:#fff;">${esc(q.title)}</div>
+        <div style="font-size:13.5px;color:var(--theme-accent);font-weight:700;">Mukofot: +${fmtInt(q.reward)} HOLD</div>
+      </div>
+
+      ${cleanHandle ? `
+        <p style="font-size:13px;color:var(--text-2);line-height:1.45;text-align:center;">
+          1. Quyidagi tugma orqali PaxtaGram ichida <b>@${esc(cleanHandle)}</b> kanaliga oʻting yoki nomini nusxalab obuna boʻling.<br/>
+          2. Soʻng <b>"Tekshirish va Olish"</b> tugmasini bosing (bot aʼzolikni 100% tekshiradi).
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button type="button" class="skin-pill-btn" id="btnInternalOpenQuest" style="padding:12px;font-size:13px;">
+            📢 @${esc(cleanHandle)} ochish
+          </button>
+          <button type="button" class="skin-pill-btn" id="btnCopyQuestHandle" style="padding:12px;font-size:13px;">
+            📋 @${esc(cleanHandle)} nusxalash
+          </button>
+        </div>
+      ` : `
+        <p style="font-size:13px;color:var(--text-2);line-height:1.45;text-align:center;">
+          Ushbu vazifa shartini bajargan boʻlsangiz, quyidagi tekshirish tugmasini bosing.
+        </p>
+      `}
+
+      <button type="button" class="btn-sapphire-primary" id="btnVerifyQuestNow">
+        ${cleanHandle ? '1. Avval kanalni oching' : 'Tekshirish va Olish'}
+      </button>
+    </div>
+  `, (body) => {
+    const verifyBtn = body.querySelector('#btnVerifyQuestNow');
+    let started = !!STATE.openedQuestLinks[q.id] || !cleanHandle;
+
+    const triggerStartQuest = async () => {
+      STATE.openedQuestLinks[q.id] = Date.now();
+      started = true;
+      await api('/api/hold/start-quest', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, questId: q.id })
+      });
+      if (verifyBtn) {
+        let sec = 4;
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = `Tekshirish (${sec}s)...`;
+        const iv = setInterval(() => {
+          sec--;
+          if (sec <= 0) {
+            clearInterval(iv);
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = '✅ Tekshirish va Olish';
+          } else {
+            verifyBtn.textContent = `Tekshirish (${sec}s)...`;
+          }
+        }, 1000);
+      }
+    };
+
+    body.querySelector('#btnInternalOpenQuest')?.addEventListener('click', async () => {
+      await triggerStartQuest();
+      openInternalPaxtaChannel(cleanHandle);
+      showToast(`@${cleanHandle} PaxtaGram ichida ochildi!`);
+    });
+
+    body.querySelector('#btnCopyQuestHandle')?.addEventListener('click', async () => {
+      await triggerStartQuest();
+      try {
+        await navigator.clipboard.writeText(`@${cleanHandle}`);
+      } catch {}
+      showToast(`@${cleanHandle} nusxalandi!`);
+    });
+
+    verifyBtn?.addEventListener('click', async () => {
+      if (!started && cleanHandle) {
+        await triggerStartQuest();
+        openInternalPaxtaChannel(cleanHandle);
+        return;
+      }
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = 'Tekshirilmoqda...';
+      const res = await api('/api/hold/claim-quest', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, questId: q.id })
+      });
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = '✅ Tekshirish va Olish';
+
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        haptic('heavy');
+        closeModal();
+        renderAll();
+        showToast(`🎉 +${fmtInt(res.reward)} HOLD qoʻshildi!`);
+      } else {
+        showToast(res.error || 'Shart hali bajarilmagan');
+      }
+    });
+  });
+}
+
 // ============================================================================
-// SHEET 4: INVITE FRENS & OFFICIAL PAXTAGRAM SQUADS
+// SHEET 4: INVITE FRENS & OFFICIAL PAXTAGRAM SQUADS (100% IN-APP, NO NEW TAB)
 // ============================================================================
 function renderFrensSheet() {
   const u = STATE.user;
@@ -1021,16 +1390,57 @@ function renderFrensSheet() {
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
+  // In-app referral claim box (so users never need to open an external browser tab!)
+  const refClaimBox = document.getElementById('inAppRefClaimBox');
+  if (refClaimBox) {
+    if (u.referredBy) {
+      refClaimBox.innerHTML = `
+        <div style="font-size:13px;color:var(--text-2);display:flex;align-items:center;justify-content:space-between;">
+          <span>Sizni taklif qilgan doʻstingiz:</span>
+          <b style="color:var(--theme-accent);">@${esc(u.referredBy)} ✓</b>
+        </div>
+      `;
+    } else {
+      refClaimBox.innerHTML = `
+        <div style="font-size:13px;font-weight:600;color:#fff;">Doʻstingiz taklif qildimi? (+5,000 HOLD)</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="inpInviterUsername" placeholder="Doʻstingiz @username" class="apple-search-input" style="padding:9px 12px;" />
+          <button type="button" class="skin-pill-btn" id="btnClaimRefCode" style="padding:0 16px;">Olish</button>
+        </div>
+      `;
+      refClaimBox.querySelector('#btnClaimRefCode')?.addEventListener('click', async () => {
+        const refVal = refClaimBox.querySelector('#inpInviterUsername')?.value.trim();
+        if (!refVal) return;
+        const res = await api('/api/hold/claim-ref', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, refUsername: refVal })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          haptic('heavy');
+          renderAll();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Topilmadi');
+        }
+      });
+    }
+  }
+
   const frensList = document.getElementById('frensInvitedList');
   if (frensList) {
     if (!refs.length) {
-      frensList.innerHTML = `<div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">No frens invited yet. Share your link to earn +10,000 HOLD!</div>`;
+      frensList.innerHTML = `
+        <div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">
+          Hozircha doʻstlar yoʻq. Taklif havolangiz yoki <b>@${esc(u.username)}</b> nikingizni ulashing va <b>+10,000 HOLD</b> oling!
+        </div>
+      `;
     } else {
       frensList.innerHTML = refs.map(r => `
         <div class="not-row-item">
           <div class="lb-avatar-circle">${esc((r.displayName || r.username || 'F').charAt(0).toUpperCase())}</div>
           <div class="nri-center">
-            <div class="nri-title">${esc(r.displayName || r.username)}</div>
+            <div class="nri-title">${esc(r.displayName || r.username)} <span style="opacity:0.55;font-size:12px;">@${esc(r.username)}</span></div>
             <div class="nri-sub">${esc(r.league || 'Bronze')} · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(r.lifetimeHold)}</div>
           </div>
           <span style="color:#facc15;font-size:13px;font-weight:700;">+10K</span>
@@ -1042,20 +1452,20 @@ function renderFrensSheet() {
   const sList = document.getElementById('squadsList');
   if (sList) {
     sList.innerHTML = '';
-    for (const sq of u.squads || []) {
+    (u.squads || []).forEach((sq, idx) => {
       const joined = u.squadId === sq.id;
       const row = document.createElement('div');
       row.className = 'not-row-item';
       row.innerHTML = `
         <div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>
         <div class="nri-center">
-          <div class="nri-title">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
-          <div class="nri-sub">${fmtInt(sq.members)} members · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
+          <div class="nri-title">${idx === 0 ? '👑 ' : ''}${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
+          <div class="nri-sub">${fmtInt(sq.members)} a'zo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
         </div>
         <button type="button" class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined' : 'Join'}</button>
       `;
-      if (!joined) {
-        row.addEventListener('click', async () => {
+      row.addEventListener('click', async () => {
+        if (!joined) {
           const res = await api('/api/hold/join-squad', {
             method: 'POST',
             body: JSON.stringify({ username: STATE.username, squadId: sq.id })
@@ -1066,12 +1476,24 @@ function renderFrensSheet() {
             renderAll();
             showToast(res.message);
           }
-        });
-      } else if (sq.link) {
-        row.addEventListener('click', () => window.open(sq.link, '_blank'));
-      }
+        } else {
+          openModal(sq.name, `
+            <div style="display:flex;flex-direction:column;gap:12px;text-align:center;">
+              <div style="font-size:14px;color:var(--text-2);">
+                Rasmiy Squad: <b>@${esc(sq.handle || sq.id)}</b> · Jami: <b>${fmtInt(sq.totalHold)} HOLD</b>
+              </div>
+              <button type="button" class="btn-sapphire-primary" id="btnOpenSquadInternal">PaxtaGram ichida kanalga oʻtish</button>
+            </div>
+          `, (b) => {
+            b.querySelector('#btnOpenSquadInternal')?.addEventListener('click', () => {
+              openInternalPaxtaChannel(sq.handle || sq.link || sq.id);
+              closeModal();
+            });
+          });
+        }
+      });
       sList.appendChild(row);
-    }
+    });
   }
 }
 
@@ -1104,7 +1526,7 @@ function openAddPaxtaChannelSquadModal() {
   });
 }
 
-// ---- Top Up Stars via @HOLDbot Invoice ----
+// ---- Top Up Stars via @HOLDbot Invoice (100% In-App — Never Opens New Tab!) ----
 function openTopUpStarsModal(defaultAmount = 250, reason = 'HOLD Boost') {
   openModal('Top Up Stars', `
     <div style="display:flex;flex-direction:column;gap:12px;">
@@ -1114,181 +1536,410 @@ function openTopUpStarsModal(defaultAmount = 250, reason = 'HOLD Boost') {
         `).join('')}
       </div>
       <input type="number" id="inpStarsAmount" value="${defaultAmount}" min="10" max="100000" class="apple-search-input" />
+      <div id="starsInvoiceStatusBox" hidden style="padding:10px;border-radius:12px;background:rgba(56,182,255,0.12);color:#e0f2fe;font-size:13px;text-align:center;"></div>
       <button type="button" class="btn-sapphire-primary" id="btnPayStarsInvoice">Pay with Stars</button>
     </div>
   `, (body) => {
     const inp = body.querySelector('#inpStarsAmount');
+    const statusBox = body.querySelector('#starsInvoiceStatusBox');
+    const payBtn = body.querySelector('#btnPayStarsInvoice');
+
     body.querySelectorAll('[data-preset]').forEach(b => {
       b.addEventListener('click', () => { if (inp) inp.value = b.dataset.preset; });
     });
 
-    body.querySelector('#btnPayStarsInvoice')?.addEventListener('click', async () => {
+    payBtn?.addEventListener('click', async () => {
       const amount = Math.max(1, parseInt(inp?.value, 10) || defaultAmount);
+      payBtn.disabled = true;
+      payBtn.textContent = 'Invoice yaratilmoqda...';
+
       const res = await api('/api/hold/create-invoice', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, amount, title: reason })
       });
+
+      payBtn.disabled = false;
+      payBtn.textContent = 'Pay with Stars';
+
       if (res.ok && res.invoiceUrl) {
-        if (window.Telegram?.WebApp?.openInvoice) {
-          window.Telegram.WebApp.openInvoice(res.invoiceUrl, async (status) => {
-            if (status === 'paid') {
+        const slug = res.slug || String(res.invoiceUrl).split('/').pop();
+        // Trigger PaxtaGram in-app invoice sheet via postMessage (Zero external tab!)
+        notifyPaxtaMiniApp('web_app_open_invoice', { slug, url: res.invoiceUrl });
+        try {
+          if (window.Telegram?.WebApp?.openInvoice) {
+            window.Telegram.WebApp.openInvoice(res.invoiceUrl, async (st) => {
+              if (st === 'paid') {
+                await syncHoldUser();
+                closeModal();
+                showToast(`🎉 +${amount} Stars qoʻshildi!`);
+              }
+            });
+          }
+        } catch {}
+
+        if (statusBox) {
+          statusBox.hidden = false;
+          statusBox.innerHTML = `⏳ Toʻlov oynasi ochildi (<b>${amount} ⭐</b>). Tasdiqlashingiz bilan avtomatik tushadi...`;
+        }
+
+        if (res.invoiceId) {
+          if (STATE.invoicePollTimer) clearInterval(STATE.invoicePollTimer);
+          STATE.invoicePollTimer = setInterval(async () => {
+            const stRes = await api(`/api/hold/invoice-status/${encodeURIComponent(res.invoiceId)}`);
+            if (stRes.ok && stRes.status === 'paid') {
+              clearInterval(STATE.invoicePollTimer);
+              STATE.invoicePollTimer = null;
               await syncHoldUser();
               closeModal();
-              showToast(`+${amount} Stars added`);
+              showToast(`🎉 +${amount} Stars hisobingizga qoʻshildi!`);
             }
-          });
-        } else {
-          window.open(res.invoiceUrl, '_blank');
+          }, 2000);
         }
       } else {
-        showToast(res.error || 'Invoice error');
+        showToast(res.error || 'Invoice xatosi');
       }
     });
   });
 }
 
 // ============================================================================
-// COMPREHENSIVE 4-TAB ADMIN STUDIO (MORSE, TASKS, SQUADS, USERS)
+// SHEET 5: DEDICATED FULL-SCREEN ADMIN STUDIO (`#sheetAdmin` — NOT A POPUP!)
 // ============================================================================
-function openHoldAdminModal() {
+async function loadAdminUsersData() {
+  const res = await api(`/api/hold/admin-users?username=${encodeURIComponent(STATE.username)}`);
+  if (res.ok) {
+    STATE.adminUsersData = res;
+  }
+}
+
+async function renderAdminSheet() {
   const u = STATE.user;
   if (!u?.isAdmin) return;
 
-  const renderAdminBody = (body) => {
-    const curUser = STATE.user;
-    const secretMap = curUser.morse?.secretCodesMap || {};
-    const quests = curUser.quests || [];
-    const squads = curUser.squads || [];
+  const container = document.getElementById('adminSheetBody');
+  if (!container) return;
 
-    body.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div class="not-segmented-tabs">
-          <button type="button" class="nseg-btn ${STATE.adminTab === 'morse' ? 'active' : ''}" data-atab="morse">Morze</button>
-          <button type="button" class="nseg-btn ${STATE.adminTab === 'tasks' ? 'active' : ''}" data-atab="tasks">Tasks</button>
-          <button type="button" class="nseg-btn ${STATE.adminTab === 'squads' ? 'active' : ''}" data-atab="squads">Squads</button>
-          <button type="button" class="nseg-btn ${STATE.adminTab === 'users' ? 'active' : ''}" data-atab="users">Users</button>
+  await loadAdminUsersData();
+  const adm = STATE.adminUsersData || {};
+  const usersList = adm.users || [];
+  const stats = adm.stats || {};
+  const curUser = STATE.user;
+  const secretMap = curUser.morse?.secretCodesMap || {};
+  const quests = curUser.quests || [];
+  const squads = curUser.squads || [];
+
+  if (STATE.adminTab === 'overview') {
+    container.innerHTML = `
+      <div class="admin-stat-grid">
+        <div class="admin-stat-card">
+          <span>Rasmiy Ishtirokchilar</span>
+          <strong>${fmtInt(stats.totalPlayers || usersList.length)}</strong>
         </div>
+        <div class="admin-stat-card">
+          <span>Jami Muomaladagi HOLD</span>
+          <strong>${fmtInt(stats.totalHoldInCirculation || 0)}</strong>
+        </div>
+        <div class="admin-stat-card">
+          <span>2x Happy Hour Holati</span>
+          <strong style="color:${stats.happyHourActive ? '#4ade80' : '#facc15'};">${stats.happyHourActive ? 'YOQILGAN (2X)' : 'Jadval (20:00)'}</strong>
+        </div>
+        <div class="admin-stat-card">
+          <span>Lucky Ticket Gʻolibi</span>
+          <strong style="font-size:15px;">${stats.lastLuckyWinner ? `@${esc(stats.lastLuckyWinner.username)}` : 'Oʻynalmagan'}</strong>
+        </div>
+      </div>
 
-        ${STATE.adminTab === 'morse' ? `
-          <div class="dark-group-box" style="padding:12px;gap:10px;">
-            <strong style="font-size:13.5px;">Kunlik Morze Soʻzi</strong>
-            <input type="text" id="admMorseWord" value="${esc(curUser.morse?.word || 'HOLD')}" placeholder="Masalan: HOLD" class="apple-search-input" />
-            <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 25000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
-            <button type="button" class="btn-sapphire-primary" id="btnAdmSaveDailyMorse">Kunlik Morzeni Saqlash</button>
-          </div>
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14.5px;">⚡ Tezkor Boshqaruv va Eventlar</strong>
+        <button type="button" class="btn-sapphire-primary" id="btnAdmToggleHH">
+          ${stats.happyHourForceEnabled ? '🛑 2x Happy Hour Oʻchirish' : '⚡ 2x Happy Hour Yoqish (Barchaga)'}
+        </button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button type="button" class="skin-pill-btn" id="btnAdmRewardSquad" style="padding:12px;">⚔️ #1 Squadga +25K</button>
+          <button type="button" class="skin-pill-btn" id="btnAdmDrawLucky" style="padding:12px;">🎟️ Lucky Ticket Gʻolibi</button>
+        </div>
+      </div>
 
-          <div class="dark-group-box" style="padding:12px;gap:10px;">
-            <strong style="font-size:13.5px;">Yangi Maxfiy Morze Kod Qoʻshish</strong>
-            <input type="text" id="admSecCode" placeholder="Maxfiy soʻz (masalan: BONUS)" class="apple-search-input" />
-            <input type="number" id="admSecReward" value="25000" placeholder="HOLD mukofoti" class="apple-search-input" />
-            <button type="button" class="btn-sapphire-primary" id="btnAdmAddSecret">Maxfiy Kod Qoʻshish</button>
-          </div>
-
-          <div class="dark-group-box" style="padding:10px;">
-            ${Object.entries(secretMap).map(([code, info]) => `
-              <div class="not-row-item" style="padding:6px;">
-                <div class="nri-center">
-                  <div class="nri-title">${esc(code)}</div>
-                  <div class="nri-sub">+${fmtInt(info.reward)} HOLD</div>
-                </div>
-                <button type="button" class="skin-pill-btn" data-del-secret="${esc(code)}">Oʻchirish</button>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
-
-        ${STATE.adminTab === 'tasks' ? `
-          <div class="dark-group-box" style="padding:12px;gap:8px;">
-            <strong style="font-size:13.5px;">Yangi Vazifa (Task) Qoʻshish</strong>
-            <input type="text" id="admTaskTitle" placeholder="Vazifa nomi (masalan: Join @insider)" class="apple-search-input" />
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <select id="admTaskCat" class="apple-search-input">
-                <option value="specials">Specials</option>
-                <option value="onboarding">Onboarding</option>
-                <option value="web3">Web3 world</option>
-              </select>
-              <input type="text" id="admTaskIcon" value="📢" placeholder="Emoji (📢, ⭐, 🏆)" class="apple-search-input" />
-            </div>
-            <input type="number" id="admTaskReward" value="15000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
-            <input type="text" id="admTaskLink" placeholder="Havola yoki @kanal (ixtiyoriy)" class="apple-search-input" />
-            <button type="button" class="btn-sapphire-primary" id="btnAdmAddTask">Vazifani Qoʻshish</button>
-          </div>
-
-          <div class="dark-group-box" style="padding:8px;max-height:220px;overflow-y:auto;">
-            ${quests.map(q => `
-              <div class="not-row-item" style="padding:6px;">
-                <div class="nri-center">
-                  <div class="nri-title">${esc(q.icon || '⭐')} ${esc(q.title)}</div>
-                  <div class="nri-sub">${esc(q.cat)} · +${fmtInt(q.reward)} HOLD</div>
-                </div>
-                <button type="button" class="skin-pill-btn" data-del-task="${esc(q.id)}">✕</button>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
-
-        ${STATE.adminTab === 'squads' ? `
-          <div class="dark-group-box" style="padding:12px;gap:8px;">
-            <strong style="font-size:13.5px;">Rasmiy PaxtaGram Kanal Qoʻshish</strong>
-            <input type="text" id="admSquadHandle" placeholder="@kanal_username" class="apple-search-input" />
-            <input type="text" id="admSquadName" placeholder="Kanal nomi (boʻsh qolsa avtomatik oladi)" class="apple-search-input" />
-            <button type="button" class="btn-sapphire-primary" id="btnAdmAddSquad">Tekshirish va Qoʻshish</button>
-          </div>
-
-          <div class="dark-group-box" style="padding:8px;">
-            ${squads.map(s => `
-              <div class="not-row-item" style="padding:6px;">
-                <div class="nri-center">
-                  <div class="nri-title">${esc(s.name)} ${s.verified ? '✓' : ''}</div>
-                  <div class="nri-sub">@${esc(s.handle || s.id)} · ${fmtInt(s.totalHold)} HOLD</div>
-                </div>
-                <button type="button" class="skin-pill-btn" data-del-squad="${esc(s.id)}">✕</button>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
-
-        ${STATE.adminTab === 'users' ? `
-          <div class="dark-group-box" style="padding:12px;gap:8px;">
-            <strong style="font-size:13.5px;">Foydalanuvchi Balansi va Test</strong>
-            <input type="text" id="admTargetUser" value="${esc(curUser.username)}" placeholder="@username" class="apple-search-input" />
-            <input type="number" id="admHoldDelta" value="50000" placeholder="Qoʻshiladigan HOLD miqdori" class="apple-search-input" />
-            <button type="button" class="btn-sapphire-primary" id="btnAdmGrantHold">HOLD Qoʻshish</button>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-              <button type="button" class="skin-pill-btn" id="btnAdmResetMorse" style="padding:10px;">Morzeni Reset</button>
-              <button type="button" class="skin-pill-btn" id="btnAdmResetOnboard" style="padding:10px;">Onboardingni Koʻrish</button>
-            </div>
-          </div>
-        ` : ''}
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14.5px;">🔄 Hisoblarni Reset Qilish (0 HOLD + Onboarding)</strong>
+        <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
+          Oʻz hisobingizni yoki barcha ishtirokchilarni 0 HOLD va 3-qadamli Onboarding holatiga qaytarish:
+        </p>
+        <button type="button" class="skin-pill-btn" id="btnAdmResetSelf" style="padding:12px;width:100%;">
+          🔄 Oʻz Hisobimni Reset Qilish (@${esc(curUser.username)})
+        </button>
+        <button type="button" class="skin-pill-btn danger" id="btnAdmResetAllUsers" style="padding:12px;width:100%;">
+          ⚠️ BARCHA Foydalanuvchilarni Reset Qilish (Full Season Reset)
+        </button>
       </div>
     `;
 
-    // Wire Admin Tab Switches
-    body.querySelectorAll('[data-atab]').forEach(b => {
-      b.addEventListener('click', () => {
-        STATE.adminTab = b.dataset.atab;
-        renderAdminBody(body);
-      });
-    });
-
-    // Morse actions
-    body.querySelector('#btnAdmSaveDailyMorse')?.addEventListener('click', async () => {
-      const morseWord = body.querySelector('#admMorseWord')?.value.trim();
-      const morseReward = parseInt(body.querySelector('#admMorseReward')?.value, 10) || 1000000;
+    container.querySelector('#btnAdmToggleHH')?.addEventListener('click', async () => {
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'save_morse', morseWord, morseReward })
+        body: JSON.stringify({ username: STATE.username, action: 'toggle_happy_hour' })
       });
       if (res.ok && res.user) {
         STATE.user = res.user;
         renderAll();
+        renderAdminSheet();
         showToast(res.message);
       }
     });
 
-    body.querySelector('#btnAdmAddSecret')?.addEventListener('click', async () => {
-      const code = body.querySelector('#admSecCode')?.value.trim();
-      const reward = parseInt(body.querySelector('#admSecReward')?.value, 10) || 500000;
+    container.querySelector('#btnAdmRewardSquad')?.addEventListener('click', async () => {
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'reward_top_squad', rewardAmount: 25000 })
+      });
+      if (res.ok) {
+        if (res.user) STATE.user = res.user;
+        renderAll();
+        renderAdminSheet();
+        showToast(res.message);
+      } else {
+        showToast(res.error || 'Xato');
+      }
+    });
+
+    container.querySelector('#btnAdmDrawLucky')?.addEventListener('click', async () => {
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'draw_lucky_winner' })
+      });
+      if (res.ok) {
+        if (res.user) STATE.user = res.user;
+        renderAll();
+        renderAdminSheet();
+        showToast(res.message);
+      } else {
+        showToast(res.error || 'Chiptali ishtirokchi yoʻq');
+      }
+    });
+
+    container.querySelector('#btnAdmResetSelf')?.addEventListener('click', async () => {
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername: STATE.username })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        closeAllSheets();
+        renderAll();
+        loadLeaderboardData();
+        openOnboardingStory(0);
+        showToast('Hisobingiz 0 HOLD va Onboarding holatiga qaytarildi!');
+      }
+    });
+
+    container.querySelector('#btnAdmResetAllUsers')?.addEventListener('click', async () => {
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'reset_all_users' })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        closeAllSheets();
+        renderAll();
+        loadLeaderboardData();
+        openOnboardingStory(0);
+        showToast(res.message);
+      }
+    });
+    return;
+  }
+
+  if (STATE.adminTab === 'users') {
+    container.innerHTML = `
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14px;">👤 Foydalanuvchini Boshqarish (Grant / Reset)</strong>
+        <input type="text" id="admTargetUser" value="${esc(curUser.username)}" placeholder="@username" class="apple-search-input" />
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <input type="number" id="admHoldDelta" value="50000" placeholder="HOLD (+/-)" class="apple-search-input" />
+          <input type="number" id="admStarsDelta" value="0" placeholder="Stars (+/-)" class="apple-search-input" />
+        </div>
+        <select id="admGrantSkin" class="apple-search-input">
+          <option value="">Skin berish (ixtiyoriy)</option>
+          ${(curUser.allSkins || []).map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('')}
+        </select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button type="button" class="btn-sapphire-primary" id="btnAdmGrantUser">Saqlash / Qoʻshish</button>
+          <button type="button" class="skin-pill-btn danger" id="btnAdmResetTargetUser" style="padding:12px;">🔄 Shu Userni Reset (0)</button>
+        </div>
+      </div>
+
+      <div class="not-section-heading">Barcha Foydalanuvchilar (${usersList.length})</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${usersList.map(uRow => `
+          <div class="admin-user-card">
+            <div class="admin-user-head">
+              <div>
+                <strong style="font-size:14px;color:#fff;">#${uRow.rank} ${esc(uRow.displayName || uRow.username)}</strong>
+                <span style="font-size:12px;color:var(--text-2);margin-left:6px;">@${esc(uRow.username)} · ${esc(uRow.league)}</span>
+              </div>
+              <b style="color:var(--theme-accent);font-size:13.5px;">${fmtInt(uRow.holdBalance)} HOLD</b>
+            </div>
+            <div style="font-size:11.5px;color:var(--text-2);">
+              Lifetime: ${fmtInt(uRow.lifetimeHold)} · Streak: D${uRow.streakDays} · Tickets: ${uRow.luckyTickets} 🎟️ · Onboarding: ${uRow.ogBonusClaimed ? 'Ha' : 'Yoʻq'}
+            </div>
+            <div class="admin-user-actions">
+              <button type="button" class="skin-pill-btn" data-quick-select="${esc(uRow.username)}" style="font-size:11.5px;padding:5px 10px;">Tanlash</button>
+              <button type="button" class="skin-pill-btn" data-quick-reset="${esc(uRow.username)}" style="font-size:11.5px;padding:5px 10px;">🔄 Reset 0</button>
+              <button type="button" class="skin-pill-btn" data-quick-morse="${esc(uRow.username)}" style="font-size:11.5px;padding:5px 10px;">Morze Reset</button>
+              ${uRow.username !== curUser.username ? `<button type="button" class="skin-pill-btn danger" data-quick-del="${esc(uRow.username)}" style="font-size:11.5px;padding:5px 10px;">Oʻchirish</button>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelector('#btnAdmGrantUser')?.addEventListener('click', async () => {
+      const targetUsername = container.querySelector('#admTargetUser')?.value.trim();
+      const holdDelta = parseInt(container.querySelector('#admHoldDelta')?.value, 10) || 0;
+      const starsDelta = parseInt(container.querySelector('#admStarsDelta')?.value, 10) || 0;
+      const grantSkin = container.querySelector('#admGrantSkin')?.value || '';
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, holdDelta, starsDelta, grantSkin })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        loadLeaderboardData();
+        renderAdminSheet();
+        showToast(res.message);
+      } else {
+        showToast(res.error || 'Xato');
+      }
+    });
+
+    container.querySelector('#btnAdmResetTargetUser')?.addEventListener('click', async () => {
+      const targetUsername = container.querySelector('#admTargetUser')?.value.trim();
+      if (!targetUsername) return;
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        loadLeaderboardData();
+        renderAdminSheet();
+        showToast(res.message);
+      }
+    });
+
+    container.querySelectorAll('[data-quick-select]').forEach(b => {
+      b.addEventListener('click', () => {
+        const inp = container.querySelector('#admTargetUser');
+        if (inp) {
+          inp.value = b.dataset.quickSelect;
+          inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    });
+
+    container.querySelectorAll('[data-quick-reset]').forEach(b => {
+      b.addEventListener('click', async () => {
+        const target = b.dataset.quickReset;
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername: target })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          renderAll();
+          loadLeaderboardData();
+          renderAdminSheet();
+          showToast(res.message);
+        }
+      });
+    });
+
+    container.querySelectorAll('[data-quick-morse]').forEach(b => {
+      b.addEventListener('click', async () => {
+        const target = b.dataset.quickMorse;
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername: target, resetMorse: true })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          renderAll();
+          renderAdminSheet();
+          showToast(`@${target} uchun Morze reset qilindi!`);
+        }
+      });
+    });
+
+    container.querySelectorAll('[data-quick-del]').forEach(b => {
+      b.addEventListener('click', async () => {
+        const target = b.dataset.quickDel;
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'delete_user', targetUsername: target })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          renderAll();
+          loadLeaderboardData();
+          renderAdminSheet();
+          showToast(res.message);
+        }
+      });
+    });
+    return;
+  }
+
+  if (STATE.adminTab === 'morse') {
+    container.innerHTML = `
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14px;">🕵️ Kunlik Morze Soʻzi va Maslahati (Hint)</strong>
+        <input type="text" id="admMorseWord" value="${esc(curUser.morse?.word || 'HOLD')}" placeholder="Masalan: HOLD" class="apple-search-input" />
+        <input type="text" id="admMorseHint" value="${esc(curUser.morse?.hint || '')}" placeholder="Earn boʻlimida koʻrinadigan maslahat (hint)" class="apple-search-input" />
+        <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 25000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+        <button type="button" class="btn-sapphire-primary" id="btnAdmSaveDailyMorse">Kunlik Morzeni Saqlash</button>
+      </div>
+
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14px;">➕ Yangi Maxfiy Morze Kod Qoʻshish</strong>
+        <input type="text" id="admSecCode" placeholder="Maxfiy soʻz (masalan: BONUS)" class="apple-search-input" />
+        <input type="number" id="admSecReward" value="25000" placeholder="HOLD mukofoti" class="apple-search-input" />
+        <button type="button" class="btn-sapphire-primary" id="btnAdmAddSecret">Maxfiy Kod Qoʻshish</button>
+      </div>
+
+      <div class="dark-group-box" style="padding:10px;">
+        ${Object.entries(secretMap).map(([code, info]) => `
+          <div class="not-row-item" style="padding:8px;">
+            <div class="nri-center">
+              <div class="nri-title">${esc(code)}</div>
+              <div class="nri-sub">+${fmtInt(info.reward)} HOLD</div>
+            </div>
+            <button type="button" class="skin-pill-btn danger" data-del-secret="${esc(code)}">Oʻchirish</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelector('#btnAdmSaveDailyMorse')?.addEventListener('click', async () => {
+      const morseWord = container.querySelector('#admMorseWord')?.value.trim();
+      const morseHint = container.querySelector('#admMorseHint')?.value.trim();
+      const morseReward = parseInt(container.querySelector('#admMorseReward')?.value, 10) || 25000;
+      const res = await api('/api/hold/admin-config', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, action: 'save_morse', morseWord, morseHint, morseReward })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        renderAll();
+        renderAdminSheet();
+        showToast(res.message);
+      }
+    });
+
+    container.querySelector('#btnAdmAddSecret')?.addEventListener('click', async () => {
+      const code = container.querySelector('#admSecCode')?.value.trim();
+      const reward = parseInt(container.querySelector('#admSecReward')?.value, 10) || 25000;
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, action: 'add_secret_code', code, reward })
@@ -1296,12 +1947,12 @@ function openHoldAdminModal() {
       if (res.ok && res.user) {
         STATE.user = res.user;
         renderAll();
-        renderAdminBody(body);
+        renderAdminSheet();
         showToast(res.message);
       }
     });
 
-    body.querySelectorAll('[data-del-secret]').forEach(b => {
+    container.querySelectorAll('[data-del-secret]').forEach(b => {
       b.addEventListener('click', async () => {
         const res = await api('/api/hold/admin-config', {
           method: 'POST',
@@ -1310,18 +1961,50 @@ function openHoldAdminModal() {
         if (res.ok && res.user) {
           STATE.user = res.user;
           renderAll();
-          renderAdminBody(body);
+          renderAdminSheet();
         }
       });
     });
+    return;
+  }
 
-    // Task actions
-    body.querySelector('#btnAdmAddTask')?.addEventListener('click', async () => {
-      const title = body.querySelector('#admTaskTitle')?.value.trim();
-      const cat = body.querySelector('#admTaskCat')?.value;
-      const icon = body.querySelector('#admTaskIcon')?.value.trim();
-      const reward = parseInt(body.querySelector('#admTaskReward')?.value, 10) || 150000;
-      const link = body.querySelector('#admTaskLink')?.value.trim();
+  if (STATE.adminTab === 'tasks') {
+    container.innerHTML = `
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14px;">📋 Yangi Vazifa (Task) Qoʻshish</strong>
+        <input type="text" id="admTaskTitle" placeholder="Vazifa nomi (masalan: Join @kanal)" class="apple-search-input" />
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <select id="admTaskCat" class="apple-search-input">
+            <option value="specials">Specials</option>
+            <option value="onboarding">Onboarding</option>
+            <option value="web3">Web3 world</option>
+          </select>
+          <input type="text" id="admTaskIcon" value="📢" placeholder="Icon (📢, ⭐, 🏆)" class="apple-search-input" />
+        </div>
+        <input type="number" id="admTaskReward" value="15000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+        <input type="text" id="admTaskLink" placeholder="@kanal_username (bot obunani 100% tekshiradi)" class="apple-search-input" />
+        <button type="button" class="btn-sapphire-primary" id="btnAdmAddTask">Vazifani Qoʻshish</button>
+      </div>
+
+      <div class="dark-group-box" style="padding:8px;">
+        ${quests.map(q => `
+          <div class="not-row-item" style="padding:8px;">
+            <div class="nri-center">
+              <div class="nri-title">${esc(q.icon || '⭐')} ${esc(q.title)}</div>
+              <div class="nri-sub">${esc(q.cat)} · +${fmtInt(q.reward)} HOLD ${q.link ? `· ${esc(q.link)}` : ''}</div>
+            </div>
+            <button type="button" class="skin-pill-btn danger" data-del-task="${esc(q.id)}">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelector('#btnAdmAddTask')?.addEventListener('click', async () => {
+      const title = container.querySelector('#admTaskTitle')?.value.trim();
+      const cat = container.querySelector('#admTaskCat')?.value;
+      const icon = container.querySelector('#admTaskIcon')?.value.trim();
+      const reward = parseInt(container.querySelector('#admTaskReward')?.value, 10) || 15000;
+      const link = container.querySelector('#admTaskLink')?.value.trim();
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, action: 'add_quest', title, cat, icon, reward, link })
@@ -1329,12 +2012,12 @@ function openHoldAdminModal() {
       if (res.ok && res.user) {
         STATE.user = res.user;
         renderAll();
-        renderAdminBody(body);
+        renderAdminSheet();
         showToast(res.message);
       }
     });
 
-    body.querySelectorAll('[data-del-task]').forEach(b => {
+    container.querySelectorAll('[data-del-task]').forEach(b => {
       b.addEventListener('click', async () => {
         const res = await api('/api/hold/admin-config', {
           method: 'POST',
@@ -1343,15 +2026,38 @@ function openHoldAdminModal() {
         if (res.ok && res.user) {
           STATE.user = res.user;
           renderAll();
-          renderAdminBody(body);
+          renderAdminSheet();
         }
       });
     });
+    return;
+  }
 
-    // Squad actions
-    body.querySelector('#btnAdmAddSquad')?.addEventListener('click', async () => {
-      const handle = body.querySelector('#admSquadHandle')?.value.trim();
-      const name = body.querySelector('#admSquadName')?.value.trim();
+  if (STATE.adminTab === 'squads') {
+    container.innerHTML = `
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14px;">🏛 Rasmiy PaxtaGram Kanal Squad Qoʻshish</strong>
+        <input type="text" id="admSquadHandle" placeholder="@kanal_username" class="apple-search-input" />
+        <input type="text" id="admSquadName" placeholder="Kanal nomi (boʻsh qolsa avtomatik oladi)" class="apple-search-input" />
+        <button type="button" class="btn-sapphire-primary" id="btnAdmAddSquad">Tekshirish va Qoʻshish</button>
+      </div>
+
+      <div class="dark-group-box" style="padding:8px;">
+        ${squads.map(s => `
+          <div class="not-row-item" style="padding:8px;">
+            <div class="nri-center">
+              <div class="nri-title">${esc(s.name)} ${s.verified ? '✓' : ''}</div>
+              <div class="nri-sub">@${esc(s.handle || s.id)} · ${fmtInt(s.members || 0)} a'zo · ${fmtInt(s.totalHold)} HOLD</div>
+            </div>
+            <button type="button" class="skin-pill-btn danger" data-del-squad="${esc(s.id)}">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelector('#btnAdmAddSquad')?.addEventListener('click', async () => {
+      const handle = container.querySelector('#admSquadHandle')?.value.trim();
+      const name = container.querySelector('#admSquadName')?.value.trim();
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, action: 'add_squad', handle, name })
@@ -1359,12 +2065,14 @@ function openHoldAdminModal() {
       if (res.ok && res.user) {
         STATE.user = res.user;
         renderAll();
-        renderAdminBody(body);
+        renderAdminSheet();
         showToast(res.message);
+      } else {
+        showToast(res.error || 'Kanal topilmadi');
       }
     });
 
-    body.querySelectorAll('[data-del-squad]').forEach(b => {
+    container.querySelectorAll('[data-del-squad]').forEach(b => {
       b.addEventListener('click', async () => {
         const res = await api('/api/hold/admin-config', {
           method: 'POST',
@@ -1373,47 +2081,11 @@ function openHoldAdminModal() {
         if (res.ok && res.user) {
           STATE.user = res.user;
           renderAll();
-          renderAdminBody(body);
+          renderAdminSheet();
         }
       });
     });
-
-    // User actions
-    body.querySelector('#btnAdmGrantHold')?.addEventListener('click', async () => {
-      const targetUsername = body.querySelector('#admTargetUser')?.value.trim();
-      const holdDelta = parseInt(body.querySelector('#admHoldDelta')?.value, 10) || 0;
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, holdDelta })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        showToast(res.message);
-      }
-    });
-
-    body.querySelector('#btnAdmResetMorse')?.addEventListener('click', async () => {
-      const targetUsername = body.querySelector('#admTargetUser')?.value.trim();
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, resetMorse: true })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        closeModal();
-        showToast('Morze reset qilindi!');
-      }
-    });
-
-    body.querySelector('#btnAdmResetOnboard')?.addEventListener('click', () => {
-      closeModal();
-      openOnboardingStory(0);
-    });
-  };
-
-  openModal('Admin Studio', '<div></div>', renderAdminBody);
+  }
 }
 
 // ============================================================================
@@ -1424,6 +2096,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.Telegram?.WebApp?.ready?.();
     window.Telegram?.WebApp?.expand?.();
   } catch {}
+  notifyPaxtaMiniApp('web_app_ready');
+  notifyPaxtaMiniApp('web_app_expand');
+
+  // Official PaxtaGram Login Overlay Wiring
+  document.getElementById('btnPaxtaLoginSubmit')?.addEventListener('click', handlePaxtaLoginSubmit);
+  document.getElementById('inpPaxtaLoginUsername')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handlePaxtaLoginSubmit();
+  });
 
   // Onboarding Continue Button
   document.getElementById('btnOsContinue')?.addEventListener('click', advanceOnboardingStory);
@@ -1440,13 +2120,30 @@ window.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', closeAllSheets);
   });
 
-  // Top Pill & League Triggers
+  // Top Pill, Arena Streak Pill, League & Admin Sheet Triggers
   document.getElementById('btnSquadPill')?.addEventListener('click', () => openSheet('frens'));
   document.getElementById('btnOpenLeagues')?.addEventListener('click', () => openSheet('leagues'));
+  document.getElementById('btnArenaStreakPill')?.addEventListener('click', () => {
+    if (STATE.user?.streak?.canClaimToday) {
+      claimDailyStreakBonus();
+    } else {
+      openSheet('earn');
+    }
+  });
   document.getElementById('btnOpenStarsTopup')?.addEventListener('click', () => openTopUpStarsModal(250));
-  document.getElementById('btnOpenAdminModal')?.addEventListener('click', openHoldAdminModal);
+  document.getElementById('btnOpenAdminModal')?.addEventListener('click', () => openSheet('admin'));
   document.getElementById('btnEarnInviteCard')?.addEventListener('click', () => openSheet('frens'));
   document.getElementById('btnAddCustomSquad')?.addEventListener('click', openAddPaxtaChannelSquadModal);
+
+  // Admin Full-Screen Sheet Tab Switcher
+  document.querySelectorAll('#adminMainTabs .nseg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#adminMainTabs .nseg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      STATE.adminTab = btn.dataset.atab || 'overview';
+      renderAdminSheet();
+    });
+  });
 
   // Switch to Top-10 NFT tab when clicking Stats pill in Leagues
   document.getElementById('btnSwitchTop10Tab')?.addEventListener('click', () => {
@@ -1474,10 +2171,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     const morseHint = curWord.split('').map(c => `${c} (${(MORSE_MAP[c] || '').replace(/\./g, '•').replace(/-/g, '—')})`).join(' · ');
     openModal('Full guide', `
       <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:var(--text-2);line-height:1.5;">
-        <p><b style="color:#fff;">🪙 Havoda Muallaq Morze Shifri:</b> Markazdagi tangani qisqa bosing (<b>•</b>) yoki bosib ushlab turing (<b>—</b>). Birinchi harf toʻgʻri terilishi bilan harflar havoda muallaq paydo boʻladi!</p>
+        <p><b style="color:#fff;">🪙 Havoda Muallaq Morze Shifri:</b> Markazdagi tangani qisqa bosing (<b>•</b>) yoki bosib ushlab turing (<b>—</b>). Birinchi harf toʻgʻri terilishi bilan harflar havoda muallaq paydo boʻladi va <b>+1 Lucky Ticket</b> ham beradi!</p>
         <p style="background:rgba(255,255,255,0.06);padding:10px;border-radius:12px;color:#fff;font-size:12.5px;">
           Bugungi shifr: <b>${esc(morseHint)}</b>
         </p>
+        <p><b style="color:#fff;">🔥 7-Kunlik Streak & 2x Happy Hour:</b> Har kuni kirib zanjirni uzmang (7-kuni +50K HOLD va Cookie Skin) hamda 20:00–21:00 da 2x Tap rejimida oʻynang.</p>
         <p><b style="color:#fff;">🏆 Top-10 NFT:</b> Reytingda Top-10 oʻrinni egallagan ishtirokchilar haqiqiy NFT sovgʻalar va HOLD mukofotlarini qoʻlga kiritadilar.</p>
       </div>
     `);
@@ -1525,7 +2223,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Main 3D Coin Pointer Events (100% Reliable Tap + Hold Dash Morse!)
   const coinBtn = document.getElementById('holdCoinBtn');
   if (coinBtn) {
-    // Prevent contextmenu on long-press so mobile browsers never cancel the hold!
     coinBtn.addEventListener('contextmenu', (e) => e.preventDefault());
     coinBtn.addEventListener('dragstart', (e) => e.preventDefault());
 
@@ -1541,7 +2238,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       const dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       coinBtn.style.transform = `rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg) scale(0.955)`;
 
-      // Haptic & visual pulse right at 195ms so the user feels their press became a Dash (—)!
       clearTimeout(STATE.dashFeedbackTimer);
       STATE.dashFeedbackTimer = setTimeout(() => {
         if (STATE.pointerDownTime > 0) {
@@ -1566,14 +2262,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     coinBtn.addEventListener('pointercancel', finishCoinPress);
   }
 
-  // Copy Referral Link
+  // Copy Referral Link / Username In-App (Never opens an external browser tab!)
   document.getElementById('btnCopyRefLink')?.addEventListener('click', async () => {
-    const link = `https://paxta.online/HOLDbot?start=ref_${STATE.username}`;
+    const shareText = `https://paxta.online/HOLDbot?start=ref_${STATE.username}`;
     try {
-      await navigator.clipboard.writeText(link);
-      showToast('Invite link copied!');
+      await navigator.clipboard.writeText(shareText);
+      showToast(`Taklif havolasi nusxalandi! Yoki doʻstingizga @${STATE.username} nikingizni bering.`);
     } catch {
-      showToast(link);
+      showToast(`Nikingiz: @${STATE.username}`);
     }
   });
 

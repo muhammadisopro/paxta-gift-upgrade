@@ -1348,3 +1348,151 @@ body.turbo-active .coin-radial-glow {
 .hold-toast[hidden] {
   display: none !important;
 }
+
+/* ==================== ARENA LIVE PILLS & DAILY STREAK ==================== */
+.arena-live-pills-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.arena-streak-pill,
+.arena-hh-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform 0.14s ease, background 0.15s ease;
+}
+
+.arena-streak-pill:active {
+  transform: scale(0.95);
+}
+
+.arena-streak-pill.ready {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(239, 68, 68, 0.25));
+  border-color: rgba(251, 191, 36, 0.55);
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.28);
+}
+
+.arena-hh-pill {
+  background: linear-gradient(135deg, rgba(56, 182, 255, 0.24), rgba(0, 102, 255, 0.28));
+  border-color: rgba(56, 182, 255, 0.55);
+  color: #e0f2fe;
+}
+
+.arena-hh-pill[hidden] {
+  display: none !important;
+}
+
+.streak-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.streak-day-cell {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  padding: 7px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.streak-day-cell.claimed {
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.45);
+}
+
+.streak-day-cell.today {
+  background: linear-gradient(180deg, rgba(56, 182, 255, 0.26), rgba(0, 102, 255, 0.22));
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 14px rgba(56, 182, 255, 0.25);
+}
+
+.streak-day-num {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.streak-day-val {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* ==================== FULL-SCREEN ADMIN STUDIO ==================== */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.admin-stat-card {
+  background: var(--panel-dark);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-stat-card span {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.admin-stat-card strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.admin-user-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 11px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-user-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.skin-pill-btn.danger {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
