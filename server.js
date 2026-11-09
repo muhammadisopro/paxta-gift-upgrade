@@ -18,6 +18,10 @@ const inventoryFile = path.join(dataDir, 'inventory.json');
 const paymentsFile = path.join(dataDir, 'payments.json');
 const activityFile = path.join(dataDir, 'activity.json');
 const promocodesFile = path.join(dataDir, 'promocodes.json');
+const channelCalendarsFile = path.join(dataDir, 'channel_calendars.json');
+
+// STRICT HARDWARE-LEVEL PROTECTION FOR THE 4 FORBIDDEN NFTs (NEVER TOUCH OR TRANSFER!)
+const FORBIDDEN_GIFT_IDS = new Set([6068, 4226, 3015, 6095]);
 
 // PaxtaGram @UpgradeBot (Forge, ID: 682) configuration
 const PAXTA_BOT_TOKEN = process.env.PAXTA_BOT_TOKEN || '682:OSWsBqK5LZHWlGJmzeONb9iIjE-UV7QBQY_';
@@ -25,6 +29,8 @@ const PAXTA_API_BASE = process.env.PAXTA_API_BASE || 'https://paxta.online';
 const PUBLIC_APP_URL = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_APP_URL || 'https://paxta-gift-upgrade.onrender.com';
 const ADMIN_PAXTA_ID = 100; // Strictly ONLY PaxtaGram User ID 100 has admin access
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+const MOON_USERNAME = process.env.MOON_USERNAME || 'shade';
+const MOON_PASSWORD = process.env.MOON_PASSWORD || 'urRFEbgx5mgbWib';
 
 // Cloud Gist Persistence (ensures Render restarts/redeploys never lose user data)
 const STATE_GIST_ID = process.env.STATE_GIST_ID || '0f1aac885e21df6b689d54e0e373a1e0';
@@ -37,15 +43,51 @@ if (!fs.existsSync(paymentsFile)) fs.writeFileSync(paymentsFile, '{"invoices":{}
 if (!fs.existsSync(activityFile)) fs.writeFileSync(activityFile, '[]');
 if (!fs.existsSync(promocodesFile)) fs.writeFileSync(promocodesFile, '{}');
 
-const loadJSON = (f, fb) => {
-  try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fb; }
-};
-const saveJSON = (f, d) => {
-  const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
-  fs.renameSync(tmp, f);
+// ---- High-Speed In-Memory RAM Cache + Non-Blocking Async Disk Persistence ----
+const memStore = new Map();
+const diskWriteTimers = new Map();
+let invStatsVersion = 1;
 
-  // Instant Turso Cloud Database sync
+function hydrateMemoryFromDisk() {
+  for (const f of [usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile, indexFile, channelCalendarsFile]) {
+    if (fs.existsSync(f)) {
+      try {
+        memStore.set(f, JSON.parse(fs.readFileSync(f, 'utf8')));
+      } catch {}
+    }
+  }
+  invStatsVersion++;
+}
+
+const loadJSON = (f, fb) => {
+  if (memStore.has(f)) return memStore.get(f);
+  try {
+    const parsed = JSON.parse(fs.readFileSync(f, 'utf8'));
+    memStore.set(f, parsed);
+    return parsed;
+  } catch {
+    return fb;
+  }
+};
+
+const saveJSON = (f, d) => {
+  memStore.set(f, d);
+  if (f === inventoryFile || f === settingsFile) {
+    invStatsVersion++;
+  }
+
+  // Non-blocking debounced async disk write (never freezes Node.js event loop!)
+  if (diskWriteTimers.has(f)) clearTimeout(diskWriteTimers.get(f));
+  diskWriteTimers.set(f, setTimeout(async () => {
+    diskWriteTimers.delete(f);
+    try {
+      const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
+      await fs.promises.writeFile(tmp, JSON.stringify(d));
+      await fs.promises.rename(tmp, f);
+    } catch {}
+  }, 200));
+
+  // Instant Turso Cloud Database sync (debounced in turso.js)
   const keyMap = {
     [inventoryFile]: 'inventory',
     [usersFile]: 'users',
@@ -58,33 +100,22 @@ const saveJSON = (f, d) => {
   if (tursoKey) {
     saveToTurso(tursoKey, d);
   }
-
-  if ([usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile].includes(f)) {
-    scheduleCloudSync();
-  }
 };
 
-// ---- Cloud State Backup & Restore (Turso LibSQL Cloud DB & Gist Backup) ----
-let cloudSyncTimer = null;
-let cloudSyncInFlight = false;
-let lastCloudSyncTime = 0;
-
+// ---- Cloud State Backup & Restore (Turso LibSQL Cloud DB) ----
 async function loadCloudStateOnStartup() {
-  // 1. Primary Cloud Database: Turso LibSQL (Exclusive authoritative persistence)
   try {
     await initTursoSync(dataDir);
   } catch (err) {
     console.error('[Turso Init Error]', err.message);
   }
-
+  hydrateMemoryFromDisk();
   const localUsers = loadJSON(usersFile, {});
   const localInv = loadJSON(inventoryFile, []);
-  console.log(`📂 [TursoState] Active state: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
+  console.log(`📂 [TursoState] Active RAM state hydrated: ${Object.keys(localUsers).length} users, ${localInv.length} gifts`);
 }
 
-function scheduleCloudSync() {
-  // All persistence is handled in real-time by Turso Cloud Database (turso.js)
-}
+function scheduleCloudSync() {}
 
 function logActivity(entry) {
   const act = loadJSON(activityFile, []);
@@ -102,7 +133,11 @@ const colCache = new Map();
 
 function loadSettings() {
   const s = loadJSON(settingsFile, null);
-  if (s && s.collections) return s;
+  if (s && s.collections) {
+    if (!s.soldCalendars) s.soldCalendars = {};
+    if (!Array.isArray(s.calendarOrders)) s.calendarOrders = [];
+    return s;
+  }
   const initial = {
     collections: Object.fromEntries(index.map(c => [
       c.slug,
@@ -112,7 +147,9 @@ function loadSettings() {
         upgradePrice: c.upgradePrice !== undefined ? c.upgradePrice : 100,
         supply: c.supply || 500
       }
-    ]))
+    ])),
+    soldCalendars: {},
+    calendarOrders: []
   };
   saveJSON(settingsFile, initial);
   return initial;
@@ -150,7 +187,7 @@ function weightedPick(items) {
 
 function normalizeUrl(slug, url) {
   if (!url) return '';
-  if (url.startsWith('/a/')) return url;
+  if (url.startsWith('/a/') || url.startsWith('/calendars/')) return url;
   const m = url.match(/\/file\/gifts\/([a-z0-9]+)\/([A-Za-z0-9._-]+)$/);
   if (m) return `/a/${m[1]}/${m[2]}`;
   return url;
@@ -166,7 +203,6 @@ function formatModelForClient(slug, m) {
   let img = normalizeUrl(slug, m.img);
   let tgs = normalizeTgsToJson(slug, m.tgs || m.img);
 
-  // Auto-healing for Imperial Crown and dynamic collections: ensure valid model image & tgs
   if (slug === 'imperialcrown') {
     const c = loadCollection('imperialcrown');
     if (c) {
@@ -223,19 +259,50 @@ function formatSymbolForClient(slug, s) {
   };
 }
 
+// ---- O(1) Single-Pass Collection Stats Index ----
+let cachedStatsVersion = -1;
+let cachedSlugCounts = new Map();
+let cachedComputedStats = new Map();
+
+function ensureStatsIndex(inv) {
+  if (cachedStatsVersion === invStatsVersion) return;
+  cachedSlugCounts = new Map();
+  cachedComputedStats = new Map();
+  for (let idx = 0; idx < inv.length; idx++) {
+    const item = inv[idx];
+    const s = item.slug;
+    if (!s) continue;
+    let entry = cachedSlugCounts.get(s);
+    if (!entry) {
+      entry = { totalMinted: 0, burnedCount: 0, activeCount: 0 };
+      cachedSlugCounts.set(s, entry);
+    }
+    if (!item.isSpecialFounder && item.paid > 0) {
+      entry.totalMinted++;
+    }
+    if (item.state === 'burned' || item.state === 'converted') {
+      entry.burnedCount++;
+    } else {
+      entry.activeCount++;
+    }
+  }
+  cachedStatsVersion = invStatsVersion;
+}
+
 function computeCollectionStats(slug, inv) {
+  ensureStatsIndex(inv || loadJSON(inventoryFile, []));
+  if (cachedComputedStats.has(slug)) return cachedComputedStats.get(slug);
   const c = loadCollection(slug) || {};
   const cfg = getColConfig(slug, c);
-  const allForSlug = inv.filter(i => i.slug === slug);
-  const publicMinted = inv.filter(i => i.slug === slug && !i.isSpecialFounder && i.paid > 0);
-  const totalMinted = publicMinted.length;
-  const burnedCount = allForSlug.filter(i => i.state === 'burned' || i.state === 'converted').length;
-  const activeCount = allForSlug.filter(i => i.state !== 'burned' && i.state !== 'converted').length;
+  const counts = cachedSlugCounts.get(slug) || { totalMinted: 0, burnedCount: 0, activeCount: 0 };
+  const totalMinted = counts.totalMinted;
+  const burnedCount = counts.burnedCount;
+  const activeCount = counts.activeCount;
   const remainingToBuy = Math.max(0, cfg.supply - totalMinted);
   const circulating = slug === 'mask' && totalMinted <= 1
     ? Math.max(1, 217 - burnedCount)
     : Math.max(0, cfg.supply - burnedCount);
-  return {
+  const res = {
     ...cfg,
     totalMinted,
     burnedCount,
@@ -243,6 +310,8 @@ function computeCollectionStats(slug, inv) {
     remainingToBuy,
     circulating
   };
+  cachedComputedStats.set(slug, res);
+  return res;
 }
 
 const cleanName = (u) => String(u || '').replace(/^@/, '').trim().slice(0, 32);
@@ -328,9 +397,166 @@ async function paxtaBotCall(method, body = {}) {
   }
 }
 
+// ---- @moon PaxtaGram Client (Transfers Real Channel Desk Calendar NFTs) ----
+class MoonPaxtaClient {
+  constructor() {
+    this.cookies = new Map();
+    this.isLoggedIn = false;
+    this.user = null;
+    this.lastLoginAt = 0;
+  }
+
+  updateCookies(headers) {
+    const raw =
+      typeof headers.getSetCookie === 'function'
+        ? headers.getSetCookie()
+        : headers.get('set-cookie')
+          ? [headers.get('set-cookie')]
+          : [];
+    for (const c of raw) {
+      const firstPart = c.split(';')[0];
+      const eqIdx = firstPart.indexOf('=');
+      if (eqIdx > 0) {
+        const k = firstPart.slice(0, eqIdx).trim();
+        const v = firstPart.slice(eqIdx + 1).trim();
+        this.cookies.set(k, v);
+      }
+    }
+  }
+
+  getCookieHeader() {
+    return Array.from(this.cookies.entries())
+      .map(([k, v]) => `${k}=${v}`)
+      .join('; ');
+  }
+
+  getXsrfToken() {
+    const raw = this.cookies.get('XSRF-TOKEN') || '';
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw;
+    }
+  }
+
+  async request(apiPath, options = {}) {
+    const url = apiPath.startsWith('http') ? apiPath : `${PAXTA_API_BASE}/api${apiPath}`;
+    const headers = {
+      'User-Agent': BROWSER_UA,
+      Accept: 'application/json, text/plain, */*',
+      Referer: `${PAXTA_API_BASE}/`,
+      Cookie: this.getCookieHeader(),
+      'X-XSRF-TOKEN': this.getXsrfToken(),
+      ...(options.headers || {})
+    };
+    let body = options.body;
+    if (body && typeof body === 'object') {
+      headers['Content-Type'] = 'application/json';
+      body = JSON.stringify(body);
+    }
+    const res = await fetch(url, {
+      ...options,
+      headers,
+      body,
+      signal: AbortSignal.timeout(8000)
+    });
+    this.updateCookies(res.headers);
+    return res;
+  }
+
+  async ensureLoggedIn() {
+    if (this.isLoggedIn && Date.now() - this.lastLoginAt < 25 * 60 * 1000) {
+      return true;
+    }
+    try {
+      const csrfRes = await fetch(`${PAXTA_API_BASE}/sanctum/csrf-cookie`, {
+        headers: { 'User-Agent': BROWSER_UA, Referer: `${PAXTA_API_BASE}/` },
+        signal: AbortSignal.timeout(6000)
+      });
+      this.updateCookies(csrfRes.headers);
+
+      for (const uname of [MOON_USERNAME, 'moon', 'shade']) {
+        const loginRes = await this.request('/auth/login', {
+          method: 'POST',
+          body: { username: uname, password: MOON_PASSWORD }
+        });
+        if (loginRes.ok) {
+          const data = await loginRes.json();
+          this.user = data.user;
+          this.isLoggedIn = true;
+          this.lastLoginAt = Date.now();
+          console.log(`[@moon Client] Logged in as @${this.user?.username} (ID: ${this.user?.id})`);
+          return true;
+        }
+      }
+    } catch (err) {
+      console.error('[@moon Login Error]', err.message);
+    }
+    return false;
+  }
+
+  async resolveUserByUsername(rawUsername) {
+    const clean = String(rawUsername || '').replace(/^@/, '').trim();
+    if (!clean) return null;
+    await this.ensureLoggedIn();
+    try {
+      const res = await this.request(`/users/${encodeURIComponent(clean)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.user || null;
+    } catch {
+      return null;
+    }
+  }
+
+  async transferNftGift({ giftId, targetUserId }) {
+    const numGiftId = Number(giftId);
+    if (FORBIDDEN_GIFT_IDS.has(numGiftId)) {
+      return { ok: false, status: 403, data: { message: 'Protected personal NFT!' } };
+    }
+    await this.ensureLoggedIn();
+    try {
+      await this.request(`/user-gifts/${numGiftId}/resale`, { method: 'DELETE' });
+    } catch {}
+    const res = await this.request(`/user-gifts/${numGiftId}/transfer`, {
+      method: 'POST',
+      body: {
+        user_id: Number(targetUserId),
+        expected_price: 50
+      }
+    });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, status: res.status, data };
+  }
+}
+
+const moonClient = new MoonPaxtaClient();
+
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
+
+// Fast built-in Gzip compression for JSON responses > 1 KB (cuts 500 KB responses to ~15 KB!)
+app.use((req, res, next) => {
+  const origJson = res.json.bind(res);
+  res.json = (body) => {
+    const accept = req.headers['accept-encoding'] || '';
+    if (accept.includes('gzip')) {
+      const str = JSON.stringify(body);
+      if (str.length > 1024) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.setHeader('Content-Encoding', 'gzip');
+        res.setHeader('Vary', 'Accept-Encoding');
+        return res.send(zlib.gzipSync(Buffer.from(str, 'utf8'), { level: zlib.constants.Z_BEST_SPEED }));
+      }
+    }
+    return origJson(body);
+  };
+  next();
+});
+
+app.use('/calendars', express.static(path.join(__dirname, 'public', 'calendars'), { maxAge: '7d', immutable: true }));
+app.use('/img', express.static(path.join(__dirname, 'public', 'img'), { maxAge: '7d' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---- Health Check ----
@@ -343,15 +569,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ---- Asset proxy with disk cache ----
+// ---- Asset proxy with RAM + disk cache ----
+const assetMemCache = new Map();
+
 async function serveGiftAsset(req, res) {
   const { slug, file } = req.params;
   if (!/^[a-z0-9]+$/.test(slug) || !/^[A-Za-z0-9._-]+\.(webp|svg|json|tgs)$/.test(file)) {
     return res.sendStatus(400);
   }
-  const wantJson = file.endsWith('.json');
-  const remoteFile = wantJson ? file.replace(/\.json$/, '.tgs') : file;
-  const local = path.join(cacheDir, `${slug}__${file}`);
+  const cacheKey = `${slug}__${file}`;
   const types = {
     webp: 'image/webp',
     svg: 'image/svg+xml',
@@ -359,8 +585,21 @@ async function serveGiftAsset(req, res) {
     tgs: 'application/octet-stream'
   };
   const type = types[file.split('.').pop()];
-  res.setHeader('Cache-Control', 'public, max-age=604800');
-  if (fs.existsSync(local)) return res.type(type).send(fs.readFileSync(local));
+  res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+
+  if (assetMemCache.has(cacheKey)) {
+    return res.type(type).send(assetMemCache.get(cacheKey));
+  }
+
+  const wantJson = file.endsWith('.json');
+  const remoteFile = wantJson ? file.replace(/\.json$/, '.tgs') : file;
+  const local = path.join(cacheDir, cacheKey);
+
+  if (fs.existsSync(local)) {
+    const buf = fs.readFileSync(local);
+    if (assetMemCache.size < 600) assetMemCache.set(cacheKey, buf);
+    return res.type(type).send(buf);
+  }
 
   try {
     const r = await fetch(`https://fragment.com/file/gifts/${slug}/${remoteFile}`, {
@@ -369,7 +608,8 @@ async function serveGiftAsset(req, res) {
     if (!r.ok) return res.sendStatus(404);
     let buf = Buffer.from(await r.arrayBuffer());
     if (wantJson) buf = zlib.gunzipSync(buf);
-    fs.writeFileSync(local, buf);
+    fs.promises.writeFile(local, buf).catch(() => {});
+    if (assetMemCache.size < 600) assetMemCache.set(cacheKey, buf);
     res.type(type).send(buf);
   } catch {
     res.sendStatus(502);
@@ -378,6 +618,282 @@ async function serveGiftAsset(req, res) {
 
 app.get('/a/:slug/:file', serveGiftAsset);
 app.get('/file/gifts/:slug/:file', serveGiftAsset);
+
+// ---- Deterministic Profitable Pricing for Real Channel Desk Calendar NFTs ----
+function computeCalendarPrice(cal) {
+  const isBlack = cal.backdrop === 'Black' || cal.backdrop === 'Onyx Black';
+  const isCraft = !!cal.crafted;
+  const num = Number(cal.number || 999);
+  if (isCraft && isBlack) return 2200;
+  if (isCraft) return 1650;
+  if (isBlack) return num < 200 ? 1850 : 1500;
+  if (num < 100) return 1350;
+  if (num < 250) return 1150;
+  if (num < 600) return 1000;
+  return 950;
+}
+
+function getEnrichedChannelCalendars() {
+  const raw = loadJSON(channelCalendarsFile, []);
+  const settings = loadSettings();
+  const soldMap = settings.soldCalendars || {};
+  return raw.map(cal => {
+    const soldInfo = soldMap[cal.id] || null;
+    const priceStars = computeCalendarPrice(cal);
+    const maxTradeInDiscount = 300;
+    const isBlack = cal.backdrop === 'Black' || cal.backdrop === 'Onyx Black';
+    return {
+      ...cal,
+      priceStars,
+      minStarsWithTradeIn: Math.max(650, priceStars - maxTradeInDiscount),
+      maxTradeInDiscount,
+      isBlackBackdrop: isBlack,
+      tierLabel: cal.crafted
+        ? '🔨 Craft Eksklyuziv'
+        : isBlack
+          ? '🖤 Black Fon VIP'
+          : cal.number < 100
+            ? '👑 Top #100 Raqam'
+            : '📅 Rasmiy Kanal NFT',
+      sold: !!soldInfo,
+      soldTo: soldInfo?.buyer || null,
+      soldAt: soldInfo?.soldAt || null,
+      deliveryStatus: soldInfo?.deliveryStatus || null
+    };
+  });
+}
+
+// ---- Real Channel Desk Calendar NFTs Vitrinasi (GET /api/channel-calendars) ----
+app.get('/api/channel-calendars', (req, res) => {
+  const list = getEnrichedChannelCalendars();
+  const availableCount = list.filter(c => !c.sold).length;
+  res.json({
+    ok: true,
+    totalCount: list.length,
+    availableCount,
+    soldCount: list.length - availableCount,
+    calendars: list
+  });
+});
+
+// ---- Buy / Smart Exchange Real Channel Desk Calendar NFT (POST /api/channel-calendars/buy) ----
+app.post('/api/channel-calendars/buy', async (req, res) => {
+  const key = cleanKey(req.body.username);
+  const calendarId = String(req.body.calendarId || '').trim();
+  const tradeInGiftIds = Array.isArray(req.body.tradeInGiftIds) ? req.body.tradeInGiftIds.slice(0, 3) : [];
+  const recipientUsername = cleanName(req.body.recipientUsername || key);
+
+  const users = loadJSON(usersFile, {});
+  const inv = loadJSON(inventoryFile, []);
+  const settings = loadSettings();
+
+  if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
+
+  const allCals = getEnrichedChannelCalendars();
+  const cal = allCals.find(c => c.id === calendarId);
+  if (!cal) return res.status(404).json({ ok: false, error: 'Kalendar NFT topilmadi' });
+  if (cal.sold) return res.status(400).json({ ok: false, error: 'Ushbu Kalendar NFT allaqachon xarid qilingan!' });
+
+  // Validate optional Trade-In gifts (up to 3 upgraded gifts owned by buyer)
+  const tradeInGifts = [];
+  let tradeInDiscount = 0;
+  for (const gid of tradeInGiftIds) {
+    const g = inv.find(i => i.id === gid && i.owner === key && i.state === 'upgraded' && !i.salePrice && !i.isRealPaxtaNft);
+    if (!g) {
+      return res.status(400).json({ ok: false, error: 'Almashtirish uchun tanlangan sovgʻa topilmadi yoki sotuvda turibdi' });
+    }
+    tradeInGifts.push(g);
+    const credit = Math.min(120, Math.max(40, Math.round(((g.paid || 100) + (g.upgradePaid || 50)) * 0.45)));
+    tradeInDiscount += credit;
+  }
+  tradeInDiscount = Math.min(cal.maxTradeInDiscount || 300, tradeInDiscount);
+
+  const finalStarsPrice = Math.max(650, cal.priceStars - tradeInDiscount);
+  if ((users[key].stars || 0) < finalStarsPrice) {
+    return res.status(400).json({
+      ok: false,
+      needStars: true,
+      deficit: finalStarsPrice - (users[key].stars || 0),
+      required: finalStarsPrice,
+      balance: users[key].stars || 0,
+      error: `Yulduzlar yetarli emas: ⭐ ${finalStarsPrice} kerak (balans: ⭐ ${users[key].stars || 0})`
+    });
+  }
+
+  // Deduct Stars & burn traded-in gifts
+  const now = new Date().toISOString();
+  users[key].stars -= finalStarsPrice;
+  for (const tg of tradeInGifts) {
+    tg.state = 'converted';
+    tg.convertedAt = now;
+    tg.worn = false;
+    tg.pinned = false;
+    tg.salePrice = null;
+  }
+
+  // Attempt automated real PaxtaGram NFT transfer via @moon
+  let deliveryStatus = 'pending_transfer';
+  let deliveryMessage = 'Buyurtma qabul qilindi! Kalendar NFT PaxtaGram profilingizga oʻtkazilmoqda.';
+  let targetPaxtaId = users[key].paxtaId || null;
+
+  try {
+    if (!targetPaxtaId || cleanKey(recipientUsername) !== key) {
+      const resolved = await moonClient.resolveUserByUsername(recipientUsername);
+      if (resolved?.id) targetPaxtaId = resolved.id;
+    }
+    const lockTime = cal.tradeLockedUntil ? new Date(cal.tradeLockedUntil).getTime() : 0;
+    if (targetPaxtaId && (!lockTime || Date.now() >= lockTime)) {
+      const tx = await moonClient.transferNftGift({
+        giftId: cal.giftId,
+        targetUserId: targetPaxtaId
+      });
+      if (tx.ok) {
+        deliveryStatus = 'delivered';
+        deliveryMessage = `🎉 Real Desk Calendar #${cal.number} NFT PaxtaGram profilingizga (@${recipientUsername}) avtomatik oʻtkazildi!`;
+      }
+    }
+  } catch (err) {
+    console.error('[Calendar Auto-Transfer Error]', err.message);
+  }
+
+  // Record sale in settings
+  settings.soldCalendars = settings.soldCalendars || {};
+  settings.soldCalendars[cal.id] = {
+    calendarId: cal.id,
+    giftId: cal.giftId,
+    number: cal.number,
+    model: cal.model,
+    backdrop: cal.backdrop,
+    buyer: key,
+    recipientUsername,
+    targetPaxtaId,
+    paidStars: finalStarsPrice,
+    tradeInCount: tradeInGifts.length,
+    tradeInDiscount,
+    deliveryStatus,
+    soldAt: now
+  };
+  settings.calendarOrders = settings.calendarOrders || [];
+  settings.calendarOrders.unshift(settings.soldCalendars[cal.id]);
+
+  // Also add the verified Real PaxtaGram NFT card into the user's @UpgradeBot inventory showcase!
+  const nftGiftRecord = {
+    id: `nft_cal_${cal.number}_${Date.now().toString(36)}`,
+    owner: key,
+    ownerName: users[key].displayName || key,
+    slug: 'deskcalendar',
+    name: 'Desk Calendar (Real NFT)',
+    thumb: cal.image,
+    baseTgs: cal.image,
+    supply: 2059,
+    state: 'upgraded',
+    crafted: !!cal.crafted,
+    isRealPaxtaNft: true,
+    realGiftId: cal.giftId,
+    paxtaNftLink: cal.link,
+    deliveryStatus,
+    hidden: false,
+    worn: false,
+    pinned: false,
+    salePrice: null,
+    paid: finalStarsPrice,
+    upgradePaid: 0,
+    number: cal.number,
+    model: {
+      id: cal.model,
+      name: cal.model,
+      rarity: cal.crafted ? 5 : 15,
+      pct: cal.crafted ? 0.5 : 1.5,
+      crafted: !!cal.crafted,
+      tier: cal.crafted ? 'legendary' : null,
+      img: cal.image,
+      tgs: ''
+    },
+    backdrop: {
+      id: cal.backdrop,
+      name: cal.backdrop,
+      rarity: cal.isBlackBackdrop ? 8 : 20,
+      pct: cal.isBlackBackdrop ? 0.8 : 2.0,
+      center: cal.backdropColors?.center || '#363738',
+      edge: cal.backdropColors?.edge || '#0e0f0f',
+      pattern: cal.backdropColors?.edge || '#000000',
+      text: cal.backdropColors?.text || '#f3f4f8'
+    },
+    symbol: {
+      id: cal.pattern,
+      name: cal.pattern,
+      rarity: 12,
+      pct: 1.2,
+      img: ''
+    },
+    boughtAt: now,
+    upgradedAt: now
+  };
+  inv.push(nftGiftRecord);
+
+  saveJSON(usersFile, users);
+  saveJSON(inventoryFile, inv);
+  saveJSON(settingsFile, settings);
+
+  logActivity({
+    type: 'buy_real_nft',
+    actor: key,
+    actorName: users[key].displayName || key,
+    giftId: nftGiftRecord.id,
+    giftName: `Desk Calendar #${cal.number} (Real NFT)`,
+    giftNumber: cal.number,
+    slug: 'deskcalendar',
+    modelName: cal.model,
+    thumb: cal.image,
+    price: finalStarsPrice
+  });
+
+  // Notify Admin (ID 100) via @UpgradeBot
+  paxtaBotCall('sendMessage', {
+    chat_id: ADMIN_PAXTA_ID,
+    text: `📅 *YANGI REAL KALENDAR NFT XARIDI!*\n\n🎁 NFT: *Desk Calendar #${cal.number}* (${cal.model} · ${cal.backdrop})\n👤 Xaridor: *@${key}* (PaxtaGram: *@${recipientUsername}*)\n💰 Toʻlandi: *⭐ ${finalStarsPrice} Stars*${tradeInGifts.length ? ` (+${tradeInGifts.length} ta sovgʻa Trade-In)` : ''}\n📦 Holat: *${deliveryStatus === 'delivered' ? '✅ Avtomatik oʻtkazildi' : '⏳ Oʻtkazish kutilmoqda'}*\n🔗 Havola: ${cal.link}`,
+    parse_mode: 'Markdown'
+  }).catch(() => {});
+
+  res.json({
+    ok: true,
+    calendar: { ...cal, sold: true, soldTo: key, deliveryStatus },
+    gift: enrichGift(nftGiftRecord, inv, users),
+    newBalance: users[key].stars,
+    deliveryStatus,
+    message: deliveryMessage
+  });
+});
+
+// ---- Admin Manual Trigger for Real Calendar NFT Transfer (ID: 100) ----
+app.post('/api/admin/calendar-deliver', async (req, res) => {
+  if (!isRequestAdmin(req)) {
+    return res.status(403).json({ ok: false, error: 'Faqat Admin (ID 100) uchun' });
+  }
+  const { calendarId, targetUsername } = req.body;
+  const settings = loadSettings();
+  const order = settings.soldCalendars?.[calendarId];
+  if (!order) return res.status(404).json({ ok: false, error: 'Buyurtma topilmadi' });
+
+  const uname = cleanName(targetUsername || order.recipientUsername || order.buyer);
+  const resolved = await moonClient.resolveUserByUsername(uname);
+  if (!resolved?.id) {
+    return res.status(400).json({ ok: false, error: `PaxtaGram'da @${uname} foydalanuvchisi topilmadi` });
+  }
+
+  const tx = await moonClient.transferNftGift({
+    giftId: order.giftId,
+    targetUserId: resolved.id
+  });
+  if (!tx.ok) {
+    return res.status(400).json({ ok: false, error: tx.data?.message || 'Transfer amalga oshmadi (50 Stars balans yoki trade-lock tekshiring)' });
+  }
+
+  order.deliveryStatus = 'delivered';
+  order.deliveredAt = new Date().toISOString();
+  saveJSON(settingsFile, settings);
+  res.json({ ok: true, order });
+});
 
 // ---- Enrich gift helper ----
 function enrichGift(g, inv, users) {
@@ -527,9 +1043,11 @@ app.get('/api/admin/collections', (req, res) => {
       craftModelsCount: c.craftModelsCount || 0
     };
   });
+  const settings = loadSettings();
   res.json({
     ok: true,
     collections: list,
+    calendarOrders: settings.calendarOrders || [],
     usersCount: Object.keys(users).length,
     totalGifts: inv.filter(i => i.state !== 'burned' && i.state !== 'converted').length,
     burnedGifts: inv.filter(i => i.state === 'burned').length,
@@ -980,6 +1498,7 @@ app.post('/api/user/login', (req, res) => {
   const isAdmin = Number(effectivePaxtaId) === ADMIN_PAXTA_ID;
   const authToken = createSessionToken(key, effectivePaxtaId);
   const profile = buildPublicUserProfile(userRecord, inv, users, true);
+  const myGifts = profile.gifts;
 
   res.json({
     ok: true,
@@ -988,8 +1507,8 @@ app.post('/api/user/login', (req, res) => {
       ...userRecord,
       isAdmin
     },
-    profile,
-    inventory: profile.gifts
+    profile: { ...profile, gifts: [] },
+    inventory: myGifts
   });
 });
 
@@ -1023,7 +1542,6 @@ app.get('/api/users/:username/profile', (req, res) => {
 
   let userObj = users[targetKey];
   if (!userObj) {
-    // Also check if any gifts belong to targetKey
     const hasGifts = inv.some(i => i.owner === targetKey && i.state !== 'burned');
     if (!hasGifts) {
       return res.status(404).json({ ok: false, error: `@${targetKey} profili topilmadi` });
@@ -1045,42 +1563,89 @@ app.get('/api/users/:username/profile', (req, res) => {
   });
 });
 
-// ---- Users / Collectors Leaderboard & Search ----
+// ---- O(N) Single-Pass Users / Collectors Leaderboard & Search ----
 app.get('/api/users', (req, res) => {
   const q = String(req.query.q || '').trim().toLowerCase().replace(/^@/, '');
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
 
+  // Group public active gifts by owner in ONE single pass!
+  const giftsByOwner = new Map();
+  for (let idx = 0; idx < inv.length; idx++) {
+    const g = inv[idx];
+    if (!g.owner || g.state === 'burned' || g.state === 'converted' || g.hidden) continue;
+    let arr = giftsByOwner.get(g.owner);
+    if (!arr) {
+      arr = [];
+      giftsByOwner.set(g.owner, arr);
+    }
+    arr.push(g);
+  }
+
   const allKeys = new Set([
     ...Object.keys(users),
-    ...inv.filter(i => i.state !== 'burned' && i.state !== 'converted').map(i => i.owner)
+    ...giftsByOwner.keys()
   ]);
 
   const list = [];
   for (const k of allKeys) {
     const u = users[k] || { username: k, displayName: k, stars: 0 };
     if (q && !k.includes(q) && !(u.displayName || '').toLowerCase().includes(q)) continue;
-    const p = buildPublicUserProfile(u, inv, users, false);
+
+    const rawGifts = giftsByOwner.get(k) || [];
+    let upgradedCount = 0;
+    let craftedCount = 0;
+    let onSaleCount = 0;
+    let collectionValue = 0;
+    let wornRaw = null;
+    const pinnedRaws = [];
+
+    for (let i = 0; i < rawGifts.length; i++) {
+      const rg = rawGifts[i];
+      const st = computeCollectionStats(rg.slug, inv);
+      const val = rg.salePrice || (rg.paid || st.price) + (rg.upgradePaid || 0);
+      collectionValue += val;
+      if (rg.state === 'upgraded') {
+        upgradedCount++;
+        if (rg.worn && !wornRaw) wornRaw = rg;
+        if (rg.pinned && pinnedRaws.length < 4) pinnedRaws.push(rg);
+      }
+      if (rg.crafted) craftedCount++;
+      if (rg.salePrice > 0) onSaleCount++;
+    }
+
+    const wornGift = wornRaw ? enrichGift(wornRaw, inv, users) : null;
+    const pinnedPreviews = pinnedRaws.map(pg => {
+      const eg = enrichGift(pg, inv, users);
+      return {
+        id: eg.id,
+        name: eg.name,
+        number: eg.number,
+        img: eg.model?.img || eg.thumb,
+        backdrop: eg.backdrop
+      };
+    });
+
     list.push({
-      username: p.username,
-      displayName: p.displayName,
-      bio: p.bio,
-      avatarUrl: p.avatarUrl,
-      stats: p.stats,
-      wornGift: p.wornGift ? {
-        id: p.wornGift.id,
-        name: p.wornGift.name,
-        number: p.wornGift.number,
-        model: p.wornGift.model,
-        backdrop: p.wornGift.backdrop
+      username: u.username || k,
+      displayName: u.displayName || u.username || k,
+      bio: u.bio || '',
+      avatarUrl: u.avatarUrl || null,
+      stats: {
+        totalGifts: rawGifts.length,
+        upgradedCount,
+        craftedCount,
+        onSaleCount,
+        collectionValue
+      },
+      wornGift: wornGift ? {
+        id: wornGift.id,
+        name: wornGift.name,
+        number: wornGift.number,
+        model: wornGift.model,
+        backdrop: wornGift.backdrop
       } : null,
-      pinnedPreviews: p.pinnedGifts.slice(0, 4).map(g => ({
-        id: g.id,
-        name: g.name,
-        number: g.number,
-        img: g.model?.img || g.thumb,
-        backdrop: g.backdrop
-      }))
+      pinnedPreviews
     });
   }
 
@@ -1380,9 +1945,11 @@ app.post('/api/market/buy', async (req, res) => {
     };
   }
 
-  // Atomic Stars transfer & Gift ownership transfer
+  // Atomic Stars transfer & Gift ownership transfer (10% Platform Fee, 90% Seller Proceeds)
+  const platformFee = Math.max(1, Math.round(price * 0.10));
+  const sellerProceeds = Math.max(1, price - platformFee);
   users[buyerKey].stars -= price;
-  users[sellerKey].stars = (users[sellerKey].stars || 0) + price;
+  users[sellerKey].stars = (users[sellerKey].stars || 0) + sellerProceeds;
 
   gift.owner = buyerKey;
   gift.ownerName = users[buyerKey].displayName || buyerKey;
@@ -1418,7 +1985,7 @@ app.post('/api/market/buy', async (req, res) => {
   if (users[sellerKey].paxtaId) {
     paxtaBotCall('sendMessage', {
       chat_id: users[sellerKey].paxtaId,
-      text: `🎉 *Sovgʻangiz Marketda sotildi!*\n\n🎁 *${gift.name} #${gift.number}* (${enriched.model?.name || ''})\n👤 Xaridor: *@${buyerKey}*\n💰 Narxi: *+⭐ ${price}*\n🏦 Yangi balansingiz: *⭐ ${users[sellerKey].stars}*`,
+      text: `🎉 *Sovgʻangiz Marketda sotildi!*\n\n🎁 *${gift.name} #${gift.number}* (${enriched.model?.name || ''})\n👤 Xaridor: *@${buyerKey}*\n💰 Sotuv narxi: *⭐ ${price}*\n💎 Sizga tushdi (90%): *+⭐ ${sellerProceeds}*\n🏦 Yangi balansingiz: *⭐ ${users[sellerKey].stars}*`,
       parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [
@@ -1451,6 +2018,7 @@ app.get('/api/gifts/:id/upgrade', (req, res) => {
   res.json({
     ok: true,
     price: stats.upgradePrice,
+    isReupgrade: gift.state === 'upgraded',
     can_afford: balance >= stats.upgradePrice,
     balance_stars: balance,
     models: (c.models || []).map(m => formatModelForClient(c.slug, m)),
@@ -1459,7 +2027,7 @@ app.get('/api/gifts/:id/upgrade', (req, res) => {
   });
 });
 
-// ---- Upgrade a regular gift -> unique collectible ----
+// ---- Upgrade a regular gift OR Re-Upgrade (VIP Tuning) an upgraded gift -> 100% Guaranteed ----
 app.post('/api/gifts/upgrade', (req, res) => {
   const key = cleanKey(req.body.username);
   const users = loadJSON(usersFile, {});
@@ -1467,9 +2035,15 @@ app.post('/api/gifts/upgrade', (req, res) => {
   const gift = inv.find(i => i.id === req.body.giftId && i.owner === key && i.state !== 'burned');
   if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval kiring' });
   if (!gift) return res.status(404).json({ ok: false, error: 'Sovg\'a topilmadi' });
-  if (gift.state !== 'regular') return res.status(400).json({ ok: false, error: 'Bu sovg\'a allaqachon yaxshilangan' });
+  if (gift.isRealPaxtaNft) {
+    return res.status(400).json({ ok: false, error: 'Real PaxtaGram NFT kalendarni oʻzgartirib boʻlmaydi' });
+  }
+  if (gift.salePrice && gift.salePrice > 0) {
+    return res.status(400).json({ ok: false, error: 'Avval sovgʻani sotuvdan oling' });
+  }
 
   const c = loadCollection(gift.slug);
+  if (!c) return res.status(404).json({ ok: false, error: 'Kolleksiya topilmadi' });
   const stats = computeCollectionStats(c.slug, inv);
   if (users[key].stars < stats.upgradePrice) {
     return res.status(400).json({
@@ -1483,9 +2057,14 @@ app.post('/api/gifts/upgrade', (req, res) => {
   }
 
   users[key].stars -= stats.upgradePrice;
-  const existingNums = new Set(inv.filter(i => i.slug === c.slug && typeof i.number === 'number' && i.number > 0).map(i => i.number));
-  let nextNum = 1;
-  while (existingNums.has(nextNum)) nextNum++;
+
+  // Preserve serial number if already upgraded (VIP Tuning), otherwise assign next serial number
+  let nextNum = gift.number;
+  if (!nextNum) {
+    const existingNums = new Set(inv.filter(i => i.slug === c.slug && typeof i.number === 'number' && i.number > 0).map(i => i.number));
+    nextNum = 1;
+    while (existingNums.has(nextNum)) nextNum++;
+  }
 
   const model = weightedPick(c.models);
   const backdrop = weightedPick(c.backdrops);
@@ -1498,7 +2077,7 @@ app.post('/api/gifts/upgrade', (req, res) => {
     model: formatModelForClient(c.slug, model),
     backdrop: formatBackdropForClient(backdrop),
     symbol: formatSymbolForClient(c.slug, symbol),
-    upgradePaid: stats.upgradePrice,
+    upgradePaid: (gift.upgradePaid || 0) + stats.upgradePrice,
     upgradedAt: new Date().toISOString()
   });
 
@@ -1523,7 +2102,7 @@ app.post('/api/gifts/upgrade', (req, res) => {
   res.json({ ok: true, gift: enriched, newBalance: users[key].stars });
 });
 
-// ---- Preview Craft Data (GET /api/gifts/:id/craft) ----
+// ---- Preview Craft Data (GET /api/gifts/:id/craft) — 100% Guaranteed Non-Gambling Craft ----
 app.get('/api/gifts/:id/craft', (req, res) => {
   const key = cleanKey(req.query.username || 'user');
   const users = loadJSON(usersFile, {});
@@ -1535,13 +2114,13 @@ app.get('/api/gifts/:id/craft', (req, res) => {
   if (!c) return res.status(404).json({ ok: false, error: 'Kolleksiya topilmadi' });
 
   const candidates = inv
-    .filter(i => i.owner === key && i.slug === gift.slug && i.state === 'upgraded' && i.id !== gift.id && !i.salePrice)
+    .filter(i => i.owner === key && i.slug === gift.slug && i.state === 'upgraded' && i.id !== gift.id && !i.salePrice && !i.isRealPaxtaNft)
     .map(g => {
       const eg = enrichGift(g, inv, users);
       return {
         id: eg.id,
         number: eg.number,
-        chance: eg.crafted ? 270 : 240,
+        chance: 250,
         crafted: !!eg.crafted,
         model: eg.model,
         backdrop: eg.backdrop,
@@ -1552,27 +2131,29 @@ app.get('/api/gifts/:id/craft', (req, res) => {
 
   res.json({
     ok: true,
-    solo: 150,
-    chance: gift.crafted ? 270 : 240,
+    guaranteed: true,
+    feePerMissingSlot: 150,
+    solo: 1000,
+    chance: 250,
     max: 4,
     persist: [
-      [150],
-      [90, 270],
-      [60, 180, 450],
-      [50, 140, 330, 600]
+      [250],
+      [250, 500],
+      [250, 500, 750],
+      [250, 500, 750, 1000]
     ],
     tiers: {
-      legendary: 60,
-      epic: 160,
-      rare: 300,
-      uncommon: 480
+      legendary: 80,
+      epic: 200,
+      rare: 320,
+      uncommon: 400
     },
     models: (c.craftModels || []).map(m => formatModelForClient(c.slug, m)),
     candidates
   });
 });
 
-// ---- Execute Craft (POST /api/gifts/craft) ----
+// ---- Execute 100% Guaranteed Craft (POST /api/gifts/craft — Zero Gambling / Zero Item Loss on Failure) ----
 app.post('/api/gifts/craft', (req, res) => {
   const key = cleanKey(req.body.username);
   const giftId = req.body.giftId;
@@ -1580,6 +2161,7 @@ app.post('/api/gifts/craft', (req, res) => {
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
 
+  if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
   const mainGift = inv.find(i => i.id === giftId && i.owner === key && i.state === 'upgraded' && !i.salePrice);
   if (!mainGift) return res.status(404).json({ ok: false, error: 'Asosiy sovg\'a topilmadi yoki sotuvda turibdi' });
 
@@ -1596,28 +2178,26 @@ app.post('/api/gifts/craft', (req, res) => {
     return res.status(400).json({ ok: false, error: 'Bu kolleksiyada tayyorlash modellari mavjud emas' });
   }
 
-  const rawSum = allInput.reduce((s, g) => s + (g.crafted ? 270 : 240), 0);
-  const totalPermille = allInput.length === 1 ? Math.min(150, rawSum) : Math.min(1000, rawSum);
-  const roll = crypto.randomInt(0, 1000);
-  const succeeded = roll < totalPermille;
-
-  const now = new Date().toISOString();
-  if (!succeeded) {
-    for (const g of allInput) {
-      g.state = 'burned';
-      g.burnedAt = now;
-      g.worn = false;
-      g.pinned = false;
-      g.salePrice = null;
-    }
-    saveJSON(inventoryFile, inv);
-    return res.json({
-      ok: true,
-      crafted: false,
-      lostIds: allInput.map(g => g.id)
+  // 100% Guaranteed Craft: 4 gifts = 0 Stars fee; fewer than 4 gifts = 150 Stars per missing slot
+  const missingSlots = Math.max(0, 4 - allInput.length);
+  const craftFeeStars = missingSlots * 150;
+  if (craftFeeStars > 0 && (users[key].stars || 0) < craftFeeStars) {
+    return res.status(400).json({
+      ok: false,
+      needStars: true,
+      deficit: craftFeeStars - (users[key].stars || 0),
+      required: craftFeeStars,
+      balance: users[key].stars || 0,
+      error: `100% Kafolatlangan Craft uchun ⭐ ${craftFeeStars} ustama kerak (yoki 4 ta sovgʻa birlashtiring)`
     });
   }
 
+  if (craftFeeStars > 0) {
+    users[key].stars -= craftFeeStars;
+    saveJSON(usersFile, users);
+  }
+
+  const now = new Date().toISOString();
   for (const eg of extraGifts) {
     eg.state = 'burned';
     eg.burnedAt = now;
@@ -1627,10 +2207,10 @@ app.post('/api/gifts/craft', (req, res) => {
   }
 
   const persistTable = [
-    [150],
-    [90, 270],
-    [60, 180, 450],
-    [50, 140, 330, 600]
+    [250],
+    [250, 500],
+    [250, 500, 750],
+    [250, 500, 750, 1000]
   ];
   const pRow = persistTable[Math.min(persistTable.length - 1, allInput.length - 1)];
 
@@ -1659,6 +2239,7 @@ app.post('/api/gifts/craft', (req, res) => {
   Object.assign(mainGift, {
     crafted: true,
     craftedAt: now,
+    upgradePaid: (mainGift.upgradePaid || 0) + craftFeeStars,
     model: formatModelForClient(c.slug, craftModel),
     backdrop: formatBackdropForClient(chosenBackdrop),
     symbol: formatSymbolForClient(c.slug, chosenSymbol)
@@ -1677,12 +2258,15 @@ app.post('/api/gifts/craft', (req, res) => {
     modelName: enriched.model?.name,
     tier: enriched.model?.tier,
     thumb: enriched.model?.img || enriched.thumb,
-    backdrop: enriched.backdrop
+    backdrop: enriched.backdrop,
+    price: craftFeeStars
   });
 
   res.json({
     ok: true,
     crafted: true,
+    craftFeeStars,
+    newBalance: users[key].stars,
     gift: enriched
   });
 });
@@ -1817,25 +2401,50 @@ app.get('/api/gifts/:id', (req, res) => {
   res.json({ ok: true, gift: enrichGift(gift, inv, users) });
 });
 
-// ---- Activity Feed & Platform Stats ----
+// ---- Activity Feed & Platform Stats (O(N) Fast Single-Pass) ----
 app.get('/api/feed', (req, res) => {
   const inv = loadJSON(inventoryFile, []);
   const users = loadJSON(usersFile, {});
   const activity = loadJSON(activityFile, []);
-  const activeGifts = inv.filter(i => i.state !== 'burned' && i.state !== 'converted');
-  const up = activeGifts.filter(i => i.state === 'upgraded').map(g => enrichGift(g, inv, users));
+
+  let totalGifts = 0;
+  let totalUpgraded = 0;
+  let craftedTotal = 0;
+  let marketListings = 0;
+  let burnedTotal = 0;
+  let starsSpent = 0;
+  const upRaw = [];
+
+  for (let i = 0; i < inv.length; i++) {
+    const g = inv[i];
+    starsSpent += (g.paid || 0) + (g.upgradePaid || 0);
+    if (g.state === 'burned') {
+      burnedTotal++;
+      continue;
+    }
+    if (g.state === 'converted') continue;
+    totalGifts++;
+    if (g.state === 'upgraded') {
+      totalUpgraded++;
+      if (g.crafted) craftedTotal++;
+      if (g.salePrice > 0) marketListings++;
+      upRaw.push(g);
+    }
+  }
+
+  const recent = upRaw.slice(-20).reverse().map(g => enrichGift(g, inv, users));
 
   res.json({
     ok: true,
     totalUsers: Object.keys(users).length,
-    totalGifts: activeGifts.length,
-    totalUpgraded: up.length,
-    craftedTotal: up.filter(g => g.crafted).length,
-    marketListings: up.filter(g => g.salePrice > 0).length,
-    burnedTotal: inv.filter(i => i.state === 'burned').length,
-    starsSpent: inv.reduce((s, i) => s + (i.paid || 0) + (i.upgradePaid || 0), 0),
+    totalGifts,
+    totalUpgraded,
+    craftedTotal,
+    marketListings,
+    burnedTotal,
+    starsSpent,
     activity: activity.slice().reverse().slice(0, 50),
-    recent: up.slice(-20).reverse()
+    recent
   });
 });
 

@@ -1,7 +1,7 @@
 {
   "collections": {
     "coinflip": {
-      "enabled": true,
+      "enabled": false,
       "price": 250,
       "upgradePrice": 100,
       "supply": 500
@@ -21,26 +21,26 @@
     "algorithmcup": {
       "enabled": false,
       "price": 500,
-      "upgradePrice": 125,
-      "supply": 60
+      "upgradePrice": 25,
+      "supply": 20
     },
     "luckylocket": {
       "enabled": false,
-      "price": 1000,
-      "upgradePrice": 250,
-      "supply": 556
+      "price": 150,
+      "upgradePrice": 50,
+      "supply": 50
     },
     "durovsglasses": {
       "enabled": false,
-      "price": 1000,
-      "upgradePrice": 250,
-      "supply": 718
+      "price": 200,
+      "upgradePrice": 50,
+      "supply": 50
     },
     "resistancedog": {
       "enabled": false,
       "price": 1000,
-      "upgradePrice": 250,
-      "supply": 843
+      "upgradePrice": 50,
+      "supply": 10
     },
     "miragelamp": {
       "enabled": false,
@@ -49,52 +49,52 @@
       "supply": 1556
     },
     "nailbracelet": {
-      "enabled": false,
-      "price": 1000,
-      "upgradePrice": 250,
-      "supply": 1956
+      "enabled": true,
+      "price": 500,
+      "upgradePrice": 50,
+      "supply": 90
     },
     "heartlocket": {
-      "enabled": false,
+      "enabled": true,
       "price": 1000,
-      "upgradePrice": 250,
-      "supply": 1973
+      "upgradePrice": 50,
+      "supply": 10
     },
     "minioscar": {
-      "enabled": false,
+      "enabled": true,
       "price": 500,
-      "upgradePrice": 125,
-      "supply": 2194
+      "upgradePrice": 25,
+      "supply": 50
     },
     "gemsignet": {
-      "enabled": false,
-      "price": 500,
-      "upgradePrice": 125,
-      "supply": 2205
+      "enabled": true,
+      "price": 111,
+      "upgradePrice": 25,
+      "supply": 99
     },
     "genielamp": {
-      "enabled": false,
-      "price": 500,
+      "enabled": true,
+      "price": 111,
       "upgradePrice": 125,
-      "supply": 2790
+      "supply": 99
     },
     "plushpepe": {
       "enabled": false,
-      "price": 500,
+      "price": 1111,
       "upgradePrice": 125,
-      "supply": 2861
+      "supply": 9
     },
     "bondedring": {
-      "enabled": false,
-      "price": 500,
-      "upgradePrice": 125,
-      "supply": 3004
+      "enabled": true,
+      "price": 300,
+      "upgradePrice": 30,
+      "supply": 300
     },
     "astralshard": {
-      "enabled": false,
-      "price": 500,
-      "upgradePrice": 125,
-      "supply": 3009
+      "enabled": true,
+      "price": 111,
+      "upgradePrice": 25,
+      "supply": 99
     },
     "preciouspeach": {
       "enabled": false,
@@ -116,15 +116,15 @@
     },
     "heroichelmet": {
       "enabled": false,
-      "price": 500,
+      "price": 444,
       "upgradePrice": 125,
-      "supply": 3794
+      "supply": 50
     },
     "finepen": {
-      "enabled": false,
+      "enabled": true,
       "price": 500,
-      "upgradePrice": 125,
-      "supply": 3807
+      "upgradePrice": 25,
+      "supply": 80
     },
     "rarebird": {
       "enabled": false,
@@ -134,9 +134,9 @@
     },
     "sharptongue": {
       "enabled": false,
-      "price": 500,
-      "upgradePrice": 125,
-      "supply": 3956
+      "price": 25,
+      "upgradePrice": 50,
+      "supply": 100
     },
     "mightyarm": {
       "enabled": false,
@@ -158,9 +158,9 @@
     },
     "electricskull": {
       "enabled": false,
-      "price": 500,
-      "upgradePrice": 125,
-      "supply": 4431
+      "price": 25,
+      "upgradePrice": 25,
+      "supply": 100
     },
     "iongem": {
       "enabled": false,
@@ -169,16 +169,16 @@
       "supply": 4692
     },
     "durovscap": {
-      "enabled": true,
-      "price": 5000,
+      "enabled": false,
+      "price": 333,
       "upgradePrice": 500,
       "supply": 30
     },
     "perfumebottle": {
-      "enabled": false,
+      "enabled": true,
       "price": 500,
-      "upgradePrice": 125,
-      "supply": 4848
+      "upgradePrice": 25,
+      "supply": 100
     },
     "magicpotion": {
       "enabled": false,
@@ -194,9 +194,9 @@
     },
     "westsidesign": {
       "enabled": false,
-      "price": 250,
-      "upgradePrice": 63,
-      "supply": 5339
+      "price": 222,
+      "upgradePrice": 55,
+      "supply": 99
     },
     "recordplayer": {
       "enabled": false,
@@ -217,10 +217,10 @@
       "supply": 6806
     },
     "artisanbrick": {
-      "enabled": false,
+      "enabled": true,
       "price": 250,
-      "upgradePrice": 63,
-      "supply": 6852
+      "upgradePrice": 50,
+      "supply": 80
     },
     "flyingbroom": {
       "enabled": false,
@@ -231,8 +231,8 @@
     "lowrider": {
       "enabled": false,
       "price": 250,
-      "upgradePrice": 63,
-      "supply": 6905
+      "upgradePrice": 50,
+      "supply": 100
     },
     "lovepotion": {
       "enabled": false,
@@ -254,9 +254,9 @@
     },
     "ufcstrike": {
       "enabled": false,
-      "price": 250,
-      "upgradePrice": 63,
-      "supply": 7060
+      "price": 111,
+      "upgradePrice": 55,
+      "supply": 99
     },
     "skullflower": {
       "enabled": false,
@@ -279,14 +279,14 @@
     "diamondring": {
       "enabled": false,
       "price": 250,
-      "upgradePrice": 63,
-      "supply": 8723
+      "upgradePrice": 50,
+      "supply": 80
     },
     "bowtie": {
       "enabled": false,
       "price": 250,
-      "upgradePrice": 63,
-      "supply": 9113
+      "upgradePrice": 50,
+      "supply": 25
     },
     "jinglebells": {
       "enabled": false,
@@ -301,10 +301,10 @@
       "supply": 9217
     },
     "tophat": {
-      "enabled": false,
+      "enabled": true,
       "price": 250,
-      "upgradePrice": 63,
-      "supply": 9257
+      "upgradePrice": 50,
+      "supply": 100
     },
     "hypnolollipop": {
       "enabled": false,
@@ -595,10 +595,10 @@
       "supply": 48021
     },
     "skystilettos": {
-      "enabled": false,
+      "enabled": true,
       "price": 50,
       "upgradePrice": 25,
-      "supply": 58460
+      "supply": 460
     },
     "lolpop": {
       "enabled": false,
@@ -724,34 +724,34 @@
       "enabled": false,
       "price": 25,
       "upgradePrice": 25,
-      "supply": 288772
+      "supply": 100
     },
     "icecream": {
-      "enabled": true,
+      "enabled": false,
       "price": 25,
       "upgradePrice": 25,
-      "supply": 342255
+      "supply": 100
     },
     "whipcupcake": {
       "enabled": false,
       "price": 25,
       "upgradePrice": 25,
-      "supply": 367619
+      "supply": 100
     },
     "instantramen": {
       "enabled": false,
       "price": 25,
       "upgradePrice": 25,
-      "supply": 457382
+      "supply": 100
     },
     "snoopdogg": {
       "enabled": false,
       "price": 25,
       "upgradePrice": 25,
-      "supply": 593781
+      "supply": 100
     },
     "imperialcrown": {
-      "enabled": true,
+      "enabled": false,
       "price": 3000,
       "upgradePrice": 0,
       "supply": 100

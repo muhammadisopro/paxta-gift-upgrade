@@ -8,12 +8,17 @@ const STATE = {
   viewedProfile: null, // null = viewing own profile, otherwise another user's profile object
   inventory: [],
   collections: [],
+  channelCalendars: [],
+  calendarFilter: 'all',
+  calendarQuery: '',
+  shopMode: 'all',
   marketListings: [],
   marketFilter: 'all',
   marketQuery: '',
   collectors: [],
   activity: [],
   adminCollections: [],
+  adminCalendarOrders: [],
   adminUsers: [],
   adminPromos: [],
   adminStats: { usersCount: 0, totalGifts: 0, burnedGifts: 0, marketCount: 0 },
@@ -169,12 +174,77 @@ function getTintedPatternCanvas(img, url, color) {
   return c;
 }
 
+const compactBackdropCache = new Map();
+
+const backdropLazyObserver = typeof IntersectionObserver !== 'undefined'
+  ? new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const cvs = entry.target;
+        backdropLazyObserver.unobserve(cvs);
+        if (cvs.__bdArgs) {
+          const { backdrop, pattern, opts } = cvs.__bdArgs;
+          cvs.__bdArgs = null;
+          drawUniqueBackdrop(cvs, backdrop, pattern, opts);
+        }
+      }
+    }, { rootMargin: '260px 0px' })
+  : null;
+
+function scheduleBackdropDraw(canvas, backdrop, pattern, opts = {}) {
+  if (!canvas || !backdrop) return;
+  if (opts.compact && backdropLazyObserver) {
+    canvas.__bdArgs = { backdrop, pattern, opts };
+    backdropLazyObserver.observe(canvas);
+    return;
+  }
+  requestAnimationFrame(() => drawUniqueBackdrop(canvas, backdrop, pattern, opts));
+}
+
+function renderGridInChunks(gridEl, items, buildCardFn, chunkSize = 48) {
+  if (!gridEl) return;
+  gridEl.innerHTML = '';
+  if (!items || !items.length) return;
+
+  let cursor = 0;
+  const appendNextBatch = () => {
+    const frag = document.createDocumentFragment();
+    const end = Math.min(items.length, cursor + chunkSize);
+    for (; cursor < end; cursor++) {
+      frag.appendChild(buildCardFn(items[cursor]));
+    }
+    gridEl.appendChild(frag);
+  };
+
+  appendNextBatch();
+
+  if (cursor < items.length && typeof IntersectionObserver !== 'undefined') {
+    const sentinel = document.createElement('div');
+    sentinel.style.height = '1px';
+    sentinel.style.gridColumn = '1 / -1';
+    gridEl.appendChild(sentinel);
+
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        sentinel.remove();
+        appendNextBatch();
+        if (cursor < items.length) {
+          gridEl.appendChild(sentinel);
+        } else {
+          obs.disconnect();
+        }
+      }
+    }, { rootMargin: '360px 0px' });
+    obs.observe(sentinel);
+  }
+}
+
 async function drawUniqueBackdrop(canvas, backdrop, pattern, opts = {}) {
   if (!canvas || !backdrop) return;
   const rect = canvas.getBoundingClientRect();
-  const w = Math.max(1, opts.width || rect.width || canvas.clientWidth || 380);
-  const h = Math.max(1, opts.height || rect.height || canvas.clientHeight || 260);
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, opts.width || rect.width || canvas.clientWidth || (opts.compact ? 160 : 380));
+  const h = Math.max(1, opts.height || rect.height || canvas.clientHeight || (opts.compact ? 172 : 260));
+  const dpr = Math.min(window.devicePixelRatio || 1, opts.compact ? 1.5 : 2);
 
   if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
     canvas.width = Math.round(w * dpr);
@@ -185,6 +255,14 @@ async function drawUniqueBackdrop(canvas, backdrop, pattern, opts = {}) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, w, h);
 
+  const patUrl = pattern?.img || pattern?.image_url || '';
+  const cacheKey = opts.compact ? `${backdrop.center}_${backdrop.edge}_${backdrop.pattern}_${patUrl}` : '';
+
+  if (cacheKey && compactBackdropCache.has(cacheKey)) {
+    ctx.drawImage(compactBackdropCache.get(cacheKey), 0, 0, w, h);
+    return;
+  }
+
   const cx = w / 2;
   const cy = h * 0.44;
   const rad = Math.hypot(w, h) * 0.62;
@@ -194,8 +272,16 @@ async function drawUniqueBackdrop(canvas, backdrop, pattern, opts = {}) {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
-  const patUrl = pattern?.img || pattern?.image_url;
-  if (!patUrl) return;
+  if (!patUrl) {
+    if (cacheKey && compactBackdropCache.size < 250) {
+      const off = document.createElement('canvas');
+      off.width = canvas.width;
+      off.height = canvas.height;
+      off.getContext('2d').drawImage(canvas, 0, 0);
+      compactBackdropCache.set(cacheKey, off);
+    }
+    return;
+  }
 
   const img = await loadPatternImage(patUrl);
   if (!img || !canvas.isConnected) return;
@@ -220,6 +306,14 @@ async function drawUniqueBackdrop(canvas, backdrop, pattern, opts = {}) {
     }
   }
   ctx.restore();
+
+  if (cacheKey && compactBackdropCache.size < 250) {
+    const off = document.createElement('canvas');
+    off.width = canvas.width;
+    off.height = canvas.height;
+    off.getContext('2d').drawImage(canvas, 0, 0);
+    compactBackdropCache.set(cacheKey, off);
+  }
 }
 
 // ---- Lottie Helper ----
@@ -446,8 +540,9 @@ async function loginUser(username) {
   });
   if (data.ok) {
     STATE.user = data.user;
-    STATE.myProfile = data.profile;
     STATE.inventory = data.inventory || [];
+    STATE.myProfile = data.profile || {};
+    STATE.myProfile.gifts = STATE.inventory;
     if (data.authToken) {
       STATE.authToken = data.authToken;
       localStorage.setItem('paxta_gift_auth_token', data.authToken);
@@ -474,12 +569,344 @@ async function loginUser(username) {
 }
 
 async function loadCollections() {
-  const data = await api('/api/collections');
+  const [data, calData] = await Promise.all([
+    api('/api/collections'),
+    api('/api/channel-calendars')
+  ]);
   if (data.ok) {
     STATE.collections = data.collections || [];
     document.getElementById('shopCountBadge').textContent = STATE.collections.length;
     renderCatalog();
   }
+  if (calData && calData.ok) {
+    STATE.channelCalendars = calData.calendars || [];
+    const availEl = document.getElementById('calendarAvailBadge');
+    if (availEl) availEl.textContent = calData.availableCount ?? STATE.channelCalendars.filter(c => !c.sold).length;
+    renderChannelCalendars();
+  }
+}
+
+function setShopMode(mode) {
+  STATE.shopMode = mode || 'all';
+  document.querySelectorAll('.shop-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.shopMode === STATE.shopMode);
+  });
+  const officialSec = document.getElementById('officialCatalogSection');
+  const calSec = document.getElementById('channelCalendarsSection');
+  if (officialSec) officialSec.hidden = STATE.shopMode === 'calendars';
+  if (calSec) calSec.hidden = STATE.shopMode === 'collections';
+}
+
+function renderChannelCalendars() {
+  const grid = document.getElementById('channelCalendarsGrid');
+  if (!grid) return;
+
+  const q = (STATE.calendarQuery || '').trim().toLowerCase().replace(/^#/, '');
+  let list = (STATE.channelCalendars || []).filter(c => {
+    if (STATE.calendarFilter === 'craft' && !c.crafted) return false;
+    if (STATE.calendarFilter === 'black' && !c.isBlackBackdrop) return false;
+    if (STATE.calendarFilter === 'top100' && Number(c.number) >= 100) return false;
+    if (q) {
+      const matchNum = String(c.number || '').includes(q);
+      const matchModel = (c.model || '').toLowerCase().includes(q);
+      const matchBg = (c.backdrop || '').toLowerCase().includes(q);
+      const matchPat = (c.pattern || '').toLowerCase().includes(q);
+      if (!matchNum && !matchModel && !matchBg && !matchPat) return false;
+    }
+    return true;
+  });
+
+  if (STATE.calendarFilter === 'price_asc') {
+    list.sort((a, b) => (a.priceStars || 0) - (b.priceStars || 0));
+  } else if (STATE.calendarFilter === 'num_asc') {
+    list.sort((a, b) => (a.number || 9999) - (b.number || 9999));
+  } else {
+    // Default sort: available first, then crafted/black/low number
+    list.sort((a, b) => {
+      if (a.sold !== b.sold) return a.sold ? 1 : -1;
+      if (a.crafted !== b.crafted) return a.crafted ? -1 : 1;
+      if (a.isBlackBackdrop !== b.isBlackBackdrop) return a.isBlackBackdrop ? -1 : 1;
+      return (a.number || 9999) - (b.number || 9999);
+    });
+  }
+
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="empty-box">
+        <strong>Qidiruv boʻyicha Kalendar NFT topilmadi</strong>
+        <span>Boshqa filtrni tanlang yoki qidiruv soʻzini oʻzgartiring.</span>
+      </div>
+    `;
+    return;
+  }
+
+  renderGridInChunks(grid, list, buildCalendarCard, 36);
+}
+
+function buildCalendarCard(cal) {
+  const card = document.createElement('div');
+  card.className = `gift-card is-upgraded`;
+
+  const cvs = document.createElement('canvas');
+  cvs.className = 'unique-backdrop';
+  card.appendChild(cvs);
+  scheduleBackdropDraw(cvs, {
+    center: cal.backdropColors?.center || '#363738',
+    edge: cal.backdropColors?.edge || '#0e0f0f',
+    pattern: cal.backdropColors?.edge || '#000000'
+  }, null, { compact: true });
+
+  if (cal.crafted) {
+    const rib = document.createElement('div');
+    rib.className = 'gift-card-crafted-ribbon';
+    rib.textContent = '🔨 CRAFT NFT';
+    card.appendChild(rib);
+  } else {
+    const rib = document.createElement('div');
+    rib.className = 'real-nft-ribbon';
+    rib.textContent = cal.isBlackBackdrop ? '🖤 BLACK NFT' : '📅 REAL NFT';
+    card.appendChild(rib);
+  }
+
+  const top = document.createElement('div');
+  top.className = 'gift-card-top';
+  top.innerHTML = `
+    <span class="gift-card-badge" style="visibility:hidden">·</span>
+    <span class="gift-card-num">#${fmtInt(cal.number)}</span>
+  `;
+  card.appendChild(top);
+
+  const img = document.createElement('img');
+  img.className = 'gift-card-art';
+  img.src = cal.image;
+  img.alt = cal.name;
+  img.loading = 'lazy';
+  card.appendChild(img);
+
+  const foot = document.createElement('div');
+  foot.className = 'gift-card-foot';
+  foot.innerHTML = `
+    <div class="gift-card-title">Desk Calendar #${fmtInt(cal.number)}</div>
+    <div class="gift-card-sub">${esc(cal.model)} · ${esc(cal.backdrop)}</div>
+    ${cal.sold ? `
+      <button type="button" class="market-buy-pill" disabled style="opacity:0.55;background:rgba(255,255,255,0.12);color:#fff;">
+        <span>Sotilgan (@${esc(cal.soldTo || 'user')})</span>
+      </button>
+    ` : `
+      <button type="button" class="market-buy-pill" title="Real PaxtaGram NFT xarid qilish">
+        ${svgStar(14)}
+        <span>${fmtInt(cal.priceStars)}</span>
+        <span class="market-buy-txt">Xarid</span>
+      </button>
+    `}
+  `;
+  card.appendChild(foot);
+
+  card.addEventListener('click', () => openBuyCalendarModal(cal));
+  return card;
+}
+
+function openBuyCalendarModal(cal) {
+  if (cal.sold) {
+    return showToast(`Ushbu Kalendar NFT allaqachon @${cal.soldTo || 'foydalanuvchi'} tomonidan xarid qilingan`);
+  }
+
+  const myUpgradedCandidates = (STATE.inventory || []).filter(
+    g => g.state === 'upgraded' && !g.salePrice && !g.isRealPaxtaNft
+  );
+  const selectedTradeIds = new Set();
+
+  function calcSummary() {
+    let discount = 0;
+    for (const gid of selectedTradeIds) {
+      const g = myUpgradedCandidates.find(x => x.id === gid);
+      if (g) {
+        const credit = Math.min(120, Math.max(40, Math.round(((g.paid || 100) + (g.upgradePaid || 50)) * 0.45)));
+        discount += credit;
+      }
+    }
+    discount = Math.min(cal.maxTradeInDiscount || 300, discount);
+    const finalPrice = Math.max(650, (cal.priceStars || 950) - discount);
+    const userStars = STATE.user?.stars || 0;
+    const hasEnough = userStars >= finalPrice;
+    const deficit = Math.max(0, finalPrice - userStars);
+    return { discount, finalPrice, userStars, hasEnough, deficit };
+  }
+
+  const initSum = calcSummary();
+
+  openSubModal(`📅 Desk Calendar #${cal.number} (Real NFT)`, `
+    <div class="form-stack" style="align-items:center;text-align:center;">
+      <div style="width:100%;height:175px;border-radius:18px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.14);">
+        <canvas id="calBuyModalCanvas" class="unique-backdrop"></canvas>
+        <img src="${esc(cal.image)}" alt="" style="width:108px;height:108px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.45));" />
+        <div style="position:relative;z-index:2;margin-top:6px;font-weight:800;font-size:15px;color:${esc(cal.backdropColors?.text || '#fff')};">
+          Desk Calendar #${fmtInt(cal.number)} · ${esc(cal.model)}
+        </div>
+        <div style="position:relative;z-index:2;font-size:12px;opacity:0.88;color:${esc(cal.backdropColors?.text || '#fff')};">
+          Fon: <b>${esc(cal.backdrop)}</b> · Naqsh: <b>${esc(cal.pattern)}</b>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;">
+        <span class="filter-chip active" style="font-size:11.5px;">${esc(cal.tierLabel || '📅 Real PaxtaGram NFT')}</span>
+        <a href="${esc(cal.link)}" target="_blank" rel="noopener" class="filter-chip" style="text-decoration:none;font-size:11.5px;color:#60a5fa;">
+          🔗 PaxtaGram NFT sahifasi ↗
+        </a>
+      </div>
+
+      ${myUpgradedCandidates.length > 0 ? `
+        <div class="trade-in-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong style="font-size:12.5px;color:#fff;">🔄 Smart Trade-In (Ixtiyoriy chegirma -300 ⭐ gacha)</strong>
+            <span style="font-size:11.5px;color:#34d399;font-weight:700;" id="calTradeDiscountLbl">0 ⭐ chegirma</span>
+          </div>
+          <span style="font-size:11.5px;color:var(--text-2);display:block;margin-top:2px;">
+            Oʻzingizdagi 3 tagacha Upgraded sovgʻani qoʻshib, Kalendar NFT narxini arzonlashtirishingiz mumkin:
+          </span>
+          <div class="trade-in-grid" id="calTradeInGrid">
+            ${myUpgradedCandidates.slice(0, 24).map(g => {
+              const cr = Math.min(120, Math.max(40, Math.round(((g.paid || 100) + (g.upgradePaid || 50)) * 0.45)));
+              return `
+                <div class="trade-in-item" data-trade-id="${esc(g.id)}">
+                  <img src="${esc(g.model?.img || g.thumb)}" alt="" loading="lazy" />
+                  <strong>${esc(g.name)} #${fmtInt(g.number)}</strong>
+                  <span>-${cr} ⭐</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div style="width:100%;text-align:left;">
+        <label style="font-size:12px;color:var(--text-2);font-weight:600;display:block;margin-bottom:4px;">
+          Qabul qiluvchi PaxtaGram @username (NFT shu profilga oʻtkaziladi):
+        </label>
+        <div class="form-field">
+          <span>@</span>
+          <input type="text" id="inpCalRecipient" value="${esc(STATE.user?.username || '')}" placeholder="PaxtaGram username..." />
+        </div>
+      </div>
+
+      <div class="buy-summary-box" style="width:100%;">
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:13px;color:var(--text-2);">
+          <span>Asl narxi:</span>
+          <b>⭐ ${fmtInt(cal.priceStars)}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:13px;color:#34d399;margin-top:3px;" id="calDiscountRow" hidden>
+          <span>Trade-In chegirma:</span>
+          <b id="calDiscountVal">-0 ⭐</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:15px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08);">
+          <span>Toʻlov miqdori:</span>
+          <b style="color:var(--saffron);" id="calFinalPriceVal">${svgStar(15)} ${fmtInt(initSum.finalPrice)}</b>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary gv-btn" id="btnConfirmBuyCalendar" style="height:46px;font-size:14.5px;">
+        <span id="btnConfirmBuyCalendarTxt">${initSum.hasEnough
+          ? `📅 Xarid qilish va PaxtaGram'ga olish · ${svgStar(15)} ${fmtInt(initSum.finalPrice)}`
+          : `⭐ Stars toʻldirish va olish (+${fmtInt(initSum.deficit)} ⭐)`}</span>
+      </button>
+    </div>
+  `, (body) => {
+    const cvs = body.querySelector('#calBuyModalCanvas');
+    if (cvs) {
+      drawUniqueBackdrop(cvs, {
+        center: cal.backdropColors?.center || '#363738',
+        edge: cal.backdropColors?.edge || '#0e0f0f',
+        pattern: cal.backdropColors?.edge || '#000000'
+      }, null);
+    }
+
+    const updateUI = () => {
+      const s = calcSummary();
+      const discLbl = body.querySelector('#calTradeDiscountLbl');
+      const discRow = body.querySelector('#calDiscountRow');
+      const discVal = body.querySelector('#calDiscountVal');
+      const finalEl = body.querySelector('#calFinalPriceVal');
+      const btnTxt = body.querySelector('#btnConfirmBuyCalendarTxt');
+
+      if (discLbl) discLbl.textContent = `-${fmtInt(s.discount)} ⭐ chegirma`;
+      if (discRow) discRow.hidden = s.discount <= 0;
+      if (discVal) discVal.textContent = `-${fmtInt(s.discount)} ⭐`;
+      if (finalEl) finalEl.innerHTML = `${svgStar(15)} ${fmtInt(s.finalPrice)}`;
+      if (btnTxt) {
+        btnTxt.innerHTML = s.hasEnough
+          ? `📅 Xarid qilish va PaxtaGram'ga olish · ${svgStar(15)} ${fmtInt(s.finalPrice)}`
+          : `⭐ Stars toʻldirish va olish (+${fmtInt(s.deficit)} ⭐)`;
+      }
+    };
+
+    body.querySelectorAll('[data-trade-id]').forEach(el => {
+      el.addEventListener('click', () => {
+        const gid = el.getAttribute('data-trade-id');
+        if (selectedTradeIds.has(gid)) {
+          selectedTradeIds.delete(gid);
+          el.classList.remove('selected');
+        } else {
+          if (selectedTradeIds.size >= 3) {
+            return showToast('Koʻpi bilan 3 ta sovgʻa Trade-In qilish mumkin');
+          }
+          selectedTradeIds.add(gid);
+          el.classList.add('selected');
+        }
+        updateUI();
+      });
+    });
+
+    const executePurchase = async () => {
+      const s = calcSummary();
+      const recipientUsername = (body.querySelector('#inpCalRecipient')?.value || STATE.user?.username || '').trim().replace(/^@/, '');
+      if (!recipientUsername) return showToast('PaxtaGram @username kiriting');
+
+      if (!s.hasEnough) {
+        openAddStarsModal(s.deficit, `Desk Calendar #${cal.number} (Real NFT) xaridi`, async () => {
+          await executePurchase();
+        });
+        return;
+      }
+
+      const btn = body.querySelector('#btnConfirmBuyCalendar');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ PaxtaGram NFT rasmiylashtirilmoqda...';
+      }
+
+      const res = await api('/api/channel-calendars/buy', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: STATE.user.username,
+          calendarId: cal.id,
+          tradeInGiftIds: Array.from(selectedTradeIds),
+          recipientUsername
+        })
+      });
+
+      if (!res.ok) {
+        if (btn) {
+          btn.disabled = false;
+          updateUI();
+        }
+        if (res.needStars) {
+          openAddStarsModal(res.deficit || s.finalPrice, `Desk Calendar #${cal.number} (Real NFT) xaridi`);
+          return;
+        }
+        return showToast(res.error || 'Xatolik yuz berdi');
+      }
+
+      closeSubModal();
+      launchEdgeConfetti();
+      showToast(res.message || `🎉 Desk Calendar #${cal.number} xarid qilindi!`);
+      await Promise.all([loginUser(STATE.user.username), loadCollections()]);
+      STATE.viewedProfile = null;
+      switchTab('inventory');
+      if (res.gift) openGiftModal(res.gift, 'view');
+    };
+
+    body.querySelector('#btnConfirmBuyCalendar')?.addEventListener('click', executePurchase);
+  });
 }
 
 async function loadMarket() {
@@ -653,9 +1080,7 @@ function renderMarket() {
     return;
   }
 
-  for (const g of list) {
-    grid.appendChild(buildGiftCard(g, { isMarketCard: true }));
-  }
+  renderGridInChunks(grid, list, g => buildGiftCard(g, { isMarketCard: true }), 48);
 }
 
 async function buyMarketGift(gift) {
@@ -912,13 +1337,11 @@ function renderInventoryGrid(giftsList, isOwn, profileUsername) {
     return;
   }
 
-  for (const g of filtered) {
-    grid.appendChild(buildGiftCard(g, {
-      isSelectMode: STATE.selectMode && isOwn,
-      isSelected: STATE.selectedGiftIds.has(g.id),
-      onToggleSelect: (gift) => handleToggleGiftSelection(gift, filtered)
-    }));
-  }
+  renderGridInChunks(grid, filtered, g => buildGiftCard(g, {
+    isSelectMode: STATE.selectMode && isOwn,
+    isSelected: STATE.selectedGiftIds.has(g.id),
+    onToggleSelect: (gift) => handleToggleGiftSelection(gift, filtered)
+  }), 48);
 }
 
 function handleToggleGiftSelection(g, allGifts) {
@@ -1041,10 +1464,15 @@ function buildGiftCard(g, opts = {}) {
     const cvs = document.createElement('canvas');
     cvs.className = 'unique-backdrop';
     card.appendChild(cvs);
-    requestAnimationFrame(() => drawUniqueBackdrop(cvs, g.backdrop, g.symbol, { compact: true }));
+    scheduleBackdropDraw(cvs, g.backdrop, g.symbol, { compact: true });
   }
 
-  if (g.crafted) {
+  if (g.isRealPaxtaNft) {
+    const rib = document.createElement('div');
+    rib.className = 'real-nft-ribbon';
+    rib.textContent = '📅 REAL NFT';
+    card.appendChild(rib);
+  } else if (g.crafted) {
     const rib = document.createElement('div');
     rib.className = 'gift-card-crafted-ribbon';
     rib.textContent = '✨ CRAFT';
@@ -3558,6 +3986,12 @@ function initShopCarousel() {
   slides.forEach(slide => {
     slide.addEventListener('click', (e) => {
       if (e.target.closest('button')) return;
+      if (slide.dataset.action === 'scroll-calendars') {
+        setShopMode('calendars');
+        const sec = document.getElementById('channelCalendarsSection');
+        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       const slug = slide.dataset.slug;
       if (slug) {
         const col = (STATE.collections || []).find(c => c.slug === slug || c.id === slug);
@@ -3650,6 +4084,36 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('brandHome')?.addEventListener('click', () => switchTab('shop'));
 
+  // Hero Calendar Vitrina Banner Click
+  document.getElementById('btnHeroGoCalendars')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setShopMode('calendars');
+    const sec = document.getElementById('channelCalendarsSection');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Shop Mode Switcher (Barchasi / Rasmiy / Real Kalendarlar)
+  document.querySelectorAll('.shop-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setShopMode(btn.dataset.shopMode || 'all');
+    });
+  });
+
+  // Real Channel Desk Calendars Search & Filters
+  document.getElementById('calendarSearch')?.addEventListener('input', (e) => {
+    STATE.calendarQuery = e.target.value;
+    renderChannelCalendars();
+  });
+
+  document.querySelectorAll('#calendarFilterChips .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#calendarFilterChips .filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      STATE.calendarFilter = chip.dataset.cfilter || 'all';
+      renderChannelCalendars();
+    });
+  });
+
   // Profile filters
   document.querySelectorAll('#paneInventory .filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -3689,9 +4153,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnMarketRules')?.addEventListener('click', () => {
     openSubModal('Qayta Sotuv Bozori Qoidalari', `
       <div class="form-stack" style="font-size:14px;line-height:1.6;color:var(--text-2);">
-        <p><b style="color:#fff;">1. Komissiya 0%:</b> Siz sotuvga qoʻygan narxingiz boʻyicha toʻliq Stars olasiz.</p>
-        <p><b style="color:#fff;">2. Tezkor hisob-kitob:</b> Boshqa foydalanuvchi sovgʻangizni sotib olgan soniyadayoq Stars balansingizga oʻtadi.</p>
-        <p><b style="color:#fff;">3. Qaytarib olish:</b> Istalgan vaqtda sovgʻangizni sotuvdan qaytarib olishingiz mumkin.</p>
+        <p><b style="color:#fff;">1. Komissiya 10%:</b> Sovgʻangiz sotilganda, mablagʻning 90% qismi darhol va avtomatik Stars balansingizga oʻtkaziladi (10% platforma komissiyasi).</p>
+        <p><b style="color:#fff;">2. Tezkor hisob-kitob:</b> Boshqa foydalanuvchi sovgʻangizni sotib olgan soniyadayoq Stars balansingizga oʻtadi va PaxtaGram botingizga xabar yuboriladi.</p>
+        <p><b style="color:#fff;">3. Qaytarib olish:</b> Istalgan vaqtda sovgʻangizni bepul sotuvdan qaytarib olishingiz mumkin.</p>
         <p><b style="color:#fff;">4. Faqat Upgraded:</b> Bozorga faqat yaxshilangan (Upgraded) va Craft qilingan noyob sovgʻalar chiqariladi.</p>
       </div>
     `);
