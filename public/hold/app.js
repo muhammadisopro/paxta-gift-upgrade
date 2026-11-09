@@ -1943,6 +1943,97 @@ async function renderAdminSheet() {
     return;
   }
 
+  if (STATE.adminTab === 'broadcast') {
+    container.innerHTML = `
+      <div class="dark-group-box" style="padding:14px;gap:10px;">
+        <strong style="font-size:14px;">📢 Barcha Foydalanuvchilarga E'lon (Broadcast)</strong>
+        <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
+          Xabar @HOLDbot orqali botdan roʻyxatdan oʻtgan barcha faol PaxtaGram foydalanuvchilariga yetkaziladi. HTML teglari (&lt;b&gt;, &lt;i&gt;) va emojilar qoʻllab-quvvatlanadi.
+        </p>
+        <textarea id="admBroadcastText" rows="4" placeholder="E'lon matnini kiriting..." class="apple-search-input" style="resize:vertical;min-height:90px;font-family:inherit;"></textarea>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <input type="text" id="admBroadcastBtnText" value="🪙 $HOLD ga kirish" placeholder="Tugma matni (ixtiyoriy)" class="apple-search-input" />
+          <input type="text" id="admBroadcastBtnUrl" value="https://paxta.online/HOLDbot" placeholder="Tugma havolasi" class="apple-search-input" />
+        </div>
+        <div id="admBroadcastProgress" hidden style="padding:10px;border-radius:12px;background:rgba(56,182,255,0.12);color:#e0f2fe;font-size:13px;text-align:center;"></div>
+        <button type="button" class="btn-sapphire-primary" id="btnAdmSendBroadcast">🚀 Xabarni Barchaga Yuborish</button>
+      </div>
+
+      <div class="dark-group-box" style="padding:12px;gap:6px;">
+        <strong style="font-size:13px;color:#fff;">💡 Foydali shablonlar:</strong>
+        <button type="button" class="skin-pill-btn" id="tplHappyHour" style="text-align:left;padding:8px 12px;width:100%;font-size:12px;">
+          ⚡ 2x Happy Hour e'loni
+        </button>
+        <button type="button" class="skin-pill-btn" id="tplStreakAlert" style="text-align:left;padding:8px 12px;width:100%;font-size:12px;">
+          🔥 Kunlik zanjir eslatmasi
+        </button>
+        <button type="button" class="skin-pill-btn" id="tplNewTask" style="text-align:left;padding:8px 12px;width:100%;font-size:12px;">
+          🎁 Yangi vazifa va bonus e'loni
+        </button>
+      </div>
+    `;
+
+    container.querySelector('#tplHappyHour')?.addEventListener('click', () => {
+      const txt = container.querySelector('#admBroadcastText');
+      if (txt) txt.value = '⚡ <b>Happy Hour boshlandi!</b>\n\nKeyingi 1 soat (20:00 – 21:00) davomida barcha bosishlar <b>2 barobar (2x)</b> koʻproq $HOLD beradi! 🚀';
+    });
+    container.querySelector('#tplStreakAlert')?.addEventListener('click', () => {
+      const txt = container.querySelector('#admBroadcastText');
+      if (txt) txt.value = '🔥 <b>Kunlik bonus kutmoqda!</b>\n\nBugungi kunlik zanjir mukofotingizni olishni unutmang. 7-kuni bepul Cookie skin beriladi! 🍪';
+    });
+    container.querySelector('#tplNewTask')?.addEventListener('click', () => {
+      const txt = container.querySelector('#admBroadcastText');
+      if (txt) txt.value = '🎁 <b>Yangi vazifalar qoʻshildi!</b>\n\nEarn boʻlimida yangi rasmiy kanallar paydo boʻldi. Bajarib qoʻshimcha $HOLD toʻplang!';
+    });
+
+    container.querySelector('#btnAdmSendBroadcast')?.addEventListener('click', async () => {
+      const text = container.querySelector('#admBroadcastText')?.value.trim();
+      if (!text) {
+        showToast('Iltimos, xabar matnini kiriting!');
+        return;
+      }
+      const buttonText = container.querySelector('#admBroadcastBtnText')?.value.trim();
+      const buttonUrl = container.querySelector('#admBroadcastBtnUrl')?.value.trim();
+      const prg = container.querySelector('#admBroadcastProgress');
+      const btn = container.querySelector('#btnAdmSendBroadcast');
+
+      if (!confirm('Haqiqatan ham barcha foydalanuvchilarga ushbu xabarni yubormoqchimisiz?')) return;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Yuborilmoqda...';
+      }
+      if (prg) {
+        prg.hidden = false;
+        prg.textContent = '⏳ Xabar barcha ishtirokchilarga uzatilmoqda...';
+      }
+
+      const res = await api('/api/hold/admin-broadcast', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: STATE.username,
+          text,
+          buttonText,
+          buttonUrl
+        })
+      });
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '🚀 Xabarni Barchaga Yuborish';
+      }
+
+      if (res.ok) {
+        if (prg) prg.innerHTML = `✅ <b>Muvaffaqiyatli:</b> ${res.sent} ta yetkazildi (Jami: ${res.total}).`;
+        showToast(res.message || 'Xabar yuborildi!');
+      } else {
+        if (prg) prg.innerHTML = `❌ Xatolik: ${esc(res.error || 'Yuborilmadi')}`;
+        showToast(res.error || 'Xatolik');
+      }
+    });
+    return;
+  }
+
   if (STATE.adminTab === 'morse') {
     container.innerHTML = `
       <div class="dark-group-box" style="padding:14px;gap:10px;">
@@ -2033,7 +2124,16 @@ async function renderAdminSheet() {
           </select>
           <input type="text" id="admTaskIcon" value="📢" placeholder="Icon (📢, ⭐, 🏆)" class="apple-search-input" />
         </div>
-        <input type="number" id="admTaskReward" value="15000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <input type="number" id="admTaskReward" value="15000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+          <select id="admTaskMinLeague" class="apple-search-input">
+            <option value="">Liga cheklovi yoʻq</option>
+            <option value="silver">Silver ligadan boshlab</option>
+            <option value="gold">Gold ligadan boshlab</option>
+            <option value="platinum">Platinum ligadan boshlab</option>
+            <option value="diamond">Diamond ligadan boshlab</option>
+          </select>
+        </div>
         <input type="text" id="admTaskLink" placeholder="@kanal_username (bot obunani 100% tekshiradi)" class="apple-search-input" />
         <button type="button" class="btn-sapphire-primary" id="btnAdmAddTask">Vazifani Qoʻshish</button>
       </div>
@@ -2043,7 +2143,7 @@ async function renderAdminSheet() {
           <div class="not-row-item" style="padding:8px;">
             <div class="nri-center">
               <div class="nri-title">${esc(q.icon || '⭐')} ${esc(q.title)}</div>
-              <div class="nri-sub">${esc(q.cat)} · +${fmtInt(q.reward)} HOLD ${q.link ? `· ${esc(q.link)}` : ''}</div>
+              <div class="nri-sub">${esc(q.cat)} · +${fmtInt(q.reward)} HOLD ${q.minLeague ? `· 🔒 ${esc(q.minLeague)}` : ''} ${q.link ? `· ${esc(q.link)}` : ''}</div>
             </div>
             <button type="button" class="skin-pill-btn danger" data-del-task="${esc(q.id)}">✕</button>
           </div>
@@ -2056,10 +2156,11 @@ async function renderAdminSheet() {
       const cat = container.querySelector('#admTaskCat')?.value;
       const icon = container.querySelector('#admTaskIcon')?.value.trim();
       const reward = parseInt(container.querySelector('#admTaskReward')?.value, 10) || 15000;
+      const minLeague = container.querySelector('#admTaskMinLeague')?.value || null;
       const link = container.querySelector('#admTaskLink')?.value.trim();
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'add_quest', title, cat, icon, reward, link })
+        body: JSON.stringify({ username: STATE.username, action: 'add_quest', title, cat, icon, reward, link, minLeague })
       });
       if (res.ok && res.user) {
         STATE.user = res.user;
@@ -2287,6 +2388,48 @@ window.addEventListener('DOMContentLoaded', async () => {
       const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       const dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       coinBtn.style.transform = `rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg) scale(0.955)`;
+
+      // Secret Compass Direction Detection (Top -> Right -> Down -> Left -> Top)
+      if (Math.hypot(dx, dy) >= 0.35) {
+        const dir = Math.abs(dy) > Math.abs(dx) ? (dy < 0 ? 'up' : 'down') : (dx > 0 ? 'right' : 'left');
+        if (!STATE.compassSequence) STATE.compassSequence = [];
+        clearTimeout(STATE.compassTimer);
+        STATE.compassSequence.push(dir);
+        STATE.compassTimer = setTimeout(() => { STATE.compassSequence = []; }, 2800);
+
+        const expectedCompass = ['up', 'right', 'down', 'left', 'up'];
+        if (STATE.compassSequence.length > expectedCompass.length) {
+          STATE.compassSequence = STATE.compassSequence.slice(-expectedCompass.length);
+        }
+
+        if (
+          STATE.compassSequence.length === expectedCompass.length &&
+          STATE.compassSequence.every((v, i) => v === expectedCompass[i])
+        ) {
+          STATE.compassSequence = [];
+          clearTimeout(STATE.compassTimer);
+          (async () => {
+            haptic('heavy');
+            const airEl = document.getElementById('floatingMidAirMorse');
+            if (airEl) {
+              airEl.classList.add('solved');
+              airEl.innerHTML = `<span class="midair-letter" style="font-size:22px;letter-spacing:1px;">🧭 VAULT UNLOCKED</span>`;
+              setTimeout(() => { airEl.innerHTML = ''; airEl.classList.remove('solved'); }, 2200);
+            }
+            const res = await api('/api/hold/solve-compass', {
+              method: 'POST',
+              body: JSON.stringify({ username: STATE.username, sequence: expectedCompass })
+            });
+            if (res.ok && res.user) {
+              STATE.user = res.user;
+              renderAll();
+              showToast(res.message);
+            } else if (res.error) {
+              showToast(res.error);
+            }
+          })();
+        }
+      }
 
       clearTimeout(STATE.dashFeedbackTimer);
       STATE.dashFeedbackTimer = setTimeout(() => {
