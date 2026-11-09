@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=11" />
+  <link rel="stylesheet" href="/hold/style.css?v=12" />
 </head>
 <body>
   <div class="hold-app" id="holdApp">
@@ -77,17 +77,6 @@
             <span class="chevron-txt">›</span>
           </span>
         </button>
-
-        <!-- Live Retention Status Pills (Daily Streak & 2x Happy Hour) -->
-        <div class="arena-live-pills-row">
-          <button type="button" class="arena-streak-pill" id="btnArenaStreakPill">
-            <span>🔥</span>
-            <span id="uiArenaStreakText">Day 1 Streak</span>
-          </button>
-          <div class="arena-hh-pill" id="uiArenaHappyHourPill" hidden>
-            <span>⚡ 2x Happy Hour</span>
-          </div>
-        </div>
       </div>
 
       <!-- 3. Enlarged Center 3D Coin + Pure Mid-Air Floating Morse Letters -->
@@ -231,54 +220,52 @@
       </div>
     </section>
 
-    <!-- ==================== SHEET 3: EARN MORE COINS ==================== -->
-    <section class="apple-sheet" id="sheetEarn" hidden>
+    <!-- ==================== SHEET 3: EARN MORE COINS (EXACT SCREENSHOT 4 LAYOUT) ==================== -->
+    <section class="apple-sheet earn-showcase-sheet" id="sheetEarn" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
-        <span class="sheet-nav-title">Earn</span>
+        <span class="sheet-nav-title">HOLD</span>
         <div style="width:52px;"></div>
       </div>
 
       <div class="sheet-content">
         <div class="earn-hero-header">
+          <span class="earn-sparkle s1">✦</span>
           <h2>Earn more coins</h2>
           <button type="button" class="bb-link-btn" id="btnOpenEarnGuide">Full guide</button>
+          <span class="earn-sparkle s2">✦</span>
         </div>
 
-        <!-- 1. 7-Day Daily Streak Card -->
-        <h3 class="not-section-heading">Daily Streak (7 kunlik zanjir)</h3>
-        <div class="dark-group-box" id="dailyStreakBox" style="padding:14px;"></div>
-
-        <!-- 2. Daily Morse Hint, Happy Hour & Weekly Lucky Ticket -->
-        <h3 class="not-section-heading">Daily Mystery & Events</h3>
-        <div class="dark-group-box" id="dailyEventsBox"></div>
-
-        <!-- 3. Invite Bonus Card -->
+        <!-- 1. Invite Bonus Card (Exact Match to Item 1 in Screenshot) -->
         <div class="dark-group-box">
           <button type="button" class="not-row-item" id="btnEarnInviteCard">
             <div class="nri-icon-box">🧸</div>
             <div class="nri-center">
               <div class="nri-title">Invite bonus</div>
-              <div class="nri-sub">up to 10K <img src="/hold/skins/skin-4.png" class="inline-c" alt="" /> for fren</div>
+              <div class="nri-sub">up to 10K <img src="/hold/skins/skin-4.png" class="inline-c" alt="" id="uiEarnInviteCoin" /> for fren</div>
             </div>
             <span class="nri-chevron">›</span>
           </button>
         </div>
 
-        <!-- 4. Onboarding Tasks -->
+        <!-- 2. Daily (Streak, Happy Hour, Lucky Draw) -->
+        <h3 class="not-section-heading">Daily</h3>
+        <div class="dark-group-box" id="dailyTasksList"></div>
+
+        <!-- 3. Onboarding Tasks (Exact Match to Item 2 in Screenshot) -->
         <h3 class="not-section-heading">Onboarding</h3>
         <div class="dark-group-box" id="onboardingTasksList"></div>
 
-        <!-- 5. Specials -->
+        <!-- 3. Specials (Exact Match to Item 3 in Screenshot) -->
         <h3 class="not-section-heading">Specials</h3>
         <div class="dark-group-box" id="specialsTasksList"></div>
 
-        <!-- 6. Web3 world -->
-        <h3 class="not-section-heading">Web3 world</h3>
+        <!-- 4. Web3 world (Exact Match to Item 4 in Screenshot) -->
+        <h3 class="not-section-heading">Web3 world <span class="sec-progress-count" id="uiWeb3Count">0/3</span></h3>
         <div class="dark-group-box" id="web3TasksList"></div>
 
-        <!-- 7. Stars Power Packs -->
-        <h3 class="not-section-heading">Stars Boost Packs</h3>
+        <!-- 5. Stars Boost Packs -->
+        <h3 class="not-section-heading">Stars Boost</h3>
         <div class="dark-group-box" id="vipPacksList"></div>
       </div>
     </section>
@@ -371,6 +358,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=11"></script>
+  <script src="/hold/app.js?v=12"></script>
 </body>
 </html>

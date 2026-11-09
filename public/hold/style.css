@@ -1506,3 +1506,281 @@ body.turbo-active .coin-radial-glow {
   border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
+
+/* ==================== EARN SHEET — CLEAN NOTCOIN-STYLE LAYOUT (v12) ==================== */
+.earn-showcase-sheet {
+  background-color: #000000 !important;
+  background-image:
+    radial-gradient(ellipse at 50% 110%, var(--theme-glow-2) 0%, rgba(0, 0, 0, 0) 60%),
+    linear-gradient(180deg, #000000 0%, #000000 55%, #05070e 100%) !important;
+}
+
+.earn-showcase-sheet .sheet-content {
+  gap: 10px;
+  padding-bottom: 40px;
+}
+
+.earn-showcase-sheet .earn-hero-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0 14px;
+}
+
+.earn-showcase-sheet .earn-hero-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.earn-showcase-sheet .bb-link-btn {
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.earn-sparkle {
+  position: absolute;
+  color: #ffffff;
+  opacity: 0.85;
+  pointer-events: none;
+  animation: earnTwinkle 2.6s ease-in-out infinite;
+}
+.earn-sparkle.s1 { left: 16%; bottom: 0; font-size: 12px; }
+.earn-sparkle.s2 { right: 12%; top: 6px; font-size: 9px; animation-delay: 1.2s; }
+
+@keyframes earnTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.earn-showcase-sheet .not-section-heading {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-top: 14px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sec-progress-count {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.earn-showcase-sheet .dark-group-box {
+  background: rgba(30, 31, 36, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  padding: 6px;
+  gap: 0;
+}
+
+.earn-showcase-sheet .not-row-item {
+  min-height: 66px;
+  padding: 9px 10px;
+  gap: 14px;
+}
+
+.earn-showcase-sheet .not-row-item.static {
+  cursor: default;
+}
+.earn-showcase-sheet .not-row-item.static:active {
+  background: transparent;
+}
+
+.earn-showcase-sheet .nri-icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 26px;
+}
+
+.earn-showcase-sheet .nri-center {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.earn-showcase-sheet .nri-title {
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.earn-showcase-sheet .nri-sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.earn-showcase-sheet .nri-sub b {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.earn-showcase-sheet .nri-sub.gold-lock {
+  color: #f5b301;
+  font-weight: 500;
+}
+
+.earn-showcase-sheet .nri-chevron {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.earn-showcase-sheet .nri-chevron.done {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Completed tasks are dimmed like the reference */
+.earn-showcase-sheet .not-row-item.is-done {
+  cursor: default;
+}
+.earn-showcase-sheet .not-row-item.is-done .nri-icon-box,
+.earn-showcase-sheet .not-row-item.is-done .nri-title,
+.earn-showcase-sheet .not-row-item.is-done .nri-sub {
+  opacity: 0.38;
+}
+.earn-showcase-sheet .not-row-item.is-done:active {
+  background: transparent;
+}
+
+.earn-claim-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+}
+
+.earn-live-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #052e16;
+  background: #4ade80;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+
+.earn-count-badge {
+  min-width: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 9px;
+  border-radius: 99px;
+  text-align: center;
+}
+
+.earn-empty {
+  padding: 18px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+/* Daily reward modal */
+.streak-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.streak-modal-sub {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.streak-modal .streak-days-grid {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.streak-modal .streak-day-cell {
+  padding: 10px 4px;
+  border-radius: 14px;
+  gap: 5px;
+}
+
+.streak-modal .streak-day-cell:last-child {
+  grid-column: span 2;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(239, 68, 68, 0.12));
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.streak-day-coin {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.streak-modal .streak-day-val {
+  font-size: 13px;
+}
+
+.btn-sapphire-primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Full guide modal */
+.guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guide-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.guide-item:last-child { border-bottom: none; }
+
+.guide-item > span {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.guide-item b {
+  font-size: 14.5px;
+  color: #ffffff;
+}
+
+.guide-item p {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-2);
+  margin-top: 2px;
+}

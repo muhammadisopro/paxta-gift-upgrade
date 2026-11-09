@@ -1114,107 +1114,123 @@ function renderEarnSheet() {
   const done = u.tasksCompleted || [];
   const quests = u.quests || [];
 
-  // 1. Render 7-Day Daily Streak Box (`#dailyStreakBox`)
-  const streakBox = document.getElementById('dailyStreakBox');
-  if (streakBox && u.streak) {
-    const st = u.streak;
-    const rewards = st.rewards || [];
-    streakBox.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <strong style="font-size:14.5px;">🔥 Kunlik Zanjir (Day ${st.currentDay || 0}/7)</strong>
-          <div style="font-size:12px;color:var(--text-2);margin-top:2px;">7-kuni +50,000 HOLD + Cookie Skin bepul!</div>
-        </div>
-        <button type="button" class="skin-pill-btn ${st.canClaimToday ? '' : 'enabled'}" id="btnClaimDailyStreak" ${st.canClaimToday ? '' : 'disabled'}>
-          ${st.canClaimToday ? `Olish (+${fmtInt(st.nextRewardHold)})` : 'Olindi ✓'}
-        </button>
-      </div>
-      <div class="streak-days-grid">
-        ${rewards.map(r => {
-          const isClaimed = !st.canClaimToday && r.day <= st.currentDay || (st.canClaimToday && r.day < st.nextDay);
-          const isToday = st.canClaimToday && r.day === st.nextDay;
-          return `
-            <div class="streak-day-cell ${isClaimed ? 'claimed' : ''} ${isToday ? 'today' : ''}">
-              <span class="streak-day-num">D${r.day}</span>
-              <span class="streak-day-val">${r.day === 7 ? '🍪50K' : `${Math.round(r.hold / 1000)}K`}</span>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-    streakBox.querySelector('#btnClaimDailyStreak')?.addEventListener('click', claimDailyStreakBonus);
-  }
+  const lockedByLeague = (q) => {
+    if (!q.minLeague) return false;
+    const order = (u.allLeagues || []).map(l => l.id);
+    const need = order.indexOf(q.minLeague);
+    const mine = order.indexOf(u.league?.id || 'bronze');
+    return need > -1 && mine < need;
+  };
 
-  // 2. Render Daily Events Box (`#dailyEventsBox`: Morse Hint + Happy Hour + Lucky Ticket + Squad Wars)
-  const eventsBox = document.getElementById('dailyEventsBox');
-  if (eventsBox) {
-    const m = u.morse || {};
+  const rowHtml = ({ icon, title, sub, subClass = '', right = '›', done: isDone = false }) => `
+    <div class="nri-icon-box">${icon}</div>
+    <div class="nri-center">
+      <div class="nri-title">${title}</div>
+      <div class="nri-sub ${subClass}">${sub}</div>
+    </div>
+    <span class="nri-chevron ${isDone ? 'done' : ''}">${right}</span>
+  `;
+
+  const coinTag = `<img src="${esc(coinImg)}" class="inline-c" alt="" />`;
+
+  // Invite card coin follows active skin
+  const invCoin = document.getElementById('uiEarnInviteCoin');
+  if (invCoin) invCoin.src = coinImg;
+
+  // 1. Daily section: Streak · Happy Hour · Weekly Lucky Draw (Morse stays 100% hidden)
+  const dailyEl = document.getElementById('dailyTasksList');
+  if (dailyEl) {
+    dailyEl.innerHTML = '';
+    const st = u.streak || {};
     const hh = u.happyHour || {};
     const lt = u.luckyDraw || {};
-    eventsBox.innerHTML = `
-      <div class="not-row-item" style="cursor:default;">
-        <div class="nri-icon-box">🕵️</div>
-        <div class="nri-center">
-          <div class="nri-title">Kunlik Yashirin Morze (${m.length || 4} harf)</div>
-          <div class="nri-sub">${esc(m.hint || 'Asosiy 4 harfli nom')} · <b>+${fmtInt(m.reward || 25000)} HOLD</b></div>
-        </div>
-        <span class="skin-pill-btn ${m.solvedToday ? 'enabled' : ''}">${m.solvedToday ? 'Topildi ✓' : `${esc(m.firstLetter || 'H')}...`}</span>
-      </div>
 
-      <div class="not-row-item" style="cursor:default;">
-        <div class="nri-icon-box">⚡</div>
-        <div class="nri-center">
-          <div class="nri-title">Happy Hour (2x Tap)</div>
-          <div class="nri-sub">Har kuni ${esc(hh.scheduleText || '20:00 – 21:00')} da barcha bosishlar 2x!</div>
-        </div>
-        <span class="skin-pill-btn ${hh.active ? '' : 'enabled'}">${hh.active ? 'LIVE 2X' : '20:00'}</span>
-      </div>
+    const streakBtn = document.createElement('button');
+    streakBtn.type = 'button';
+    streakBtn.className = 'not-row-item';
+    streakBtn.innerHTML = rowHtml({
+      icon: '🔥',
+      title: 'Daily reward',
+      sub: st.canClaimToday
+        ? `<b>+${fmtInt(st.nextRewardHold || 1000)}</b> ${coinTag} · Day ${st.nextDay || 1}/7`
+        : `Day ${st.currentDay || 0}/7 · come back tomorrow`,
+      right: st.canClaimToday ? '<span class="earn-claim-dot"></span>›' : '✓',
+      done: !st.canClaimToday
+    });
+    streakBtn.addEventListener('click', openDailyStreakModal);
+    dailyEl.appendChild(streakBtn);
 
-      <div class="not-row-item" style="cursor:default;">
-        <div class="nri-icon-box">🎟️</div>
-        <div class="nri-center">
-          <div class="nri-title">Haftalik Lucky Ticket</div>
-          <div class="nri-sub">Har bir topilgan Morze = +1 chipta (${esc(lt.prizeTitle || 'Victory Medal NFT + 100K HOLD')})</div>
-        </div>
-        <span class="skin-pill-btn">${fmtInt(lt.myTickets || 0)} 🎟️</span>
-      </div>
-    `;
+    const hhRow = document.createElement('div');
+    hhRow.className = 'not-row-item static';
+    hhRow.innerHTML = rowHtml({
+      icon: '⚡',
+      title: 'Happy Hour',
+      sub: hh.active ? '<b style="color:#4ade80;">Live now · 2x per tap</b>' : `2x per tap · ${esc(hh.scheduleText || '20:00 – 21:00')}`,
+      right: hh.active ? '<span class="earn-live-badge">LIVE</span>' : ''
+    });
+    dailyEl.appendChild(hhRow);
+
+    const ltRow = document.createElement('div');
+    ltRow.className = 'not-row-item static';
+    ltRow.innerHTML = rowHtml({
+      icon: '🎟️',
+      title: 'Weekly Lucky Draw',
+      sub: `${esc(lt.prizeTitle || 'NFT + 100K HOLD')}`,
+      right: `<span class="earn-count-badge">${fmtInt(lt.myTickets || 0)}</span>`
+    });
+    dailyEl.appendChild(ltRow);
   }
 
-  // 3. Render Quests with 100% In-App Verification Modal (Zero New Browser Tab Redirects!)
+  // 2. Quests — Notcoin-style rows, verified in-app (no external tabs)
   const renderQuestRows = (containerId, list) => {
     const el = document.getElementById(containerId);
     if (!el) return;
     el.innerHTML = '';
-    for (const q of list) {
+    if (!list.length) {
+      el.innerHTML = `<div class="earn-empty">New tasks coming soon</div>`;
+      return;
+    }
+    // Pending first, completed last
+    const sorted = [...list].sort((a, b) => Number(done.includes(a.id)) - Number(done.includes(b.id)));
+    for (const q of sorted) {
       const isDone = done.includes(q.id);
+      const isLocked = !isDone && lockedByLeague(q);
+      const lockLeagueName = isLocked ? ((u.allLeagues || []).find(l => l.id === q.minLeague)?.name || 'Silver') : '';
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'not-row-item';
-      btn.style.opacity = isDone ? '0.55' : '1';
-      btn.innerHTML = `
-        <div class="nri-icon-box">${esc(q.icon || '⭐')}</div>
-        <div class="nri-center">
-          <div class="nri-title">${esc(q.title)}</div>
-          <div class="nri-sub">
-            ${isDone ? 'Bajarildi ✓' : `+${fmtInt(q.reward)} <img src="${esc(coinImg)}" class="inline-c" alt="" />`}
-          </div>
-        </div>
-        ${isDone
-          ? `<span class="nri-chevron">✓</span>`
-          : `<span class="skin-pill-btn" style="font-size:11.5px;padding:5px 11px;">Bajarish</span>`
-        }
-      `;
+      btn.className = `not-row-item${isDone ? ' is-done' : ''}`;
+      btn.innerHTML = rowHtml({
+        icon: esc(q.icon || '⭐'),
+        title: esc(q.title),
+        sub: isDone
+          ? 'Completed'
+          : isLocked
+            ? `🔒 ${esc(lockLeagueName)} league`
+            : `<b>+${fmtInt(q.reward)}</b> ${coinTag}`,
+        subClass: isLocked ? 'gold-lock' : '',
+        right: isDone ? '✓' : '›',
+        done: isDone
+      });
       if (!isDone) {
-        btn.addEventListener('click', () => openQuestVerificationModal(q));
+        btn.addEventListener('click', () => {
+          if (isLocked) {
+            showToast(`${lockLeagueName} ligasiga chiqing`);
+            return;
+          }
+          openQuestVerificationModal(q);
+        });
       }
       el.appendChild(btn);
     }
   };
 
+  const web3List = quests.filter(q => q.cat === 'web3');
   renderQuestRows('onboardingTasksList', quests.filter(q => q.cat === 'onboarding'));
   renderQuestRows('specialsTasksList', quests.filter(q => q.cat === 'specials' || !q.cat));
-  renderQuestRows('web3TasksList', quests.filter(q => q.cat === 'web3'));
+  renderQuestRows('web3TasksList', web3List);
+
+  const web3Count = document.getElementById('uiWeb3Count');
+  if (web3Count) web3Count.textContent = `${web3List.filter(q => done.includes(q.id)).length}/${web3List.length}`;
 
   // 4. Stars VIP Packs inside Earn
   const vipList = document.getElementById('vipPacksList');
@@ -1251,6 +1267,42 @@ function renderEarnSheet() {
       });
     });
   }
+}
+
+function openDailyStreakModal() {
+  const u = STATE.user;
+  if (!u) return;
+  const st = u.streak || {};
+  const rewards = st.rewards?.length ? st.rewards : [1000, 2500, 5000, 10000, 15000, 25000, 50000].map((hold, i) => ({ day: i + 1, hold }));
+  const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
+
+  openModal('Daily reward', `
+    <div class="streak-modal">
+      <p class="streak-modal-sub">Har kuni kiring — zanjir uzilmasa mukofot oʻsib boradi. 7-kun: Cookie skin.</p>
+      <div class="streak-days-grid">
+        ${rewards.map(r => {
+          const isClaimed = st.canClaimToday ? r.day < (st.nextDay || 1) : r.day <= (st.currentDay || 0);
+          const isToday = st.canClaimToday && r.day === (st.nextDay || 1);
+          const val = r.hold >= 1000 ? `${Math.round(r.hold / 1000)}K` : fmtInt(r.hold);
+          return `
+            <div class="streak-day-cell ${isClaimed ? 'claimed' : ''} ${isToday ? 'today' : ''}">
+              <span class="streak-day-num">Day ${r.day}</span>
+              <img src="${esc(coinImg)}" class="streak-day-coin" alt="" />
+              <span class="streak-day-val">${isClaimed ? '✓' : val}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <button type="button" class="btn-sapphire-primary" id="btnClaimDailyStreak" ${st.canClaimToday ? '' : 'disabled'}>
+        ${st.canClaimToday ? `Claim +${fmtInt(st.nextRewardHold || rewards[0].hold)}` : 'Come back tomorrow'}
+      </button>
+    </div>
+  `, (body) => {
+    body.querySelector('#btnClaimDailyStreak')?.addEventListener('click', async () => {
+      await claimDailyStreakBonus();
+      closeModal();
+    });
+  });
 }
 
 async function claimDailyStreakBonus() {
@@ -2167,16 +2219,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('btnOpenEarnGuide')?.addEventListener('click', () => {
-    const curWord = STATE.user?.morse?.word || 'HOLD';
-    const morseHint = curWord.split('').map(c => `${c} (${(MORSE_MAP[c] || '').replace(/\./g, '•').replace(/-/g, '—')})`).join(' · ');
     openModal('Full guide', `
-      <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:var(--text-2);line-height:1.5;">
-        <p><b style="color:#fff;">🪙 Havoda Muallaq Morze Shifri:</b> Markazdagi tangani qisqa bosing (<b>•</b>) yoki bosib ushlab turing (<b>—</b>). Birinchi harf toʻgʻri terilishi bilan harflar havoda muallaq paydo boʻladi va <b>+1 Lucky Ticket</b> ham beradi!</p>
-        <p style="background:rgba(255,255,255,0.06);padding:10px;border-radius:12px;color:#fff;font-size:12.5px;">
-          Bugungi shifr: <b>${esc(morseHint)}</b>
-        </p>
-        <p><b style="color:#fff;">🔥 7-Kunlik Streak & 2x Happy Hour:</b> Har kuni kirib zanjirni uzmang (7-kuni +50K HOLD va Cookie Skin) hamda 20:00–21:00 da 2x Tap rejimida oʻynang.</p>
-        <p><b style="color:#fff;">🏆 Top-10 NFT:</b> Reytingda Top-10 oʻrinni egallagan ishtirokchilar haqiqiy NFT sovgʻalar va HOLD mukofotlarini qoʻlga kiritadilar.</p>
+      <div class="guide-list">
+        <div class="guide-item"><span>🪙</span><div><b>Tap</b><p>Tangani bosing — har bosish HOLD beradi. Energiya oʻz-oʻzidan tiklanadi.</p></div></div>
+        <div class="guide-item"><span>✅</span><div><b>Tasks</b><p>Vazifani bajaring va “Tekshirish” tugmasini bosing. Bot bajarilganini 100% tekshiradi.</p></div></div>
+        <div class="guide-item"><span>🔥</span><div><b>Daily reward</b><p>Har kuni kiring. 7 kun ketma-ket — +50K HOLD va Cookie skin.</p></div></div>
+        <div class="guide-item"><span>⚡</span><div><b>Happy Hour</b><p>Har kuni 20:00–21:00 da har bosish 2 barobar.</p></div></div>
+        <div class="guide-item"><span>🏆</span><div><b>Top-10</b><p>Reytingning eng yaxshi 10 tasi NFT sovgʻa va HOLD oladi.</p></div></div>
+        <div class="guide-item"><span>✦</span><div><b>Sirlar</b><p>Tangada yashirin sirlar bor. Kuzatib boring…</p></div></div>
       </div>
     `);
   });
