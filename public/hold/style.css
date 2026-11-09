@@ -43,6 +43,13 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+}
+
 .inline-c {
   width: 14px;
   height: 14px;
@@ -388,8 +395,9 @@ body.sheet-open #viewArena {
   font-variant-numeric: tabular-nums;
 }
 
-.arena-rank-league-row {
-  margin-top: 10px;
+.arena-rank-league-row,
+.arena-rank-league-pill {
+  margin-top: 8px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -445,7 +453,7 @@ body.sheet-open #viewArena {
   align-items: center;
   justify-content: center;
   perspective: 1100px;
-  min-height: 290px;
+  min-height: 240px;
 }
 
 /* Pure Mid-Air Floating Letters (Havoda muallaq turganday — Zero Input Box!) */
@@ -522,10 +530,11 @@ body.turbo-active .coin-radial-glow {
 }
 
 /* Enlarged Center Coin (Touch-action & callout disabled so holding for Morse Dash works 100%) */
-.official-coin-btn {
+.official-coin-btn,
+.coin-3d-btn {
   position: relative;
-  width: min(84vw, 338px);
-  height: min(84vw, 338px);
+  width: min(76vw, 306px);
+  height: min(76vw, 306px);
   background: transparent;
   border: none;
   padding: 0;
@@ -538,7 +547,8 @@ body.turbo-active .coin-radial-glow {
   z-index: 2;
 }
 
-.official-coin-img {
+.official-coin-img,
+.coin-3d-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
