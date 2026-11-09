@@ -4,6 +4,8 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 
+const FORBIDDEN_GIFT_IDS = new Set([6068, 4226, 3015, 6095]);
+
 export const MORSE_MAP = {
   A: '.-',    B: '-...',  C: '-.-.',  D: '-..',   E: '.',     F: '..-.',
   G: '--.',   H: '....',  I: '..',    J: '.---',  K: '-.-',   L: '.-..',
