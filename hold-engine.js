@@ -21,11 +21,11 @@ export const REVERSE_MORSE = Object.fromEntries(
 );
 
 export const HOLD_LEAGUES = [
-  { id: 'bronze',   name: 'Bronze Holder',   icon: '🥉', minHold: 0,          bonusTap: 0, color: '#cd7f32' },
-  { id: 'silver',   name: 'Silver Holder',   icon: '🥈', minHold: 250_000,    bonusTap: 1, color: '#c0c0c0' },
-  { id: 'gold',     name: 'Gold Holder',     icon: '🥇', minHold: 1_000_000,  bonusTap: 2, color: '#ffd700' },
-  { id: 'diamond',  name: 'Diamond Holder',  icon: '💎', minHold: 4_000_000,  bonusTap: 4, color: '#38bdf8' },
-  { id: 'obsidian', name: 'Obsidian Whale',  icon: '🖤', minHold: 10_000_000, bonusTap: 7, color: '#a855f7' }
+  { id: 'bronze',   name: 'Bronze',   icon: '🏆', minHold: 0,          bonusTap: 0, color: '#cd7f32' },
+  { id: 'silver',   name: 'Silver',   icon: '🏆', minHold: 250_000,    bonusTap: 1, color: '#c0c0c0' },
+  { id: 'gold',     name: 'Gold',     icon: '🏆', minHold: 1_000_000,  bonusTap: 2, color: '#ffd700' },
+  { id: 'diamond',  name: 'Diamond',  icon: '🏆', minHold: 4_000_000,  bonusTap: 4, color: '#38bdf8' },
+  { id: 'obsidian', name: 'Obsidian', icon: '🏆', minHold: 10_000_000, bonusTap: 7, color: '#60a5fa' }
 ];
 
 export const HOLD_MINE_CARDS = [
@@ -33,8 +33,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'paxta_node',
     cat: 'ecosystem',
-    name: 'Paxta Node Server',
-    desc: 'PaxtaGram tarmogʻida tezkor tugun (node) ishga tushirish',
+    name: 'Paxta Node',
+    desc: 'Tarmoq tuguni daromadi',
     icon: '🖥️',
     baseCost: 5_000,
     baseProfit: 1_200
@@ -42,8 +42,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'hold_verify_hub',
     cat: 'ecosystem',
-    name: 'Hold Verification Hub',
-    desc: 'Rasmiy @Hold_bot tasdiqlash markazi ulushi',
+    name: 'Verification Hub',
+    desc: '@Hold_bot tasdiqlash ulushi',
     icon: '🛡️',
     baseCost: 12_000,
     baseProfit: 2_800
@@ -51,8 +51,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'stars_liquidity',
     cat: 'ecosystem',
-    name: 'Stars Liquidity Pool',
-    desc: 'Paxta Stars likvidlik hovuzidan doimiy ulush',
+    name: 'Stars Pool',
+    desc: 'Likvidlik hovuzi ulushi',
     icon: '⭐',
     baseCost: 25_000,
     baseProfit: 5_400
@@ -61,8 +61,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'nft_floor_sniper',
     cat: 'web3',
-    name: 'NFT Floor Sniper v4',
-    desc: 'Bozordagi arzon NFTlarni avtomatik tutuvchi algoritm',
+    name: 'Floor Sniper',
+    desc: 'Avtomatik bozor snayperi',
     icon: '🎯',
     baseCost: 18_000,
     baseProfit: 4_100
@@ -70,8 +70,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'whale_staking',
     cat: 'web3',
-    name: 'Whale Staking Vault',
-    desc: 'Yirik kitlar bilan birgalikda $HOLD staking qilish',
+    name: 'Whale Staking',
+    desc: 'Yirik staking hovuzi',
     icon: '🐋',
     baseCost: 45_000,
     baseProfit: 9_500
@@ -79,8 +79,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'p2p_arbitrage',
     cat: 'web3',
-    name: 'P2P Market Arbitraj',
-    desc: 'Sovgʻalar bozoridagi narx farqidan passiv daromad',
+    name: 'P2P Arbitrage',
+    desc: 'Bozor arbitraji oqimi',
     icon: '📈',
     baseCost: 75_000,
     baseProfit: 15_000
@@ -89,8 +89,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'morse_ai_decoder',
     cat: 'mystery',
-    name: 'Morse AI Decoder',
-    desc: 'Yashirin Morze signallarini sunʼiy intellekt bilan ochish',
+    name: 'Morse Decoder',
+    desc: 'Shifrlarni avtomatik yechish',
     icon: '📡',
     baseCost: 15_000,
     baseProfit: 3_600
@@ -98,8 +98,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'enigma_cipher',
     cat: 'mystery',
-    name: 'Enigma Shifr Mashinasi',
-    desc: 'Maxfiy kodlar va kriptografik bloklarni yechish',
+    name: 'Enigma Core',
+    desc: 'Kriptografik blok tahlili',
     icon: '🔐',
     baseCost: 38_000,
     baseProfit: 8_200
@@ -107,8 +107,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'quantum_reactor',
     cat: 'mystery',
-    name: 'Kvant Tap Reaktori',
-    desc: 'Har bir zarbani kvant darajasida koʻpaytiruvchi reaktor',
+    name: 'Quantum Core',
+    desc: 'Kvant hisoblash quvvati',
     icon: '⚛️',
     baseCost: 90_000,
     baseProfit: 18_500
@@ -117,8 +117,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'victory_medal_mint',
     cat: 'vip',
-    name: 'Victory Medal Zavodi',
-    desc: 'Oltin medallar kolleksiyasidan yuqori passiv daromad',
+    name: 'Medal Mint',
+    desc: 'Victory Medal kolleksiyasi',
     icon: '🏅',
     baseCost: 30_000,
     baseProfit: 6_800
@@ -126,8 +126,8 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'desk_calendar_vault',
     cat: 'vip',
-    name: 'Desk Calendar Ombori',
-    desc: 'Noyob stol kalendarlari fondidan soatlik $HOLD oqimi',
+    name: 'Calendar Vault',
+    desc: 'Desk Calendar kolleksiyasi',
     icon: '📅',
     baseCost: 60_000,
     baseProfit: 13_200
@@ -135,63 +135,63 @@ export const HOLD_MINE_CARDS = [
   {
     id: 'obsidian_genesis',
     cat: 'vip',
-    name: 'Obsidian Black Pass',
-    desc: 'Onyx Black & Obsidian elit klubining oliy daromad kartasi',
-    icon: '🖤',
+    name: 'Obsidian Pass',
+    desc: 'Elit klub daromad kartasi',
+    icon: '💎',
     baseCost: 150_000,
     baseProfit: 32_000
   }
 ];
 
 export const SECRET_BONUS_CODES = {
-  WAKEUP:   { reward: 500_000,   title: '🕶️ Notcoin "WAKEUP" Maxfiy Kodi!', skin: 'obsidian' },
-  PAXTA:    { reward: 600_000,   title: '🌸 "PAXTA" Maxfiy Morze Bonus!' },
-  MEDAL:    { reward: 750_000,   title: '🏅 "MEDAL" Maxfiy Morze Bonus!' },
-  OBSIDIAN: { reward: 1_000_000, title: '🖤 "OBSIDIAN" Whale Shifri!' },
-  MOON:     { reward: 888_888,   title: '🌙 "MOON" Maxfiy Kod Topildi!' }
+  WAKEUP:   { reward: 500_000,   title: 'WAKEUP kodi ochildi', skin: 'obsidian' },
+  PAXTA:    { reward: 600_000,   title: 'PAXTA kodi ochildi' },
+  MEDAL:    { reward: 750_000,   title: 'MEDAL kodi ochildi' },
+  OBSIDIAN: { reward: 1_000_000, title: 'OBSIDIAN kodi ochildi' },
+  MOON:     { reward: 888_888,   title: 'MOON kodi ochildi' }
 };
 
 export const HOLD_QUESTS = [
-  { id: 'daily_checkin',   title: '📅 Kunlik Kirish Bonusi',                 reward: 50_000,  type: 'instant', icon: '🎁' },
-  { id: 'solve_first_morse', title: '🕵️‍♂️ Birinchi Morze Kodini Yechish',       reward: 250_000, type: 'check_morse', icon: '📡' },
-  { id: 'join_squad',      title: '🛡️ Birorta Squad (Jamoa)ga Qoʻshilish',   reward: 100_000, type: 'check_squad', icon: '⚔️' },
-  { id: 'upgrade_3_cards', title: '⛏️ Mine Boʻlimida 3 ta Karta Ochish',     reward: 200_000, type: 'check_cards', icon: '🃏' },
-  { id: 'invite_1_friend', title: '👥 1 ta Doʻstni Oʻyinga Taklif Qilish',   reward: 150_000, type: 'check_ref_1', icon: '🤝' },
-  { id: 'invite_3_friends',title: '🔥 3 ta Doʻstni Taklif Qilish (VIP)',     reward: 500_000, type: 'check_ref_3', icon: '🚀' },
-  { id: 'reach_silver',    title: '🥈 Silver Holder Ligasiga Chiqish',       reward: 300_000, type: 'check_silver', icon: '🥈' },
-  { id: 'reach_gold',      title: '🥇 Gold Holder Ligasiga Chiqish',         reward: 750_000, type: 'check_gold', icon: '🥇' }
+  { id: 'daily_checkin',     title: 'Kunlik kirish bonusi',           reward: 50_000,  type: 'instant',      icon: '📅' },
+  { id: 'solve_first_morse', title: 'Birinchi Morze shifrini yechish', reward: 250_000, type: 'check_morse',  icon: '📡' },
+  { id: 'join_squad',        title: 'Squad jamoasiga qoʻshilish',     reward: 100_000, type: 'check_squad',  icon: '🛡️' },
+  { id: 'upgrade_3_cards',   title: '3 ta Mine kartani kuchaytirish', reward: 200_000, type: 'check_cards',  icon: '⚡' },
+  { id: 'invite_1_friend',   title: '1 ta doʻstni taklif qilish',     reward: 150_000, type: 'check_ref_1',  icon: '👥' },
+  { id: 'invite_3_friends',  title: '3 ta doʻstni taklif qilish',     reward: 500_000, type: 'check_ref_3',  icon: '🚀' },
+  { id: 'reach_silver',      title: 'Silver ligasiga chiqish',        reward: 300_000, type: 'check_silver', icon: '🏆' },
+  { id: 'reach_gold',        title: 'Gold ligasiga chiqish',          reward: 750_000, type: 'check_gold',   icon: '🏆' }
 ];
 
 export const STARS_VIP_PACKS = [
   {
     id: 'god_mode',
-    name: '⚡ Hold God Mode + Auto-Bot',
-    desc: '+2,500,000 $HOLD + Tap darajasi +5 + 24/7 Avto-Bot',
+    name: 'Hold Starter Boost',
+    desc: '+2,500,000 HOLD · Tap +5 · Auto-Bot',
     starsPrice: 99,
     holdGrant: 2_500_000,
     tapBoost: 5,
     enableAutoBot: true,
-    badge: 'ENG OMMABOP'
+    badge: 'POPULAR'
   },
   {
     id: 'whale_pack',
-    name: '🐋 Mega Whale Paketi',
-    desc: '+6,000,000 $HOLD + Tap darajasi +8 + 24/7 Avto-Bot',
+    name: 'Whale Boost',
+    desc: '+6,000,000 HOLD · Tap +8 · Auto-Bot',
     starsPrice: 199,
     holdGrant: 6_000_000,
     tapBoost: 8,
     enableAutoBot: true,
-    badge: '2X FOYDA'
+    badge: '2X VALUE'
   },
   {
     id: 'obsidian_pack',
-    name: '🖤 Obsidian Titan Paketi',
-    desc: '+15,000,000 $HOLD + Tap +15 + Obsidian Liga Darhol Ochiladi!',
+    name: 'Obsidian Max',
+    desc: '+15,000,000 HOLD · Tap +15 · Obsidian League',
     starsPrice: 399,
     holdGrant: 15_000_000,
     tapBoost: 15,
     enableAutoBot: true,
-    badge: 'VIP MAX'
+    badge: 'MAX'
   }
 ];
 
@@ -1227,7 +1227,7 @@ export function registerHoldEngine(app, deps) {
     holdBotCall('setChatMenuButton', {
       menu_button: {
         type: 'web_app',
-        text: '🪙 $HOLD',
+        text: 'HOLD',
         web_app: { url: holdWebAppUrl }
       }
     }).catch(() => {});
@@ -1281,11 +1281,10 @@ export function registerHoldEngine(app, deps) {
                   const token = createSessionToken(targetKey, fromUser?.id);
                   await holdBotCall('sendMessage', {
                     chat_id: item.message.chat.id,
-                    text: `✅ *Toʻlov qabul qilindi!*\n\nHisobingizga *+⭐ ${starsAdded}* qoʻshildi.\nJoriy balans: *⭐ ${users[targetKey].stars}*\n\nEndi *$HOLD NFT Vault*dan Desk Calendar yoki Victory Medal olishingiz mumkin!`,
-                    parse_mode: 'Markdown',
+                    text: `Toʻlov tasdiqlandi. Balans: ${users[targetKey].stars} Stars.`,
                     reply_markup: {
                       inline_keyboard: [
-                        [{ text: '🪙 $HOLD Oʻyiniga Qaytish', web_app: { url: `${holdWebAppUrl}?auth=${encodeURIComponent(token)}` } }]
+                        [{ text: 'HOLD', web_app: { url: `${holdWebAppUrl}?auth=${encodeURIComponent(token)}` } }]
                       ]
                     }
                   });
@@ -1307,20 +1306,10 @@ export function registerHoldEngine(app, deps) {
 
               await holdBotCall('sendMessage', {
                 chat_id: item.message.chat.id,
-                text:
-                  `🪙 *$HOLD — Rasmiy Web3 Oʻyini & Real NFT Vault!*\n\n` +
-                  `Probably nothing... lekin bu yerda yigʻgan *$HOLD* tangalaringiz evaziga *haqiqiy PaxtaGram NFT sovgʻalarini* olasiz!\n\n` +
-                  `🔥 *Oʻyin imkoniyatlari:*\n` +
-                  `• 🐶 *OG Snapshot:* PaxtaGram ID yoshingizga qarab darhol boshlangʻich *$HOLD* bonusi!\n` +
-                  `• 🕵️‍♂️ *Kunlik Morze Kodi (Daily Cipher):* Nuqta (\`•\`) va chiziq (\`—\`) bilan maxfiy soʻzni topib *+1,000,000 $HOLD* yuting!\n` +
-                  `• 🃏 *Kunlik 3 ta Kombo Karta:* Yashirin kartalarni ochib *+3,000,000 $HOLD* oling!\n` +
-                  `• 🎁 *Real NFT Vault:* Kanalimizdagi *128 ta Desk Calendar* va *59 ta Victory Medal* NFTlarini (shu jumladan *Onyx Black* va *Craft*!) profilingizga yechib oling!\n` +
-                  `• 🏆 *Beta Test Top-3:* Eng faol 3 ishtirokchiga NFTlar *0 ⭐ (100% BEPUL)* topshiriladi!`,
-                parse_mode: 'Markdown',
+                text: `Nothing to sell. Just hold. @hold`,
                 reply_markup: {
                   inline_keyboard: [
-                    [{ text: '🪙 Play $HOLD (Real NFT Yutish!)', web_app: { url: personalUrl } }],
-                    [{ text: '👥 Doʻstlarni Taklif Qilish (+50,000 $HOLD)', url: `https://paxta.online/HOLDbot?start=ref_${senderKey}` }]
+                    [{ text: 'HOLD', web_app: { url: personalUrl } }]
                   ]
                 }
               });
