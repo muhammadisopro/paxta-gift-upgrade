@@ -23,6 +23,8 @@ const STATE = {
   totalPlayers: 0,
   top10Prizes: [],
   leaderboard: [],
+  leaderboardDay: [],
+  openedQuestLinks: {},
   viewedLeagueIdx: 0,
   leagueMainTab: 'miners',
   leagueTimePeriod: 'day',
@@ -246,7 +248,7 @@ function renderOnboardingSlide() {
   const pid = u.paxtaId || 245;
   const topPct = u.topPct || 5;
   const years = u.yearsEquivalent || 2;
-  const totalReward = pid <= 150 ? 280_000 : pid <= 600 ? 180_000 : 80_000;
+  const totalReward = pid <= 150 ? 14_500 : pid <= 600 ? 10_000 : 5_500;
 
   if (step === 0) {
     wrap.innerHTML = `
@@ -311,7 +313,7 @@ async function advanceOnboardingStory() {
     if (res.ok && res.user) {
       STATE.user = res.user;
       renderAll();
-      showToast(`🎉 +${fmtInt(res.ogDetails?.totalBonus || 80000)} HOLD!`);
+      showToast(`🎉 +${fmtInt(res.ogDetails?.totalBonus || 5500)} HOLD!`);
     }
   }
   if (overlay) overlay.hidden = true;
@@ -615,6 +617,7 @@ async function loadLeaderboardData() {
     STATE.totalPlayers = res.totalPlayers || (res.leaderboard || []).length;
     STATE.top10Prizes = res.top10Prizes || [];
     STATE.leaderboard = res.leaderboard || [];
+    STATE.leaderboardDay = res.leaderboardDay || res.leaderboard || [];
     renderLeaguesSheet();
   }
 }
@@ -728,10 +731,14 @@ function renderLeaguesSheet() {
     return;
   }
 
-  // Miners Leaderboard
-  const players = STATE.leaderboard || [];
+  // Miners Leaderboard (Day vs All Time)
+  const players = STATE.leagueTimePeriod === 'day'
+    ? (STATE.leaderboardDay?.length ? STATE.leaderboardDay : STATE.leaderboard)
+    : (STATE.leaderboard || []);
+
   players.slice(0, 50).forEach((p) => {
     const medal = p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : `${p.rank}`;
+    const scoreVal = STATE.leagueTimePeriod === 'day' ? (p.dailyHold ?? p.lifetimeHold) : p.lifetimeHold;
     const row = document.createElement('div');
     row.className = 'lb-row-item';
     row.innerHTML = `
@@ -742,7 +749,7 @@ function renderLeaguesSheet() {
           <div class="lb-user-name">${esc(p.displayName || p.username)}</div>
           <div class="lb-user-score">
             <img src="${esc(coinImg)}" class="inline-c" alt="" />
-            <span>${fmtInt(p.lifetimeHold)}</span>
+            <span>${fmtInt(scoreVal)}</span>
           </div>
         </div>
       </div>
@@ -912,6 +919,7 @@ function renderEarnSheet() {
     el.innerHTML = '';
     for (const q of list) {
       const isDone = done.includes(q.id);
+      const isOpenedLink = !!STATE.openedQuestLinks[q.id];
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'not-row-item';
@@ -924,12 +932,22 @@ function renderEarnSheet() {
             ${isDone ? 'Completed' : `+${fmtInt(q.reward)} <img src="${esc(coinImg)}" class="inline-c" alt="" />`}
           </div>
         </div>
-        <span class="nri-chevron">${isDone ? '✓' : '›'}</span>
+        ${isDone
+          ? `<span class="nri-chevron">✓</span>`
+          : (q.link && isOpenedLink
+              ? `<span class="skin-pill-btn" style="font-size:11px;padding:5px 10px;">Check</span>`
+              : `<span class="nri-chevron">›</span>`
+            )
+        }
       `;
       if (!isDone) {
         btn.addEventListener('click', async () => {
-          if (q.link) {
+          if (q.link && !STATE.openedQuestLinks[q.id]) {
+            STATE.openedQuestLinks[q.id] = true;
             window.open(q.link, '_blank');
+            renderEarnSheet();
+            showToast('Kanalga obuna boʻling va "Check" tugmasini bosing!');
+            return;
           }
           const res = await api('/api/hold/claim-quest', {
             method: 'POST',
@@ -1006,7 +1024,7 @@ function renderFrensSheet() {
   const frensList = document.getElementById('frensInvitedList');
   if (frensList) {
     if (!refs.length) {
-      frensList.innerHTML = `<div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">No frens invited yet. Share your link to earn +50,000 HOLD!</div>`;
+      frensList.innerHTML = `<div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">No frens invited yet. Share your link to earn +10,000 HOLD!</div>`;
     } else {
       frensList.innerHTML = refs.map(r => `
         <div class="not-row-item">
@@ -1015,7 +1033,7 @@ function renderFrensSheet() {
             <div class="nri-title">${esc(r.displayName || r.username)}</div>
             <div class="nri-sub">${esc(r.league || 'Bronze')} · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(r.lifetimeHold)}</div>
           </div>
-          <span style="color:#facc15;font-size:13px;font-weight:700;">+50K</span>
+          <span style="color:#facc15;font-size:13px;font-weight:700;">+10K</span>
         </div>
       `).join('');
     }
@@ -1155,14 +1173,14 @@ function openHoldAdminModal() {
           <div class="dark-group-box" style="padding:12px;gap:10px;">
             <strong style="font-size:13.5px;">Kunlik Morze Soʻzi</strong>
             <input type="text" id="admMorseWord" value="${esc(curUser.morse?.word || 'HOLD')}" placeholder="Masalan: HOLD" class="apple-search-input" />
-            <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 1000000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+            <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 25000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
             <button type="button" class="btn-sapphire-primary" id="btnAdmSaveDailyMorse">Kunlik Morzeni Saqlash</button>
           </div>
 
           <div class="dark-group-box" style="padding:12px;gap:10px;">
             <strong style="font-size:13.5px;">Yangi Maxfiy Morze Kod Qoʻshish</strong>
             <input type="text" id="admSecCode" placeholder="Maxfiy soʻz (masalan: BONUS)" class="apple-search-input" />
-            <input type="number" id="admSecReward" value="500000" placeholder="HOLD mukofoti" class="apple-search-input" />
+            <input type="number" id="admSecReward" value="25000" placeholder="HOLD mukofoti" class="apple-search-input" />
             <button type="button" class="btn-sapphire-primary" id="btnAdmAddSecret">Maxfiy Kod Qoʻshish</button>
           </div>
 
@@ -1191,7 +1209,7 @@ function openHoldAdminModal() {
               </select>
               <input type="text" id="admTaskIcon" value="📢" placeholder="Emoji (📢, ⭐, 🏆)" class="apple-search-input" />
             </div>
-            <input type="number" id="admTaskReward" value="150000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+            <input type="number" id="admTaskReward" value="15000" placeholder="Mukofot (HOLD)" class="apple-search-input" />
             <input type="text" id="admTaskLink" placeholder="Havola yoki @kanal (ixtiyoriy)" class="apple-search-input" />
             <button type="button" class="btn-sapphire-primary" id="btnAdmAddTask">Vazifani Qoʻshish</button>
           </div>
@@ -1234,7 +1252,7 @@ function openHoldAdminModal() {
           <div class="dark-group-box" style="padding:12px;gap:8px;">
             <strong style="font-size:13.5px;">Foydalanuvchi Balansi va Test</strong>
             <input type="text" id="admTargetUser" value="${esc(curUser.username)}" placeholder="@username" class="apple-search-input" />
-            <input type="number" id="admHoldDelta" value="500000" placeholder="Qoʻshiladigan HOLD miqdori" class="apple-search-input" />
+            <input type="number" id="admHoldDelta" value="50000" placeholder="Qoʻshiladigan HOLD miqdori" class="apple-search-input" />
             <button type="button" class="btn-sapphire-primary" id="btnAdmGrantHold">HOLD Qoʻshish</button>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
               <button type="button" class="skin-pill-btn" id="btnAdmResetMorse" style="padding:10px;">Morzeni Reset</button>

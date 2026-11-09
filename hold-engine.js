@@ -34,7 +34,7 @@ export const HOLD_LEAGUES = [
     id: 'silver',
     name: 'Silver',
     trophyImg: '/hold/trophies/silver.png',
-    minHold: 200_000,
+    minHold: 50_000,
     bonusTap: 1,
     color: '#cbd5e1',
     glow: 'rgba(203, 213, 225, 0.42)'
@@ -43,7 +43,7 @@ export const HOLD_LEAGUES = [
     id: 'gold',
     name: 'Gold',
     trophyImg: '/hold/trophies/gold.png',
-    minHold: 1_000_000,
+    minHold: 250_000,
     bonusTap: 2,
     color: '#fbbf24',
     glow: 'rgba(251, 191, 36, 0.48)'
@@ -52,8 +52,8 @@ export const HOLD_LEAGUES = [
     id: 'platinum',
     name: 'Platinum',
     trophyImg: '/hold/trophies/platinum.png',
-    minHold: 2_500_000,
-    bonusTap: 4,
+    minHold: 1_000_000,
+    bonusTap: 3,
     color: '#94a3b8',
     glow: 'rgba(148, 163, 184, 0.46)'
   },
@@ -62,7 +62,7 @@ export const HOLD_LEAGUES = [
     name: 'Diamond',
     trophyImg: '/hold/trophies/diamond.png',
     minHold: 5_000_000,
-    bonusTap: 6,
+    bonusTap: 5,
     color: '#38bdf8',
     glow: 'rgba(56, 189, 248, 0.52)'
   }
@@ -84,53 +84,11 @@ export const HOLD_SKINS = [
     }
   },
   {
-    id: 'chrome',
-    name: 'Du Rove Chrome',
-    subtitle: '500,000 HOLD',
-    img: '/hold/skins/skin-2.png',
-    priceHold: 500_000,
-    theme: {
-      accent: '#e2e8f0',
-      secondary: '#64748b',
-      glow1: 'rgba(226, 232, 240, 0.45)',
-      glow2: 'rgba(100, 116, 139, 0.25)',
-      bgBottom: '#0f172a'
-    }
-  },
-  {
-    id: 'paxta_neon',
-    name: 'Paxta Blossom',
-    subtitle: '1,500,000 HOLD',
-    img: '/hold/skins/skin-3.png',
-    priceHold: 1_500_000,
-    theme: {
-      accent: '#c084fc',
-      secondary: '#7c3aed',
-      glow1: 'rgba(192, 132, 252, 0.54)',
-      glow2: 'rgba(124, 58, 237, 0.30)',
-      bgBottom: '#1e0938'
-    }
-  },
-  {
-    id: 'pizza',
-    name: 'Pizza',
-    subtitle: '750,000 HOLD',
-    img: '/hold/skins/skin-5.png',
-    priceHold: 750_000,
-    theme: {
-      accent: '#fb923c',
-      secondary: '#ea580c',
-      glow1: 'rgba(251, 146, 60, 0.52)',
-      glow2: 'rgba(234, 88, 12, 0.28)',
-      bgBottom: '#2b0f04'
-    }
-  },
-  {
     id: 'cookie',
     name: 'Cookie',
-    subtitle: '350,000 HOLD',
+    subtitle: '50,000 HOLD',
     img: '/hold/skins/skin-1.webp',
-    priceHold: 350_000,
+    priceHold: 50_000,
     theme: {
       accent: '#fbbf24',
       secondary: '#d97706',
@@ -140,11 +98,53 @@ export const HOLD_SKINS = [
     }
   },
   {
+    id: 'chrome',
+    name: 'Du Rove Chrome',
+    subtitle: '100,000 HOLD',
+    img: '/hold/skins/skin-2.png',
+    priceHold: 100_000,
+    theme: {
+      accent: '#e2e8f0',
+      secondary: '#64748b',
+      glow1: 'rgba(226, 232, 240, 0.45)',
+      glow2: 'rgba(100, 116, 139, 0.25)',
+      bgBottom: '#0f172a'
+    }
+  },
+  {
+    id: 'pizza',
+    name: 'Pizza',
+    subtitle: '150,000 HOLD',
+    img: '/hold/skins/skin-5.png',
+    priceHold: 150_000,
+    theme: {
+      accent: '#fb923c',
+      secondary: '#ea580c',
+      glow1: 'rgba(251, 146, 60, 0.52)',
+      glow2: 'rgba(234, 88, 12, 0.28)',
+      bgBottom: '#2b0f04'
+    }
+  },
+  {
+    id: 'paxta_neon',
+    name: 'Paxta Blossom',
+    subtitle: '300,000 HOLD',
+    img: '/hold/skins/skin-3.png',
+    priceHold: 300_000,
+    theme: {
+      accent: '#c084fc',
+      secondary: '#7c3aed',
+      glow1: 'rgba(192, 132, 252, 0.54)',
+      glow2: 'rgba(124, 58, 237, 0.30)',
+      bgBottom: '#1e0938'
+    }
+  },
+  {
     id: 'cyber_lonely',
     name: 'You look lonely',
-    subtitle: '2,500,000 HOLD',
+    subtitle: '500,000 HOLD',
     img: '/hold/skins/skin-6.png',
-    priceHold: 2_500_000,
+    priceHold: 500_000,
     theme: {
       accent: '#f472b6',
       secondary: '#db2777',
@@ -156,64 +156,65 @@ export const HOLD_SKINS = [
 ];
 
 export const DEFAULT_SECRET_CODES = {
-  WAKEUP:   { reward: 500_000,   title: 'WAKEUP kodi ochildi', skin: 'cyber_lonely' },
-  PAXTA:    { reward: 600_000,   title: 'PAXTA kodi ochildi',  skin: 'paxta_neon' },
-  MEDAL:    { reward: 750_000,   title: 'MEDAL kodi ochildi' },
-  OBSIDIAN: { reward: 1_000_000, title: 'OBSIDIAN kodi ochildi', skin: 'chrome' },
-  MOON:     { reward: 888_888,   title: 'MOON kodi ochildi' }
+  WAKEUP:   { reward: 25_000, title: 'WAKEUP kodi ochildi', skin: 'cyber_lonely' },
+  PAXTA:    { reward: 30_000, title: 'PAXTA kodi ochildi',  skin: 'paxta_neon' },
+  MEDAL:    { reward: 35_000, title: 'MEDAL kodi ochildi' },
+  OBSIDIAN: { reward: 50_000, title: 'OBSIDIAN kodi ochildi', skin: 'chrome' },
+  MOON:     { reward: 40_000, title: 'MOON kodi ochildi' }
 };
 
 export const DEFAULT_HOLD_QUESTS = [
   // Onboarding
-  { id: 'join_squad',        cat: 'onboarding', title: 'Join Squad',                reward: 100_000, type: 'check_squad',  icon: '🛡️', link: '' },
-  { id: 'earn_1000_hold',    cat: 'onboarding', title: 'Earn 1,000 HOLD',           reward: 50_000,  type: 'check_1k',     icon: '🐣', link: '' },
-  { id: 'invite_10_frens',   cat: 'onboarding', title: 'Invite 10 frens',           reward: 500_000, type: 'check_ref_10', icon: '🧸', link: '' },
+  { id: 'join_squad',        cat: 'onboarding', title: 'Join Squad',                reward: 10_000, type: 'check_squad',  icon: '🛡️', link: '' },
+  { id: 'earn_1000_hold',    cat: 'onboarding', title: 'Earn 1,000 HOLD',           reward: 5_000,  type: 'check_1k',     icon: '🐣', link: '' },
+  { id: 'invite_10_frens',   cat: 'onboarding', title: 'Invite 10 frens',           reward: 50_000, type: 'check_ref_10', icon: '🧸', link: '' },
   // Specials
-  { id: 'join_insider_ch',   cat: 'specials',   title: 'Insider Official Channel',  reward: 150_000, type: 'link',         icon: '📢', link: 'https://paxta.online/insider' },
-  { id: 'join_medal_ch',     cat: 'specials',   title: 'Welcome to MEDAL NFT',      reward: 200_000, type: 'link',         icon: '🖼️', link: 'https://paxta.online/MEDAL' },
-  { id: 'join_kalendar_ch',  cat: 'specials',   title: 'Desk Calendar Collectors',  reward: 200_000, type: 'link',         icon: '📅', link: 'https://paxta.online/Kalendar' },
-  { id: 'solve_first_morse', cat: 'specials',   title: 'Secret Morse Master',       reward: 250_000, type: 'check_morse',  icon: '📡', link: '' },
+  { id: 'join_insider_ch',   cat: 'specials',   title: 'Insider Official Channel',  reward: 15_000, type: 'link',         icon: '📢', link: 'https://paxta.online/insider' },
+  { id: 'join_medal_ch',     cat: 'specials',   title: 'Welcome to MEDAL NFT',      reward: 20_000, type: 'link',         icon: '🖼️', link: 'https://paxta.online/MEDAL' },
+  { id: 'join_kalendar_ch',  cat: 'specials',   title: 'Desk Calendar Collectors',  reward: 20_000, type: 'link',         icon: '📅', link: 'https://paxta.online/Kalendar' },
+  { id: 'solve_first_morse', cat: 'specials',   title: 'Secret Morse Master',       reward: 25_000, type: 'check_morse',  icon: '📡', link: '' },
   // Web3 world
-  { id: 'reach_silver',      cat: 'web3',       title: 'Silver League Holder',      reward: 300_000, type: 'check_silver', icon: '🥈', link: '' },
-  { id: 'reach_gold',        cat: 'web3',       title: 'Gold League Whale',         reward: 750_000, type: 'check_gold',   icon: '🏆', link: '' },
-  { id: 'upgrade_Verify',    cat: 'web3',       title: 'Paxta Gift Upgrade',        reward: 150_000, type: 'link',         icon: '⭐', link: 'https://paxta.online/UpgradeBot' }
+  { id: 'reach_silver',      cat: 'web3',       title: 'Silver League Holder',      reward: 30_000, type: 'check_silver', icon: '🥈', link: '' },
+  { id: 'reach_gold',        cat: 'web3',       title: 'Gold League Whale',         reward: 75_000, type: 'check_gold',   icon: '🏆', link: '' },
+  { id: 'upgrade_Verify',    cat: 'web3',       title: 'Paxta Gift Upgrade',        reward: 15_000, type: 'link',         icon: '⭐', link: 'https://paxta.online/UpgradeBot' }
 ];
 
+// Strict 1,000 Stars = 1,000,000 HOLD economy (1 Star = 1,000 HOLD)
 export const STARS_VIP_PACKS = [
   {
     id: 'starter_hold',
-    name: '1,000,000 HOLD + Tap Boost',
-    desc: '+1,000,000 HOLD · Multitap +2',
-    starsPrice: 49,
-    holdGrant: 1_000_000,
-    tapBoost: 2,
+    name: '100,000 HOLD + Tap Boost',
+    desc: '+100,000 HOLD · Multitap +1',
+    starsPrice: 100,
+    holdGrant: 100_000,
+    tapBoost: 1,
     enableAutoBot: false
   },
   {
     id: 'god_mode',
-    name: '3,000,000 HOLD + Auto-Bot',
-    desc: '+3,000,000 HOLD · Multitap +5 · 24/7 Auto-Bot',
-    starsPrice: 99,
-    holdGrant: 3_000_000,
-    tapBoost: 5,
-    enableAutoBot: true
+    name: '250,000 HOLD + Tap Boost',
+    desc: '+250,000 HOLD · Multitap +2',
+    starsPrice: 250,
+    holdGrant: 250_000,
+    tapBoost: 2,
+    enableAutoBot: false
   },
   {
     id: 'whale_pack',
-    name: '7,500,000 HOLD + Whale Boost',
-    desc: '+7,500,000 HOLD · Multitap +10 · 24/7 Auto-Bot',
-    starsPrice: 199,
-    holdGrant: 7_500_000,
-    tapBoost: 10,
+    name: '500,000 HOLD + Auto-Bot',
+    desc: '+500,000 HOLD · Multitap +3 · 24/7 Auto-Bot',
+    starsPrice: 500,
+    holdGrant: 500_000,
+    tapBoost: 3,
     enableAutoBot: true
   },
   {
     id: 'obsidian_pack',
-    name: '20,000,000 HOLD · Diamond Max',
-    desc: '+20,000,000 HOLD · Multitap +18 · Top-10 Boost',
-    starsPrice: 399,
-    holdGrant: 20_000_000,
-    tapBoost: 18,
+    name: '1,000,000 HOLD · Gold Pack',
+    desc: '+1,000,000 HOLD · Multitap +5 · 24/7 Auto-Bot',
+    starsPrice: 1000,
+    holdGrant: 1_000_000,
+    tapBoost: 5,
     enableAutoBot: true
   }
 ];
@@ -252,6 +253,19 @@ export function registerHoldEngine(app, deps) {
     milliybekClient
   } = deps;
 
+  function creditHold(u, st, amount) {
+    const val = Math.max(0, Math.floor(Number(amount) || 0));
+    if (val <= 0) return;
+    u.holdBalance = (u.holdBalance || 0) + val;
+    u.lifetimeHold = (u.lifetimeHold || 0) + val;
+    const today = todayStr();
+    if (!u.dailyHold || typeof u.dailyHold !== 'object') u.dailyHold = {};
+    u.dailyHold[today] = (u.dailyHold[today] || 0) + val;
+    if (u.squadId && st?.squads?.[u.squadId]) {
+      st.squads[u.squadId].totalHold = (st.squads[u.squadId].totalHold || 0) + val;
+    }
+  }
+
   function loadHoldState() {
     const st = loadJSON(holdStateFile, null);
     if (st && st.users && st.config && st.squads) {
@@ -260,24 +274,51 @@ export function registerHoldEngine(app, deps) {
       if (!st.payments) st.payments = { invoices: {}, charges: {}, lastUpdateId: 0 };
       if (!st.config.secretCodes) st.config.secretCodes = { ...DEFAULT_SECRET_CODES };
       if (!Array.isArray(st.config.customQuests)) st.config.customQuests = [...DEFAULT_HOLD_QUESTS];
+
+      // One-time economy rebalance migration (1,000 Stars = 1,000,000 HOLD standard)
+      if (!st.config.economyV2Migrated) {
+        st.config.economyV2Migrated = true;
+        if (!st.config.dailyMorse || st.config.dailyMorse.reward >= 200_000) {
+          st.config.dailyMorse = {
+            word: st.config.dailyMorse?.word || 'HOLD',
+            reward: 25_000,
+            hint: st.config.dailyMorse?.hint || 'Loyihamizning asosiy 4 harfli nomi (H-O-L-D)'
+          };
+        }
+        st.config.secretCodes = { ...DEFAULT_SECRET_CODES };
+        st.config.customQuests = [...DEFAULT_HOLD_QUESTS];
+        // Scale down any legacy test balances that were inflated by the old 1M Morse reward
+        for (const u of Object.values(st.users)) {
+          if ((u.lifetimeHold || 0) > 350_000) {
+            u.lifetimeHold = Math.min(280_000, Math.round((u.lifetimeHold || 0) * 0.05));
+            u.holdBalance = Math.min(u.lifetimeHold, Math.round((u.holdBalance || 0) * 0.05));
+          }
+        }
+        if (st.squads.insider) st.squads.insider.totalHold = 1_420_000;
+        if (st.squads.medal) st.squads.medal.totalHold = 980_000;
+        if (st.squads.kalendar) st.squads.kalendar.totalHold = 810_000;
+        if (st.squads.hold_vip) st.squads.hold_vip.totalHold = 1_750_000;
+        saveJSON(holdStateFile, st);
+      }
       return st;
     }
     const initial = {
       users: {},
       config: {
+        economyV2Migrated: true,
         dailyMorse: {
           word: 'HOLD',
-          reward: 1_000_000,
+          reward: 25_000,
           hint: 'Loyihamizning asosiy 4 harfli nomi (H-O-L-D)'
         },
         secretCodes: { ...DEFAULT_SECRET_CODES },
         customQuests: [...DEFAULT_HOLD_QUESTS]
       },
       squads: {
-        insider:  { id: 'insider',  handle: 'insider',  name: 'Insider Official',   members: 42, totalHold: 28_500_000, verified: true, link: 'https://paxta.online/insider' },
-        medal:    { id: 'medal',    handle: 'MEDAL',    name: 'MEDAL Collectors',   members: 31, totalHold: 19_400_000, verified: true, link: 'https://paxta.online/MEDAL' },
-        kalendar: { id: 'kalendar', handle: 'Kalendar', name: 'Kalendar Whales',    members: 27, totalHold: 16_200_000, verified: true, link: 'https://paxta.online/Kalendar' },
-        hold_vip: { id: 'hold_vip', handle: 'hold',     name: 'Hold Verified Club', members: 54, totalHold: 34_800_000, verified: true, link: 'https://paxta.online/HOLDbot' }
+        insider:  { id: 'insider',  handle: 'insider',  name: 'Insider Official',   members: 42, totalHold: 1_420_000, verified: true, link: 'https://paxta.online/insider' },
+        medal:    { id: 'medal',    handle: 'MEDAL',    name: 'MEDAL Collectors',   members: 31, totalHold: 980_000,   verified: true, link: 'https://paxta.online/MEDAL' },
+        kalendar: { id: 'kalendar', handle: 'Kalendar', name: 'Kalendar Whales',    members: 27, totalHold: 810_000,   verified: true, link: 'https://paxta.online/Kalendar' },
+        hold_vip: { id: 'hold_vip', handle: 'hold',     name: 'Hold Verified Club', members: 54, totalHold: 1_750_000, verified: true, link: 'https://paxta.online/HOLDbot' }
       },
       soldMedals: {},
       nftClaims: [],
@@ -413,17 +454,15 @@ export function registerHoldEngine(app, deps) {
         createdAt: new Date().toISOString()
       };
 
-      // Handle Referral attribution
+      // Handle Referral attribution (+10,000 HOLD to inviter, +5,000 HOLD to friend)
       if (refCode) {
         const refKey = cleanKey(String(refCode).replace(/^ref_/i, ''));
         if (refKey && refKey !== key && st.users[refKey]) {
           st.users[key].referredBy = refKey;
-          st.users[key].holdBalance += 25_000;
-          st.users[key].lifetimeHold += 25_000;
+          creditHold(st.users[key], st, 5_000);
           if (!st.users[refKey].referrals.includes(key)) {
             st.users[refKey].referrals.push(key);
-            st.users[refKey].holdBalance += 50_000;
-            st.users[refKey].lifetimeHold += 50_000;
+            creditHold(st.users[refKey], st, 10_000);
           }
         }
       }
@@ -463,15 +502,11 @@ export function registerHoldEngine(app, deps) {
     let passiveEarned = 0;
     const botElapsedMs = Math.max(0, now - (u.lastAutoBotClaimAt || now));
     if (u.autoBotEnabled && botElapsedMs >= 30_000) {
-      const cappedHours = Math.min(12, botElapsedMs / (3600 * 1000));
-      const hourlyRate = ((u.tapLevel || 1) * 1800);
+      const cappedHours = Math.min(8, botElapsedMs / (3600 * 1000));
+      const hourlyRate = ((u.tapLevel || 1) * 350);
       passiveEarned = Math.floor(hourlyRate * cappedHours);
       if (passiveEarned > 0) {
-        u.holdBalance += passiveEarned;
-        u.lifetimeHold += passiveEarned;
-        if (u.squadId && st.squads[u.squadId]) {
-          st.squads[u.squadId].totalHold += passiveEarned;
-        }
+        creditHold(u, st, passiveEarned);
       }
       u.lastAutoBotClaimAt = now;
     } else if (botElapsedMs >= 30_000) {
@@ -516,6 +551,7 @@ export function registerHoldEngine(app, deps) {
       stars: mainUser?.stars || 0,
       holdBalance: Math.floor(u.holdBalance || 0),
       lifetimeHold: Math.floor(u.lifetimeHold || 0),
+      dailyHoldToday: Math.floor(u.dailyHold?.[today] || 0),
       passiveEarnedJustNow: passiveEarned,
       tapPower,
       tapLevel: u.tapLevel || 1,
@@ -528,7 +564,7 @@ export function registerHoldEngine(app, deps) {
       rechargingSpeedMax: 5,
       nextRechargingUpgradeCost: rSpeedLvl >= 5 ? 0 : Math.round(2_000 * Math.pow(1.8, rSpeedLvl - 1)),
       autoBotEnabled: !!u.autoBotEnabled,
-      autoBotCost: 150_000,
+      autoBotCost: 50_000,
       fullTankCount: u.fullTankCount ?? 3,
       rocketCount: u.rocketCount ?? 3,
       ogBonusClaimed: !!u.ogBonusClaimed,
@@ -544,7 +580,7 @@ export function registerHoldEngine(app, deps) {
         secretWords: Object.keys(st.config?.secretCodes || DEFAULT_SECRET_CODES),
         secretCodesMap: st.config?.secretCodes || DEFAULT_SECRET_CODES,
         hint: st.config?.dailyMorse?.hint || 'Maxfiy soʻzni Morze alifbosida tering',
-        reward: st.config?.dailyMorse?.reward || 1_000_000,
+        reward: st.config?.dailyMorse?.reward || 25_000,
         solvedToday,
         lettersGuide: morseOverlay
       },
@@ -631,19 +667,19 @@ export function registerHoldEngine(app, deps) {
 
     const pid = Number(u.paxtaId) || 999;
     let tierName = 'Verified Holder';
-    let idBonus = 50_000;
+    let idBonus = 3_000;
     if (pid <= 150) {
       tierName = 'Legendary Pioneer';
-      idBonus = 250_000;
+      idBonus = 12_000;
     } else if (pid <= 600) {
       tierName = 'Early Pioneer';
-      idBonus = 150_000;
+      idBonus = 7_500;
     } else if (pid <= 1400) {
       tierName = 'Veteran Holder';
-      idBonus = 95_000;
+      idBonus = 5_000;
     }
 
-    const activityBonus = 30_000;
+    const activityBonus = 2_500;
     const totalBonus = idBonus + activityBonus;
 
     u.ogBonusClaimed = true;
@@ -654,8 +690,7 @@ export function registerHoldEngine(app, deps) {
       activityBonus,
       totalBonus
     };
-    u.holdBalance += totalBonus;
-    u.lifetimeHold += totalBonus;
+    creditHold(u, st, totalBonus);
     saveHoldState(st);
 
     res.json({
@@ -683,13 +718,8 @@ export function registerHoldEngine(app, deps) {
     }
 
     const earned = actualTaps * perTap;
-    u.holdBalance += earned;
-    u.lifetimeHold += earned;
+    creditHold(u, st, earned);
     u.lastEnergyAt = Date.now();
-
-    if (u.squadId && st.squads[u.squadId]) {
-      st.squads[u.squadId].totalHold += earned;
-    }
 
     saveHoldState(st);
     res.json({
@@ -767,7 +797,7 @@ export function registerHoldEngine(app, deps) {
       if (u.autoBotEnabled) {
         return res.status(400).json({ ok: false, error: 'Auto tap bot already active' });
       }
-      const cost = 150_000;
+      const cost = 50_000;
       if (u.holdBalance < cost) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
@@ -832,7 +862,7 @@ export function registerHoldEngine(app, deps) {
 
     const today = todayStr();
     const dailyWord = (st.config?.dailyMorse?.word || 'HOLD').toUpperCase();
-    const dailyReward = st.config?.dailyMorse?.reward || 1_000_000;
+    const dailyReward = st.config?.dailyMorse?.reward || 25_000;
     const secretMap = st.config?.secretCodes || DEFAULT_SECRET_CODES;
 
     if (!Array.isArray(u.morseSolvedDays)) u.morseSolvedDays = [];
@@ -855,11 +885,7 @@ export function registerHoldEngine(app, deps) {
         u.morseSolvedDays.push(today);
       }
       u.lastSolvedMorseWord = dailyWord;
-      u.holdBalance += dailyReward;
-      u.lifetimeHold += dailyReward;
-      if (u.squadId && st.squads[u.squadId]) {
-        st.squads[u.squadId].totalHold += dailyReward;
-      }
+      creditHold(u, st, dailyReward);
       saveHoldState(st);
       return res.json({
         ok: true,
@@ -885,8 +911,7 @@ export function registerHoldEngine(app, deps) {
         });
       }
       u.secretCodesClaimed.push(wordInput);
-      u.holdBalance += secret.reward;
-      u.lifetimeHold += secret.reward;
+      creditHold(u, st, secret.reward);
       if (secret.skin) {
         if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
         if (!u.ownedSkins.includes(secret.skin)) u.ownedSkins.push(secret.skin);
@@ -954,7 +979,7 @@ export function registerHoldEngine(app, deps) {
   });
 
   // ---- 8. Complete Quests (Earn More Coins) ----
-  app.post('/api/hold/claim-quest', (req, res) => {
+  app.post('/api/hold/claim-quest', async (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const questId = req.body?.questId;
     const allQuests = st.config?.customQuests || DEFAULT_HOLD_QUESTS;
@@ -978,16 +1003,31 @@ export function registerHoldEngine(app, deps) {
     if (quest.type === 'check_ref_10' && (u.referrals || []).length < 10) {
       return res.status(400).json({ ok: false, error: `10 ta doʻst taklif qiling (${(u.referrals || []).length}/10)` });
     }
-    if (quest.type === 'check_silver' && (u.lifetimeHold || 0) < 200_000) {
-      return res.status(400).json({ ok: false, error: 'Avval Silver ligaga (200K HOLD) chiqing' });
+    if (quest.type === 'check_silver' && (u.lifetimeHold || 0) < 50_000) {
+      return res.status(400).json({ ok: false, error: 'Avval Silver ligaga (50K HOLD) chiqing' });
     }
-    if (quest.type === 'check_gold' && (u.lifetimeHold || 0) < 1_000_000) {
-      return res.status(400).json({ ok: false, error: 'Avval Gold ligaga (1M HOLD) chiqing' });
+    if (quest.type === 'check_gold' && (u.lifetimeHold || 0) < 250_000) {
+      return res.status(400).json({ ok: false, error: 'Avval Gold ligaga (250K HOLD) chiqing' });
+    }
+
+    // Optional real channel membership verification if bot has access & user has paxtaId
+    if (quest.type === 'link' && quest.link && u.paxtaId) {
+      const m = String(quest.link).match(/paxta\.online\/([A-Za-z0-9_]+)/i);
+      if (m && m[1] && !/bot$/i.test(m[1])) {
+        try {
+          const chatMem = await holdBotCall('getChatMember', { chat_id: `@${m[1]}`, user_id: Number(u.paxtaId) });
+          if (chatMem && chatMem.ok && chatMem.result) {
+            const stMem = chatMem.result.status;
+            if (stMem === 'left' || stMem === 'kicked') {
+              return res.status(400).json({ ok: false, error: `Avval @${m[1]} kanaliga obuna boʻling!` });
+            }
+          }
+        } catch {}
+      }
     }
 
     u.tasksCompleted.push(questId);
-    u.holdBalance += quest.reward;
-    u.lifetimeHold += quest.reward;
+    creditHold(u, st, quest.reward);
     saveHoldState(st);
 
     res.json({
@@ -1022,8 +1062,7 @@ export function registerHoldEngine(app, deps) {
     userRecord.stars -= pack.starsPrice;
     saveJSON(usersFile, users);
 
-    u.holdBalance += pack.holdGrant;
-    u.lifetimeHold += pack.holdGrant;
+    creditHold(u, st, pack.holdGrant);
     u.tapLevel = (u.tapLevel || 1) + (pack.tapBoost || 0);
     if (pack.enableAutoBot) u.autoBotEnabled = true;
     saveHoldState(st);
@@ -1113,8 +1152,8 @@ export function registerHoldEngine(app, deps) {
     };
 
     const holdBonusByRank = [
-      10_000_000, 7_500_000, 5_000_000, 3_500_000, 2_500_000,
-      2_000_000, 1_500_000, 1_000_000, 750_000, 500_000
+      500_000, 350_000, 250_000, 175_000, 125_000,
+      100_000, 75_000, 50_000, 35_000, 25_000
     ];
 
     const selected = [
@@ -1150,7 +1189,10 @@ export function registerHoldEngine(app, deps) {
     const allItems = getVaultItems();
     const top10Prizes = getTop10PrizeAllocation(allItems);
     const st = loadHoldState();
-    const sortedUsers = Object.values(st.users || {})
+    const today = todayStr();
+    const allUsers = Object.values(st.users || {});
+
+    const sortedUsers = [...allUsers]
       .sort((a, b) => (b.lifetimeHold || 0) - (a.lifetimeHold || 0));
 
     const leaderboard = sortedUsers
@@ -1163,6 +1205,29 @@ export function registerHoldEngine(app, deps) {
           username: u.username,
           displayName: u.displayName || u.username,
           lifetimeHold: Math.floor(u.lifetimeHold || 0),
+          dailyHold: Math.floor(u.dailyHold?.[today] || 0),
+          holdBalance: Math.floor(u.holdBalance || 0),
+          league: getLeagueForHold(u.lifetimeHold || 0),
+          referralsCount: (u.referrals || []).length,
+          prize
+        };
+      });
+
+    const sortedDayUsers = [...allUsers]
+      .sort((a, b) => (b.dailyHold?.[today] || b.lifetimeHold || 0) - (a.dailyHold?.[today] || a.lifetimeHold || 0));
+
+    const leaderboardDay = sortedDayUsers
+      .slice(0, 100)
+      .map((u, idx) => {
+        const rank = idx + 1;
+        const prize = rank <= 10 ? top10Prizes[rank - 1] : null;
+        const dayVal = Math.floor(u.dailyHold?.[today] ?? u.lifetimeHold ?? 0);
+        return {
+          rank,
+          username: u.username,
+          displayName: u.displayName || u.username,
+          lifetimeHold: dayVal,
+          dailyHold: dayVal,
           holdBalance: Math.floor(u.holdBalance || 0),
           league: getLeagueForHold(u.lifetimeHold || 0),
           referralsCount: (u.referrals || []).length,
@@ -1174,7 +1239,8 @@ export function registerHoldEngine(app, deps) {
       ok: true,
       totalPlayers: sortedUsers.length,
       top10Prizes,
-      leaderboard
+      leaderboard,
+      leaderboardDay
     });
   });
 
@@ -1233,7 +1299,7 @@ export function registerHoldEngine(app, deps) {
         st.config.dailyMorse.word = String(req.body.morseWord).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
       }
       if (req.body?.morseReward) {
-        st.config.dailyMorse.reward = Math.max(1_000, parseInt(req.body.morseReward, 10) || 1_000_000);
+        st.config.dailyMorse.reward = Math.max(500, parseInt(req.body.morseReward, 10) || 25_000);
       }
       saveHoldState(st);
       return res.json({ ok: true, message: 'Kunlik Morze yangilandi', user: formatHoldUserResponse(st, u, mainUser) });
@@ -1241,7 +1307,7 @@ export function registerHoldEngine(app, deps) {
 
     if (action === 'add_secret_code') {
       const code = String(req.body?.code || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const reward = Math.max(1_000, parseInt(req.body?.reward, 10) || 500_000);
+      const reward = Math.max(500, parseInt(req.body?.reward, 10) || 25_000);
       const skin = req.body?.skin || null;
       if (!code) return res.status(400).json({ ok: false, error: 'Kod kiriting' });
       if (!st.config.secretCodes) st.config.secretCodes = { ...DEFAULT_SECRET_CODES };
@@ -1266,7 +1332,7 @@ export function registerHoldEngine(app, deps) {
     if (action === 'add_quest') {
       const title = String(req.body?.title || '').trim();
       const cat = ['onboarding', 'specials', 'web3'].includes(req.body?.cat) ? req.body.cat : 'specials';
-      const reward = Math.max(1_000, parseInt(req.body?.reward, 10) || 100_000);
+      const reward = Math.max(500, parseInt(req.body?.reward, 10) || 15_000);
       let link = String(req.body?.link || '').trim();
       if (link && link.startsWith('@')) {
         link = `https://paxta.online/${link.slice(1)}`;
