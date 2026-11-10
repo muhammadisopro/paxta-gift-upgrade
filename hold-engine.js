@@ -237,6 +237,27 @@ function yesterdayStr() {
   return new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 }
 
+export const HOLD_DAILY_MORSE_WORDS = [
+  'PAXTA', 'HOLD', 'SHADE', 'MOON', 'MEDAL', 'TON',
+  'STAR', 'WHALE', 'PIONEER', 'DIAMOND', 'INSIDER', 'SQUAD'
+];
+
+export function getDailyMorseWord(dateStr = todayStr()) {
+  let hash = 0;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
+  }
+  return HOLD_DAILY_MORSE_WORDS[hash % HOLD_DAILY_MORSE_WORDS.length];
+}
+
+export function formatMorseSymbols(word) {
+  return word.split('').map(letter => {
+    const raw = MORSE_MAP[letter] || '';
+    const formatted = raw.split('').map(c => c === '.' ? '•' : '—').join(' ');
+    return `<b>${letter}</b>: <code>${formatted}</code>`;
+  }).join('\n');
+}
+
 export function getLeagueForHold(lifetimeHold) {
   let current = HOLD_LEAGUES[0];
   for (const lg of HOLD_LEAGUES) {
@@ -395,6 +416,41 @@ export function registerHoldEngine(app, deps) {
 
   function saveHoldState(st) {
     saveJSON(holdStateFile, st);
+  }
+
+  function getActiveDailyMorse(st) {
+    const today = todayStr();
+    if (!st.config) st.config = {};
+    if (!st.config.dailyMorse) st.config.dailyMorse = {};
+    if (!st.config.dailyMorse.date || st.config.dailyMorse.date !== today) {
+      st.config.dailyMorse.date = today;
+      st.config.dailyMorse.word = getDailyMorseWord(today);
+      st.config.dailyMorse.reward = 50_000;
+      st.config.dailyMorse.hint = `Bugungi kunlik maxfiy soʻz (${st.config.dailyMorse.word.length} ta harf)`;
+      saveHoldState(st);
+    }
+    return st.config.dailyMorse;
+  }
+
+  async function broadcastDailyMorseToChannel(word, reward = 50_000) {
+    const breakdown = formatMorseSymbols(word);
+    const text =
+      `🕵️‍♂️ <b>BUGUNGI KUNLIK MORZE KODI</b>\n\n` +
+      `Bugungi maxfiy soʻz: <b>${word}</b>\n\n` +
+      `Harflar Morze alifbosida:\n${breakdown}\n\n` +
+      `🎁 <b>Mukofot:</b> +${reward.toLocaleString('en-US')} $HOLD + 1 🎟 Lucky Ticket\n\n` +
+      `<i>Tangani qisqa bosish: <b>• (nuqta)</b>\nTangani ushlab turish: <b>— (chiziq)</b>\nMini App ga kiring va tangaga teginib kodni tering!</i>`;
+
+    return await holdBotCall('sendMessage', {
+      chat_id: '@insider',
+      text,
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🪙 $HOLD da terish', url: 'https://paxta.online/HOLDbot' }]
+        ]
+      }
+    });
   }
 
   // Check if 2x Happy Hour is active (Daily 20:00 - 21:00 Tashkent UTC+5 OR forced by Admin)
@@ -637,7 +693,9 @@ export function registerHoldEngine(app, deps) {
     const baseTapPower = (u.tapLevel || 1) + (league.bonusTap || 0);
     const tapPower = baseTapPower * (happyHour.active ? happyHour.multiplier : 1);
 
-    const morseWord = (st.config?.dailyMorse?.word || 'HOLD').toUpperCase();
+    const dailyMorseObj = getActiveDailyMorse(st);
+    const morseWord = (dailyMorseObj.word || 'HOLD').toUpperCase();
+    const morseReward = dailyMorseObj.reward || 50_000;
     const morseOverlay = morseWord.split('').map(ch => ({
       letter: ch,
       morse: MORSE_MAP[ch] || '.-'
@@ -725,8 +783,8 @@ export function registerHoldEngine(app, deps) {
         word: morseWord,
         secretWords: Object.keys(st.config?.secretCodes || DEFAULT_SECRET_CODES),
         secretCodesMap: st.config?.secretCodes || DEFAULT_SECRET_CODES,
-        hint: st.config?.dailyMorse?.hint || 'Maxfiy soʻzni Morze alifbosida tering',
-        reward: st.config?.dailyMorse?.reward || 25_000,
+        hint: dailyMorseObj?.hint || 'Maxfiy soʻzni Morze alifbosida tering',
+        reward: morseReward,
         solvedToday,
         lettersGuide: morseOverlay
       },
@@ -1167,8 +1225,9 @@ export function registerHoldEngine(app, deps) {
     }
 
     const today = todayStr();
-    const dailyWord = (st.config?.dailyMorse?.word || 'HOLD').toUpperCase();
-    const dailyReward = st.config?.dailyMorse?.reward || 25_000;
+    const dailyMorseObj = getActiveDailyMorse(st);
+    const dailyWord = (dailyMorseObj.word || 'HOLD').toUpperCase();
+    const dailyReward = dailyMorseObj.reward || 50_000;
     const secretMap = st.config?.secretCodes || DEFAULT_SECRET_CODES;
 
     if (!Array.isArray(u.morseSolvedDays)) u.morseSolvedDays = [];
@@ -2059,6 +2118,42 @@ export function registerHoldEngine(app, deps) {
     });
   });
 
+  // ---- 15b. Admin Publish Morse to @insider Channel (/api/hold/admin-post-morse-channel) ----
+  app.post('/api/hold/admin-post-morse-channel', async (req, res) => {
+    const { st, u } = getOrCreateHoldUser(req.body?.username);
+    if (!checkAdminAccess(req, u)) {
+      return res.status(403).json({ ok: false, error: 'Faqat Admin uchun!' });
+    }
+
+    const morseObj = getActiveDailyMorse(st);
+    const word = String(req.body?.word || morseObj.word || 'HOLD').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const reward = parseInt(req.body?.reward, 10) || morseObj.reward || 50_000;
+
+    // Update active word & reward
+    st.config.dailyMorse.word = word;
+    st.config.dailyMorse.reward = reward;
+    saveHoldState(st);
+
+    try {
+      const resp = await broadcastDailyMorseToChannel(word, reward);
+      if (resp && resp.ok) {
+        return res.json({
+          ok: true,
+          word,
+          reward,
+          message: `Kunlik Morze shifri ("${word}") @insider kanaliga post qilindi! 🚀`
+        });
+      } else {
+        return res.status(500).json({
+          ok: false,
+          error: resp?.description || 'Kanalga yuborishda xatolik yuz berdi'
+        });
+      }
+    } catch (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
   // ---- 16. Automated Push Notifications Ticker (Happy Hour & Streak Reminders) ----
   setInterval(async () => {
     try {
@@ -2071,6 +2166,18 @@ export function registerHoldEngine(app, deps) {
       const today = todayStr();
 
       if (!st.config.notifs) st.config.notifs = {};
+
+      // 0. Daily Morse Broadcast to @insider Channel at 12:00 (UTC+5)
+      if (hour === 12 && minute <= 5 && st.config.notifs.lastMorseBroadcastDay !== today) {
+        st.config.notifs.lastMorseBroadcastDay = today;
+        const morseObj = getActiveDailyMorse(st);
+        saveHoldState(st);
+        try {
+          await broadcastDailyMorseToChannel(morseObj.word, morseObj.reward);
+        } catch (err) {
+          console.error('Auto-broadcast Morse to @insider failed:', err);
+        }
+      }
 
       // 1. Happy Hour announcement at 20:00 (UTC+5)
       if (hour === 20 && minute <= 5 && st.config.notifs.lastHappyHourDay !== today) {

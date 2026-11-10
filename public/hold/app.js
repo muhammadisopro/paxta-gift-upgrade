@@ -2068,8 +2068,11 @@ async function renderAdminSheet() {
         <strong style="font-size:14px;">🕵️ Kunlik Morze Soʻzi va Maslahati (Hint)</strong>
         <input type="text" id="admMorseWord" value="${esc(curUser.morse?.word || 'HOLD')}" placeholder="Masalan: HOLD" class="apple-search-input" />
         <input type="text" id="admMorseHint" value="${esc(curUser.morse?.hint || '')}" placeholder="Earn boʻlimida koʻrinadigan maslahat (hint)" class="apple-search-input" />
-        <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 25000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
-        <button type="button" class="btn-sapphire-primary" id="btnAdmSaveDailyMorse">Kunlik Morzeni Saqlash</button>
+        <input type="number" id="admMorseReward" value="${curUser.morse?.reward || 50000}" placeholder="Mukofot (HOLD)" class="apple-search-input" />
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button type="button" class="btn-sapphire-primary" id="btnAdmSaveDailyMorse" style="flex:1;">Saqlash</button>
+          <button type="button" class="btn-sapphire-primary" id="btnAdmPostMorseChannel" style="flex:1.2;background:linear-gradient(135deg, #0284c7, #2563eb);">📢 @insider ga post</button>
+        </div>
       </div>
 
       <div class="dark-group-box" style="padding:14px;gap:10px;">
@@ -2095,7 +2098,7 @@ async function renderAdminSheet() {
     container.querySelector('#btnAdmSaveDailyMorse')?.addEventListener('click', async () => {
       const morseWord = container.querySelector('#admMorseWord')?.value.trim();
       const morseHint = container.querySelector('#admMorseHint')?.value.trim();
-      const morseReward = parseInt(container.querySelector('#admMorseReward')?.value, 10) || 25000;
+      const morseReward = parseInt(container.querySelector('#admMorseReward')?.value, 10) || 50000;
       const res = await api('/api/hold/admin-config', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, action: 'save_morse', morseWord, morseHint, morseReward })
@@ -2105,6 +2108,21 @@ async function renderAdminSheet() {
         renderAll();
         renderAdminSheet();
         showToast(res.message);
+      }
+    });
+
+    container.querySelector('#btnAdmPostMorseChannel')?.addEventListener('click', async () => {
+      const morseWord = container.querySelector('#admMorseWord')?.value.trim();
+      const morseReward = parseInt(container.querySelector('#admMorseReward')?.value, 10) || 50000;
+      showToast('Kanalga post qilinmoqda...');
+      const res = await api('/api/hold/admin-post-morse-channel', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, word: morseWord, reward: morseReward })
+      });
+      if (res.ok) {
+        showToast(res.message);
+      } else {
+        showToast(res.error || 'Xatolik yuz berdi');
       }
     });
 
