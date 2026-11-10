@@ -238,8 +238,16 @@ function yesterdayStr() {
 }
 
 export const HOLD_DAILY_MORSE_WORDS = [
-  'PAXTA', 'HOLD', 'SHADE', 'MOON', 'MEDAL', 'TON',
-  'STAR', 'WHALE', 'PIONEER', 'DIAMOND', 'INSIDER', 'SQUAD'
+  'HOLD', 'PAXTA', 'SHADE', 'MOON', 'INSIDER', 'SQUAD', 'BOT', 'TON', 'STAR',
+  'MEDAL', 'DIAMOND', 'PLATINUM', 'SAPPHIRE', 'EMERALD', 'RUBY', 'BRONZE', 'SILVER', 'GOLD', 'CROWN',
+  'ENERGY', 'TURBO', 'BOOST', 'ROCKET', 'STREAK', 'LUCKY', 'TICKET', 'BONUS', 'POWER', 'SPARK',
+  'CLICK', 'LEVEL', 'SPEED', 'FLASH', 'MINE', 'SUPER', 'MAGIC', 'SHADOW', 'NIGHT',
+  'PIONEER', 'WHALE', 'CHAMPION', 'LEGEND', 'MASTER', 'HERO', 'LEADER', 'WINNER', 'KING', 'CHIEF',
+  'GENIUS', 'HUNTER', 'WARRIOR', 'SNIPER', 'SCOUT', 'ELITE',
+  'CRYPTO', 'TOKEN', 'WALLET', 'VAULT', 'FORGE', 'MARKET', 'AIRDROP', 'BLOCK', 'CHAIN',
+  'FUTURE', 'CYBER', 'MATRIX', 'ORBIT', 'SIGNAL', 'RADAR', 'CIPHER', 'SECRET',
+  'VICTORY', 'TROPHY', 'MILLION', 'BILLION', 'RICH', 'JACKPOT', 'REWARD', 'PROFIT', 'FORTUNE',
+  'TREASURE', 'VIP', 'INFINITY', 'ALPHA', 'OMEGA', 'APEX', 'ZENITH'
 ];
 
 export function getDailyMorseWord(dateStr = todayStr()) {
@@ -254,7 +262,7 @@ export function formatMorseSymbols(word) {
   return word.split('').map(letter => {
     const raw = MORSE_MAP[letter] || '';
     const formatted = raw.split('').map(c => c === '.' ? '•' : '—').join(' ');
-    return `*${letter}*: \`${formatted}\``;
+    return `**${letter}**: \`${formatted}\``;
   }).join('\n');
 }
 
@@ -435,10 +443,10 @@ export function registerHoldEngine(app, deps) {
   async function broadcastDailyMorseToChannel(word, reward = 50_000) {
     const breakdown = formatMorseSymbols(word);
     const text =
-      `🕵️‍♂️ *BUGUNGI KUNLIK MORZE KODI*\n\n` +
-      `Bugungi maxfiy soʻz: *${word}*\n\n` +
+      `🕵️‍♂️ **BUGUNGI KUNLIK MORZE KODI**\n\n` +
+      `Bugungi maxfiy soʻz: **${word}**\n\n` +
       `Harflar Morze alifbosida:\n${breakdown}\n\n` +
-      `🎁 *Mukofot:* +${reward.toLocaleString('en-US')} $HOLD + 1 🎟 Lucky Ticket\n\n` +
+      `🎁 **Mukofot:** +${reward.toLocaleString('en-US')} $HOLD + 1 🎟 Lucky Ticket\n\n` +
       `_Tangani qisqa bosish: • (nuqta)_\n` +
       `_Tangani ushlab turish: — (chiziq)_\n\n` +
       `👉 Mini App: @HOLDbot`;
@@ -2191,10 +2199,10 @@ export function registerHoldEngine(app, deps) {
           try {
             await holdBotCall('sendMessage', {
               chat_id: pid,
-              text: '⚡ <b>Happy Hour boshlandi!</b>\n\nKeyingi 1 soat (20:00 – 21:00) davomida har bir bosish <b>2 barobar (2x)</b> koʻproq $HOLD beradi! 🚀',
-              parse_mode: 'HTML',
+              text: '⚡ **Happy Hour boshlandi!**\n\nKeyingi 1 soat (20:00 – 21:00) davomida har bir bosish **2 barobar (2x)** koʻproq $HOLD beradi! 🚀',
+              parse_mode: 'Markdown',
               reply_markup: {
-                inline_keyboard: [[{ text: '🪙 $HOLD ga kirish', web_app: { url: 'https://paxta.online/HOLDbot' } }]]
+                inline_keyboard: [[{ text: '🪙 $HOLD ga kirish', url: 'https://paxta.online/u/HOLDbot' }]]
               }
             });
             await new Promise(r => setTimeout(r, 45));
@@ -2214,10 +2222,10 @@ export function registerHoldEngine(app, deps) {
           try {
             await holdBotCall('sendMessage', {
               chat_id: pid,
-              text: '🔥 <b>Kunlik bonus kutmoqda!</b>\n\nBugungi kunlik zanjir mukofotingizni olishni unutmang. 7-kuni bepul Cookie skin beriladi! 🍪',
-              parse_mode: 'HTML',
+              text: '🔥 **Kunlik bonus kutmoqda!**\n\nBugungi kunlik zanjir mukofotingizni olishni unutmang. 7-kuni bepul Cookie skin beriladi! 🍪',
+              parse_mode: 'Markdown',
               reply_markup: {
-                inline_keyboard: [[{ text: '🎁 Bonusni olish', web_app: { url: 'https://paxta.online/HOLDbot' } }]]
+                inline_keyboard: [[{ text: '🎁 Bonusni olish', url: 'https://paxta.online/u/HOLDbot' }]]
               }
             });
             await new Promise(r => setTimeout(r, 45));
