@@ -254,7 +254,7 @@ export function formatMorseSymbols(word) {
   return word.split('').map(letter => {
     const raw = MORSE_MAP[letter] || '';
     const formatted = raw.split('').map(c => c === '.' ? '•' : '—').join(' ');
-    return `<b>${letter}</b>: <code>${formatted}</code>`;
+    return `*${letter}*: \`${formatted}\``;
   }).join('\n');
 }
 
@@ -435,19 +435,21 @@ export function registerHoldEngine(app, deps) {
   async function broadcastDailyMorseToChannel(word, reward = 50_000) {
     const breakdown = formatMorseSymbols(word);
     const text =
-      `🕵️‍♂️ <b>BUGUNGI KUNLIK MORZE KODI</b>\n\n` +
-      `Bugungi maxfiy soʻz: <b>${word}</b>\n\n` +
+      `🕵️‍♂️ *BUGUNGI KUNLIK MORZE KODI*\n\n` +
+      `Bugungi maxfiy soʻz: *${word}*\n\n` +
       `Harflar Morze alifbosida:\n${breakdown}\n\n` +
-      `🎁 <b>Mukofot:</b> +${reward.toLocaleString('en-US')} $HOLD + 1 🎟 Lucky Ticket\n\n` +
-      `<i>Tangani qisqa bosish: <b>• (nuqta)</b>\nTangani ushlab turish: <b>— (chiziq)</b>\nMini App ga kiring va tangaga teginib kodni tering!</i>`;
+      `🎁 *Mukofot:* +${reward.toLocaleString('en-US')} $HOLD + 1 🎟 Lucky Ticket\n\n` +
+      `_Tangani qisqa bosish: • (nuqta)_\n` +
+      `_Tangani ushlab turish: — (chiziq)_\n\n` +
+      `👉 Mini App: @HOLDbot`;
 
     return await holdBotCall('sendMessage', {
       chat_id: '@insider',
       text,
-      parse_mode: 'HTML',
+      parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🪙 $HOLD da terish', url: 'https://paxta.online/HOLDbot' }]
+          [{ text: '🪙 $HOLD da terish', url: 'https://paxta.online/u/HOLDbot' }]
         ]
       }
     });
