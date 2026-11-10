@@ -354,7 +354,7 @@ export function registerHoldEngine(app, deps) {
       insider:  { id: 'insider',  handle: 'insider',  name: 'Insider Official',   members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/insider' },
       medal:    { id: 'medal',    handle: 'MEDAL',    name: 'MEDAL Collectors',   members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/MEDAL' },
       kalendar: { id: 'kalendar', handle: 'Kalendar', name: 'Kalendar Whales',    members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/Kalendar' },
-      hold_vip: { id: 'hold_vip', handle: 'HOLDbot',  name: 'Hold Verified Club', members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/HOLDbot' }
+      hold_vip: { id: 'hold_vip', handle: 'HOLDbot',  name: 'Hold Verified Club', members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/u/HOLDbot' }
     };
   }
 
@@ -457,7 +457,7 @@ export function registerHoldEngine(app, deps) {
       parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🪙 $HOLD da terish', url: 'https://paxta.online/u/HOLDbot' }]
+          [{ text: '🪙 HOLD botga kirish', url: 'https://paxta.online/u/HOLDbot' }]
         ]
       }
     });
@@ -623,12 +623,54 @@ export function registerHoldEngine(app, deps) {
       // Handle Referral attribution (+10,000 HOLD to inviter, +5,000 HOLD to friend)
       if (refCode) {
         const refKey = cleanKey(String(refCode).replace(/^ref_/i, '').replace(/^@/, ''));
-        if (refKey && refKey !== key && st.users[refKey]) {
-          st.users[key].referredBy = refKey;
-          creditHold(st.users[key], st, 5_000);
-          if (!st.users[refKey].referrals.includes(key)) {
-            st.users[refKey].referrals.push(key);
-            creditHold(st.users[refKey], st, 10_000);
+        if (refKey && refKey !== key) {
+          if (!st.users[refKey]) {
+            st.users[refKey] = {
+              username: refKey,
+              displayName: cleanName(mainUsers[refKey]?.displayName || refKey),
+              paxtaId: mainUsers[refKey]?.paxtaId || null,
+              avatarUrl: mainUsers[refKey]?.avatarUrl || null,
+              paxtaVerified: !!mainUsers[refKey]?.paxtaId,
+              holdBalance: 0,
+              lifetimeHold: 0,
+              dailyHold: {},
+              ogBonusClaimed: false,
+              ogDetails: null,
+              energy: 1500,
+              maxEnergy: 1500,
+              lastEnergyAt: Date.now(),
+              tapLevel: 1,
+              energyLevel: 1,
+              rechargingSpeedLevel: 1,
+              autoBotEnabled: false,
+              fullTankCount: 3,
+              rocketCount: 3,
+              lastBoostResetDay: todayStr(),
+              lastAutoBotClaimAt: Date.now(),
+              morseSolvedDays: [],
+              lastSolvedMorseWord: '',
+              secretCodesClaimed: [],
+              referrals: [],
+              referredBy: null,
+              squadId: null,
+              tasksCompleted: [],
+              questStartedAt: {},
+              claimedNfts: [],
+              ownedSkins: ['basic'],
+              skin: 'basic',
+              streakCount: 0,
+              lastStreakDate: '',
+              luckyTickets: 0,
+              createdAt: new Date().toISOString()
+            };
+          }
+          if (st.users[refKey]) {
+            st.users[key].referredBy = refKey;
+            creditHold(st.users[key], st, 5_000);
+            if (!st.users[refKey].referrals.includes(key)) {
+              st.users[refKey].referrals.push(key);
+              creditHold(st.users[refKey], st, 10_000);
+            }
           }
         }
       }
@@ -647,11 +689,53 @@ export function registerHoldEngine(app, deps) {
       // If user hasn't been referred yet and refCode is provided
       if (refCode && !st.users[key].referredBy) {
         const refKey = cleanKey(String(refCode).replace(/^ref_/i, '').replace(/^@/, ''));
-        if (refKey && refKey !== key && st.users[refKey] && !st.users[refKey].referrals.includes(key)) {
-          st.users[key].referredBy = refKey;
-          creditHold(st.users[key], st, 5_000);
-          st.users[refKey].referrals.push(key);
-          creditHold(st.users[refKey], st, 10_000);
+        if (refKey && refKey !== key) {
+          if (!st.users[refKey]) {
+            st.users[refKey] = {
+              username: refKey,
+              displayName: cleanName(mainUsers[refKey]?.displayName || refKey),
+              paxtaId: mainUsers[refKey]?.paxtaId || null,
+              avatarUrl: mainUsers[refKey]?.avatarUrl || null,
+              paxtaVerified: !!mainUsers[refKey]?.paxtaId,
+              holdBalance: 0,
+              lifetimeHold: 0,
+              dailyHold: {},
+              ogBonusClaimed: false,
+              ogDetails: null,
+              energy: 1500,
+              maxEnergy: 1500,
+              lastEnergyAt: Date.now(),
+              tapLevel: 1,
+              energyLevel: 1,
+              rechargingSpeedLevel: 1,
+              autoBotEnabled: false,
+              fullTankCount: 3,
+              rocketCount: 3,
+              lastBoostResetDay: todayStr(),
+              lastAutoBotClaimAt: Date.now(),
+              morseSolvedDays: [],
+              lastSolvedMorseWord: '',
+              secretCodesClaimed: [],
+              referrals: [],
+              referredBy: null,
+              squadId: null,
+              tasksCompleted: [],
+              questStartedAt: {},
+              claimedNfts: [],
+              ownedSkins: ['basic'],
+              skin: 'basic',
+              streakCount: 0,
+              lastStreakDate: '',
+              luckyTickets: 0,
+              createdAt: new Date().toISOString()
+            };
+          }
+          if (st.users[refKey] && !st.users[refKey].referrals.includes(key)) {
+            st.users[key].referredBy = refKey;
+            creditHold(st.users[key], st, 5_000);
+            st.users[refKey].referrals.push(key);
+            creditHold(st.users[refKey], st, 10_000);
+          }
         }
       }
     }
@@ -800,6 +884,7 @@ export function registerHoldEngine(app, deps) {
       },
       squadId: u.squadId,
       squads: Object.values(st.squads || {}).sort((a, b) => b.totalHold - a.totalHold),
+      referredBy: u.referredBy || null,
       referrals: (u.referrals || []).map(rKey => {
         const rUser = st.users[rKey];
         return {
@@ -954,18 +1039,19 @@ export function registerHoldEngine(app, deps) {
   });
 
   // ---- 1C. Claim Referral by Friend's @username Inside App (Zero External Redirect!) ----
-  app.post('/api/hold/claim-ref', (req, res) => {
+  app.post('/api/hold/claim-ref', async (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     if (u.referredBy) {
       return res.status(400).json({ ok: false, error: `Siz allaqachon @${u.referredBy} tomonidan taklif qilingansiz` });
     }
-    const friendKey = cleanKey(String(req.body?.friendUsername || '').replace(/^ref_/i, '').replace(/^@/, ''));
+    const rawFriend = req.body?.friendUsername || req.body?.refUsername || req.body?.refCode || '';
+    const friendKey = cleanKey(String(rawFriend).replace(/^ref_/i, '').replace(/^@/, ''));
     if (!friendKey || friendKey === u.username) {
       return res.status(400).json({ ok: false, error: 'Doʻstingizning @username manzilini kiriting' });
     }
-    const friendUser = st.users[friendKey];
+    const { u: friendUser } = getOrCreateHoldUser(friendKey);
     if (!friendUser) {
-      return res.status(404).json({ ok: false, error: `@${friendKey} hali HOLD oʻyiniga kirmagan` });
+      return res.status(404).json({ ok: false, error: `@${friendKey} topilmadi` });
     }
 
     u.referredBy = friendKey;
@@ -976,9 +1062,24 @@ export function registerHoldEngine(app, deps) {
     }
     saveHoldState(st);
 
+    if (friendUser.paxtaId && String(friendUser.paxtaId) !== String(u.paxtaId)) {
+      try {
+        await holdBotCall('sendMessage', {
+          chat_id: friendUser.paxtaId,
+          text: `🎉 **Yangi doʻstingiz qoʻshildi!**\n\n**@${u.username}** ilovada sizni taklif qiluvchi deb kiritdi!\n💰 Hisobingizga **+10,000 $HOLD** qoʻshildi! 🚀`,
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🪙 $HOLD ga kirish', url: 'https://paxta.online/u/HOLDbot' }]
+            ]
+          }
+        });
+      } catch (err) {}
+    }
+
     res.json({
       ok: true,
-      message: `🎉 @${friendKey} kodi qabul qilindi · +5,000 HOLD!`,
+      message: `🎉 @${friendKey} taklifi qabul qilindi · +5,000 HOLD!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -2087,10 +2188,15 @@ export function registerHoldEngine(app, deps) {
     if (!text) return res.status(400).json({ ok: false, error: 'Xabar matnini kiriting' });
 
     const btnText = String(req.body?.buttonText || '').trim();
-    const btnUrl = String(req.body?.buttonUrl || '').trim() || 'https://paxta.online/HOLDbot';
+    const btnUrl = String(req.body?.buttonUrl || '').trim() || 'https://paxta.online/u/HOLDbot';
+
+    let btnObj = { text: btnText, url: btnUrl };
+    if (btnUrl.startsWith('http') && btnUrl.includes('/hold') && !btnUrl.includes('paxta.online/u/')) {
+      btnObj = { text: btnText, web_app: { url: btnUrl } };
+    }
 
     const reply_markup = btnText ? {
-      inline_keyboard: [[{ text: btnText, web_app: { url: btnUrl } }]]
+      inline_keyboard: [[btnObj]]
     } : undefined;
 
     const allUsers = Object.values(st.users || {});
@@ -2316,25 +2422,97 @@ export function registerHoldEngine(app, deps) {
             }
 
             const txt = (item.message?.text || '').trim();
-            if (txt.startsWith('/start') || txt.startsWith('/hold') || txt.startsWith('/play')) {
-              const parts = txt.split(/\s+/);
-              const refParam = parts[1] || null;
+            if (txt) {
               const sender = item.message.from || {};
               const senderKey = cleanKey(sender.username || sender.first_name || `paxta_${sender.id}`);
+              if (!senderKey) continue;
 
-              getOrCreateHoldUser(senderKey, sender.first_name || sender.username, sender.id, refParam);
-              const token = createSessionToken(senderKey, sender.id);
-              const personalUrl = `${holdWebAppUrl}?auth=${encodeURIComponent(token)}${refParam ? `&ref=${encodeURIComponent(refParam)}` : ''}`;
+              const isSlashCmd = txt.startsWith('/start') || txt.startsWith('/hold') || txt.startsWith('/play') || txt.startsWith('/ref');
+              const parts = txt.split(/\s+/);
 
-              await holdBotCall('sendMessage', {
-                chat_id: item.message.chat.id,
-                text: `Nothing to sell. Just hold. @hold`,
-                reply_markup: {
-                  inline_keyboard: [
-                    [{ text: 'HOLD', web_app: { url: personalUrl } }]
-                  ]
+              let rawRef = '';
+              if (isSlashCmd && parts.length > 1) {
+                rawRef = parts.slice(1).join(' ').trim();
+              } else if (!txt.startsWith('/') && (txt.startsWith('@') || /^[a-zA-Z0-9_]{3,32}$/.test(txt))) {
+                rawRef = txt;
+              }
+
+              let refKey = null;
+              if (rawRef) {
+                const match = String(rawRef)
+                  .replace(/https?:\/\/(?:www\.)?paxta\.online\/(?:u\/)?/i, '')
+                  .match(/^(?:ref_|start=)?@?([A-Za-z0-9_]{3,32})/i);
+                if (match) {
+                  const candidate = cleanKey(match[1]);
+                  if (candidate && candidate !== senderKey && candidate.toLowerCase() !== 'holdbot' && candidate.toLowerCase() !== 'hold') {
+                    refKey = candidate;
+                  }
                 }
-              });
+              }
+
+              const { u: senderUser } = getOrCreateHoldUser(senderKey, sender.first_name || sender.username, sender.id, null, null);
+              let refAttributed = false;
+              let alreadyReferred = !!senderUser.referredBy;
+              let inviterUser = null;
+
+              if (refKey) {
+                if (!senderUser.referredBy) {
+                  const inviterObj = getOrCreateHoldUser(refKey);
+                  inviterUser = inviterObj.u;
+
+                  senderUser.referredBy = refKey;
+                  creditHold(senderUser, st, 5_000);
+                  refAttributed = true;
+
+                  if (!inviterUser.referrals.includes(senderKey)) {
+                    inviterUser.referrals.push(senderKey);
+                    creditHold(inviterUser, st, 10_000);
+                  }
+                  saveHoldState(st);
+
+                  if (inviterUser.paxtaId && String(inviterUser.paxtaId) !== String(sender.id)) {
+                    try {
+                      await holdBotCall('sendMessage', {
+                        chat_id: inviterUser.paxtaId,
+                        text: `🎉 **Yangi doʻstingiz qoʻshildi!**\n\n**@${senderKey}** sizning taklifingiz bilan $HOLD ga kirdi!\n💰 Hisobingizga **+10,000 $HOLD** qoʻshildi! 🚀`,
+                        parse_mode: 'Markdown',
+                        reply_markup: {
+                          inline_keyboard: [
+                            [{ text: '🪙 HOLD ni ochish', web_app: { url: holdWebAppUrl } }]
+                          ]
+                        }
+                      });
+                    } catch (err) {
+                      console.error('Failed to notify inviter via bot:', err?.message);
+                    }
+                  }
+                }
+              }
+
+              const token = createSessionToken(senderKey, sender.id);
+              const personalUrl = `${holdWebAppUrl}?auth=${encodeURIComponent(token)}${refKey ? `&ref=${encodeURIComponent(refKey)}` : ''}`;
+
+              let replyText = '';
+              if (refAttributed) {
+                replyText = `🎉 **Doʻstingiz @${refKey} taklifi muvaffaqiyatli qabul qilindi!**\n\n💰 Sizga **+5,000 $HOLD** bonusi berildi!\n\nNothing to sell. Just hold. @hold`;
+              } else if (alreadyReferred && refKey && refKey !== senderUser.referredBy) {
+                replyText = `ℹ️ Siz allaqachon **@${senderUser.referredBy}** ning taklifi bilan roʻyxatdan oʻtgansiz.\n\nNothing to sell. Just hold. @hold`;
+              } else {
+                replyText = `🪙 **HOLD — Nothing to sell. Just hold.**\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagicha yozishini ayting:\n\`/start ${senderKey}\`\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
+              }
+
+              if (item.message?.chat?.id) {
+                await holdBotCall('sendMessage', {
+                  chat_id: item.message.chat.id,
+                  text: replyText,
+                  parse_mode: 'Markdown',
+                  reply_markup: {
+                    inline_keyboard: [
+                      [{ text: 'HOLD', web_app: { url: personalUrl } }]
+                    ]
+                  }
+                });
+              }
             }
           }
           st.payments.lastUpdateId = offset - 1;

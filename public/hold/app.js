@@ -1493,7 +1493,7 @@ function renderFrensSheet() {
         if (!refVal) return;
         const res = await api('/api/hold/claim-ref', {
           method: 'POST',
-          body: JSON.stringify({ username: STATE.username, refUsername: refVal })
+          body: JSON.stringify({ username: STATE.username, refUsername: refVal, friendUsername: refVal })
         });
         if (res.ok && res.user) {
           STATE.user = res.user;
@@ -1512,7 +1512,7 @@ function renderFrensSheet() {
     if (!refs.length) {
       frensList.innerHTML = `
         <div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">
-          Hozircha doʻstlar yoʻq. Taklif havolangiz yoki <b>@${esc(u.username)}</b> nikingizni ulashing va <b>+10,000 HOLD</b> oling!
+          Hozircha doʻstlar yoʻq. Doʻstingizga @HOLDbot ga <b>/start ${esc(u.username)}</b> yozishini ayting va <b>+10,000 HOLD</b> oling!
         </div>
       `;
     } else {
@@ -1976,12 +1976,12 @@ async function renderAdminSheet() {
       <div class="dark-group-box" style="padding:14px;gap:10px;">
         <strong style="font-size:14px;">📢 Barcha Foydalanuvchilarga E'lon (Broadcast)</strong>
         <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
-          Xabar @HOLDbot orqali botdan roʻyxatdan oʻtgan barcha faol PaxtaGram foydalanuvchilariga yetkaziladi. HTML teglari (&lt;b&gt;, &lt;i&gt;) va emojilar qoʻllab-quvvatlanadi.
+          Xabar @HOLDbot orqali botdan roʻyxatdan oʻtgan barcha faol PaxtaGram foydalanuvchilariga yetkaziladi. Markdown formatlash (**qalin**, *kursiv*) va emojilar qoʻllab-quvvatlanadi.
         </p>
         <textarea id="admBroadcastText" rows="4" placeholder="E'lon matnini kiriting..." class="apple-search-input" style="resize:vertical;min-height:90px;font-family:inherit;"></textarea>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <input type="text" id="admBroadcastBtnText" value="🪙 $HOLD ga kirish" placeholder="Tugma matni (ixtiyoriy)" class="apple-search-input" />
-          <input type="text" id="admBroadcastBtnUrl" value="https://paxta.online/HOLDbot" placeholder="Tugma havolasi" class="apple-search-input" />
+          <input type="text" id="admBroadcastBtnUrl" value="https://paxta.online/u/HOLDbot" placeholder="Tugma havolasi" class="apple-search-input" />
         </div>
         <div id="admBroadcastProgress" hidden style="padding:10px;border-radius:12px;background:rgba(56,182,255,0.12);color:#e0f2fe;font-size:13px;text-align:center;"></div>
         <button type="button" class="btn-sapphire-primary" id="btnAdmSendBroadcast">🚀 Xabarni Barchaga Yuborish</button>
@@ -2503,10 +2503,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Copy Referral Link / Username In-App (Never opens an external browser tab!)
   document.getElementById('btnCopyRefLink')?.addEventListener('click', async () => {
-    const shareText = `https://paxta.online/HOLDbot?start=ref_${STATE.username}`;
+    const shareText = `🪙 **$HOLD ga qoʻshiling!**\n\n1. https://paxta.online/u/HOLDbot ga kiring\n2. **/start ${STATE.username}** deb yozing\n\nHar ikkalamizga bepul $HOLD beriladi! 🚀`;
     try {
       await navigator.clipboard.writeText(shareText);
-      showToast(`Taklif havolasi nusxalandi! Yoki doʻstingizga @${STATE.username} nikingizni bering.`);
+      showToast(`Taklif xabari nusxalandi! Doʻstlaringizga yuboring`);
     } catch {
       showToast(`Nikingiz: @${STATE.username}`);
     }
