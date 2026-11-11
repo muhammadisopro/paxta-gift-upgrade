@@ -5,6 +5,7 @@ let farmTickerInterval = null;
 function renderFarmSheet() {
   const u = STATE.user;
   if (!u) return;
+  renderFarmExtras();
 
   const farm = u.farm || {
     startedAt: Date.now() - 3600_000,
@@ -344,6 +345,187 @@ function triggerSolarEclipseEasterEgg() {
 }
 
 
+// ==================== SQUAD WARS + FARM EXTRAS ====================
+function fmtClock(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(s / 86400);
+  const h = String(Math.floor((s % 86400) / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return (d > 0 ? d + 'd ' : '') + h + ':' + m + ':' + sec;
+}
+
+function renderWarsSheet() {
+  const u = STATE.user;
+  if (!u || !u.wars) return;
+  const w = u.wars;
+  const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
+
+  const prizeEl = document.getElementById('uiWarsPrize');
+  if (prizeEl) prizeEl.textContent = 'Winner squad: +' + fmtInt(w.prize) + ' HOLD each · +' + w.leaderBonusPct + '% farm speed';
+
+  const my = document.getElementById('uiWarsMyCard');
+  if (my) {
+    if (!w.mySquadName) {
+      my.innerHTML = `
+        <button type="button" class="not-row-item" id="btnWarsJoin">
+          <div class="nri-icon-box">⚔️</div>
+          <div class="nri-center">
+            <div class="nri-title">Squadga qoʻshiling</div>
+            <div class="nri-sub">Jangda qatnashish uchun jamoa tanlang</div>
+          </div>
+          <span class="nri-chevron">›</span>
+        </button>`;
+      document.getElementById('btnWarsJoin')?.addEventListener('click', () => openSheet('frens'));
+    } else {
+      my.innerHTML = `
+        <div class="not-row-item">
+          <div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((w.mySquadName || 'S').charAt(0).toUpperCase())}</div>
+          <div class="nri-center">
+            <div class="nri-title">${esc(w.mySquadName)} ${w.isLeader ? '👑' : ''}</div>
+            <div class="nri-sub">#${w.myRank} · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(w.myScore)} · siz: ${fmtInt(w.myEarned)}</div>
+          </div>
+          <span class="war-rank-badge">#${w.myRank}</span>
+        </div>`;
+    }
+  }
+
+  const list = document.getElementById('uiWarsList');
+  if (list) {
+    if (!w.top.length) {
+      list.innerHTML = '<div class="not-row-item"><div class="nri-center"><div class="nri-sub">Hali squadlar yoʻq</div></div></div>';
+    } else {
+      list.innerHTML = w.top.map((sq, i) => `
+        <div class="not-row-item ${sq.id === w.mySquadId ? 'war-row-me' : ''}">
+          <span class="war-rank-num">${i + 1}</span>
+          <div class="nri-center">
+            <div class="nri-title">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
+            <div class="nri-sub">${fmtInt(sq.members)} a'zo</div>
+          </div>
+          <span class="war-score"><img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.score)}</span>
+        </div>`).join('');
+    }
+  }
+
+  const last = document.getElementById('uiWarsLast');
+  if (last) {
+    last.textContent = w.lastWinner
+      ? 'Oʻtgan hafta gʻolibi: ' + w.lastWinner.name + ' (+' + fmtInt(w.lastWinner.prize) + ' × ' + w.lastWinner.members + ')'
+      : 'Birinchi haftalik jang davom etmoqda';
+  }
+  tickWars();
+}
+
+function tickWars() {
+  const w = STATE.user?.wars;
+  const el = document.getElementById('uiWarsTimer');
+  if (w && el) el.textContent = fmtClock(w.endsAt - Date.now());
+}
+
+function renderFarmExtras() {
+  const u = STATE.user;
+  if (!u || !u.farm) return;
+  const f = u.farm;
+  const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
+
+  const up = document.getElementById('farmUpgradesList');
+  if (up) {
+    const sMax = f.speedLevel >= f.speedMax;
+    const cMax = f.capLevel >= f.capMax;
+    up.innerHTML = `
+      <button type="button" class="not-row-item" data-farm-upg="speed" ${sMax ? 'disabled' : ''}>
+        <div class="nri-icon-box">⚡</div>
+        <div class="nri-center">
+          <div class="nri-title">Farm speed</div>
+          <div class="nri-sub">${sMax ? 'Max level reached' : '<img src="' + esc(coinImg) + '" class="inline-c" alt="" /> <b>' + fmtInt(f.nextSpeedCost) + '</b> · lvl ' + f.speedLevel + ' · ' + f.baseRate + '/h'}</div>
+        </div>
+        <span class="nri-chevron">${sMax ? '✓' : '›'}</span>
+      </button>
+      <button type="button" class="not-row-item" data-farm-upg="cap" ${cMax ? 'disabled' : ''}>
+        <div class="nri-icon-box">📦</div>
+        <div class="nri-center">
+          <div class="nri-title">Farm storage</div>
+          <div class="nri-sub">${cMax ? 'Max level reached' : '<img src="' + esc(coinImg) + '" class="inline-c" alt="" /> <b>' + fmtInt(f.nextCapCost) + '</b> · lvl ' + f.capLevel + ' · ' + f.durationHours + 'h'}</div>
+        </div>
+        <span class="nri-chevron">${cMax ? '✓' : '›'}</span>
+      </button>`;
+    up.querySelectorAll('[data-farm-upg]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        haptic('medium');
+        try {
+          const res = await api('/api/hold/farm-upgrade', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, type: btn.dataset.farmUpg })
+          });
+          if (res.ok && res.user) {
+            STATE.user = res.user;
+            renderAll();
+            renderFarmSheet();
+            showToast(res.message);
+          } else {
+            btn.disabled = false;
+            showToast(res?.error || 'Xatolik');
+          }
+        } catch {
+          btn.disabled = false;
+          showToast('Tarmoqda xatolik');
+        }
+      });
+    });
+  }
+
+  const durNote = document.getElementById('uiFarmDurationNote');
+  if (durNote) durNote.textContent = 'Auto-farm · har ' + (f.durationHours || 8) + ' soatda bir marta yigʻib oling';
+  const stTitle = document.getElementById('uiFarmStorageTitle');
+  if (stTitle) stTitle.textContent = (f.durationHours || 8) + ' soatlik zaxira';
+
+  const bn = document.getElementById('farmBonusList');
+  if (bn) {
+    bn.innerHTML = `
+      <div class="not-row-item">
+        <div class="nri-icon-box">🔥</div>
+        <div class="nri-center">
+          <div class="nri-title">Daily streak</div>
+          <div class="nri-sub">${f.streakPct > 0 ? '+' + f.streakPct + '% farm speed active' : 'Har kuni kiring: +2% kuniga (max +14%)'}</div>
+        </div>
+      </div>
+      <button type="button" class="not-row-item" id="btnFarmWarsRow">
+        <div class="nri-icon-box">⚔️</div>
+        <div class="nri-center">
+          <div class="nri-title">Squad Wars leader</div>
+          <div class="nri-sub">${f.warPct > 0 ? '+' + f.warPct + '% farm speed active 👑' : 'Squadingiz #1 boʻlsa +20% farm speed'}</div>
+        </div>
+        <span class="nri-chevron">›</span>
+      </button>`;
+    document.getElementById('btnFarmWarsRow')?.addEventListener('click', () => openSheet('wars'));
+  }
+}
+
+function updateArenaFarmChip() {
+  const f = STATE.user?.farm;
+  const chip = document.getElementById('btnArenaFarmChip');
+  const txt = document.getElementById('uiArenaFarmText');
+  const dot = document.getElementById('uiDockFarmDot');
+  if (!f) return;
+  const dur = f.durationMs || 8 * 3600_000;
+  const elapsed = Math.max(0, Date.now() - (f.startedAt || Date.now()));
+  const ready = elapsed >= dur;
+  if (dot) dot.hidden = !ready;
+  if (!chip || !txt) return;
+  if (ready) {
+    chip.classList.add('ready');
+    txt.textContent = 'Farm ready · Claim +' + fmtInt(f.totalFarmReward);
+  } else {
+    chip.classList.remove('ready');
+    txt.textContent = 'Farming ' + Math.floor((elapsed / dur) * 100) + '% · ' + fmtClock(dur - elapsed);
+  }
+}
+
+setInterval(() => { tickWars(); updateArenaFarmChip(); }, 1000);
+
+
 // ==================== GLOBAL NATIVE SELECTION & CONTEXT MENU SUPPRESSION ====================
 // Completely disables "Copy", "Look up", "Share", and long-press callouts across the whole Mini App
 window.addEventListener('contextmenu', (e) => {
@@ -564,7 +746,8 @@ function openSheet(sheetName) {
     boosts: 'sheetBoosts',
     leagues: 'sheetLeagues',
     admin: 'sheetAdmin',
-    farm: 'sheetFarm'
+    farm: 'sheetFarm',
+    wars: 'sheetWars'
   };
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
   const targetId = map[sheetName];
@@ -574,7 +757,9 @@ function openSheet(sheetName) {
       el.hidden = false;
       document.body.classList.add('sheet-open');
     }
-    if (sheetName === 'farm') {
+    if (sheetName === 'wars') {
+      renderWarsSheet();
+    } else if (sheetName === 'farm') {
       renderFarmSheet();
     } else if (sheetName === 'leagues') {
       const leagues = STATE.user?.allLeagues || [];
@@ -1118,6 +1303,8 @@ function renderAll() {
   renderBoostsAndSkinsSheet();
   renderEarnSheet();
   renderFrensSheet();
+  renderWarsSheet();
+  updateArenaFarmChip();
   renderLeaguesSheet();
 }
 
@@ -2715,6 +2902,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     openSheet('farm');
   });
+  document.getElementById('btnArenaFarmChip')?.addEventListener('click', () => openSheet('farm'));
+  document.getElementById('btnOpenWarsCard')?.addEventListener('click', () => openSheet('wars'));
+  document.getElementById('btnWarsInvite')?.addEventListener('click', () => openSheet('frens'));
   document.getElementById('btnClaimFarm')?.addEventListener('click', claimFarmYield);
   document.getElementById('btnClaimFarmRef')?.addEventListener('click', claimFarmRefYield);
   document.getElementById('btnCloseFootprintStory')?.addEventListener('click', () => {
@@ -2735,7 +2925,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Top Pill, Arena Streak Pill, League & Admin Sheet Triggers
-  document.getElementById('btnSquadPill')?.addEventListener('click', () => openSheet('frens'));
+  document.getElementById('btnSquadPill')?.addEventListener('click', () => openSheet(STATE.user?.squadId ? 'wars' : 'frens'));
   document.getElementById('btnOpenLeagues')?.addEventListener('click', () => openSheet('leagues'));
   document.getElementById('btnArenaStreakPill')?.addEventListener('click', () => {
     if (STATE.user?.streak?.canClaimToday) {

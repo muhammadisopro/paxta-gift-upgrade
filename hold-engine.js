@@ -309,9 +309,103 @@ export function registerHoldEngine(app, deps) {
     const today = todayStr();
     if (!u.dailyHold || typeof u.dailyHold !== 'object') u.dailyHold = {};
     u.dailyHold[today] = (u.dailyHold[today] || 0) + val;
+    const wk = warWeekInfo().key;
+    if (u.warWeek !== wk) { u.warWeek = wk; u.warEarned = 0; }
+    u.warEarned = (u.warEarned || 0) + val;
     if (u.squadId && st?.squads?.[u.squadId]) {
-      st.squads[u.squadId].totalHold = (st.squads[u.squadId].totalHold || 0) + val;
+      const sq = st.squads[u.squadId];
+      sq.totalHold = (sq.totalHold || 0) + val;
+      if (sq.weekKey !== wk) { sq.weekKey = wk; sq.weekScore = 0; }
+      sq.weekScore = (sq.weekScore || 0) + val;
     }
+  }
+
+  // ================= SQUAD WARS (weekly) + FARM ENGINE HELPERS =================
+  function warWeekInfo() {
+    const OFFSET = 5 * 3600_000; // UTC+5 (Tashkent)
+    const d = new Date(Date.now() + OFFSET);
+    const dayIdx = (d.getUTCDay() + 6) % 7; // Monday = 0
+    const startTz = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - dayIdx * 86400_000;
+    return {
+      key: new Date(startTz).toISOString().slice(0, 10),
+      endsAt: startTz + 7 * 86400_000 - OFFSET
+    };
+  }
+
+  function getWarsInfo(st, u) {
+    const w = warWeekInfo();
+    const prize = st.config?.squadWarPrize || 25_000;
+    const list = Object.values(st.squads || {}).map(sq => ({
+      id: sq.id,
+      name: sq.name,
+      members: sq.members || 0,
+      verified: !!sq.verified,
+      score: sq.weekKey === w.key ? Math.floor(sq.weekScore || 0) : 0
+    })).sort((a, b) => b.score - a.score);
+    const myIdx = u.squadId ? list.findIndex(s => s.id === u.squadId) : -1;
+    return {
+      weekKey: w.key,
+      endsAt: w.endsAt,
+      prize,
+      leaderBonusPct: 20,
+      top: list.slice(0, 10),
+      totalSquads: list.length,
+      mySquadId: myIdx >= 0 ? list[myIdx].id : null,
+      mySquadName: myIdx >= 0 ? list[myIdx].name : null,
+      myRank: myIdx >= 0 ? myIdx + 1 : null,
+      myScore: myIdx >= 0 ? list[myIdx].score : 0,
+      myEarned: u.warWeek === w.key ? Math.floor(u.warEarned || 0) : 0,
+      isLeader: myIdx === 0 && list[0].score > 0,
+      lastWinner: st.config?.lastWarWinner || null
+    };
+  }
+
+  function getFarmParams(st, u) {
+    const speedLevel = Math.min(10, Math.max(1, u.farmSpeedLevel || 1));
+    const capLevel = Math.min(5, Math.max(1, u.farmCapLevel || 1));
+    const baseRate = 300 + (speedLevel - 1) * 150;
+    const today = todayStr();
+    const yesterday = yesterdayStr();
+    const streakAlive = u.lastStreakDate === today || u.lastStreakDate === yesterday;
+    const streakPct = Math.min(7, streakAlive ? (u.streakCount || 0) : 0) * 2;
+    const wars = getWarsInfo(st, u);
+    const warPct = wars.isLeader ? wars.leaderBonusPct : 0;
+    const rate = Math.round(baseRate * (1 + (streakPct + warPct) / 100));
+    const durationHours = 8 + (capLevel - 1) * 2;
+    const durationMs = durationHours * 3600_000;
+    return {
+      speedLevel, capLevel, speedMax: 10, capMax: 5,
+      baseRate, streakPct, warPct, rate,
+      durationHours, durationMs,
+      reward: Math.round(durationHours * rate),
+      nextSpeedCost: speedLevel >= 10 ? 0 : Math.round(5000 * Math.pow(1.7, speedLevel - 1)),
+      nextCapCost: capLevel >= 5 ? 0 : Math.round(8000 * Math.pow(1.9, capLevel - 1))
+    };
+  }
+
+  function settleWars(st) {
+    if (!st.config) st.config = {};
+    const cur = warWeekInfo();
+    const prev = st.config.warsWeekKey;
+    if (prev && prev !== cur.key) {
+      const ranked = Object.values(st.squads || {})
+        .filter(s => s.weekKey === prev && (s.weekScore || 0) > 0)
+        .sort((a, b) => (b.weekScore || 0) - (a.weekScore || 0));
+      const win = ranked[0];
+      if (win) {
+        const prize = st.config.squadWarPrize || 25_000;
+        let n = 0;
+        for (const usr of Object.values(st.users || {})) {
+          if (usr.squadId === win.id && usr.warWeek === prev && (usr.warEarned || 0) > 0) {
+            usr.holdBalance = (usr.holdBalance || 0) + prize;
+            usr.lifetimeHold = (usr.lifetimeHold || 0) + prize;
+            n++;
+          }
+        }
+        st.config.lastWarWinner = { name: win.name, weekKey: prev, prize, members: n, score: Math.floor(win.weekScore || 0) };
+      }
+    }
+    st.config.warsWeekKey = cur.key;
   }
 
   function resetSingleUserObject(u) {
@@ -743,6 +837,7 @@ export function registerHoldEngine(app, deps) {
     const u = st.users[key];
     const now = Date.now();
     const today = todayStr();
+    settleWars(st);
 
     // Daily free boosts reset
     if (u.lastBoostResetDay !== today) {
@@ -817,9 +912,10 @@ export function registerHoldEngine(app, deps) {
     const solvedToday = (u.morseSolvedDays || []).includes(today) && u.lastSolvedMorseWord === morseWord;
 
     // 8-Hour Farming calculation
-    const farmDuration = u.farmDurationMs || (8 * 3600 * 1000);
-    const farmRate = u.farmRatePerHour || 300;
-    const farmRewardMax = Math.round((farmDuration / 3600_000) * farmRate);
+    const fpm = getFarmParams(st, u);
+    const farmDuration = fpm.durationMs;
+    const farmRate = fpm.rate;
+    const farmRewardMax = fpm.reward;
     const farmElapsed = Math.max(0, now - (u.farmStartedAt || (now - 3600_000)));
     const farmRatio = Math.min(1, farmElapsed / farmDuration);
     const currentFarmed = Math.min(farmRewardMax, Math.floor(farmRewardMax * farmRatio));
@@ -938,8 +1034,19 @@ export function registerHoldEngine(app, deps) {
         remainingMs: farmRemainingMs,
         canClaim: farmCanClaim,
         claimedTotal: u.farmClaimedHold || 0,
-        refEarnings: u.farmRefEarnings || 0
+        refEarnings: u.farmRefEarnings || 0,
+        speedLevel: fpm.speedLevel,
+        capLevel: fpm.capLevel,
+        speedMax: fpm.speedMax,
+        capMax: fpm.capMax,
+        nextSpeedCost: fpm.nextSpeedCost,
+        nextCapCost: fpm.nextCapCost,
+        baseRate: fpm.baseRate,
+        streakPct: fpm.streakPct,
+        warPct: fpm.warPct,
+        durationHours: fpm.durationHours
       },
+      wars: getWarsInfo(st, u),
       footprint: {
         claimed: !!u.footprintClaimed,
         details: u.footprintDetails || null,
@@ -1181,9 +1288,9 @@ export function registerHoldEngine(app, deps) {
   app.post('/api/hold/farm-claim', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const now = Date.now();
-    const duration = u.farmDurationMs || (8 * 3600 * 1000);
-    const ratePerHour = u.farmRatePerHour || 300;
-    const totalFarmReward = Math.round((duration / 3600_000) * ratePerHour);
+    const fpm = getFarmParams(st, u);
+    const duration = fpm.durationMs;
+    const totalFarmReward = fpm.reward;
 
     const elapsed = Math.max(0, now - (u.farmStartedAt || (now - 3600_000)));
     if (elapsed < duration) {
@@ -1212,6 +1319,32 @@ export function registerHoldEngine(app, deps) {
       ok: true,
       reward: totalFarmReward,
       message: `🌾 +${totalFarmReward.toLocaleString()} $HOLD hosili yig'ib olindi!`,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 2B1b. Upgrade Farm (speed / storage) ----
+  app.post('/api/hold/farm-upgrade', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const type = req.body?.type;
+    const p = getFarmParams(st, u);
+    if (type === 'speed') {
+      if (p.speedLevel >= p.speedMax) return res.status(400).json({ ok: false, error: 'Maksimal darajaga yetgan' });
+      if ((u.holdBalance || 0) < p.nextSpeedCost) return res.status(400).json({ ok: false, error: 'Balans yetarli emas' });
+      u.holdBalance -= p.nextSpeedCost;
+      u.farmSpeedLevel = p.speedLevel + 1;
+    } else if (type === 'cap') {
+      if (p.capLevel >= p.capMax) return res.status(400).json({ ok: false, error: 'Maksimal darajaga yetgan' });
+      if ((u.holdBalance || 0) < p.nextCapCost) return res.status(400).json({ ok: false, error: 'Balans yetarli emas' });
+      u.holdBalance -= p.nextCapCost;
+      u.farmCapLevel = p.capLevel + 1;
+    } else {
+      return res.status(400).json({ ok: false, error: 'Notoʻgʻri tur' });
+    }
+    saveHoldState(st);
+    res.json({
+      ok: true,
+      message: type === 'speed' ? '⚡ Farm tezligi oshirildi!' : '📦 Farm sigʻimi oshirildi!',
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });

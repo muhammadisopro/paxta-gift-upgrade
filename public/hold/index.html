@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=25" />
+  <link rel="stylesheet" href="/hold/style.css?v=26" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -85,6 +85,10 @@
             <span id="uiLeagueNameText">Bronze</span>
             <span class="chevron-txt">›</span>
           </span>
+        </button>
+
+        <button type="button" class="arena-farm-chip" id="btnArenaFarmChip">
+          <span>🌾</span><span id="uiArenaFarmText">Farm</span>
         </button>
       </div>
 
@@ -297,6 +301,15 @@
           <button type="button" class="bb-link-btn" id="btnReplayOnboarding">View my Pioneer status ✦</button>
         </div>
 
+        <button type="button" class="wars-entry-card" id="btnOpenWarsCard">
+          <div class="nri-icon-box">⚔️</div>
+          <div class="nri-center">
+            <div class="nri-title">Squad Wars</div>
+            <div class="nri-sub">Haftalik jang · #1 squadga sovgʻa</div>
+          </div>
+          <span class="nri-chevron">›</span>
+        </button>
+
         <!-- Invite Bonus Tiers Box -->
         <div class="frens-reward-banner">
           <div class="frb-title">+10,000 HOLD for invite</div>
@@ -335,6 +348,56 @@
     </section>
 
 
+    <!-- ==================== SHEET 7: SQUAD WARS ==================== -->
+    <section class="apple-sheet" id="sheetWars" hidden>
+      <div class="sheet-top-nav">
+        <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
+        <span class="sheet-nav-title">Squad Wars</span>
+        <div style="width:52px;"></div>
+      </div>
+
+      <div class="sheet-content">
+        <div class="boost-balance-header">
+          <span class="bb-label">Week ends in</span>
+          <div class="bb-amount-row"><strong id="uiWarsTimer" style="font-size:36px;">--</strong></div>
+          <span class="farm-sub-note" id="uiWarsPrize"></span>
+        </div>
+
+        <div class="dark-group-box" id="uiWarsMyCard"></div>
+
+        <h3 class="not-section-heading">Leaderboard</h3>
+        <div class="dark-group-box" id="uiWarsList"></div>
+
+        <h3 class="not-section-heading">How it works</h3>
+        <div class="dark-group-box">
+          <div class="not-row-item">
+            <div class="nri-icon-box">🧸</div>
+            <div class="nri-center">
+              <div class="nri-title">Hafta davomida HOLD toʻplang</div>
+              <div class="nri-sub">Barcha a'zolar topganlari squad hisobiga qoʻshiladi.</div>
+            </div>
+          </div>
+          <div class="not-row-item">
+            <div class="nri-icon-box">👑</div>
+            <div class="nri-center">
+              <div class="nri-title">#1 squad gʻalaba qozonadi</div>
+              <div class="nri-sub">Yakshanba kechasi hisoblanadi. Faol a'zolar sovgʻa oladi.</div>
+            </div>
+          </div>
+          <div class="not-row-item">
+            <div class="nri-icon-box">🌾</div>
+            <div class="nri-center">
+              <div class="nri-title">Yetakchi bonusi</div>
+              <div class="nri-sub">#1 squad a'zolari farm tezligiga +20% oladi.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="farm-sub-note" id="uiWarsLast" style="text-align:center;"></div>
+        <button type="button" class="btn-sapphire-primary" id="btnWarsInvite">Frenlarni squadga taklif qilish</button>
+      </div>
+    </section>
+
     <!-- ==================== SHEET 6: 8-HOUR FARM ==================== -->
     <section class="apple-sheet" id="sheetFarm" hidden>
       <div class="sheet-top-nav">
@@ -350,7 +413,7 @@
             <img src="/hold/skins/skin-4.png" alt="" class="bb-coin-img" id="uiFarmHeroCoin" />
             <strong id="uiFarmLiveAmount">0</strong>
           </div>
-          <span class="farm-sub-note">Auto-farm · har 8 soatda bir marta yigʻib oling</span>
+          <span class="farm-sub-note" id="uiFarmDurationNote">Auto-farm · har 8 soatda bir marta yigʻib oling</span>
         </div>
 
         <div class="free-boosters-grid">
@@ -379,6 +442,12 @@
           </button>
         </div>
 
+        <h3 class="not-section-heading">Farm upgrades</h3>
+        <div class="dark-group-box" id="farmUpgradesList"></div>
+
+        <h3 class="not-section-heading">Bonuses</h3>
+        <div class="dark-group-box" id="farmBonusList"></div>
+
         <h3 class="not-section-heading">Friends farm</h3>
         <div class="dark-group-box">
           <div class="not-row-item">
@@ -399,7 +468,7 @@
           <div class="not-row-item">
             <div class="nri-icon-box">🕒</div>
             <div class="nri-center">
-              <div class="nri-title">8 soatlik zaxira</div>
+              <div class="nri-title" id="uiFarmStorageTitle">8 soatlik zaxira</div>
               <div class="nri-sub">Ilova yopiq boʻlsa ham hosil toʻxtamasdan yigʻiladi.</div>
             </div>
           </div>
@@ -514,6 +583,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=25"></script>
+  <script src="/hold/app.js?v=26"></script>
 </body>
 </html>

@@ -2428,3 +2428,68 @@ body.turbo-active .coin-radial-glow {
   font-size: 13.5px;
   cursor: pointer;
 }
+
+
+/* ==================== SQUAD WARS + ARENA FARM CHIP ==================== */
+.arena-farm-chip {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.12s ease;
+}
+.arena-farm-chip:active { transform: scale(0.96); }
+.arena-farm-chip.ready {
+  background: linear-gradient(135deg, var(--theme-accent), var(--theme-secondary));
+  border-color: transparent;
+}
+
+.wars-entry-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--panel-dark);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+.wars-entry-card:active { transform: scale(0.98); }
+
+.war-rank-num {
+  width: 26px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-2);
+}
+.war-rank-badge {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 4px 9px;
+}
+.war-score {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.war-row-me { background: rgba(255, 255, 255, 0.06); border-radius: 14px; }
+.not-row-item:disabled { opacity: 0.72; cursor: default; }
+.not-row-item:disabled:active { background: transparent; }
