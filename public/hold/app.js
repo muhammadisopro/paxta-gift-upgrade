@@ -313,7 +313,7 @@ function triggerSolarEclipseEasterEgg() {
     }
   };
 
-  document.getElementById('btnCloseEclipse').onclick = () => {
+  const closeEclipseModal = () => {
     modal.hidden = true;
     if (eclipseCountdownTimer) clearInterval(eclipseCountdownTimer);
     if (coinBtn) {
@@ -321,6 +321,11 @@ function triggerSolarEclipseEasterEgg() {
       coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
     }
   };
+
+  const btnClose = document.getElementById('btnCloseEclipse');
+  if (btnClose) btnClose.onclick = closeEclipseModal;
+  const overlayBg = modal.querySelector('.eclipse-overlay-bg');
+  if (overlayBg) overlayBg.onclick = closeEclipseModal;
 }
 
 
@@ -2825,6 +2830,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       STATE.pointerDownTime = Date.now();
       haptic('light');
 
+      // Initialize Rim Circle Tracing
+      circleTrace.active = true;
+      const initRect = coinBtn.getBoundingClientRect();
+      circleTrace.lastAngle = Math.atan2(e.clientY - (initRect.top + initRect.height / 2), e.clientX - (initRect.left + initRect.width / 2));
+
       const rect = coinBtn.getBoundingClientRect();
       const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       const dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
@@ -2881,15 +2891,94 @@ window.addEventListener('DOMContentLoaded', async () => {
       }, 195);
     });
 
+    // ---- 3-CIRCLE SOLAR ECLIPSE RIM TRACE GESTURE ----
+    let circleTrace = {
+      active: false,
+      lastAngle: null,
+      accumulatedAngle: 0,
+      lastHalfStep: 0,
+      resetTimer: null
+    };
+
+    const handleTraceMove = (clientX, clientY) => {
+      if (!circleTrace.active) return;
+      const rect = coinBtn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const px = clientX - cx;
+      const py = clientY - cy;
+      const dist = Math.hypot(px, py) / (rect.width / 2);
+
+      // Check rim distance: outer rim area (dist >= 0.25)
+      if (dist >= 0.25 && dist <= 2.2) {
+        const curAngle = Math.atan2(py, px);
+        if (circleTrace.lastAngle !== null) {
+          let delta = curAngle - circleTrace.lastAngle;
+          if (delta > Math.PI) delta -= 2 * Math.PI;
+          if (delta < -Math.PI) delta += 2 * Math.PI;
+
+          circleTrace.accumulatedAngle += delta;
+          const turns = Math.abs(circleTrace.accumulatedAngle) / (2 * Math.PI);
+
+          // Subtle dynamic 3D tilt tracking finger around rim
+          coinBtn.style.transform = `rotateX(${(-py / (rect.height / 2)) * 14}deg) rotateY(${(px / (rect.width / 2)) * 14}deg) scale(0.96)`;
+
+          // Haptic tick every half circle (180 deg)
+          const currentHalf = Math.floor(turns * 2);
+          if (currentHalf > circleTrace.lastHalfStep) {
+            circleTrace.lastHalfStep = currentHalf;
+            haptic('light');
+          }
+
+          // Trigger Solar Eclipse Easter Egg on 3 full circles! (turns >= 2.85)
+          if (turns >= 2.85) {
+            circleTrace.active = false;
+            circleTrace.accumulatedAngle = 0;
+            circleTrace.lastHalfStep = 0;
+            circleTrace.lastAngle = null;
+            STATE.pointerDownTime = 0; // prevent standard tap
+            triggerSolarEclipseEasterEgg();
+            return;
+          }
+        }
+        circleTrace.lastAngle = curAngle;
+      }
+    };
+
+    coinBtn.addEventListener('pointermove', (e) => {
+      handleTraceMove(e.clientX, e.clientY);
+    });
+
+    coinBtn.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        handleTraceMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
     const finishCoinPress = (e) => {
       clearTimeout(STATE.dashFeedbackTimer);
+      circleTrace.active = false;
+      circleTrace.lastAngle = null;
+
+      // Keep accumulatedAngle alive for 2.2s so multi-swipe circular tracing also works
+      clearTimeout(circleTrace.resetTimer);
+      circleTrace.resetTimer = setTimeout(() => {
+        circleTrace.accumulatedAngle = 0;
+        circleTrace.lastHalfStep = 0;
+      }, 2200);
+
+      const isLargeTrace = Math.abs(circleTrace.accumulatedAngle) >= Math.PI;
       coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+
       if (!STATE.pointerDownTime) return;
       const heldMs = Date.now() - STATE.pointerDownTime;
       STATE.pointerDownTime = 0;
 
-      handleCoinTap(e.clientX, e.clientY);
-      recordCoinMorseSignal(heldMs >= 195 ? '-' : '.');
+      // If user was deliberately tracing circles, don't trigger regular tap
+      if (!isLargeTrace) {
+        handleCoinTap(e.clientX, e.clientY);
+        recordCoinMorseSignal(heldMs >= 195 ? '-' : '.');
+      }
     };
 
     coinBtn.addEventListener('pointerup', finishCoinPress);
