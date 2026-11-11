@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=18" />
+  <link rel="stylesheet" href="/hold/style.css?v=19" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -56,6 +56,18 @@
           ⚙️
         </button>
       </div>
+
+      <!-- PAWS-Style Footprint Map Bar -->
+      <button type="button" class="paws-footprint-bar" id="btnOpenFootprint">
+        <div class="pfb-left">
+          <span class="pfb-paw">🐾</span>
+          <div class="pfb-info">
+            <span class="pfb-title">Check the footprint map</span>
+            <span class="pfb-sub" id="uiFootprintBadge">Qadriyatingiz & Airdrop Ulushi ›</span>
+          </div>
+        </div>
+        <span class="pfb-arrow">➔</span>
+      </button>
 
       <!-- 2. Center Balance & Rank + League Row (Exact Screenshot 3: 🌿 21,384th 🌿 · 🏆 Bronze ›) -->
       <div class="arena-balance-block">
@@ -115,6 +127,12 @@
             <button type="button" class="dock-item" data-open-sheet="boosts">
               <span class="dock-emj">🚀</span>
               <span class="dock-label">Boosts</span>
+            </button>
+            <div class="dock-divider"></div>
+            <button type="button" class="dock-item dock-item-farm" data-open-sheet="farm" id="btnDockFarm">
+              <span class="dock-emj">🌾</span>
+              <span class="dock-label">Farm</span>
+              <span class="dock-farm-live-dot" id="uiDockFarmDot" hidden></span>
             </button>
           </div>
         </div>
@@ -319,6 +337,76 @@
       </div>
     </section>
 
+
+    <!-- ==================== SHEET 6: 8-HOUR PASSIVE FARMING ==================== -->
+    <section class="apple-sheet" id="sheetFarm" hidden>
+      <div class="sheet-top-nav">
+        <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
+        <span class="sheet-nav-title">🌾 8-Hour Farm</span>
+        <div style="width:52px;"></div>
+      </div>
+
+      <div class="sheet-content">
+        <!-- 1. Central 8-Hour Farm Capsule -->
+        <div class="farm-hero-capsule">
+          <div class="fhc-glow"></div>
+          <div class="fhc-top-tag">PASSIVE REWARDS</div>
+          <div class="fhc-amount-row">
+            <span class="fhc-num" id="uiFarmLiveAmount">0</span>
+            <span class="fhc-curr">$HOLD</span>
+          </div>
+          <div class="fhc-progress-track">
+            <div class="fhc-progress-fill" id="uiFarmProgressFill" style="width:0%;"></div>
+          </div>
+          <div class="fhc-meta-row">
+            <span class="fhc-time" id="uiFarmTimerText">⏳ 08:00:00 qoldi</span>
+            <span class="fhc-rate" id="uiFarmRateText">⚡ 300 / soat</span>
+          </div>
+
+          <button type="button" class="farm-action-btn" id="btnClaimFarm" disabled>
+            <span id="uiFarmBtnLabel">⏳ Farming in progress...</span>
+          </button>
+        </div>
+
+        <!-- 2. Referral Kickback Farm Box -->
+        <div class="dark-group-box" style="padding:14px;gap:10px;">
+          <div class="section-flex-head">
+            <strong style="font-size:14px;color:#fff;">👥 Doʻstlaringiz Fermasi</strong>
+            <span class="badge-accent" style="padding:3px 8px;border-radius:8px;background:rgba(56,182,255,0.18);color:#38b6ff;font-size:11px;font-weight:700;">10% Ulush</span>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
+            Siz taklif qilgan doʻstlaringiz har safar oʻz hosilini yigʻib olganda, ularning ishlab topganidan <b>10% qoʻshimcha $HOLD</b> avtomatik sizga yigʻiladi!
+          </p>
+          <div class="farm-ref-stats-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 2px;">
+            <div>
+              <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;">Toʻplangan ulush</div>
+              <div style="font-size:18px;font-weight:700;color:#facc15;" id="uiFarmRefAmount">0 $HOLD</div>
+            </div>
+            <button type="button" class="skin-pill-btn" id="btnClaimFarmRef" disabled style="padding:0 18px;">Yechib olish</button>
+          </div>
+        </div>
+
+        <!-- 3. Farm Storage & Speed Info -->
+        <div class="dark-group-box" style="padding:14px;gap:12px;">
+          <strong style="font-size:13.5px;color:#fff;">💡 Fermerlik Qoidalari</strong>
+          <div class="not-row-item" style="padding:4px 0;">
+            <div class="nri-icon-box">⏳</div>
+            <div class="nri-center">
+              <div class="nri-title">8-Soatlik Avtomatik Zaxira</div>
+              <div class="nri-sub">Telefoningiz oʻchiq boʻlsa ham tangalar 8 soat davomida toʻxtamasdan toʻplanadi.</div>
+            </div>
+          </div>
+          <div class="not-row-item" style="padding:4px 0;">
+            <div class="nri-icon-box">⚡</div>
+            <div class="nri-center">
+              <div class="nri-title">Har Kungi Barqaror Hosil</div>
+              <div class="nri-sub">Kuniga 3 marta kirib Claim qilish kifoya, ekranni tinimsiz bosish shart emas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ==================== SHEET 5: DEDICATED FULL-SCREEN ADMIN STUDIO (NOT A POPUP!) ==================== -->
     <section class="apple-sheet" id="sheetAdmin" hidden>
       <div class="sheet-top-nav">
@@ -341,6 +429,81 @@
       </div>
     </section>
 
+
+    <!-- ==================== 5-SLIDE PAWS IDENTITY FOOTPRINT STORY MODAL ==================== -->
+    <div class="footprint-story-modal" id="footprintStoryModal" hidden>
+      <div class="fsm-backdrop" id="fsmBackdrop"></div>
+      <div class="fsm-card">
+        <!-- Progress Segment Bars (5 bars like Instagram/Telegram Stories) -->
+        <div class="fsm-story-bars">
+          <div class="fsm-bar-segment"><div class="fsm-bar-fill" id="fsmFill0"></div></div>
+          <div class="fsm-bar-segment"><div class="fsm-bar-fill" id="fsmFill1"></div></div>
+          <div class="fsm-bar-segment"><div class="fsm-bar-fill" id="fsmFill2"></div></div>
+          <div class="fsm-bar-segment"><div class="fsm-bar-fill" id="fsmFill3"></div></div>
+          <div class="fsm-bar-segment"><div class="fsm-bar-fill" id="fsmFill4"></div></div>
+        </div>
+
+        <button type="button" class="fsm-close-btn" id="btnCloseFootprintStory" aria-label="Yopish">✕</button>
+
+        <!-- Slide Content -->
+        <div class="fsm-slides-wrap" id="fsmSlidesWrap"></div>
+
+        <!-- Bottom Story Nav -->
+        <div class="fsm-bottom-nav">
+          <button type="button" class="btn-sapphire-primary" id="btnFootprintNext">Davom etish ➔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SOLAR ECLIPSE SECRET LISTING MODAL ==================== -->
+    <div class="eclipse-secret-modal" id="eclipseSecretModal" hidden>
+      <div class="eclipse-overlay-bg"></div>
+      <div class="eclipse-sun-corona"></div>
+      
+      <div class="eclipse-card-content">
+        <div class="eclipse-eyebrow">✦ CLASSIFIED // THE SECRET REVEALED ✦</div>
+        <div class="eclipse-title">SOLAR ECLIPSE</div>
+        <div class="eclipse-sub">Siz $HOLD ning eng maxfiy kodini ochdingiz</div>
+        
+        <div class="eclipse-date-pill">
+          <span class="edp-icon">📅</span>
+          <span class="edp-text">OFFICIAL LISTING & TGE: <b>15 · DEKABR · 2026</b></span>
+        </div>
+
+        <!-- Futuristic Countdown -->
+        <div class="eclipse-countdown-grid">
+          <div class="ecg-item">
+            <span class="ecg-num" id="eclipseDays">33</span>
+            <span class="ecg-label">Kun</span>
+          </div>
+          <div class="ecg-sep">:</div>
+          <div class="ecg-item">
+            <span class="ecg-num" id="eclipseHours">18</span>
+            <span class="ecg-label">Soat</span>
+          </div>
+          <div class="ecg-sep">:</div>
+          <div class="ecg-item">
+            <span class="ecg-num" id="eclipseMinutes">42</span>
+            <span class="ecg-label">Daqiqa</span>
+          </div>
+          <div class="ecg-sep">:</div>
+          <div class="ecg-item">
+            <span class="ecg-num" id="eclipseSeconds">15</span>
+            <span class="ecg-label">Soniya</span>
+          </div>
+        </div>
+
+        <div class="eclipse-quote">
+          "Haqiqiy narsalar shovqinsiz yaratiladi. Sabr qilganlar mukofotini oladi."
+        </div>
+
+        <div class="eclipse-actions">
+          <button type="button" class="btn-sapphire-primary" id="btnShareEclipse">🚀 Sirni Telegramda Ulashish</button>
+          <button type="button" class="bb-link-btn" id="btnCloseEclipse" style="margin-top:10px;color:rgba(255,255,255,0.65);width:100%;text-align:center;">Yopish</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- UNIVERSAL MODAL SHEET -->
@@ -357,6 +520,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=18"></script>
+  <script src="/hold/app.js?v=19"></script>
 </body>
 </html>

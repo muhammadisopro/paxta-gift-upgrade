@@ -1,4 +1,284 @@
 
+// ==================== 8-HOUR PASSIVE FARMING ENGINE ====================
+let farmTickerInterval = null;
+
+function renderFarmSheet() {
+  const u = STATE.user;
+  if (!u) return;
+
+  const farm = u.farm || {
+    startedAt: Date.now() - 3600_000,
+    durationMs: 8 * 3600 * 1000,
+    ratePerHour: 300,
+    totalFarmReward: 2400,
+    currentFarmed: 300,
+    elapsedMs: 3600_000,
+    remainingMs: 7 * 3600 * 1000,
+    canClaim: false,
+    refEarnings: 0
+  };
+
+  const updateFarmUI = () => {
+    const now = Date.now();
+    const duration = farm.durationMs || (8 * 3600 * 1000);
+    const elapsed = Math.max(0, now - (farm.startedAt || now));
+    const ratio = Math.min(1, elapsed / duration);
+    const maxReward = farm.totalFarmReward || 2400;
+    const currentFarmed = Math.min(maxReward, Math.floor(maxReward * ratio));
+    const remainingMs = Math.max(0, duration - elapsed);
+    const canClaim = elapsed >= duration;
+
+    const elAmount = document.getElementById('uiFarmLiveAmount');
+    const elFill = document.getElementById('uiFarmProgressFill');
+    const elTimer = document.getElementById('uiFarmTimerText');
+    const elRate = document.getElementById('uiFarmRateText');
+    const elBtn = document.getElementById('btnClaimFarm');
+    const elBtnLabel = document.getElementById('uiFarmBtnLabel');
+    const elDot = document.getElementById('uiDockFarmDot');
+
+    if (elAmount) elAmount.textContent = fmtInt(currentFarmed);
+    if (elFill) elFill.style.width = `${Math.min(100, Math.round(ratio * 100))}%`;
+    if (elRate) elRate.textContent = `⚡ ${farm.ratePerHour || 300} / soat`;
+
+    if (canClaim) {
+      if (elTimer) elTimer.textContent = '✨ Hosil yigʻishga tayyor!';
+      if (elBtn) {
+        elBtn.disabled = false;
+        elBtn.classList.add('ready-claim');
+      }
+      if (elBtnLabel) elBtnLabel.textContent = `🌾 Claim +${maxReward.toLocaleString()} $HOLD`;
+      if (elDot) elDot.hidden = false;
+    } else {
+      const h = String(Math.floor(remainingMs / 3600_000)).padStart(2, '0');
+      const m = String(Math.floor((remainingMs % 3600_000) / 60_000)).padStart(2, '0');
+      const s = String(Math.floor((remainingMs % 60_000) / 1000)).padStart(2, '0');
+      if (elTimer) elTimer.textContent = `⏳ ${h}:${m}:${s} qoldi`;
+      if (elBtn) {
+        elBtn.disabled = true;
+        elBtn.classList.remove('ready-claim');
+      }
+      if (elBtnLabel) elBtnLabel.textContent = `⏳ Farming in progress... (${h}:${m})`;
+      if (elDot) elDot.hidden = true;
+    }
+
+    // Referral kickback farm stats
+    const refEarnings = farm.refEarnings || 0;
+    const elRefAmount = document.getElementById('uiFarmRefAmount');
+    const elBtnRef = document.getElementById('btnClaimFarmRef');
+    if (elRefAmount) elRefAmount.textContent = `+${refEarnings.toLocaleString()} $HOLD`;
+    if (elBtnRef) elBtnRef.disabled = refEarnings <= 0;
+  };
+
+  updateFarmUI();
+  if (farmTickerInterval) clearInterval(farmTickerInterval);
+  farmTickerInterval = setInterval(updateFarmUI, 1000);
+}
+
+// ==================== PAWS-STYLE 5-SLIDE IDENTITY STORY ====================
+let fpCurrentSlide = 0;
+
+function openFootprintStoryModal() {
+  const u = STATE.user;
+  if (!u) return;
+
+  const fp = u.footprint || {
+    claimed: false,
+    tierName: 'Pioneer Genesis',
+    ageBonus: 25000,
+    nftCount: 2,
+    nftBonus: 30000,
+    communityBonus: 10000,
+    totalAirdrop: 65000,
+    paxtaId: u.paxtaId || 142
+  };
+
+  const slides = [
+    {
+      icon: '🆔',
+      title: 'PaxtaGram Tarixingiz',
+      sub: `Siz PaxtaGramga dastlabki toʻlqinda qoʻshilgansiz. Sizning ID raqamingiz: <b>#${fp.paxtaId || 999}</b>!`,
+      valLabel: 'Pioneer Maqomi',
+      val: `${fp.tierName} (+${fp.ageBonus.toLocaleString()} $HOLD)`
+    },
+    {
+      icon: '💎',
+      title: 'NFT & Nufuz Portfeli',
+      sub: `Profilingizdagi rasmiy Victory Medal va Desk Kalendarlar aniqlandi (${fp.nftCount} ta)!`,
+      valLabel: 'Kolleksiya Nufuzi',
+      val: `+${fp.nftBonus.toLocaleString()} $HOLD`
+    },
+    {
+      icon: '🐾',
+      title: 'Hamjamiyat Sodiqligi',
+      sub: `Siz shunchaki oʻyinchi emassiz. Siz $HOLD oilasining rasmiy va qadrli aʼzosisiz!`,
+      valLabel: 'Hamjamiyat Bonusi',
+      val: `+${fp.communityBonus.toLocaleString()} $HOLD`
+    },
+    {
+      icon: '🎯',
+      title: 'Shaffof Listing & Muddat',
+      sub: 'Hech qanday noaniqlik yoʻq! Listing sanasi va barcha mehnatlar mukofoti aniq belgilangan.',
+      valLabel: 'Rasmiy Listing Sanasi',
+      val: '15 · Dekabr · 2026'
+    },
+    {
+      icon: '🏆',
+      title: 'Kafolatlangan Airdrop',
+      sub: 'Barcha qadriyatlaringiz yigʻindisi boʻyicha sizga kafolatlangan ulush ajratildi:',
+      valLabel: 'Jami Kafolatlangan Ulush',
+      val: `+${fp.totalAirdrop.toLocaleString()} $HOLD`
+    }
+  ];
+
+  fpCurrentSlide = 0;
+  const modal = document.getElementById('footprintStoryModal');
+  if (!modal) return;
+  modal.hidden = false;
+
+  const renderCurrentSlide = () => {
+    // Fill story bars
+    for (let i = 0; i < 5; i++) {
+      const bar = document.getElementById(`fsmFill${i}`);
+      if (bar) {
+        bar.style.width = i < fpCurrentSlide ? '100%' : (i === fpCurrentSlide ? '100%' : '0%');
+      }
+    }
+
+    const slideData = slides[fpCurrentSlide];
+    const container = document.getElementById('fsmSlidesWrap');
+    if (container) {
+      container.innerHTML = `
+        <div class="fsm-slide">
+          <div class="fsm-slide-icon">${slideData.icon}</div>
+          <div class="fsm-slide-title">${slideData.title}</div>
+          <div class="fsm-slide-sub">${slideData.sub}</div>
+          <div class="fsm-stat-box">
+            <span class="fsm-stat-label">${slideData.valLabel}</span>
+            <span class="fsm-stat-val">${slideData.val}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    const nextBtn = document.getElementById('btnFootprintNext');
+    if (nextBtn) {
+      if (fpCurrentSlide < 4) {
+        nextBtn.textContent = 'Davom etish ➔';
+      } else {
+        if (!fp.claimed) {
+          nextBtn.textContent = `🎉 Airdropni Olish (+${fp.totalAirdrop.toLocaleString()} $HOLD)`;
+        } else {
+          nextBtn.textContent = '🚀 Natijani Telegramda Ulashish';
+        }
+      }
+    }
+  };
+
+  renderCurrentSlide();
+
+  const nextBtn = document.getElementById('btnFootprintNext');
+  if (nextBtn) {
+    nextBtn.onclick = async () => {
+      haptic('light');
+      if (fpCurrentSlide < 4) {
+        fpCurrentSlide++;
+        renderCurrentSlide();
+      } else {
+        if (!fp.claimed) {
+          const res = await api('/api/hold/footprint-claim', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username })
+          });
+          if (res.ok && res.user) {
+            STATE.user = res.user;
+            haptic('heavy');
+            renderAll();
+            showToast(res.message);
+            modal.hidden = true;
+          }
+        } else {
+          // Share footprint in Telegram
+          const shareText = `🐾 *$HOLD da mening PaxtaGram Raqamli Izim aniqlandi!*\n\nID: #${fp.paxtaId || 999}\nKafolatlangan Airdrop: +${fp.totalAirdrop.toLocaleString()} $HOLD\n\nO'zing ham tekshir: https://paxta.online/u/HOLDbot`;
+          try {
+            await navigator.clipboard.writeText(shareText);
+            showToast('Natijangiz nusxalandi! Doʻstlaringizga yuboring');
+          } catch {
+            showToast('Natijangiz saqlandi');
+          }
+          modal.hidden = true;
+        }
+      }
+    };
+  }
+
+  document.getElementById('btnCloseFootprintStory').onclick = () => { modal.hidden = true; };
+  document.getElementById('fsmBackdrop').onclick = () => { modal.hidden = true; };
+}
+
+// ==================== SOLAR ECLIPSE SECRET EASTER EGG ====================
+let eclipseCountdownTimer = null;
+
+function triggerSolarEclipseEasterEgg() {
+  haptic('heavy');
+  setTimeout(() => haptic('heavy'), 180);
+  setTimeout(() => haptic('heavy'), 360);
+
+  const coinBtn = document.getElementById('holdCoinBtn');
+  if (coinBtn) {
+    coinBtn.style.transition = 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+    coinBtn.style.transform = 'rotateY(180deg) scale(1.05)';
+  }
+
+  const modal = document.getElementById('eclipseSecretModal');
+  if (!modal) return;
+  modal.hidden = false;
+
+  const updateCountdown = () => {
+    // 15 December 2026, 00:00:00 UTC+5
+    const target = new Date('2026-12-15T00:00:00+05:00').getTime();
+    const diff = Math.max(0, target - Date.now());
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    const elD = document.getElementById('eclipseDays');
+    const elH = document.getElementById('eclipseHours');
+    const elM = document.getElementById('eclipseMinutes');
+    const elS = document.getElementById('eclipseSeconds');
+
+    if (elD) elD.textContent = String(days).padStart(2, '0');
+    if (elH) elH.textContent = String(hours).padStart(2, '0');
+    if (elM) elM.textContent = String(minutes).padStart(2, '0');
+    if (elS) elS.textContent = String(seconds).padStart(2, '0');
+  };
+
+  updateCountdown();
+  if (eclipseCountdownTimer) clearInterval(eclipseCountdownTimer);
+  eclipseCountdownTimer = setInterval(updateCountdown, 1000);
+
+  document.getElementById('btnShareEclipse').onclick = async () => {
+    const text = '🌑 *$HOLD ning maxfiy quyosh tutilishi (Solar Eclipse) kodini ochdim!* \n\n📅 Rasmiy listing: 15-Dekabr 2026.\nTangani 3 marta aylantirib o\'zing ham ko\'r: https://paxta.online/u/HOLDbot';
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Sirli xabar nusxalandi! Doʻstlaringizga yuboring');
+    } catch {
+      showToast('15-Dekabr 2026 — Rasmiy Listing!');
+    }
+  };
+
+  document.getElementById('btnCloseEclipse').onclick = () => {
+    modal.hidden = true;
+    if (eclipseCountdownTimer) clearInterval(eclipseCountdownTimer);
+    if (coinBtn) {
+      coinBtn.style.transition = 'transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+    }
+  };
+}
+
+
 // ==================== GLOBAL NATIVE SELECTION & CONTEXT MENU SUPPRESSION ====================
 // Completely disables "Copy", "Look up", "Share", and long-press callouts across the whole Mini App
 window.addEventListener('contextmenu', (e) => {
@@ -705,6 +985,19 @@ function renderAll() {
   // 2. Balance & Wreath Rank + League Row
   const balEl = document.getElementById('uiHoldBalance');
   if (balEl) balEl.textContent = fmtInt(u.holdBalance);
+
+  // Footprint status bar
+  const fpBadge = document.getElementById('uiFootprintBadge');
+  if (fpBadge && u.footprint) {
+    fpBadge.textContent = u.footprint.claimed ? 'Qadriyatingiz Tasdiqlangan ✓' : 'Airdrop Ulushingizni Biling ›';
+    fpBadge.style.color = u.footprint.claimed ? '#22c55e' : 'var(--theme-accent)';
+  }
+
+  // Live farm indicator dot on bottom dock
+  const dockFarmDot = document.getElementById('uiDockFarmDot');
+  if (dockFarmDot && u.farm) {
+    dockFarmDot.hidden = !u.farm.canClaim;
+  }
 
   const rankEl = document.getElementById('uiUserRankText');
   if (rankEl) rankEl.textContent = fmtOrdinal(u.rank || 1);

@@ -751,6 +751,13 @@ export function registerHoldEngine(app, deps) {
       u.lastBoostResetDay = today;
     }
 
+    // Initialize 8-Hour Farm and Footprint if missing
+    if (!u.farmStartedAt) u.farmStartedAt = now - 3600_000;
+    if (!u.farmDurationMs) u.farmDurationMs = 8 * 3600 * 1000;
+    if (!u.farmRatePerHour) u.farmRatePerHour = 300;
+    if (u.farmClaimedHold === undefined) u.farmClaimedHold = 0;
+    if (u.farmRefEarnings === undefined) u.farmRefEarnings = 0;
+
     // Regenerate energy
     const maxE = 1000 + (u.energyLevel || 1) * 500;
     u.maxEnergy = maxE;
@@ -807,6 +814,24 @@ export function registerHoldEngine(app, deps) {
     const yearsEquivalent = pid <= 200 ? 3 : pid <= 800 ? 2 : 1;
 
     const solvedToday = (u.morseSolvedDays || []).includes(today) && u.lastSolvedMorseWord === morseWord;
+
+    // 8-Hour Farming calculation
+    const farmDuration = u.farmDurationMs || (8 * 3600 * 1000);
+    const farmRate = u.farmRatePerHour || 300;
+    const farmRewardMax = Math.round((farmDuration / 3600_000) * farmRate);
+    const farmElapsed = Math.max(0, now - (u.farmStartedAt || (now - 3600_000)));
+    const farmRatio = Math.min(1, farmElapsed / farmDuration);
+    const currentFarmed = Math.min(farmRewardMax, Math.floor(farmRewardMax * farmRatio));
+    const farmRemainingMs = Math.max(0, farmDuration - farmElapsed);
+    const farmCanClaim = farmElapsed >= farmDuration;
+
+    // Footprint stats calculation
+    const fpAgeBonus = (pid <= 150 ? 25000 : pid <= 600 ? 15000 : pid <= 1500 ? 10000 : 5000);
+    const fpTierName = (pid <= 150 ? 'Pioneer Genesis' : pid <= 600 ? 'Early Pioneer' : pid <= 1500 ? 'Veteran Holder' : 'Verified Member');
+    const fpMedalsCount = Array.isArray(mainUser?.medals) ? mainUser.medals.length : (Array.isArray(u.claimedNfts) ? u.claimedNfts.length : 1);
+    const fpNftBonus = Math.min(45000, Math.max(15000, fpMedalsCount * 15000));
+    const fpCommunityBonus = 10000;
+    const fpTotalAirdrop = fpAgeBonus + fpNftBonus + fpCommunityBonus;
 
     // Streak calculation
     const streakClaimedToday = u.lastStreakDate === today;
@@ -901,7 +926,32 @@ export function registerHoldEngine(app, deps) {
       claimedNfts: u.claimedNfts || [],
       secretCodesClaimed: u.secretCodesClaimed || [],
       compassSolvedToday: (u.compassSolvedDays || []).includes(todayStr()),
-      turboActiveUntil: u.turboActiveUntil || 0
+      turboActiveUntil: u.turboActiveUntil || 0,
+      farm: {
+        startedAt: u.farmStartedAt || (now - 3600_000),
+        durationMs: farmDuration,
+        ratePerHour: farmRate,
+        totalFarmReward: farmRewardMax,
+        currentFarmed,
+        elapsedMs: farmElapsed,
+        remainingMs: farmRemainingMs,
+        canClaim: farmCanClaim,
+        claimedTotal: u.farmClaimedHold || 0,
+        refEarnings: u.farmRefEarnings || 0
+      },
+      footprint: {
+        claimed: !!u.footprintClaimed,
+        details: u.footprintDetails || null,
+        listingDate: '2026-12-15T00:00:00.000Z',
+        paxtaId: u.paxtaId,
+        tierName: fpTierName,
+        ageBonus: fpAgeBonus,
+        nftCount: fpMedalsCount,
+        nftBonus: fpNftBonus,
+        communityBonus: fpCommunityBonus,
+        totalAirdrop: fpTotalAirdrop
+      },
+      listingDate: '2026-12-15T00:00:00.000Z'
     };
   }
 
@@ -1122,6 +1172,112 @@ export function registerHoldEngine(app, deps) {
     res.json({
       ok: true,
       ogDetails: u.ogDetails,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 2B1. Claim 8-Hour Farm Yield ----
+  app.post('/api/hold/farm-claim', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const now = Date.now();
+    const duration = u.farmDurationMs || (8 * 3600 * 1000);
+    const ratePerHour = u.farmRatePerHour || 300;
+    const totalFarmReward = Math.round((duration / 3600_000) * ratePerHour);
+
+    const elapsed = Math.max(0, now - (u.farmStartedAt || (now - 3600_000)));
+    if (elapsed < duration) {
+      const remainingSec = Math.ceil((duration - elapsed) / 1000);
+      return res.status(400).json({
+        ok: false,
+        error: `Fermerlik hali to'lmadi. Qolgan vaqt: ${Math.floor(remainingSec / 60)} daqiqa`
+      });
+    }
+
+    // Award farmed HOLD
+    creditHold(u, st, totalFarmReward);
+    u.farmClaimedHold = (u.farmClaimedHold || 0) + totalFarmReward;
+    u.farmStartedAt = now; // Restart farming timer immediately!
+
+    // 10% referral kickback to inviter
+    if (u.referredBy && st.users[u.referredBy]) {
+      const inviter = st.users[u.referredBy];
+      const refShare = Math.floor(totalFarmReward * 0.10);
+      inviter.farmRefEarnings = (inviter.farmRefEarnings || 0) + refShare;
+    }
+
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      reward: totalFarmReward,
+      message: `🌾 +${totalFarmReward.toLocaleString()} $HOLD hosili yig'ib olindi!`,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 2B2. Claim Referral Farming Kickback ----
+  app.post('/api/hold/farm-claim-ref', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const refEarnings = u.farmRefEarnings || 0;
+    if (refEarnings <= 0) {
+      return res.status(400).json({ ok: false, error: 'Do\'stlar hosilidan ulush mavjud emas' });
+    }
+
+    creditHold(u, st, refEarnings);
+    u.farmRefEarnings = 0;
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      reward: refEarnings,
+      message: `🎉 Do'stlaringizdan +${refEarnings.toLocaleString()} $HOLD ulush olindi!`,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 2B3. Claim 5-Slide PAWS-Style Identity Footprint Airdrop ----
+  app.post('/api/hold/footprint-claim', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    if (u.footprintClaimed) {
+      return res.json({ ok: true, alreadyClaimed: true, user: formatHoldUserResponse(st, u, mainUser) });
+    }
+
+    const pid = Number(u.paxtaId) || 999;
+    let tierName = 'Verified Member';
+    let ageBonus = 5_000;
+    if (pid <= 150) {
+      tierName = 'Pioneer Genesis';
+      ageBonus = 25_000;
+    } else if (pid <= 600) {
+      tierName = 'Early Pioneer';
+      ageBonus = 15_000;
+    } else if (pid <= 1500) {
+      tierName = 'Veteran Holder';
+      ageBonus = 10_000;
+    }
+
+    const medalsCount = Array.isArray(mainUser?.medals) ? mainUser.medals.length : (Array.isArray(u.claimedNfts) ? u.claimedNfts.length : 1);
+    const nftBonus = Math.min(45_000, Math.max(15_000, medalsCount * 15_000));
+    const communityBonus = 10_000;
+    const totalAirdrop = ageBonus + nftBonus + communityBonus;
+
+    u.footprintClaimed = true;
+    u.footprintDetails = {
+      paxtaId: pid,
+      tierName,
+      ageBonus,
+      nftBonus,
+      communityBonus,
+      totalAirdrop,
+      claimedAt: new Date().toISOString()
+    };
+    creditHold(u, st, totalAirdrop);
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      message: `🎉 +${totalAirdrop.toLocaleString()} $HOLD qadriyat bonusi berildi!`,
+      footprintDetails: u.footprintDetails,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
