@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=21" />
+  <link rel="stylesheet" href="/hold/style.css?v=22" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -48,29 +48,23 @@
 
     <!-- ==================== MAIN ARENA (EXACT SCREENSHOT 3 TOP & DOCK) ==================== -->
     <section class="hold-view" id="viewArena">
-      <!-- 1. Top Squad Bar (Exact Screenshot 3: "Join Squad >" or Joined Squad Pill) -->
+      <!-- 1. Top Bar: Twin Luxury Pills (Squad + Footprint Map) -->
       <div class="arena-top-bar">
         <button type="button" class="not-squad-top-pill" id="btnSquadPill"></button>
+
+        <button type="button" class="not-footprint-top-pill" id="btnOpenFootprint" aria-label="Footprint Map">
+          <div class="nftp-left">
+            <span class="nftp-indicator"></span>
+            <span class="nftp-title">Footprint</span>
+            <span class="nftp-claimed-tag" id="uiFootprintBadge" hidden>✓</span>
+          </div>
+          <span class="nftp-arrow">➔</span>
+        </button>
 
         <button type="button" class="admin-floating-gear" id="btnOpenAdminModal" hidden aria-label="Admin Studio">
           ⚙️
         </button>
       </div>
-
-      <!-- PAWS-Style Footprint Map Bar (Exact 1:1 match with PAWS) -->
-      <button type="button" class="paws-footprint-bar" id="btnOpenFootprint">
-        <div class="pfb-left">
-          <span class="pfb-indicator"></span>
-          <span class="pfb-title">Check the footprint map</span>
-          <span class="pfb-claimed-tag" id="uiFootprintBadge" hidden>✓ Claimed</span>
-        </div>
-        <div class="pfb-arrow-pill">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </div>
-      </button>
 
       <!-- 2. Center Balance & Rank + League Row (Exact Screenshot 3: 🌿 21,384th 🌿 · 🏆 Bronze ›) -->
       <div class="arena-balance-block">
@@ -345,65 +339,75 @@
     <section class="apple-sheet" id="sheetFarm" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
-        <span class="sheet-nav-title">🌾 8-Hour Farm</span>
+        <span class="sheet-nav-title">Farm</span>
         <div style="width:52px;"></div>
       </div>
 
       <div class="sheet-content">
-        <!-- 1. Central 8-Hour Farm Capsule -->
-        <div class="farm-hero-capsule">
-          <div class="fhc-glow"></div>
-          <div class="fhc-top-tag">PASSIVE REWARDS</div>
-          <div class="fhc-amount-row">
-            <span class="fhc-num" id="uiFarmLiveAmount">0</span>
-            <span class="fhc-curr">$HOLD</span>
+        <!-- 1. Central Hero Card in standard dark panel -->
+        <div class="dark-group-box farm-hero-card">
+          <div class="fhc-coin-wrap">
+            <img src="/hold/skins/skin-4.png" alt="HOLD" class="fhc-coin-img" id="uiFarmHeroCoin" />
+            <div class="fhc-coin-glow"></div>
           </div>
-          <div class="fhc-progress-track">
-            <div class="fhc-progress-fill" id="uiFarmProgressFill" style="width:0%;"></div>
+          
+          <div class="farm-hero-amount-row">
+            <span class="farm-hero-num" id="uiFarmLiveAmount">0</span>
+            <span class="farm-hero-curr">$HOLD</span>
           </div>
-          <div class="fhc-meta-row">
-            <span class="fhc-time" id="uiFarmTimerText">⏳ 08:00:00 qoldi</span>
-            <span class="fhc-rate" id="uiFarmRateText">⚡ 300 / soat</span>
+
+          <div class="farm-hero-rate-pill">
+            <span>⚡</span>
+            <span class="rate-num" id="uiFarmRateText">300 / soat</span>
+            <span>·</span>
+            <span>Avtomatik Zaxira</span>
+          </div>
+
+          <div class="farm-progress-track">
+            <div class="farm-progress-fill" id="uiFarmProgressFill" style="width:0%;"></div>
+          </div>
+
+          <div class="farm-time-row">
+            <span id="uiFarmTimerText">⏳ 08:00:00 qoldi</span>
+            <span style="color:#facc15;font-weight:600;">8 Soatlik Maks</span>
           </div>
 
           <button type="button" class="farm-action-btn" id="btnClaimFarm" disabled>
-            <span id="uiFarmBtnLabel">⏳ Farming in progress...</span>
+            <span id="uiFarmBtnLabel">⏳ Fermerlik davom etmoqda...</span>
           </button>
         </div>
 
-        <!-- 2. Referral Kickback Farm Box -->
-        <div class="dark-group-box" style="padding:14px;gap:10px;">
-          <div class="section-flex-head">
-            <strong style="font-size:14px;color:#fff;">👥 Doʻstlaringiz Fermasi</strong>
-            <span class="badge-accent" style="padding:3px 8px;border-radius:8px;background:rgba(56,182,255,0.18);color:#38b6ff;font-size:11px;font-weight:700;">10% Ulush</span>
-          </div>
-          <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
-            Siz taklif qilgan doʻstlaringiz har safar oʻz hosilini yigʻib olganda, ularning ishlab topganidan <b>10% qoʻshimcha $HOLD</b> avtomatik sizga yigʻiladi!
-          </p>
-          <div class="farm-ref-stats-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 2px;">
-            <div>
-              <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;">Toʻplangan ulush</div>
-              <div style="font-size:18px;font-weight:700;color:#facc15;" id="uiFarmRefAmount">0 $HOLD</div>
+        <!-- 2. Referral Kickback Farm Box (Standard .dark-group-box) -->
+        <h3 class="not-section-heading">Doʻstlaringiz Fermasi</h3>
+        <div class="dark-group-box">
+          <div class="not-row-item" style="padding:12px 14px;">
+            <div class="nri-icon-box">👥</div>
+            <div class="nri-center">
+              <div class="nri-title">10% Doʻstlar Ulushi</div>
+              <div class="nri-sub">Doʻstlaringiz hosilidan avtomatik sizga qoʻshiladi</div>
             </div>
-            <button type="button" class="skin-pill-btn" id="btnClaimFarmRef" disabled style="padding:0 18px;">Yechib olish</button>
+            <div class="farm-ref-action-box">
+              <span class="farm-ref-val" id="uiFarmRefAmount">0 $HOLD</span>
+              <button type="button" class="skin-pill-btn" id="btnClaimFarmRef" disabled>Yechib olish</button>
+            </div>
           </div>
         </div>
 
-        <!-- 3. Farm Storage & Speed Info -->
-        <div class="dark-group-box" style="padding:14px;gap:12px;">
-          <strong style="font-size:13.5px;color:#fff;">💡 Fermerlik Qoidalari</strong>
-          <div class="not-row-item" style="padding:4px 0;">
+        <!-- 3. Farm Rules Box (Standard .dark-group-box) -->
+        <h3 class="not-section-heading">Fermerlik Qoidalari</h3>
+        <div class="dark-group-box">
+          <div class="not-row-item">
             <div class="nri-icon-box">⏳</div>
             <div class="nri-center">
               <div class="nri-title">8-Soatlik Avtomatik Zaxira</div>
-              <div class="nri-sub">Telefoningiz oʻchiq boʻlsa ham tangalar 8 soat davomida toʻxtamasdan toʻplanadi.</div>
+              <div class="nri-sub">Telefon oʻchiq boʻlsa ham tangalar 8 soat toʻxtovsiz yigʻiladi.</div>
             </div>
           </div>
-          <div class="not-row-item" style="padding:4px 0;">
-            <div class="nri-icon-box">⚡</div>
+          <div class="not-row-item">
+            <div class="nri-icon-box">🌾</div>
             <div class="nri-center">
-              <div class="nri-title">Har Kungi Barqaror Hosil</div>
-              <div class="nri-sub">Kuniga 3 marta kirib Claim qilish kifoya, ekranni tinimsiz bosish shart emas.</div>
+              <div class="nri-title">Charchatuvchi bosishlarsiz</div>
+              <div class="nri-sub">Kuniga 3 marta kirib Claim qilish kifoya, vaqtingiz tejaladi.</div>
             </div>
           </div>
         </div>
@@ -523,6 +527,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=21"></script>
+  <script src="/hold/app.js?v=22"></script>
 </body>
 </html>

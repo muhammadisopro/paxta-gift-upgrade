@@ -625,7 +625,7 @@ function applyActiveSkinTheme() {
     root.style.setProperty('--theme-bg-bottom', t.bgBottom);
   }
 
-  const coinIds = ['uiMainCoinImg', 'uiBalanceCoinIcon', 'uiDockCoinImg', 'uiBoostBalanceCoin'];
+  const coinIds = ['uiMainCoinImg', 'uiBalanceCoinIcon', 'uiDockCoinImg', 'uiBoostBalanceCoin', 'uiFarmHeroCoin'];
   for (const id of coinIds) {
     const el = document.getElementById(id);
     if (el && el.getAttribute('src') !== activeSkin.img) {
