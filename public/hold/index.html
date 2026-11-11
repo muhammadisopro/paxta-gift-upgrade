@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=24" />
+  <link rel="stylesheet" href="/hold/style.css?v=25" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -335,7 +335,7 @@
     </section>
 
 
-    <!-- ==================== SHEET 6: 8-HOUR PASSIVE FARMING ==================== -->
+    <!-- ==================== SHEET 6: 8-HOUR FARM ==================== -->
     <section class="apple-sheet" id="sheetFarm" hidden>
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
@@ -344,70 +344,70 @@
       </div>
 
       <div class="sheet-content">
-        <!-- 1. Central Hero Card in standard dark panel -->
-        <div class="dark-group-box farm-hero-card">
-          <div class="fhc-coin-wrap">
-            <img src="/hold/skins/skin-4.png" alt="HOLD" class="fhc-coin-img" id="uiFarmHeroCoin" />
-            <div class="fhc-coin-glow"></div>
+        <div class="boost-balance-header">
+          <span class="bb-label">Farmed so far</span>
+          <div class="bb-amount-row">
+            <img src="/hold/skins/skin-4.png" alt="" class="bb-coin-img" id="uiFarmHeroCoin" />
+            <strong id="uiFarmLiveAmount">0</strong>
           </div>
-          
-          <div class="farm-hero-amount-row">
-            <span class="farm-hero-num" id="uiFarmLiveAmount">0</span>
-            <span class="farm-hero-curr">$HOLD</span>
-          </div>
+          <span class="farm-sub-note">Auto-farm · har 8 soatda bir marta yigʻib oling</span>
+        </div>
 
-          <div class="farm-hero-rate-pill">
-            <span>⚡</span>
-            <span class="rate-num" id="uiFarmRateText">300 / soat</span>
-            <span>·</span>
-            <span>Avtomatik Zaxira</span>
+        <div class="free-boosters-grid">
+          <div class="free-booster-card">
+            <div class="fbc-meta">
+              <strong>Speed</strong>
+              <span id="uiFarmRateText">⚡ 300 / soat</span>
+            </div>
+            <span class="fbc-emoji">🌾</span>
           </div>
+          <div class="free-booster-card">
+            <div class="fbc-meta">
+              <strong>Time left</strong>
+              <span id="uiFarmTimerText">08:00:00</span>
+            </div>
+            <span class="fbc-emoji">🕒</span>
+          </div>
+        </div>
 
+        <div class="dark-group-box farm-progress-card">
           <div class="farm-progress-track">
             <div class="farm-progress-fill" id="uiFarmProgressFill" style="width:0%;"></div>
           </div>
-
-          <div class="farm-time-row">
-            <span id="uiFarmTimerText">⏳ 08:00:00 qoldi</span>
-            <span style="color:#facc15;font-weight:600;">8 Soatlik Maks</span>
-          </div>
-
           <button type="button" class="farm-action-btn" id="btnClaimFarm" disabled>
-            <span id="uiFarmBtnLabel">⏳ Fermerlik davom etmoqda...</span>
+            <span id="uiFarmBtnLabel">Farming...</span>
           </button>
         </div>
 
-        <!-- 2. Referral Kickback Farm Box (Standard .dark-group-box) -->
-        <h3 class="not-section-heading">Doʻstlaringiz Fermasi</h3>
+        <h3 class="not-section-heading">Friends farm</h3>
         <div class="dark-group-box">
-          <div class="not-row-item" style="padding:12px 14px;">
-            <div class="nri-icon-box">👥</div>
+          <div class="not-row-item">
+            <div class="nri-icon-box">🧸</div>
             <div class="nri-center">
-              <div class="nri-title">10% Doʻstlar Ulushi</div>
-              <div class="nri-sub">Doʻstlaringiz hosilidan avtomatik sizga qoʻshiladi</div>
+              <div class="nri-title">10% from frens</div>
+              <div class="nri-sub">Doʻstlaringiz hosilidan avtomatik qoʻshiladi</div>
             </div>
             <div class="farm-ref-action-box">
-              <span class="farm-ref-val" id="uiFarmRefAmount">0 $HOLD</span>
-              <button type="button" class="skin-pill-btn" id="btnClaimFarmRef" disabled>Yechib olish</button>
+              <span class="farm-ref-val" id="uiFarmRefAmount">0</span>
+              <button type="button" class="skin-pill-btn" id="btnClaimFarmRef" disabled>Claim</button>
             </div>
           </div>
         </div>
 
-        <!-- 3. Farm Rules Box (Standard .dark-group-box) -->
-        <h3 class="not-section-heading">Fermerlik Qoidalari</h3>
+        <h3 class="not-section-heading">How it works</h3>
         <div class="dark-group-box">
           <div class="not-row-item">
-            <div class="nri-icon-box">⏳</div>
+            <div class="nri-icon-box">🕒</div>
             <div class="nri-center">
-              <div class="nri-title">8-Soatlik Avtomatik Zaxira</div>
-              <div class="nri-sub">Telefon oʻchiq boʻlsa ham tangalar 8 soat toʻxtovsiz yigʻiladi.</div>
+              <div class="nri-title">8 soatlik zaxira</div>
+              <div class="nri-sub">Ilova yopiq boʻlsa ham hosil toʻxtamasdan yigʻiladi.</div>
             </div>
           </div>
           <div class="not-row-item">
             <div class="nri-icon-box">🌾</div>
             <div class="nri-center">
-              <div class="nri-title">Charchatuvchi bosishlarsiz</div>
-              <div class="nri-sub">Kuniga 3 marta kirib Claim qilish kifoya, vaqtingiz tejaladi.</div>
+              <div class="nri-title">Tinimsiz bosish shart emas</div>
+              <div class="nri-sub">Kuniga 3 marta kirib Claim qilish kifoya.</div>
             </div>
           </div>
         </div>
@@ -462,51 +462,38 @@
       </div>
     </div>
 
-    <!-- ==================== SOLAR ECLIPSE SECRET LISTING MODAL ==================== -->
+    <!-- ==================== THE DAY: MONOCHROME SOLAR ECLIPSE SECRET ==================== -->
     <div class="eclipse-secret-modal" id="eclipseSecretModal" hidden>
-      <div class="eclipse-overlay-bg"></div>
-      <div class="eclipse-sun-corona"></div>
-      
-      <div class="eclipse-card-content">
-        <div class="eclipse-eyebrow">✦ CLASSIFIED // THE SECRET REVEALED ✦</div>
-        <div class="eclipse-title">SOLAR ECLIPSE</div>
-        <div class="eclipse-sub">Siz $HOLD ning eng maxfiy kodini ochdingiz</div>
-        
-        <div class="eclipse-date-pill">
-          <span class="edp-icon">📅</span>
-          <span class="edp-text">OFFICIAL LISTING & TGE: <b>15 · DEKABR · 2026</b></span>
+      <div class="ecl-stars"></div>
+      <div class="ecl-grain"></div>
+      <div class="ecl-flash"></div>
+
+      <div class="ecl-stage">
+        <div class="ecl-orb">
+          <div class="ecl-corona"></div>
+          <div class="ecl-sun"></div>
+          <div class="ecl-moon"></div>
         </div>
 
-        <!-- Futuristic Countdown -->
-        <div class="eclipse-countdown-grid">
-          <div class="ecg-item">
-            <span class="ecg-num" id="eclipseDays">33</span>
-            <span class="ecg-label">Kun</span>
-          </div>
-          <div class="ecg-sep">:</div>
-          <div class="ecg-item">
-            <span class="ecg-num" id="eclipseHours">18</span>
-            <span class="ecg-label">Soat</span>
-          </div>
-          <div class="ecg-sep">:</div>
-          <div class="ecg-item">
-            <span class="ecg-num" id="eclipseMinutes">42</span>
-            <span class="ecg-label">Daqiqa</span>
-          </div>
-          <div class="ecg-sep">:</div>
-          <div class="ecg-item">
-            <span class="ecg-num" id="eclipseSeconds">15</span>
-            <span class="ecg-label">Soniya</span>
-          </div>
-        </div>
+        <div class="ecl-text">
+          <div class="ecl-eyebrow ecl-rv" style="--d:4.0s">FILE 001 &nbsp;/&nbsp; CLASSIFIED</div>
+          <div class="ecl-title ecl-rv" style="--d:4.15s">THE DAY</div>
+          <div class="ecl-date ecl-rv" id="eclipseDateText" style="--d:4.3s">?? · ?? · ????</div>
+          <div class="ecl-line ecl-rv" style="--d:5.6s"></div>
 
-        <div class="eclipse-quote">
-          "Haqiqiy narsalar shovqinsiz yaratiladi. Sabr qilganlar mukofotini oladi."
-        </div>
+          <div class="ecl-countdown ecl-rv" style="--d:5.8s">
+            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseDays">00</span><span class="ecl-cd-lab">DAYS</span></div>
+            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseHours">00</span><span class="ecl-cd-lab">HRS</span></div>
+            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseMinutes">00</span><span class="ecl-cd-lab">MIN</span></div>
+            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseSeconds">00</span><span class="ecl-cd-lab">SEC</span></div>
+          </div>
 
-        <div class="eclipse-actions">
-          <button type="button" class="btn-sapphire-primary" id="btnShareEclipse">🚀 Sirni Telegramda Ulashish</button>
-          <button type="button" class="bb-link-btn" id="btnCloseEclipse" style="margin-top:10px;color:rgba(255,255,255,0.65);width:100%;text-align:center;">Yopish</button>
+          <p class="ecl-quote ecl-rv" style="--d:6.4s">Haqiqiy narsalar shovqinsiz yaratiladi.<br/>Sabr qilganlar hammasini koʻradi.</p>
+
+          <div class="ecl-actions ecl-rv" style="--d:6.8s">
+            <button type="button" class="ecl-btn-solid" id="btnShareEclipse">Sirni ulashish</button>
+            <button type="button" class="ecl-btn-ghost" id="btnCloseEclipse">Yopish</button>
+          </div>
         </div>
       </div>
     </div>
@@ -527,6 +514,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=24"></script>
+  <script src="/hold/app.js?v=25"></script>
 </body>
 </html>

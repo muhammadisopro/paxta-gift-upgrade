@@ -1977,79 +1977,15 @@ body.turbo-active .coin-radial-glow {
   50% { transform: scale(1.25); opacity: 0.7; }
 }
 
-/* ==================== SHEET 6: REFINED 8-HOUR PASSIVE FARMING ==================== */
-.farm-hero-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 24px 16px 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.fhc-coin-wrap {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  margin-bottom: 12px;
-}
-
-.fhc-coin-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 20px var(--theme-glow-1));
-  animation: coinSubtleFloat 3s ease-in-out infinite alternate;
-}
-
-.fhc-coin-glow {
-  position: absolute;
-  inset: -15px;
-  background: radial-gradient(circle, var(--theme-glow-1) 0%, transparent 70%);
-  filter: blur(14px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.farm-hero-amount-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.farm-hero-num {
-  font-size: 40px;
-  font-weight: 800;
-  color: #ffffff;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -1px;
-}
-
-.farm-hero-curr {
-  font-size: 16px;
-  font-weight: 700;
-  color: #facc15;
-}
-
-.farm-hero-rate-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/* ==================== SHEET 6: FARM (matches Boosts sheet) ==================== */
+.farm-sub-note {
   font-size: 12.5px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.72);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 4px 12px;
-  margin-bottom: 18px;
+  color: var(--text-2);
 }
 
-.farm-hero-rate-pill span.rate-num {
-  color: #facc15;
+.farm-progress-card {
+  padding: 14px !important;
+  gap: 12px !important;
 }
 
 .farm-progress-track {
@@ -2058,59 +1994,50 @@ body.turbo-active .coin-radial-glow {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 99px;
   overflow: hidden;
-  margin-bottom: 10px;
 }
 
 .farm-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--theme-secondary) 0%, var(--theme-accent) 100%);
+  background: linear-gradient(90deg, var(--theme-secondary), var(--theme-accent));
   border-radius: 99px;
-  transition: width 0.3s ease;
-  box-shadow: 0 0 10px var(--theme-accent);
-}
-
-.farm-time-row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12.5px;
-  color: var(--text-2);
-  margin-bottom: 16px;
+  transition: width 0.4s ease;
 }
 
 .farm-action-btn {
   width: 100%;
   padding: 14px 16px;
   border-radius: 14px;
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 700;
   border: none;
-  cursor: pointer;
+  cursor: default;
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.45);
-  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.5);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .farm-action-btn.ready-claim {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, var(--theme-accent), var(--theme-secondary));
   color: #ffffff;
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-  animation: claimPulse 1.8s infinite;
   cursor: pointer;
+  animation: claimPulse 1.8s ease-in-out infinite;
+}
+
+.farm-action-btn.ready-claim:active {
+  transform: scale(0.97);
 }
 
 .farm-ref-action-box {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .farm-ref-val {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #facc15;
+  color: #ffffff;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2257,7 +2184,7 @@ body.turbo-active .coin-radial-glow {
   color: #facc15;
 }
 
-/* ==================== SOLAR ECLIPSE SECRET LISTING MODAL ==================== */
+/* ==================== THE DAY: MONOCHROME SOLAR ECLIPSE ==================== */
 .eclipse-secret-modal {
   position: fixed;
   inset: 0;
@@ -2265,130 +2192,239 @@ body.turbo-active .coin-radial-glow {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  background: #000000;
+  background: #000;
+  overflow: hidden;
+  opacity: 0;
+  animation: eclFadeIn 1.2s ease 0.45s forwards;
 }
 
-.eclipse-secret-modal[hidden] {
-  display: none;
-}
+.eclipse-secret-modal[hidden] { display: none !important; }
 
-.eclipse-overlay-bg {
+@keyframes eclFadeIn { to { opacity: 1; } }
+
+.ecl-stars {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, #050b18 0%, #000000 80%);
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 28% 72%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 47% 9%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 33%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 81% 81%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 14%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 8% 88%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 72% 58%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 37% 46%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 92%, #fff 50%, transparent 51%);
+  opacity: 0.55;
+  animation: eclTwinkle 4s ease-in-out infinite alternate;
 }
 
-.eclipse-sun-corona {
+@keyframes eclTwinkle { 0% { opacity: 0.25; } 100% { opacity: 0.7; } }
+
+.ecl-grain {
   position: absolute;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: #000000;
-  box-shadow:
-    0 0 60px rgba(250, 204, 21, 0.45),
-    0 0 120px rgba(56, 182, 255, 0.35),
-    inset 0 0 40px rgba(250, 204, 21, 0.2);
-  border: 2px solid rgba(250, 204, 21, 0.6);
-  animation: eclipseCoronaPulse 3s ease-in-out infinite alternate;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px);
+  mix-blend-mode: screen;
 }
 
-@keyframes eclipseCoronaPulse {
-  0% { transform: scale(0.96); box-shadow: 0 0 50px rgba(250, 204, 21, 0.4), 0 0 100px rgba(56, 182, 255, 0.25); }
-  100% { transform: scale(1.06); box-shadow: 0 0 80px rgba(250, 204, 21, 0.65), 0 0 160px rgba(56, 182, 255, 0.45); }
+.ecl-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: eclFlash 1.5s ease 3.4s forwards;
+  z-index: 5;
 }
 
-.eclipse-card-content {
+@keyframes eclFlash {
+  0% { opacity: 0; }
+  10% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+.ecl-stage {
   position: relative;
   z-index: 2;
+  width: 100%;
+  max-width: 400px;
+  padding: 18px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 380px;
-  padding: 20px;
+  gap: 18px;
 }
 
-.eclipse-eyebrow {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: #facc15;
-  margin-bottom: 6px;
+.ecl-orb {
+  position: relative;
+  width: min(46vw, 180px);
+  aspect-ratio: 1;
+  flex-shrink: 0;
 }
 
-.eclipse-title {
-  font-size: 32px;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-  text-shadow: 0 0 25px rgba(250, 204, 21, 0.5);
+.ecl-sun {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 70px 18px rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  animation: eclSunIn 1.1s ease 0.6s forwards;
 }
 
-.eclipse-sub {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
-  margin-bottom: 22px;
+@keyframes eclSunIn { to { opacity: 1; } }
+
+.ecl-moon {
+  position: absolute;
+  inset: 3%;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 22px 6px #000;
+  transform: translateX(-150%);
+  animation: eclMoon 2.4s cubic-bezier(0.6, 0, 0.25, 1) 1.1s forwards;
 }
 
-.eclipse-date-pill {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 99px;
-  padding: 8px 16px;
-  font-size: 13px;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
+@keyframes eclMoon { to { transform: translateX(0); } }
+
+.ecl-corona {
+  position: absolute;
+  inset: -70%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255,255,255,0.55) 0 0.8deg, transparent 0.8deg 6deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 20%, #000 27%, transparent 62%);
+  mask-image: radial-gradient(circle, transparent 20%, #000 27%, transparent 62%);
+  opacity: 0;
+  animation: eclCorona 1.6s ease 3.5s forwards, eclSpin 60s linear 3.5s infinite;
 }
 
-.eclipse-countdown-grid {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 22px;
+@keyframes eclCorona { to { opacity: 0.9; } }
+@keyframes eclSpin { to { transform: rotate(360deg); } }
+
+.ecl-rv {
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(6px);
+  animation: eclReveal 1s ease var(--d, 4s) forwards;
 }
 
-.ecg-item {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
-  padding: 10px 12px;
-  min-width: 58px;
+@keyframes eclReveal {
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.ecl-text {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
-.ecg-num {
+.ecl-eyebrow {
+  font-size: 10.5px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+}
+
+.ecl-title {
+  font-size: 13px;
+  letter-spacing: 8px;
+  color: #fff;
+  font-weight: 300;
+  margin-top: 4px;
+}
+
+.ecl-date {
+  font-size: clamp(28px, 9vw, 40px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 28px rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+.ecl-line {
+  width: 64px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+  margin: 6px 0;
+}
+
+.ecl-countdown {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.ecl-cd {
+  flex: 1;
+  max-width: 78px;
+  padding: 10px 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ecl-cd-num {
   font-size: 26px;
-  font-weight: 900;
-  color: #38b6ff;
+  font-weight: 700;
+  color: #fff;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
-.ecg-label {
-  font-size: 10.5px;
-  color: var(--text-3);
-  text-transform: uppercase;
+.ecl-cd-lab {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ecl-quote {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
   margin-top: 4px;
 }
 
-.ecg-sep {
-  font-size: 22px;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.4);
+.ecl-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
 }
 
-.eclipse-quote {
-  font-size: 12.5px;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.45;
-  margin-bottom: 22px;
+.ecl-btn-solid {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ecl-btn-solid:active { transform: scale(0.97); }
+
+.ecl-btn-ghost {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13.5px;
+  cursor: pointer;
 }

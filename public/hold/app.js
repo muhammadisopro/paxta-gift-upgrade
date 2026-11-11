@@ -264,68 +264,83 @@ function openFootprintStoryModal() {
 let eclipseCountdownTimer = null;
 
 function triggerSolarEclipseEasterEgg() {
-  haptic('heavy');
-  setTimeout(() => haptic('heavy'), 180);
-  setTimeout(() => haptic('heavy'), 360);
-
+  const modal = document.getElementById('eclipseSecretModal');
+  if (!modal) return;
   const coinBtn = document.getElementById('holdCoinBtn');
+
+  haptic('heavy');
   if (coinBtn) {
-    coinBtn.style.transition = 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+    coinBtn.style.transition = 'transform 1.4s cubic-bezier(0.16, 1, 0.3, 1)';
     coinBtn.style.transform = 'rotateY(180deg) scale(1.05)';
   }
 
-  const modal = document.getElementById('eclipseSecretModal');
-  if (!modal) return;
+  const timers = [];
+  const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
+  later(() => haptic('light'), 700);
+  later(() => haptic('medium'), 1900);
+  later(() => haptic('heavy'), 3500);
+  later(() => haptic('heavy'), 3750);
+
+  const dateEl = document.getElementById('eclipseDateText');
+  const finalText = '15 \u00b7 12 \u00b7 2026';
+  if (dateEl) dateEl.textContent = '?? \u00b7 ?? \u00b7 ????';
+  later(() => {
+    const t0 = Date.now();
+    const iv = setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / 1500);
+      let out = '';
+      for (let i = 0; i < finalText.length; i++) {
+        const ch = finalText[i];
+        if (!/\d/.test(ch)) { out += ch; continue; }
+        out += (i / finalText.length < p) ? ch : String(Math.floor(Math.random() * 10));
+      }
+      if (dateEl) dateEl.textContent = out;
+      if (p >= 1) clearInterval(iv);
+    }, 50);
+    timers.push(iv);
+  }, 4300);
+
   modal.hidden = false;
 
   const updateCountdown = () => {
-    // 15 December 2026, 00:00:00 UTC+5
     const target = new Date('2026-12-15T00:00:00+05:00').getTime();
     const diff = Math.max(0, target - Date.now());
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff / 3600000) % 24);
+    const minutes = Math.floor((diff / 60000) % 60);
     const seconds = Math.floor((diff / 1000) % 60);
-
-    const elD = document.getElementById('eclipseDays');
-    const elH = document.getElementById('eclipseHours');
-    const elM = document.getElementById('eclipseMinutes');
-    const elS = document.getElementById('eclipseSeconds');
-
-    if (elD) elD.textContent = String(days).padStart(2, '0');
-    if (elH) elH.textContent = String(hours).padStart(2, '0');
-    if (elM) elM.textContent = String(minutes).padStart(2, '0');
-    if (elS) elS.textContent = String(seconds).padStart(2, '0');
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v).padStart(2, '0'); };
+    set('eclipseDays', days);
+    set('eclipseHours', hours);
+    set('eclipseMinutes', minutes);
+    set('eclipseSeconds', seconds);
   };
-
   updateCountdown();
   if (eclipseCountdownTimer) clearInterval(eclipseCountdownTimer);
   eclipseCountdownTimer = setInterval(updateCountdown, 1000);
 
-  document.getElementById('btnShareEclipse').onclick = async () => {
-    const text = '🌑 *$HOLD ning maxfiy quyosh tutilishi (Solar Eclipse) kodini ochdim!* \n\n📅 Rasmiy listing: 15-Dekabr 2026.\nTangani 3 marta aylantirib o\'zing ham ko\'r: https://paxta.online/u/HOLDbot';
+  const shareBtn = document.getElementById('btnShareEclipse');
+  if (shareBtn) shareBtn.onclick = async () => {
+    const text = 'THE DAY: 15.12.2026. Tangani chetidan 3 marta aylantirib, sirni oching: https://paxta.online/u/HOLDbot';
     try {
       await navigator.clipboard.writeText(text);
-      showToast('Sirli xabar nusxalandi! Doʻstlaringizga yuboring');
+      showToast('Sir nusxalandi. Doʻstlaringizga yuboring');
     } catch {
-      showToast('15-Dekabr 2026 — Rasmiy Listing!');
+      showToast('15.12.2026');
     }
   };
 
   const closeEclipseModal = () => {
     modal.hidden = true;
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); });
     if (eclipseCountdownTimer) clearInterval(eclipseCountdownTimer);
     if (coinBtn) {
       coinBtn.style.transition = 'transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1)';
       coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
     }
   };
-
   const btnClose = document.getElementById('btnCloseEclipse');
   if (btnClose) btnClose.onclick = closeEclipseModal;
-  const overlayBg = modal.querySelector('.eclipse-overlay-bg');
-  if (overlayBg) overlayBg.onclick = closeEclipseModal;
 }
 
 
