@@ -1866,27 +1866,27 @@ body.turbo-active .coin-radial-glow {
 }
 
 
-/* ==================== PAWS FOOTPRINT TOP BAR ==================== */
+/* ==================== PAWS FOOTPRINT TOP BAR (EXACT 1:1) ==================== */
 .paws-footprint-bar {
   width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 14px;
-  padding: 8px 14px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 4px;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.18s ease;
+  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
 }
 
 .paws-footprint-bar:active {
-  transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.14);
+  transform: scale(0.985);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .pfb-left {
@@ -1895,40 +1895,50 @@ body.turbo-active .coin-radial-glow {
   gap: 10px;
 }
 
-.pfb-paw {
-  font-size: 19px;
-  line-height: 1;
-}
-
-.pfb-info {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  line-height: 1.22;
+.pfb-indicator {
+  width: 3px;
+  height: 18px;
+  background: #2f8af5;
+  border-radius: 3px;
+  display: inline-block;
+  box-shadow: 0 0 10px rgba(47, 138, 245, 0.6);
 }
 
 .pfb-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.1px;
-}
-
-.pfb-sub {
-  font-size: 11px;
-  color: var(--theme-accent);
-  font-weight: 500;
-}
-
-.pfb-arrow {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
-  transition: transform 0.15s ease;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.2px;
 }
 
-.paws-footprint-bar:hover .pfb-arrow {
-  transform: translateX(2px);
+.pfb-claimed-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 10px;
+  padding: 1px 7px;
+  margin-left: 6px;
+}
+
+.pfb-arrow-pill {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #2f8af5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(47, 138, 245, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.paws-footprint-bar:hover .pfb-arrow-pill {
+  transform: translateX(2px) scale(1.05);
+  background: #3b97ff;
 }
 
 /* 4-Item Glass Dock Badge */

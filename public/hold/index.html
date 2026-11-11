@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=19" />
+  <link rel="stylesheet" href="/hold/style.css?v=20" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -57,16 +57,19 @@
         </button>
       </div>
 
-      <!-- PAWS-Style Footprint Map Bar -->
+      <!-- PAWS-Style Footprint Map Bar (Exact 1:1 match with PAWS) -->
       <button type="button" class="paws-footprint-bar" id="btnOpenFootprint">
         <div class="pfb-left">
-          <span class="pfb-paw">🐾</span>
-          <div class="pfb-info">
-            <span class="pfb-title">Check the footprint map</span>
-            <span class="pfb-sub" id="uiFootprintBadge">Qadriyatingiz & Airdrop Ulushi ›</span>
-          </div>
+          <span class="pfb-indicator"></span>
+          <span class="pfb-title">Check the footprint map</span>
+          <span class="pfb-claimed-tag" id="uiFootprintBadge" hidden>✓ Claimed</span>
         </div>
-        <span class="pfb-arrow">➔</span>
+        <div class="pfb-arrow-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
       </button>
 
       <!-- 2. Center Balance & Rank + League Row (Exact Screenshot 3: 🌿 21,384th 🌿 · 🏆 Bronze ›) -->
@@ -520,6 +523,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=19"></script>
+  <script src="/hold/app.js?v=20"></script>
 </body>
 </html>

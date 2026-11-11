@@ -787,6 +787,7 @@ export function registerHoldEngine(app, deps) {
   }
 
   function formatHoldUserResponse(st, u, mainUser, passiveEarned = 0) {
+    const now = Date.now();
     const today = todayStr();
     const yesterday = yesterdayStr();
     const league = getLeagueForHold(u.lifetimeHold || 0);

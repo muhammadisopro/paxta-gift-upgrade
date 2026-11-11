@@ -989,8 +989,7 @@ function renderAll() {
   // Footprint status bar
   const fpBadge = document.getElementById('uiFootprintBadge');
   if (fpBadge && u.footprint) {
-    fpBadge.textContent = u.footprint.claimed ? 'Qadriyatingiz Tasdiqlangan ✓' : 'Airdrop Ulushingizni Biling ›';
-    fpBadge.style.color = u.footprint.claimed ? '#22c55e' : 'var(--theme-accent)';
+    fpBadge.hidden = !u.footprint.claimed;
   }
 
   // Live farm indicator dot on bottom dock
