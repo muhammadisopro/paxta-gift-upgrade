@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=17" />
+  <link rel="stylesheet" href="/hold/style.css?v=18" />
 </head>
-<body>
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
 
     <!-- ==================== OFFICIAL PAXTAGRAM LOGIN OVERLAY (WHEN OPENED OUTSIDE WEBAPP) ==================== -->
@@ -80,12 +80,12 @@
       </div>
 
       <!-- 3. Enlarged Center 3D Coin + Pure Mid-Air Floating Morse Letters -->
-      <div class="arena-coin-stage" id="coinStage">
+      <div class="arena-coin-stage" id="coinStage" oncontextmenu="return false;" onselectstart="return false;">
         <!-- Pure Mid-Air Floating Letters (Only appears in mid-air when 1st Morse letter is solved!) -->
         <div class="floating-midair-morse" id="floatingMidAirMorse" aria-hidden="true"></div>
 
         <div class="coin-radial-glow" id="coinRadialGlow"></div>
-        <button type="button" class="official-coin-btn" id="holdCoinBtn" aria-label="HOLD">
+        <button type="button" class="official-coin-btn" id="holdCoinBtn" aria-label="HOLD" oncontextmenu="return false;" onselectstart="return false;">
           <img src="/hold/skins/skin-4.png" alt="HOLD Coin" class="official-coin-img" id="uiMainCoinImg" draggable="false" />
         </button>
       </div>
@@ -357,6 +357,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=17"></script>
+  <script src="/hold/app.js?v=18"></script>
 </body>
 </html>

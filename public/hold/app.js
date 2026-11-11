@@ -1,3 +1,31 @@
+
+// ==================== GLOBAL NATIVE SELECTION & CONTEXT MENU SUPPRESSION ====================
+// Completely disables "Copy", "Look up", "Share", and long-press callouts across the whole Mini App
+window.addEventListener('contextmenu', (e) => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+}, { capture: true, passive: false });
+
+document.addEventListener('contextmenu', (e) => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+}, { capture: true, passive: false });
+
+document.addEventListener('selectstart', (e) => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  e.preventDefault();
+  return false;
+}, { capture: true, passive: false });
+
+document.addEventListener('dragstart', (e) => {
+  e.preventDefault();
+  return false;
+}, { capture: true, passive: false });
+
 // ============================================================================
 // HOLD — Official Web3 Mini App (3D Trophies, Mid-Air Morse, Onboarding, Admin)
 // ============================================================================
@@ -2420,10 +2448,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Main 3D Coin Pointer Events (100% Reliable Tap + Hold Dash Morse!)
   const coinBtn = document.getElementById('holdCoinBtn');
   if (coinBtn) {
-    coinBtn.addEventListener('contextmenu', (e) => e.preventDefault());
-    coinBtn.addEventListener('dragstart', (e) => e.preventDefault());
+    coinBtn.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); return false; }, { capture: true });
+    coinBtn.addEventListener('dragstart', (e) => { e.preventDefault(); return false; });
+    coinBtn.addEventListener('selectstart', (e) => { e.preventDefault(); return false; });
 
     coinBtn.addEventListener('pointerdown', (e) => {
+      if (e.cancelable) e.preventDefault();
       try {
         coinBtn.setPointerCapture(e.pointerId);
       } catch {}
