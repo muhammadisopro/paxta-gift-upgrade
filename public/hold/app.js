@@ -161,16 +161,16 @@ function openFootprintStoryModal() {
     },
     {
       icon: '🎯',
-      title: 'Shaffof Listing & Muddat',
-      sub: 'Hech qanday noaniqlik yoʻq! Listing sanasi va barcha mehnatlar mukofoti aniq belgilangan.',
+      title: 'The Final & Listing Sanasi',
+      sub: 'Hech qanday noaniqlik yoʻq! Listing sanasi va mehnatlar mukofoti aniq belgilangan.',
       valLabel: 'Rasmiy Listing Sanasi',
       val: '15 · Dekabr · 2026'
     },
     {
-      icon: '🏆',
-      title: 'Kafolatlangan Airdrop',
-      sub: 'Barcha qadriyatlaringiz yigʻindisi boʻyicha sizga kafolatlangan ulush ajratildi:',
-      valLabel: 'Jami Kafolatlangan Ulush',
+      icon: '🎁',
+      title: 'The Final Sovgʻasi',
+      sub: 'Barcha mehnatingiz va sodiqligingiz uchun rasmiy final sovgʻangiz taqdim etiladi:',
+      valLabel: 'Final Sovgʻa Ulushi',
       val: `+${fp.totalAirdrop.toLocaleString()} $HOLD`
     }
   ];
@@ -211,7 +211,7 @@ function openFootprintStoryModal() {
         nextBtn.textContent = 'Davom etish ➔';
       } else {
         if (!fp.claimed) {
-          nextBtn.textContent = `🎉 Airdropni Olish (+${fp.totalAirdrop.toLocaleString()} $HOLD)`;
+          nextBtn.textContent = `🎁 Final Sovgʻasini Olish (+${fp.totalAirdrop.toLocaleString()} $HOLD)`;
         } else {
           nextBtn.textContent = '🚀 Natijani Telegramda Ulashish';
         }
@@ -1043,7 +1043,9 @@ function renderAll() {
   const balEl = document.getElementById('uiHoldBalance');
   if (balEl) balEl.textContent = fmtInt(u.holdBalance);
 
-  // Footprint status bar
+  // The Final (Footprint disabled for now, saved for the finale)
+  const fpBtn = document.getElementById('btnOpenFootprint');
+  if (fpBtn) fpBtn.hidden = true;
   const fpBadge = document.getElementById('uiFootprintBadge');
   if (fpBadge && u.footprint) {
     fpBadge.hidden = !u.footprint.claimed;

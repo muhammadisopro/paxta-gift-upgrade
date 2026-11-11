@@ -311,6 +311,10 @@ body.sheet-open #viewArena {
   min-width: 0;
 }
 
+.not-footprint-top-pill[hidden] {
+  display: none !important;
+}
+
 .not-footprint-top-pill:active {
   transform: scale(0.98);
 }

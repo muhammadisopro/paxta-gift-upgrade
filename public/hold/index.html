@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=23" />
+  <link rel="stylesheet" href="/hold/style.css?v=24" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -48,14 +48,14 @@
 
     <!-- ==================== MAIN ARENA (EXACT SCREENSHOT 3 TOP & DOCK) ==================== -->
     <section class="hold-view" id="viewArena">
-      <!-- 1. Top Bar: Twin Luxury Pills (Squad + Footprint Map) -->
+      <!-- 1. Top Bar: Squad Pill (Footprint disabled for now, renamed to 'The Final' for the finale) -->
       <div class="arena-top-bar">
         <button type="button" class="not-squad-top-pill" id="btnSquadPill"></button>
 
-        <button type="button" class="not-footprint-top-pill" id="btnOpenFootprint" aria-label="Footprint Map">
+        <button type="button" class="not-footprint-top-pill" id="btnOpenFootprint" hidden aria-label="The Final">
           <div class="nftp-left">
-            <span class="nftp-indicator"></span>
-            <span class="nftp-title">Footprint</span>
+            <span class="nftp-indicator" style="background:#facc15;"></span>
+            <span class="nftp-title">The Final 🎁</span>
             <span class="nftp-claimed-tag" id="uiFootprintBadge" hidden>✓</span>
           </div>
           <span class="nftp-arrow">➔</span>
@@ -527,6 +527,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=23"></script>
+  <script src="/hold/app.js?v=24"></script>
 </body>
 </html>
