@@ -74,13 +74,58 @@ function renderFarmSheet() {
   farmTickerInterval = setInterval(updateFarmUI, 1000);
 }
 
+async function claimFarmYield() {
+  const btn = document.getElementById('btnClaimFarm');
+  if (btn) btn.disabled = true;
+  haptic('medium');
+  try {
+    const res = await api('/api/hold/farm-claim', {
+      method: 'POST',
+      body: JSON.stringify({ username: STATE.username })
+    });
+    if (res.ok && res.user) {
+      STATE.user = res.user;
+      haptic('heavy');
+      renderAll();
+      renderFarmSheet();
+      showToast(res.message || 'Hosil muvaffaqiyatli olindi!');
+    } else {
+      showToast(res?.error || 'Hosil hali toʻlmadi');
+      renderFarmSheet();
+    }
+  } catch (err) {
+    showToast('Tarmoqda xatolik yuz berdi');
+  }
+}
+
+async function claimFarmRefYield() {
+  const btn = document.getElementById('btnClaimFarmRef');
+  if (btn) btn.disabled = true;
+  haptic('medium');
+  try {
+    const res = await api('/api/hold/farm-claim-ref', {
+      method: 'POST',
+      body: JSON.stringify({ username: STATE.username })
+    });
+    if (res.ok && res.user) {
+      STATE.user = res.user;
+      haptic('heavy');
+      renderAll();
+      renderFarmSheet();
+      showToast(res.message || 'Ulush olindi!');
+    } else {
+      showToast(res?.error || 'Ulush mavjud emas');
+    }
+  } catch (err) {
+    showToast('Tarmoqda xatolik yuz berdi');
+  }
+}
+
 // ==================== PAWS-STYLE 5-SLIDE IDENTITY STORY ====================
 let fpCurrentSlide = 0;
 
 function openFootprintStoryModal() {
-  const u = STATE.user;
-  if (!u) return;
-
+  const u = STATE.user || {};
   const fp = u.footprint || {
     claimed: false,
     tierName: 'Pioneer Genesis',
@@ -498,7 +543,8 @@ function openSheet(sheetName) {
     earn: 'sheetEarn',
     boosts: 'sheetBoosts',
     leagues: 'sheetLeagues',
-    admin: 'sheetAdmin'
+    admin: 'sheetAdmin',
+    farm: 'sheetFarm'
   };
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
   const targetId = map[sheetName];
@@ -508,7 +554,9 @@ function openSheet(sheetName) {
       el.hidden = false;
       document.body.classList.add('sheet-open');
     }
-    if (sheetName === 'leagues') {
+    if (sheetName === 'farm') {
+      renderFarmSheet();
+    } else if (sheetName === 'leagues') {
       const leagues = STATE.user?.allLeagues || [];
       const curIdx = leagues.findIndex(l => l.id === STATE.user?.league?.id);
       if (curIdx >= 0) STATE.viewedLeagueIdx = curIdx;
@@ -521,6 +569,10 @@ function openSheet(sheetName) {
 }
 
 function closeAllSheets() {
+  if (farmTickerInterval) {
+    clearInterval(farmTickerInterval);
+    farmTickerInterval = null;
+  }
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
   document.body.classList.remove('sheet-open');
 }
@@ -2629,6 +2681,27 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnReplayOnboarding')?.addEventListener('click', () => {
     closeAllSheets();
     openOnboardingStory(0);
+  });
+
+  // PAWS Footprint Bar & Farm Triggers
+  document.getElementById('btnOpenFootprint')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    haptic('light');
+    openFootprintStoryModal();
+  });
+  document.getElementById('btnDockFarm')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openSheet('farm');
+  });
+  document.getElementById('btnClaimFarm')?.addEventListener('click', claimFarmYield);
+  document.getElementById('btnClaimFarmRef')?.addEventListener('click', claimFarmRefYield);
+  document.getElementById('btnCloseFootprintStory')?.addEventListener('click', () => {
+    const m = document.getElementById('footprintStoryModal');
+    if (m) m.hidden = true;
+  });
+  document.getElementById('fsmBackdrop')?.addEventListener('click', () => {
+    const m = document.getElementById('footprintStoryModal');
+    if (m) m.hidden = true;
   });
 
   // Bottom Dock Sheet Triggers
