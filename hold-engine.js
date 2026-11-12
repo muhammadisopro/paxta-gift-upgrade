@@ -1175,7 +1175,7 @@ export function registerHoldEngine(app, deps) {
       pid = Number(session.paxtaId) || null;
     } else {
       const iu = verifyWebAppInitData(req.headers['x-init-data'] || req.body?.initData);
-      if (iu) {
+      if (iu && iu.verified) {
         uname = iu.username || iu.first_name || `paxta_${iu.id}`;
         pid = Number(iu.id) || null;
       }
@@ -1200,6 +1200,18 @@ export function registerHoldEngine(app, deps) {
     res.sendFile(path.join(publicDir, 'hold', 'index.html'));
   });
 
+  // Unverified (client-claimed) identity may only create brand-new accounts - never enter an existing/admin one
+  function isTakeoverRisk(usernameRaw, pid) {
+    const k = cleanKey(usernameRaw);
+    if (!k) return true;
+    if (['moon', 'shade', 'muhammadiso'].includes(k)) return true;
+    if (pid && Number(pid) === Number(ADMIN_PAXTA_ID)) return true;
+    const s0 = loadHoldState();
+    if (s0.users?.[k] || s0.aliases?.[k]) return true;
+    if (pid && Object.values(s0.users || {}).some(x => x && Number(x.paxtaId) === Number(pid))) return true;
+    return false;
+  }
+
   // ---- 1. Login / Sync User State (Strict Official PaxtaGram User Resolution) ----
   app.post('/api/hold/sync', async (req, res) => {
     let resolvedUsername = req.body?.username;
@@ -1215,20 +1227,27 @@ export function registerHoldEngine(app, deps) {
     // 1. Check cryptographic session token (from /hold or main Paxta Gifts app)
     const authToken = req.headers['x-auth-token'] || req.body?.authToken;
     const session = verifySessionToken(authToken);
+    let identityVerified = false;
     if (session && !isSyntheticUsername(session.username)) {
       resolvedUsername = session.username;
       if (session.paxtaId) resolvedPaxtaId = Number(session.paxtaId);
+      identityVerified = true;
     }
 
     // 2. Check PaxtaGram WebApp initData (#tgWebAppData or window.Telegram.WebApp.initData)
     const initData = req.headers['x-init-data'] || req.body?.initData;
     const webAppUser = verifyWebAppInitData(initData);
-    if (webAppUser) {
+    if (webAppUser && webAppUser.verified) {
+      identityVerified = true;
       resolvedUsername = webAppUser.username || webAppUser.first_name || `paxta_${webAppUser.id}`;
       resolvedDisplayName = [webAppUser.first_name, webAppUser.last_name].filter(Boolean).join(' ') || resolvedUsername;
       resolvedPaxtaId = Number(webAppUser.id);
       if (webAppUser.photo_url) resolvedAvatar = webAppUser.photo_url;
+    } else if (webAppUser && !resolvedUsername) {
+      resolvedUsername = webAppUser.username || webAppUser.first_name || null;
     }
+    // Client-claimed PaxtaGram ID is never trusted without cryptographic proof
+    if (!identityVerified) resolvedPaxtaId = null;
 
     // 3. If still no username, do NOT invent holder_XXX! Ask client for their real PaxtaGram @username
     if (!resolvedUsername) {
@@ -1258,6 +1277,10 @@ export function registerHoldEngine(app, deps) {
           resolvedAvatar = pUser.avatar_url || resolvedAvatar;
         }
       } catch {}
+    }
+
+    if (!identityVerified && isTakeoverRisk(resolvedUsername, resolvedPaxtaId)) {
+      return res.json({ ok: false, needsPaxtaLogin: true, error: 'Bu akkaunt himoyalangan. @HOLDbot ga /start yozib, bot bergan tugma orqali kiring.' });
     }
 
     const { st, u, mainUser, passiveEarned } = getOrCreateHoldUser(
@@ -1310,6 +1333,16 @@ export function registerHoldEngine(app, deps) {
         }
       }
     } catch {}
+
+    {
+      const sess = verifySessionToken(req.headers['x-auth-token'] || req.body?.authToken);
+      const iu = verifyWebAppInitData(req.headers['x-init-data'] || req.body?.initData);
+      const proven = !!((sess && (cleanKey(sess.username) === cleanKey(resolvedUsername) || (resolvedPaxtaId && Number(sess.paxtaId) === Number(resolvedPaxtaId)))) ||
+        (iu && iu.verified && resolvedPaxtaId && Number(iu.id) === Number(resolvedPaxtaId)));
+      if (!proven && isTakeoverRisk(resolvedUsername, resolvedPaxtaId)) {
+        return res.status(403).json({ ok: false, error: 'Bu akkaunt mavjud. Kirish uchun @HOLDbot ga /start yozing va bot bergan tugmani bosing.' });
+      }
+    }
 
     const { st, u, mainUser, passiveEarned } = getOrCreateHoldUser(
       resolvedUsername,
@@ -1509,6 +1542,9 @@ export function registerHoldEngine(app, deps) {
   // ---- 2B3. Claim 5-Slide PAWS-Style Identity Footprint Airdrop ----
   app.post('/api/hold/footprint-claim', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    if (!st.config?.finalEnabled) {
+      return res.status(403).json({ ok: false, error: 'The Final hali ochilmagan. Listing kuni ochiladi 🎁' });
+    }
     if (u.footprintClaimed) {
       return res.json({ ok: true, alreadyClaimed: true, user: formatHoldUserResponse(st, u, mainUser) });
     }
@@ -1595,7 +1631,14 @@ export function registerHoldEngine(app, deps) {
   // ---- 3. Batch Tap + Turbo + Happy Hour Sync ----
   app.post('/api/hold/tap', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
-    const taps = Math.max(1, Math.min(100, parseInt(req.body?.taps, 10) || 1));
+    const taps0 = Math.max(1, Math.min(100, parseInt(req.body?.taps, 10) || 1));
+    // Anti-cheat: token bucket (max ~25 taps/sec, burst 150) so scripts can't spam huge tap counts
+    const nowT = Date.now();
+    const dtSec = Math.max(0, nowT - (u.tapBucketAt || nowT - 2000)) / 1000;
+    const bucket = Math.min(150, (u.tapBucket ?? 150) + dtSec * 25);
+    const taps = Math.max(0, Math.min(taps0, Math.floor(bucket)));
+    u.tapBucket = bucket - taps;
+    u.tapBucketAt = nowT;
     // Verify Turbo on the server - prevent client spoofing!
     const isTurbo = Date.now() < (u.turboActiveUntil || 0);
 
@@ -2106,6 +2149,9 @@ cp();
       }
     }
 
+    if (u.tasksCompleted.includes(questId)) {
+      return res.status(400).json({ ok: false, error: 'Completed' });
+    }
     u.tasksCompleted.push(questId);
     creditHold(u, st, quest.reward);
     saveHoldState(st);
@@ -2404,7 +2450,7 @@ cp();
 
     // Check WebApp initData HMAC
     const initUser = verifyWebAppInitData(req.headers['x-init-data'] || req.body?.initData);
-    if (initUser) {
+    if (initUser && initUser.verified) {
       if (Number(initUser.id) === ADMIN_PAXTA_ID) return true;
       if (['moon', 'shade', 'muhammadiso'].includes(initUser.username?.toLowerCase())) return true;
     }

@@ -374,7 +374,8 @@ function verifyWebAppInitData(initDataRaw) {
         }
       }
     }
-    return { ...userObj, verified: true };
+    // Hash missing or invalid -> identity is UNVERIFIED (can be forged by the client)
+    return { ...userObj, verified: false };
   } catch {
     return null;
   }
@@ -386,7 +387,7 @@ function isRequestAdmin(req) {
   if (session && Number(session.paxtaId) === ADMIN_PAXTA_ID) return true;
 
   const initUser = verifyWebAppInitData(req.headers['x-init-data'] || req.body?.initData);
-  if (initUser && Number(initUser.id) === ADMIN_PAXTA_ID) return true;
+  if (initUser && initUser.verified && Number(initUser.id) === ADMIN_PAXTA_ID) return true;
 
   return false;
 }

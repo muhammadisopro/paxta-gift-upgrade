@@ -926,8 +926,13 @@ async function syncHoldUser() {
 
   const loginOverlay = document.getElementById('paxtaLoginOverlay');
 
-  if (data.needPaxtaLogin) {
+  if (data.needPaxtaLogin || data.needsPaxtaLogin) {
     if (loginOverlay) loginOverlay.hidden = false;
+    const errEl0 = document.getElementById('paxtaLoginError');
+    if (errEl0 && data.error) {
+      errEl0.textContent = data.error;
+      errEl0.hidden = false;
+    }
     return;
   }
 
