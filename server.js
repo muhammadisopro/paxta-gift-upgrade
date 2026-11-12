@@ -569,7 +569,7 @@ class MoonPaxtaClient {
           id: exactUser.id,
           username: exactUser.username,
           title: exactUser.name || exactUser.first_name || exactUser.username,
-          photo: exactUser.avatar_url || null,
+          photo: exactUser.avatar || exactUser.avatar_url || null,
           type: 'user',
           verified: !!exactUser.is_verified,
           members_count: 0
@@ -578,6 +578,58 @@ class MoonPaxtaClient {
       return null;
     } catch {
       return null;
+    }
+  }
+
+  async checkChatOwnership(rawHandle, paxtaId, claimCode = null) {
+    const pid = Number(paxtaId) || 0;
+    if (!pid) return { verified: false, canProof: false };
+    const ch = await this.resolveChatByUsername(rawHandle);
+    if (!ch || !ch.id) return { verified: false, canProof: false };
+    if (ch.type === 'user') {
+      return Number(ch.id) === pid
+        ? { verified: true, method: 'user_match' }
+        : { verified: false, canProof: false };
+    }
+    try {
+      const [chatRes, memRes, msgRes] = await Promise.all([
+        this.request(`/chats/${ch.id}`).then(r => (r.ok ? r.json() : null)).catch(() => null),
+        this.request(`/chats/${ch.id}/members`).then(r => (r.ok ? r.json() : null)).catch(() => null),
+        this.request(`/chats/${ch.id}/messages`).then(r => (r.ok ? r.json() : null)).catch(() => null)
+      ]);
+      const fullChat = chatRes?.chat || chatRes || {};
+      const members = Array.isArray(memRes?.members) ? memRes.members : [];
+      const isAdminRole = r => ['owner', 'creator', 'admin', 'administrator'].includes(String(r || '').toLowerCase());
+      if (members.some(m => Number(m?.user?.id || m?.id) === pid && isAdminRole(m?.role || m?.status))) {
+        return { verified: true, method: 'member_role' };
+      }
+
+      const msgs = Array.isArray(msgRes?.messages) ? msgRes.messages : [];
+      const sortedMsgs = [...msgs].sort((a, b) => (Number(a?.id) || 0) - (Number(b?.id) || 0));
+      const creatorMsg = sortedMsgs.find(m => m?.type === 'service') || sortedMsgs[0];
+      if (creatorMsg && Number(creatorMsg.sender?.id) === pid) {
+        return { verified: true, method: 'creator_service_msg' };
+      }
+      if (sortedMsgs.some(m => Number(m?.sender?.id) === pid && isAdminRole(m?.sender_role))) {
+        return { verified: true, method: 'admin_msg_role' };
+      }
+
+      if (claimCode) {
+        const needle = String(claimCode).trim().toUpperCase();
+        const haystacks = [
+          ch.description,
+          fullChat.description,
+          fullChat.last_message?.text,
+          fullChat.pinned_message?.text,
+          ...msgs.slice(-8).map(m => m?.text)
+        ].filter(Boolean).map(t => String(t).toUpperCase());
+        if (haystacks.some(t => t.includes(needle))) {
+          return { verified: true, method: 'channel_code_proof' };
+        }
+      }
+      return { verified: false, canProof: true, chatId: ch.id, handle: ch.username || rawHandle };
+    } catch {
+      return { verified: false, canProof: true, chatId: ch.id, handle: ch.username || rawHandle };
     }
   }
 

@@ -443,12 +443,23 @@ async function openSquadModal(squadId) {
       <button type="button" class="skin-pill-btn" id="btnSquadRename">Saqlash</button>
     </div>` : '';
   const claim = (!sq.canManage && sq.canClaim) ? `
-    <button type="button" class="btn-sapphire-primary" id="btnSquadClaim" style="margin:10px 0;">👑 Men kanal adminiman — egalik qilish</button>` : '';
+    <div id="squadClaimWrap" style="margin:10px 0;">
+      <button type="button" class="btn-sapphire-primary" id="btnSquadClaim">👑 Men kanal adminiman — egalik qilish</button>
+      <div id="squadClaimProofBox" hidden style="margin-top:8px;padding:10px 12px;border-radius:12px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.35);font-size:12.5px;line-height:1.45;">
+        <div style="font-weight:700;color:#fff;margin-bottom:4px;">🔐 Egalikni tasdiqlash</div>
+        <div style="color:var(--text-2);">Kanalingizga yoki bioʻsiga quyidagi kodni yozing va <b>Tekshirish</b> tugmasini bosing (tasdiqlangach oʻchirishingiz mumkin):</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;background:rgba(0,0,0,0.3);padding:8px 10px;border-radius:10px;">
+          <code id="uiSquadClaimCode" style="font-size:15px;font-weight:800;color:#7dd3fc;">HOLD-000000</code>
+          <button type="button" class="skin-pill-btn" id="btnCopyClaimCode" style="padding:4px 10px;">Nusxalash</button>
+        </div>
+        <button type="button" class="btn-sapphire-primary" id="btnVerifyClaimProof" style="margin-top:8px;">✅ Tekshirish va Egalik qilish</button>
+      </div>
+    </div>` : '';
   const chBtn = (sq.handle || sq.link)
     ? `<button type="button" class="btn-sapphire-primary" id="btnOpenSquadCh" style="margin-top:10px;">PaxtaGram ichida kanalga oʻtish</button>`
     : '';
   openModal(sq.name, `
-    <div class="nri-sub" style="margin-bottom:4px;">${fmtInt(sq.count)} a'zo${sq.ownerUsername ? ' · ega: @' + esc(sq.ownerUsername) : ''}</div>
+    <div class="nri-sub" style="margin-bottom:4px;">@${esc(sq.handle || sq.id)} · ${fmtInt(sq.count)} a'zo${sq.ownerUsername ? ' · ega: @' + esc(sq.ownerUsername) : ''}</div>
     ${manage}${claim}
     <div class="dark-group-box" style="max-height:42vh;overflow:auto;">${rows}</div>${chBtn}`,
   () => {
@@ -462,16 +473,41 @@ async function openSquadModal(squadId) {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, squadId, name })
       });
-      if (r?.ok && r.user) { STATE.user = r.user; renderAll(); closeModal(); showToast(r.message); }
-      else showToast(r?.error || 'Xatolik');
+      if (r?.ok && r.user) {
+        STATE.user = r.user;
+        if (Array.isArray(r.user.squads)) STATE.squads = r.user.squads;
+        renderAll(); closeModal(); showToast(r.message);
+      } else showToast(r?.error || 'Xatolik');
     });
-    document.getElementById('btnSquadClaim')?.addEventListener('click', async () => {
+    const doClaim = async (btnEl) => {
+      if (btnEl) { btnEl.disabled = true; }
       const r = await api('/api/hold/squad-claim', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, squadId })
       });
-      if (r?.ok && r.user) { STATE.user = r.user; renderAll(); closeModal(); showToast(r.message); }
-      else showToast(r?.error || 'Xatolik');
+      if (btnEl) { btnEl.disabled = false; }
+      if (r?.ok && r.user) {
+        STATE.user = r.user;
+        if (Array.isArray(r.user.squads)) STATE.squads = r.user.squads;
+        renderAll(); closeModal(); showToast(r.message);
+      } else if (r?.needProof && r?.claimCode) {
+        const box = document.getElementById('squadClaimProofBox');
+        const codeEl = document.getElementById('uiSquadClaimCode');
+        const claimBtn = document.getElementById('btnSquadClaim');
+        if (codeEl) codeEl.textContent = r.claimCode;
+        if (box) box.hidden = false;
+        if (claimBtn) claimBtn.hidden = true;
+      } else {
+        showToast(r?.error || 'Tasdiqlanmadi');
+      }
+    };
+    document.getElementById('btnSquadClaim')?.addEventListener('click', (e) => doClaim(e.currentTarget));
+    document.getElementById('btnVerifyClaimProof')?.addEventListener('click', (e) => doClaim(e.currentTarget));
+    document.getElementById('btnCopyClaimCode')?.addEventListener('click', async () => {
+      const code = document.getElementById('uiSquadClaimCode')?.textContent || '';
+      if (!code) return;
+      try { await navigator.clipboard.writeText(code); } catch {}
+      showToast('📋 Kod nusxalandi: ' + code);
     });
   });
 }

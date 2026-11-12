@@ -1133,9 +1133,11 @@ export function registerHoldEngine(app, deps) {
 
   // Verify a real PaxtaGram user or channel on paxta.online
   function normalizePaxtaMediaUrl(u) {
-    if (!u || typeof u !== 'string') return null;
-    if (u.startsWith('http://') || u.startsWith('https://')) return u;
-    return `https://paxta.online${u.startsWith('/') ? '' : '/'}${u}`;
+    if (!u) return null;
+    const raw = typeof u === 'string' ? u : (u.url || u.thumb || u.photo || null);
+    if (!raw || typeof raw !== 'string') return null;
+    if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+    return `https://paxta.online${raw.startsWith('/') ? '' : '/'}${raw}`;
   }
 
   async function verifyOnPaxtaGram(handleRaw) {
@@ -2467,6 +2469,7 @@ export function registerHoldEngine(app, deps) {
             error: `Bu nomdagi squad allaqachon mavjud: ${dupSq.name} (@${dupSq.handle || dupSq.id}).`
           });
         }
+        const creatorCheck = await checkChannelOwnership(verifiedCh.username || cleanH, u.paxtaId, null);
         st.squads[cleanH] = {
           id: cleanH,
           handle: verifiedCh.username || cleanH,
@@ -2475,8 +2478,10 @@ export function registerHoldEngine(app, deps) {
           members: 0,
           totalHold: 0,
           verified: true,
-          ownerId: Number(u.paxtaId) || null,
-          ownerUsername: u.username,
+          ownerId: creatorCheck.verified ? Number(u.paxtaId) : null,
+          ownerUsername: creatorCheck.verified ? u.username : null,
+          ownerVerified: !!creatorCheck.verified,
+          addedBy: u.username,
           link: `https://paxta.online/${verifiedCh.username || cleanH}`
         };
         squadId = cleanH;
@@ -2555,13 +2560,28 @@ export function registerHoldEngine(app, deps) {
       .slice(0, 28);
   }
 
-  async function isChannelAdminOf(handle, paxtaId) {
-    if (!handle || !paxtaId) return false;
+  async function checkChannelOwnership(handle, paxtaId, claimCode = null) {
+    if (!handle || !paxtaId) return { verified: false, canProof: false };
+    try {
+      if (typeof moonClient?.checkChatOwnership === 'function') {
+        const res = await moonClient.checkChatOwnership(handle, paxtaId, claimCode);
+        if (res?.verified) return res;
+        if (res?.canProof) return res;
+      }
+    } catch {}
     try {
       const r = await holdBotCall('getChatMember', { chat_id: `@${String(handle).replace(/^@/, '')}`, user_id: Number(paxtaId) });
       const status = r?.result?.status;
-      return !!(r?.ok && (status === 'creator' || status === 'administrator'));
-    } catch { return false; }
+      if (r?.ok && (status === 'creator' || status === 'administrator')) {
+        return { verified: true, method: 'bot_getChatMember' };
+      }
+    } catch {}
+    return { verified: false, canProof: false };
+  }
+
+  function makeSquadClaimCode(sqId, paxtaId) {
+    const digest = crypto.createHash('sha256').update(`claim:${sqId}:${paxtaId}:paxtahold`).digest('hex').slice(0, 6).toUpperCase();
+    return `HOLD-${digest}`;
   }
 
   function canManageSquad(req, st, u, sq) {
@@ -2591,17 +2611,32 @@ export function registerHoldEngine(app, deps) {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const sq = st.squads[req.body?.squadId];
     if (!sq) return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
-    if (sq.ownerId && Number(sq.ownerId) === Number(u.paxtaId)) {
+    if (sq.ownerId && Number(sq.ownerId) === Number(u.paxtaId) && sq.ownerVerified) {
       return res.json({ ok: true, message: 'Siz allaqachon egasisiz', user: formatHoldUserResponse(st, u, mainUser) });
     }
-    const ok = await isChannelAdminOf(sq.handle || sq.id, u.paxtaId);
-    if (!ok) {
-      return res.status(403).json({ ok: false, error: 'Siz bu kanalning admini emassiz (bot kanalda admin boʻlishi kerak)' });
+    const pid = Number(u.paxtaId || mainUser?.paxtaId) || 0;
+    if (!pid) {
+      return res.status(400).json({ ok: false, error: 'Avval @HOLDbot orqali kirib PaxtaGram ID tasdiqlang' });
     }
-    sq.ownerId = Number(u.paxtaId);
+    const expectedCode = makeSquadClaimCode(sq.id, pid);
+    const check = await checkChannelOwnership(sq.handle || sq.id, pid, expectedCode);
+    if (!check.verified) {
+      if (check.canProof) {
+        return res.status(403).json({
+          ok: false,
+          needProof: true,
+          claimCode: expectedCode,
+          channelHandle: sq.handle || sq.id,
+          error: `Kanalga yoki bioʻsiga ${expectedCode} kodini yozing va Tekshirish tugmasini bosing.`
+        });
+      }
+      return res.status(403).json({ ok: false, error: 'Kanal egasi ekaningiz tasdiqlanmadi' });
+    }
+    sq.ownerId = pid;
     sq.ownerUsername = u.username;
+    sq.ownerVerified = true;
     saveHoldState(st);
-    res.json({ ok: true, message: '👑 Siz endi squad egasisiz!', user: formatHoldUserResponse(st, u, mainUser) });
+    res.json({ ok: true, message: '👑 Kanal egaligi tasdiqlandi — endi siz squad egasisiz!', user: formatHoldUserResponse(st, u, mainUser) });
   });
 
   app.post('/api/hold/squad-members', (req, res) => {
@@ -2609,6 +2644,7 @@ export function registerHoldEngine(app, deps) {
     const sq = st.squads[req.body?.squadId];
     if (!sq) return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
     const wk = warWeekInfo().key;
+    const isOwnerSelf = canManageSquad(req, st, u, sq);
     const members = Object.values(st.users || {})
       .filter(x => x && x.squadId === sq.id)
       .sort((a, b) => (b.lifetimeHold || 0) - (a.lifetimeHold || 0))
@@ -2629,9 +2665,10 @@ export function registerHoldEngine(app, deps) {
         handle: sq.handle || sq.id,
         link: sq.link || null,
         ownerUsername: sq.ownerUsername || null,
+        ownerVerified: !!sq.ownerVerified,
         count: Object.values(st.users || {}).filter(x => x && x.squadId === sq.id).length,
-        canManage: canManageSquad(req, st, u, sq),
-        canClaim: !(sq.ownerId || sq.ownerUsername)
+        canManage: isOwnerSelf,
+        canClaim: !isOwnerSelf && !(sq.ownerId && sq.ownerVerified)
       },
       members
     });
