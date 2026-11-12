@@ -444,11 +444,18 @@ async function openSquadModal(squadId) {
     </div>` : '';
   const claim = (!sq.canManage && sq.canClaim) ? `
     <button type="button" class="btn-sapphire-primary" id="btnSquadClaim" style="margin:10px 0;">👑 Men kanal adminiman — egalik qilish</button>` : '';
+  const chBtn = (sq.handle || sq.link)
+    ? `<button type="button" class="btn-sapphire-primary" id="btnOpenSquadCh" style="margin-top:10px;">PaxtaGram ichida kanalga oʻtish</button>`
+    : '';
   openModal(sq.name, `
     <div class="nri-sub" style="margin-bottom:4px;">${fmtInt(sq.count)} a'zo${sq.ownerUsername ? ' · ega: @' + esc(sq.ownerUsername) : ''}</div>
     ${manage}${claim}
-    <div class="dark-group-box" style="max-height:46vh;overflow:auto;">${rows}</div>`,
+    <div class="dark-group-box" style="max-height:42vh;overflow:auto;">${rows}</div>${chBtn}`,
   () => {
+    document.getElementById('btnOpenSquadCh')?.addEventListener('click', () => {
+      openInternalPaxtaChannel(sq.handle || sq.link || sq.id);
+      closeModal();
+    });
     document.getElementById('btnSquadRename')?.addEventListener('click', async () => {
       const name = document.getElementById('squadRenameInput')?.value || '';
       const r = await api('/api/hold/squad-rename', {
@@ -2123,7 +2130,7 @@ function renderFrensSheet() {
       refClaimBox.innerHTML = `
         <div style="font-size:13px;font-weight:600;color:#fff;">Doʻstingiz taklif qildimi? (+5,000 HOLD)</div>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="inpInviterUsername" placeholder="Doʻstingiz @username" class="apple-search-input" style="padding:9px 12px;" />
+          <input type="text" id="inpInviterUsername" placeholder="Doʻstingiz @username yoki ID" class="apple-search-input" style="padding:9px 12px;" />
           <button type="button" class="skin-pill-btn" id="btnClaimRefCode" style="padding:0 16px;">Olish</button>
         </div>
       `;
@@ -2151,7 +2158,7 @@ function renderFrensSheet() {
     if (!refs.length) {
       frensList.innerHTML = `
         <div style="padding:18px;text-align:center;color:var(--text-2);font-size:13.5px;">
-          Hozircha doʻstlar yoʻq. Doʻstingizga @HOLDbot ga <b>/start ${esc(u.username)}</b> yozishini ayting va <b>+10,000 HOLD</b> oling!
+          Hozircha doʻstlar yoʻq. Doʻstingizga @HOLDbot ga <b>/start ${esc(u.paxtaId || u.username)}</b> yozishini ayting va <b>+10,000 HOLD</b> oling!
         </div>
       `;
     } else {
@@ -2196,19 +2203,7 @@ function renderFrensSheet() {
             showToast(res.message);
           }
         } else {
-          openModal(sq.name, `
-            <div style="display:flex;flex-direction:column;gap:12px;text-align:center;">
-              <div style="font-size:14px;color:var(--text-2);">
-                Rasmiy Squad: <b>@${esc(sq.handle || sq.id)}</b> · Jami: <b>${fmtInt(sq.totalHold)} HOLD</b>
-              </div>
-              <button type="button" class="btn-sapphire-primary" id="btnOpenSquadInternal">PaxtaGram ichida kanalga oʻtish</button>
-            </div>
-          `, (b) => {
-            b.querySelector('#btnOpenSquadInternal')?.addEventListener('click', () => {
-              openInternalPaxtaChannel(sq.handle || sq.link || sq.id);
-              closeModal();
-            });
-          });
+          openSquadModal(sq.id);
         }
       });
       sList.appendChild(row);

@@ -301,6 +301,11 @@ export function registerHoldEngine(app, deps) {
     moonClient
   } = deps;
 
+  // Gentle polynomial upgrade curve (lvl 60 costs ~3M, whole path ~60M) instead of exponential billions
+  function upgradeCost(level, base) {
+    return Math.round(base * Math.pow(Math.max(1, level), 2.1));
+  }
+
   function creditHold(u, st, amount) {
     const val = Math.max(0, Math.floor(Number(amount) || 0));
     if (val <= 0) return;
@@ -364,7 +369,7 @@ export function registerHoldEngine(app, deps) {
   }
 
   function getFarmParams(st, u) {
-    const speedLevel = Math.min(10, Math.max(1, u.farmSpeedLevel || 1));
+    const speedLevel = Math.min(15, Math.max(1, u.farmSpeedLevel || 1));
     const capLevel = Math.min(5, Math.max(1, u.farmCapLevel || 1));
     const baseRate = 300 + (speedLevel - 1) * 150;
     const today = todayStr();
@@ -377,12 +382,12 @@ export function registerHoldEngine(app, deps) {
     const durationHours = 8 + (capLevel - 1) * 2;
     const durationMs = durationHours * 3600_000;
     return {
-      speedLevel, capLevel, speedMax: 10, capMax: 5,
+      speedLevel, capLevel, speedMax: 15, capMax: 5,
       baseRate, streakPct, warPct, rate,
       durationHours, durationMs,
       reward: Math.round(durationHours * rate),
-      nextSpeedCost: speedLevel >= 10 ? 0 : Math.round(5000 * Math.pow(1.7, speedLevel - 1)),
-      nextCapCost: capLevel >= 5 ? 0 : Math.round(8000 * Math.pow(1.9, capLevel - 1))
+      nextSpeedCost: speedLevel >= 15 ? 0 : upgradeCost(speedLevel, 2500),
+      nextCapCost: capLevel >= 5 ? 0 : Math.round(6000 * capLevel * capLevel)
     };
   }
 
@@ -398,14 +403,19 @@ export function registerHoldEngine(app, deps) {
       if (win) {
         const prize = st.config.squadWarPrize || 25_000;
         let n = 0;
+        const winnerKeys = [];
         for (const usr of Object.values(st.users || {})) {
           if (usr.squadId === win.id && usr.warSquadId === win.id && usr.warWeek === prev && (usr.warEarned || 0) > 0) {
             usr.holdBalance = (usr.holdBalance || 0) + prize;
             usr.lifetimeHold = (usr.lifetimeHold || 0) + prize;
+            winnerKeys.push(usr.username);
             n++;
           }
         }
         st.config.lastWarWinner = { name: win.name, weekKey: prev, prize, members: n, score: Math.floor(win.weekScore || 0) };
+        if (winnerKeys.length > 0) {
+          st.config.pendingWarNotify = { weekKey: prev, squadName: win.name, prize, userKeys: winnerKeys };
+        }
       }
     }
     st.config.warsWeekKey = cur.key;
@@ -453,6 +463,59 @@ export function registerHoldEngine(app, deps) {
       kalendar: { id: 'kalendar', handle: 'Kalendar', name: 'Kalendar Whales',    members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/Kalendar' },
       hold_vip: { id: 'hold_vip', handle: 'HOLDbot',  name: 'Hold Verified Club', members: 0, totalHold: 0, verified: true, link: 'https://paxta.online/u/HOLDbot' }
     };
+  }
+
+  function normSquadName(n) {
+    const stripped = String(n || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+    return stripped || String(n || '').trim().toLowerCase();
+  }
+
+  function findSquadByName(st, name, exceptId) {
+    const k = normSquadName(name);
+    if (!k) return null;
+    return Object.values(st.squads || {}).find(s => s.id !== exceptId && normSquadName(s.name) === k) || null;
+  }
+
+  // Merge and remove duplicate-named squads: keep strongest squad and reassign members cleanly
+  function dedupeSquads(st) {
+    const groups = {};
+    for (const sq of Object.values(st.squads || {})) {
+      const k = normSquadName(sq.name);
+      if (!k) continue;
+      (groups[k] = groups[k] || []).push(sq);
+    }
+    let changed = false;
+    const curWk = warWeekInfo().key;
+    for (const list of Object.values(groups)) {
+      if (list.length < 2) continue;
+      const cnt = id => Object.values(st.users || {}).filter(x => x && x.squadId === id).length;
+      list.sort((a, b) =>
+        (cnt(b.id) - cnt(a.id)) ||
+        ((b.verified ? 1 : 0) - (a.verified ? 1 : 0)) ||
+        ((b.ownerId ? 1 : 0) - (a.ownerId ? 1 : 0)) ||
+        ((b.weekScore || 0) - (a.weekScore || 0))
+      );
+      const keep = list[0];
+      for (const drop of list.slice(1)) {
+        for (const usr of Object.values(st.users || {})) {
+          if (usr && usr.squadId === drop.id) usr.squadId = keep.id;
+          if (usr && usr.warSquadId === drop.id) usr.warSquadId = keep.id;
+        }
+        const keepScore = keep.weekKey === curWk ? (keep.weekScore || 0) : 0;
+        const dropScore = drop.weekKey === curWk ? (drop.weekScore || 0) : 0;
+        if (keepScore + dropScore > 0 || keep.weekKey === curWk) {
+          keep.weekKey = curWk;
+          keep.weekScore = keepScore + dropScore;
+        }
+        if (!keep.ownerId && drop.ownerId) {
+          keep.ownerId = drop.ownerId;
+          keep.ownerUsername = drop.ownerUsername;
+        }
+        delete st.squads[drop.id];
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   // Squad totals are always derived from real members (no drift / double counting on join-leave)
@@ -532,8 +595,9 @@ export function registerHoldEngine(app, deps) {
     const st = loadJSON(holdStateFile, null);
     if (st && st.users && st.config && st.squads) {
       const merged = mergeDuplicateUsers(st);
+      const dedup = dedupeSquads(st);
       const recon = reconcileSquads(st);
-      if (merged || recon) saveJSON(holdStateFile, st);
+      if (merged || dedup || recon) saveJSON(holdStateFile, st);
       if (!st.soldMedals) st.soldMedals = {};
       if (!Array.isArray(st.nftClaims)) st.nftClaims = [];
       if (!st.payments) st.payments = { invoices: {}, charges: {}, lastUpdateId: 0 };
@@ -1055,14 +1119,14 @@ export function registerHoldEngine(app, deps) {
       tapPower,
       baseTapPower,
       tapLevel: u.tapLevel || 1,
-      nextTapUpgradeCost: Math.round(1_000 * Math.pow(1.65, (u.tapLevel || 1) - 1)),
+      nextTapUpgradeCost: upgradeCost(u.tapLevel || 1, 600),
       energy: u.energy,
       maxEnergy: u.maxEnergy,
       energyLevel: u.energyLevel || 1,
-      nextEnergyUpgradeCost: Math.round(1_000 * Math.pow(1.65, (u.energyLevel || 1) - 1)),
+      nextEnergyUpgradeCost: upgradeCost(u.energyLevel || 1, 400),
       rechargingSpeedLevel: rSpeedLvl,
-      rechargingSpeedMax: 5,
-      nextRechargingUpgradeCost: rSpeedLvl >= 5 ? 0 : Math.round(2_000 * Math.pow(1.8, rSpeedLvl - 1)),
+      rechargingSpeedMax: 10,
+      nextRechargingUpgradeCost: rSpeedLvl >= 10 ? 0 : upgradeCost(rSpeedLvl, 1200),
       autoBotEnabled: !!u.autoBotEnabled,
       autoBotCost: 50_000,
       fullTankCount: u.fullTankCount ?? 3,
@@ -1077,9 +1141,12 @@ export function registerHoldEngine(app, deps) {
       happyHour,
       streak: {
         claimedToday: streakClaimedToday,
-        currentDay: currentStreakDay,
+        canClaimToday: !streakClaimedToday,
+        currentDay: streakClaimedToday ? (u.streakCount || 1) : (streakAlive ? (u.streakCount || 0) : 0),
+        nextDay: currentStreakDay,
+        nextRewardHold: DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000,
         streakCount: streakAlive ? (u.streakCount || 0) : 0,
-        rewards: DAILY_STREAK_REWARDS,
+        rewards: DAILY_STREAK_REWARDS.map((hold, i) => ({ day: i + 1, hold })),
         todayReward: DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000
       },
       luckyDraw: {
@@ -1475,6 +1542,7 @@ export function registerHoldEngine(app, deps) {
     creditHold(u, st, totalFarmReward);
     u.farmClaimedHold = (u.farmClaimedHold || 0) + totalFarmReward;
     u.farmStartedAt = now; // Restart farming timer immediately!
+    delete u.farmNotifiedFor;
 
     // 10% referral kickback to inviter
     if (u.referredBy && st.users[u.referredBy]) {
@@ -1700,7 +1768,7 @@ export function registerHoldEngine(app, deps) {
     }
 
     if (type === 'multitap') {
-      const cost = Math.round(1_000 * Math.pow(1.65, (u.tapLevel || 1) - 1));
+      const cost = upgradeCost(u.tapLevel || 1, 600);
       if (u.holdBalance < cost) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
@@ -1711,7 +1779,7 @@ export function registerHoldEngine(app, deps) {
     }
 
     if (type === 'energy_limit') {
-      const cost = Math.round(1_000 * Math.pow(1.65, (u.energyLevel || 1) - 1));
+      const cost = upgradeCost(u.energyLevel || 1, 400);
       if (u.holdBalance < cost) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
@@ -1725,10 +1793,10 @@ export function registerHoldEngine(app, deps) {
 
     if (type === 'recharging_speed') {
       const curLvl = u.rechargingSpeedLevel || 1;
-      if (curLvl >= 5) {
+      if (curLvl >= 10) {
         return res.status(400).json({ ok: false, error: 'Max level reached' });
       }
-      const cost = Math.round(2_000 * Math.pow(1.8, curLvl - 1));
+      const cost = upgradeCost(curLvl, 1200);
       if (u.holdBalance < cost) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
@@ -1895,7 +1963,7 @@ export function registerHoldEngine(app, deps) {
         if (!sqx.name || sqx.name === `@${cleanH}`) {
           try {
             const vc = await verifyOnPaxtaGram(cleanH);
-            if (vc?.title && vc.title !== cleanH) sqx.name = vc.title;
+            if (vc?.title && vc.title !== cleanH && !findSquadByName(st, vc.title, sqx.id)) sqx.name = vc.title;
           } catch {}
         }
       } else {
@@ -1903,10 +1971,15 @@ export function registerHoldEngine(app, deps) {
         if (!verifiedCh) {
           return res.status(404).json({ ok: false, error: `@${cleanH} rasmiy PaxtaGram kanali topilmadi` });
         }
+        const sqName = cleanSquadName(verifiedCh.title) || `@${cleanH}`;
+        const dupSq = findSquadByName(st, sqName, cleanH);
+        if (dupSq) {
+          return res.status(409).json({ ok: false, error: `Bu nomdagi squad allaqachon mavjud: ${dupSq.name}. Unga qoʻshiling yoki kanal nomini oʻzgartiring` });
+        }
         st.squads[cleanH] = {
           id: cleanH,
           handle: verifiedCh.username || cleanH,
-          name: verifiedCh.title || `@${cleanH}`,
+          name: sqName,
           members: 0,
           totalHold: 0,
           verified: true,
@@ -1967,6 +2040,8 @@ export function registerHoldEngine(app, deps) {
     }
     const name = cleanSquadName(req.body?.name);
     if (name.length < 2) return res.status(400).json({ ok: false, error: 'Nom kamida 2 ta belgi boʻlsin' });
+    const dupRename = findSquadByName(st, name, sq.id);
+    if (dupRename) return res.status(409).json({ ok: false, error: `Bu nomdagi squad allaqachon mavjud: ${dupRename.name}` });
     sq.name = name;
     saveHoldState(st);
     res.json({ ok: true, message: `✅ Squad nomi: ${name}`, user: formatHoldUserResponse(st, u, mainUser) });
@@ -2588,10 +2663,13 @@ cp();
       if (!cleanH) return res.status(400).json({ ok: false, error: 'Kanal @username kiriting' });
 
       const verified = await verifyOnPaxtaGram(cleanH);
+      const admSqName = cleanSquadName(customName || verified?.title) || `@${cleanH}`;
+      const dupAdm = findSquadByName(st, admSqName, cleanH);
+      if (dupAdm) return res.status(409).json({ ok: false, error: `Bu nomdagi squad allaqachon mavjud: ${dupAdm.name}` });
       st.squads[cleanH] = {
         id: cleanH,
         handle: verified?.username || cleanH,
-        name: customName || verified?.title || `@${cleanH}`,
+        name: admSqName,
         members: st.squads[cleanH]?.members || 0,
         totalHold: st.squads[cleanH]?.totalHold || 0,
         verified: !!verified,
@@ -2609,6 +2687,9 @@ cp();
       const sqId = req.body?.squadId;
       if (sqId && st.squads[sqId]) {
         delete st.squads[sqId];
+        for (const usr of Object.values(st.users || {})) {
+          if (usr && usr.squadId === sqId) usr.squadId = null;
+        }
         saveHoldState(st);
       }
       return res.json({ ok: true, message: 'Squad oʻchirildi', user: formatHoldUserResponse(st, u, mainUser) });
@@ -2868,18 +2949,79 @@ cp();
     }
   });
 
-  // ---- 16. Automated Push Notifications Ticker (Happy Hour & Streak Reminders) ----
+  function botOpenHoldMarkup(usr, btnLabel = '🪙 HOLD ni ochish') {
+    const token = createSessionToken(usr.username, usr.paxtaId || '');
+    if (String(PUBLIC_APP_URL || '').startsWith('http')) {
+      return { inline_keyboard: [[{ text: btnLabel, web_app: { url: `${PUBLIC_APP_URL}/hold?auth=${encodeURIComponent(token)}` } }]] };
+    }
+    return { inline_keyboard: [[{ text: btnLabel, url: 'https://paxta.online/u/HOLDbot' }]] };
+  }
+
+  // ---- 16. Automated Push Notifications Ticker (Farm Ready, Wars Winner, Happy Hour & Streak) ----
   setInterval(async () => {
     try {
       const st = loadHoldState();
       const now = new Date();
+      const nowMs = now.getTime();
       // Tashkent UTC+5
-      const tashkentTime = new Date(now.getTime() + 5 * 3600 * 1000);
+      const tashkentTime = new Date(nowMs + 5 * 3600 * 1000);
       const hour = tashkentTime.getUTCHours();
       const minute = tashkentTime.getUTCMinutes();
       const today = todayStr();
 
       if (!st.config.notifs) st.config.notifs = {};
+
+      // Settle Squad Wars on week rollover and notify winners
+      const prevWk = st.config.warsWeekKey;
+      settleWars(st);
+      if (prevWk !== st.config.warsWeekKey || st.config.pendingWarNotify?.userKeys?.length) {
+        const warNote = st.config.pendingWarNotify;
+        delete st.config.pendingWarNotify;
+        saveHoldState(st);
+        if (warNote?.userKeys?.length) {
+          for (const k of warNote.userKeys) {
+            const usr = st.users?.[k];
+            if (!usr?.paxtaId) continue;
+            try {
+              await holdBotCall('sendMessage', {
+                chat_id: usr.paxtaId,
+                text: `🏆 **Squad Wars gʻolibi — ${warNote.squadName}!**\n\nSizning jamoangiz haftalik jangda #1 oʻrinni oldi! Hisobingizga **+${Number(warNote.prize || 0).toLocaleString()} $HOLD** qoʻshildi va +20% farm tezligi faol! 👑`,
+                parse_mode: 'Markdown',
+                reply_markup: botOpenHoldMarkup(usr, '⚔️ Mukofotni koʻrish')
+              });
+              await new Promise(r => setTimeout(r, 45));
+            } catch {}
+          }
+        }
+      }
+
+      // Farm Ready Alert: notify user as soon as their farm storage fills up
+      const farmReadyTargets = [];
+      const seenFarmPids = new Set();
+      for (const usr of Object.values(st.users || {})) {
+        if (!usr?.paxtaId || isSyntheticUsername(usr.username) || !usr.farmStartedAt) continue;
+        if (seenFarmPids.has(usr.paxtaId)) continue;
+        const fpm = getFarmParams(st, usr);
+        if ((nowMs - usr.farmStartedAt) >= fpm.durationMs && usr.farmNotifiedFor !== usr.farmStartedAt) {
+          usr.farmNotifiedFor = usr.farmStartedAt;
+          seenFarmPids.add(usr.paxtaId);
+          farmReadyTargets.push({ usr, reward: fpm.reward });
+        }
+      }
+      if (farmReadyTargets.length > 0) {
+        saveHoldState(st);
+        for (const item of farmReadyTargets) {
+          try {
+            await holdBotCall('sendMessage', {
+              chat_id: item.usr.paxtaId,
+              text: `🌾 **Ferma toʻldi — +${item.reward.toLocaleString()} $HOLD tayyor!**\n\nHosilni yigʻib oling, aks holda keyingi sikl boshlanmaydi! 🚀`,
+              parse_mode: 'Markdown',
+              reply_markup: botOpenHoldMarkup(item.usr, '🌾 Hosilni yigʻib olish')
+            });
+            await new Promise(r => setTimeout(r, 45));
+          } catch {}
+        }
+      }
 
       // 0. Daily Morse Broadcast to @insider Channel at 12:00 (UTC+5)
       if (hour === 12 && minute <= 5 && st.config.notifs.lastMorseBroadcastDay !== today) {
@@ -2897,17 +3039,16 @@ cp();
       if (hour === 20 && minute <= 5 && st.config.notifs.lastHappyHourDay !== today) {
         st.config.notifs.lastHappyHourDay = today;
         saveHoldState(st);
-        const recipientIds = Object.values(st.users || {}).map(usr => usr.paxtaId).filter(Boolean);
-        const uniqueIds = Array.from(new Set(recipientIds));
-        for (const pid of uniqueIds) {
+        const sentHh = new Set();
+        for (const usr of Object.values(st.users || {})) {
+          if (!usr?.paxtaId || sentHh.has(usr.paxtaId)) continue;
+          sentHh.add(usr.paxtaId);
           try {
             await holdBotCall('sendMessage', {
-              chat_id: pid,
+              chat_id: usr.paxtaId,
               text: '⚡ **Happy Hour boshlandi!**\n\nKeyingi 1 soat (20:00 – 21:00) davomida har bir bosish **2 barobar (2x)** koʻproq $HOLD beradi! 🚀',
               parse_mode: 'Markdown',
-              reply_markup: {
-                inline_keyboard: [[{ text: '🪙 $HOLD ga kirish', url: 'https://paxta.online/u/HOLDbot' }]]
-              }
+              reply_markup: botOpenHoldMarkup(usr, '⚡ 2x Tapni boshlash')
             });
             await new Promise(r => setTimeout(r, 45));
           } catch {}
@@ -2918,19 +3059,16 @@ cp();
       if (hour === 19 && minute <= 5 && st.config.notifs.lastStreakReminderDay !== today) {
         st.config.notifs.lastStreakReminderDay = today;
         saveHoldState(st);
-        const targets = Object.values(st.users || {})
-          .filter(usr => usr.paxtaId && usr.lastStreakDate !== today)
-          .map(usr => usr.paxtaId);
-        const uniqueIds = Array.from(new Set(targets));
-        for (const pid of uniqueIds) {
+        const sentSt = new Set();
+        for (const usr of Object.values(st.users || {})) {
+          if (!usr?.paxtaId || usr.lastStreakDate === today || sentSt.has(usr.paxtaId)) continue;
+          sentSt.add(usr.paxtaId);
           try {
             await holdBotCall('sendMessage', {
-              chat_id: pid,
-              text: '🔥 **Kunlik bonus kutmoqda!**\n\nBugungi kunlik zanjir mukofotingizni olishni unutmang. 7-kuni bepul Cookie skin beriladi! 🍪',
+              chat_id: usr.paxtaId,
+              text: '🔥 **Kunlik bonus kutmoqda!**\n\nBugungi zanjir mukofotingizni olishni unutmang — har kun farm tezligiga +2% beradi, 7-kuni Cookie skin! 🍪',
               parse_mode: 'Markdown',
-              reply_markup: {
-                inline_keyboard: [[{ text: '🎁 Bonusni olish', url: 'https://paxta.online/u/HOLDbot' }]]
-              }
+              reply_markup: botOpenHoldMarkup(usr, '🎁 Bonusni olish')
             });
             await new Promise(r => setTimeout(r, 45));
           } catch {}
@@ -3039,7 +3177,7 @@ cp();
               if (rawRef) {
                 const match = String(rawRef)
                   .replace(/https?:\/\/(?:www\.)?paxta\.online\/(?:u\/)?/i, '')
-                  .match(/^(?:ref_|start=)?@?([A-Za-z0-9_]{3,32})/i);
+                  .match(/^(?:ref_|start=)?@?(\d{1,12}|[A-Za-z0-9_]{3,32})/i);
                 if (match) {
                   const candidate = cleanKey(match[1]);
                   if (candidate && candidate !== senderKey && candidate.toLowerCase() !== 'holdbot' && candidate.toLowerCase() !== 'hold') {
@@ -3066,7 +3204,7 @@ cp();
               let alreadyReferred = !!senderUser.referredBy;
               let inviterUser = null;
 
-              if (refKey && st.users[refKey] && st.users[refKey].referredBy === senderUser.username) refKey = null;
+              if (refKey && (refKey === senderUser.username || (st.users[refKey] && st.users[refKey].referredBy === senderUser.username))) refKey = null;
 
               if (refKey && st.users[refKey]) {
                 if (!senderUser.referredBy) {
@@ -3076,8 +3214,8 @@ cp();
                   creditHold(senderUser, st, 5_000);
                   refAttributed = true;
 
-                  if (!inviterUser.referrals.includes(senderKey)) {
-                    inviterUser.referrals.push(senderKey);
+                  if (!inviterUser.referrals.includes(senderUser.username)) {
+                    inviterUser.referrals.push(senderUser.username);
                     creditHold(inviterUser, st, 10_000);
                   }
                   saveHoldState(st);
@@ -3101,8 +3239,9 @@ cp();
                 }
               }
 
-              const token = createSessionToken(senderKey, sender.id);
+              const token = createSessionToken(senderUser.username, sender.id);
               const personalUrl = `${holdWebAppUrl}?auth=${encodeURIComponent(token)}${refKey ? `&ref=${encodeURIComponent(refKey)}` : ''}`;
+              const myRefCode = sender.id || senderUser.username;
 
               let replyText = '';
               if (refAttributed) {
@@ -3110,7 +3249,7 @@ cp();
               } else if (alreadyReferred && refKey && refKey !== senderUser.referredBy) {
                 replyText = `ℹ️ Siz allaqachon **@${senderUser.referredBy}** ning taklifi bilan roʻyxatdan oʻtgansiz.\n\nNothing to sell. Just hold. @hold`;
               } else {
-                replyText = `🪙 **HOLD — Nothing to sell. Just hold.**\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagicha yozishini ayting:\n\`/start ${sender.id}\`\n\nYoki havola: ${PUBLIC_APP_URL}/r/${sender.id}\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
+                replyText = `🪙 **HOLD — Nothing to sell. Just hold.**\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagicha yozishini ayting:\n\`/start ${myRefCode}\`\n\nYoki havola: ${PUBLIC_APP_URL}/r/${myRefCode}\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
               }
 
               if (item.message?.chat?.id) {
