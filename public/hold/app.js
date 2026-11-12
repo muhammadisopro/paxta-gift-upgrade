@@ -648,6 +648,8 @@ const STATE = {
   webAppUser: null,
   totalPlayers: 0,
   top10Prizes: [],
+  nftPoolSummary: null,
+  squads: [],
   leaderboard: [],
   leaderboardDay: [],
   openedQuestLinks: {},
@@ -1440,6 +1442,8 @@ async function loadLeaderboardData() {
   if (res.ok) {
     STATE.totalPlayers = res.totalPlayers || (res.leaderboard || []).length;
     STATE.top10Prizes = res.top10Prizes || [];
+    STATE.nftPoolSummary = res.nftPoolSummary || null;
+    STATE.squads = res.squads || [];
     STATE.leaderboard = res.leaderboard || [];
     STATE.leaderboardDay = res.leaderboardDay || res.leaderboard || [];
     renderLeaguesSheet();
@@ -1499,6 +1503,11 @@ function renderLeaguesSheet() {
     }
   }
 
+  const rewardBannerEl = document.getElementById('uiLeagueRewardBanner');
+  if (rewardBannerEl) {
+    rewardBannerEl.innerHTML = `🎁 <span>${esc(lg.nftGuarantee || `${lg.nftPoolCount || 5} ta NFT`)} · ${esc(lg.name)} fondi</span>`;
+  }
+
   const listWrap = document.getElementById('leagueBoardList');
   if (!listWrap) return;
   listWrap.innerHTML = '';
@@ -1506,34 +1515,94 @@ function renderLeaguesSheet() {
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
   if (STATE.leagueMainTab === 'squads') {
-    const squads = u.squads || [];
-    squads.forEach((sq, sIdx) => {
+    const allSquads = (STATE.squads && STATE.squads.length) ? STATE.squads : (u.squads || []);
+    const isDay = STATE.leagueTimePeriod === 'day';
+    const filteredSquads = allSquads
+      .filter(sq => (sq.league?.id || 'bronze') === lg.id)
+      .sort((a, b) => isDay
+        ? ((b.dailyHoldToday || 0) - (a.dailyHoldToday || 0)) || ((b.totalHold || 0) - (a.totalHold || 0))
+        : ((b.totalHold || 0) - (a.totalHold || 0))
+      );
+
+    if (!filteredSquads.length) {
+      const jumpButtons = leagues
+        .map((item, lIdx) => {
+          const cnt = allSquads.filter(s => (s.league?.id || 'bronze') === item.id).length;
+          return cnt > 0
+            ? `<button type="button" class="league-jump-pill" data-jump-lidx="${lIdx}">${esc(item.name)} (${cnt})</button>`
+            : '';
+        })
+        .filter(Boolean)
+        .join('');
+      listWrap.innerHTML = `
+        <div style="padding:22px 14px;text-align:center;color:var(--text-2);font-size:13px;line-height:1.5;">
+          Hozircha <b>${esc(lg.name)}</b> ligasida squadlar yoʻq.<br/>
+          <span style="font-size:12px;opacity:0.75;">Squad jami kuchi ${fmtInt(lg.minHold)}+ HOLD boʻlganda shu ligaga kiradi.</span>
+          ${jumpButtons ? `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px;">${jumpButtons}</div>` : ''}
+        </div>
+      `;
+      listWrap.querySelectorAll('[data-jump-lidx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          STATE.viewedLeagueIdx = Number(btn.dataset.jumpLidx) || 0;
+          haptic('light');
+          renderLeaguesSheet();
+        });
+      });
+      return;
+    }
+
+    filteredSquads.forEach((sq, sIdx) => {
       const rank = sIdx + 1;
       const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}`;
+      const scoreVal = isDay ? (sq.dailyHoldToday || 0) : (sq.totalHold || 0);
       const row = document.createElement('div');
       row.className = 'lb-row-item';
       row.style.cursor = 'pointer';
       row.innerHTML = `
         <div class="lb-left">
           <div class="lb-medal-col">${medal}</div>
-          <div class="lb-avatar-circle">${esc((sq.name || 'S').charAt(0))}</div>
+          <div class="lb-avatar-circle">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>
           <div class="lb-user-meta">
-            <div class="lb-user-name">${esc(sq.name)} ${sq.verified ? '✓' : ''}</div>
+            <div class="lb-user-name">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
             <div class="lb-user-score">
               <img src="${esc(coinImg)}" class="inline-c" alt="" />
-              <span>${fmtInt(sq.totalHold)} · ${fmtInt(sq.members || 0)} a'zo</span>
+              <span>${fmtInt(scoreVal)} ${isDay ? '(bugun) · ' : '· '}${fmtInt(sq.members || 0)} a'zo</span>
             </div>
           </div>
         </div>
-        ${rank === 1 ? `<span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;color:#facc15;">⚔️ #1 Squad</span>` : `<span class="nri-chevron">›</span>`}
+        <span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;">${esc(sq.league?.name || lg.name)}</span>
       `;
-      row.addEventListener('click', () => openSheet('frens'));
+      row.addEventListener('click', () => openSquadModal(sq.id));
       listWrap.appendChild(row);
     });
     return;
   }
 
   if (STATE.leagueMainTab === 'prizes') {
+    const poolSummary = STATE.nftPoolSummary;
+    const quotas = poolSummary?.leagueQuotas || leagues;
+    const infoCard = document.createElement('div');
+    infoCard.className = 'nft-explain-card';
+    infoCard.innerHTML = `
+      <div style="font-weight:700;color:#fff;margin-bottom:4px;">🏆 Top-10 NFT & 5 ta Liga taqsimoti</div>
+      <div>
+        Top-10 NFT faqat <b style="color:#fff;">All-Time (umumiy HOLD)</b> reyting boʻyicha beriladi (#1–#10 Desk Calendar va Victory Medal).
+        ${poolSummary ? `Hozirgi zaxira: <b style="color:#fff;">${fmtInt(poolSummary.totalAvailable)} ta NFT</b>.` : ''}
+      </div>
+      <div class="nft-quota-grid">
+        ${quotas.map(q => `
+          <div class="nft-quota-chip ${q.id === lg.id ? 'active' : ''}">
+            <div style="font-weight:700;color:${esc(q.color || '#fff')};">${esc(q.name)}</div>
+            <div style="color:#fff;font-weight:800;">${fmtInt(q.nftPoolCount || 0)} NFT</div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#cbd5e1;">
+        <b style="color:${esc(lg.color || '#fff')};">${esc(lg.name)}:</b> ${esc(lg.nftRule || lg.nftGuarantee || '')}
+      </div>
+    `;
+    listWrap.appendChild(infoCard);
+
     for (const p of STATE.top10Prizes) {
       const holder = STATE.leaderboard.find(x => x.rank === p.rank);
       const nft = p.nft;
@@ -1552,7 +1621,7 @@ function renderLeaguesSheet() {
             <div class="lb-user-name">${nft ? esc(nft.title) : `Top #${p.rank} Prize`}</div>
             <div class="lb-user-score">
               <span style="color:var(--theme-accent);font-weight:700;">+${fmtInt(p.holdBonus)} HOLD</span>
-              <span>· ${holder ? `@${esc(holder.username)}` : 'Boʻsh oʻrin'}</span>
+              <span>· ${holder ? `@${esc(holder.username)}` : 'Boʻsh oʻrin'}${p.reason ? ` · ${esc(p.reason)}` : ''}</span>
             </div>
           </div>
         </div>
@@ -1601,7 +1670,7 @@ function renderLeaguesSheet() {
           </div>
         </div>
       </div>
-      ${p.rank <= 10 && p.prize?.nft ? `<span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;">🎁 #${p.rank} ${esc(p.prize.nft.title)}</span>` : ''}
+      ${STATE.leagueTimePeriod === 'all' && p.rank <= 10 && p.prize?.nft ? `<span class="skin-pill-btn" style="font-size:11px;padding:4px 9px;">🎁 #${p.rank} ${esc(p.prize.nft.title)}</span>` : ''}
     `;
     listWrap.appendChild(row);
   });
@@ -1816,15 +1885,17 @@ function renderEarnSheet() {
     });
     dailyEl.appendChild(hhRow);
 
-    const ltRow = document.createElement('div');
-    ltRow.className = 'not-row-item static';
-    ltRow.innerHTML = rowHtml({
+    const ltBtn = document.createElement('button');
+    ltBtn.type = 'button';
+    ltBtn.className = 'not-row-item';
+    ltBtn.innerHTML = rowHtml({
       icon: '🎟️',
       title: 'Weekly Lucky Draw',
-      sub: `${esc(lt.prizeTitle || 'NFT + 100K HOLD')}`,
-      right: `<span class="earn-count-badge">${fmtInt(lt.myTickets || 0)}</span>`
+      sub: `Sizda <b>${fmtInt(lt.myTickets || 0)}</b> chipta · Pul: ${fmtInt(lt.totalPoolTickets || 0)} (${lt.winChancePct || 0}%)`,
+      right: `<span class="earn-count-badge">${fmtInt(lt.myTickets || 0)}</span> ›`
     });
-    dailyEl.appendChild(ltRow);
+    ltBtn.addEventListener('click', openLuckyDrawModal);
+    dailyEl.appendChild(ltBtn);
   }
 
   // 2. Quests — Notcoin-style rows, verified in-app (no external tabs)
@@ -1941,6 +2012,71 @@ function renderEarnSheet() {
       });
     });
   }
+}
+
+function openLuckyDrawModal() {
+  const u = STATE.user;
+  if (!u) return;
+  const lt = u.luckyDraw || {};
+  const myT = lt.myTickets || 0;
+  const totalT = lt.totalPoolTickets || 0;
+  const chance = lt.winChancePct || 0;
+  const remMs = Math.max(0, (lt.endsAt || 0) - Date.now());
+  const d = Math.floor(remMs / 86400000);
+  const h = Math.floor((remMs % 86400000) / 3600000);
+  const m = Math.floor((remMs % 3600000) / 60000);
+  const timeLeftStr = lt.endsAt ? `${d}k ${h}s ${m}d` : 'Har dushanba 00:00';
+  const last = lt.lastWinner;
+  const lastHtml = last
+    ? `<div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);border-radius:12px;padding:10px 12px;font-size:12.5px;">
+         🏆 <b style="color:#4ade80;">Oxirgi gʻolib:</b> @${esc(last.username)} · ${esc(last.prizeNft || 'Victory Medal NFT')} + ${fmtInt(last.rewardHold || 100000)} HOLD
+       </div>`
+    : `<div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--text-2);">
+         🏆 Hali gʻolib aniqlanmagan — shu dushanba 00:00 (UTC+5) avtomatik oʻynaladi!
+       </div>`;
+
+  openModal('🎟️ Weekly Lucky Draw', `
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 6px;">
+          <div style="font-size:11px;color:var(--text-2);">Mening chiptam</div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">${fmtInt(myT)} 🎟️</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 6px;">
+          <div style="font-size:11px;color:var(--text-2);">Umumiy pul</div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">${fmtInt(totalT)}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 6px;">
+          <div style="font-size:11px;color:var(--text-2);">Shans</div>
+          <div style="font-size:18px;font-weight:800;color:#38bdf8;">${chance}%</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;color:var(--text-2);">
+        <div><b style="color:#fff;">🎁 Sovrin:</b> ${esc(lt.prizeTitle || 'Victory Medal NFT + 100,000 HOLD')}</div>
+        <div style="margin-top:4px;"><b style="color:#fff;">⏰ Oʻyin vaqti:</b> ${timeLeftStr} qoldi (har dushanba 00:00 UTC+5).</div>
+        <div style="margin-top:4px;font-size:12px;">Chiptalar serverda saqlanadi; qancha koʻp chipta yigʻsangiz, gʻalaba ehtimoli shuncha yuqori. Oʻyindan soʻng keyingi hafta uchun 0 dan yigʻiladi.</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;">
+        <div style="font-weight:700;color:#fff;margin-bottom:6px;">Chipta qayerdan olinadi?</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span>🔐 Bugungi Vault kodi (@HOLDbot)</span>
+          <b style="color:${u.vault?.solvedToday ? '#4ade80' : '#facc15'};">${u.vault?.solvedToday ? '✅ +1 olindi' : '+1 🎟️'}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span>🕵️ Kunlik Morze kodi (@insider)</span>
+          <b style="color:${u.morse?.solvedToday ? '#4ade80' : '#facc15'};">${u.morse?.solvedToday ? '✅ +1 olindi' : '+1 🎟️'}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span>🔥 7-kunlik Daily Streak</span>
+          <b style="color:${(u.streak?.currentDay || 0) >= 7 ? '#4ade80' : '#facc15'};">+1 🎟️</b>
+        </div>
+      </div>
+
+      ${lastHtml}
+    </div>
+  `);
 }
 
 function openDailyStreakModal() {
@@ -2186,7 +2322,7 @@ function renderFrensSheet() {
         <div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>
         <div class="nri-center">
           <div class="nri-title">${idx === 0 ? '👑 ' : ''}${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
-          <div class="nri-sub">${fmtInt(sq.members)} a'zo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
+          <div class="nri-sub">${esc(sq.league?.name || 'Bronze')} · ${fmtInt(sq.members)} a'zo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
         </div>
         <button type="button" class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined' : 'Join'}</button>
       `;
@@ -3026,12 +3162,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnOpenEarnGuide')?.addEventListener('click', () => {
     openModal('Full guide', `
       <div class="guide-list">
-        <div class="guide-item"><span>🪙</span><div><b>Tap</b><p>Tangani bosing — har bosish HOLD beradi. Energiya oʻz-oʻzidan tiklanadi.</p></div></div>
-        <div class="guide-item"><span>✅</span><div><b>Tasks</b><p>Vazifani bajaring va “Tekshirish” tugmasini bosing. Bot bajarilganini 100% tekshiradi.</p></div></div>
-        <div class="guide-item"><span>🔥</span><div><b>Daily reward</b><p>Har kuni kiring. 7 kun ketma-ket — +50K HOLD va Cookie skin.</p></div></div>
+        <div class="guide-item"><span>🪙</span><div><b>Tap & Farm</b><p>Tangani bosing va ferma yigʻimini oling — har siklda HOLD balansga qoʻshiladi.</p></div></div>
+        <div class="guide-item"><span>🔐</span><div><b>Bugungi Vault kodi</b><p>@HOLDbot ichida /vault yoki /start orqali koʻring va tanga chetlarini shu tartibda bosing (+30K HOLD + 1 🎟️).</p></div></div>
+        <div class="guide-item"><span>🎟️</span><div><b>Weekly Lucky Draw</b><p>Vault, Morze va 7-kunlik Streak chipta beradi. Har dushanba NFT + 100K HOLD oʻynaladi.</p></div></div>
+        <div class="guide-item"><span>🔥</span><div><b>Daily reward</b><p>Har kuni kiring. 7 kun ketma-ket — +50K HOLD, Cookie skin va +1 Lucky Ticket.</p></div></div>
         <div class="guide-item"><span>⚡</span><div><b>Happy Hour</b><p>Har kuni 20:00–21:00 da har bosish 2 barobar.</p></div></div>
-        <div class="guide-item"><span>🏆</span><div><b>Top-10</b><p>Reytingning eng yaxshi 10 tasi NFT sovgʻa va HOLD oladi.</p></div></div>
-        <div class="guide-item"><span>✦</span><div><b>Sirlar</b><p>Tangada yashirin sirlar bor. Kuzatib boring…</p></div></div>
+        <div class="guide-item"><span>🏆</span><div><b>Top-10 & Ligalar</b><p>All-Time Top-10 mutlaq liderlar + 5 ta Liga fondidan NFT mukofotlari ajratiladi.</p></div></div>
       </div>
     `);
   });
@@ -3108,7 +3244,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         STATE.compassSequence.push(dir);
         STATE.compassTimer = setTimeout(() => { STATE.compassSequence = []; }, 2800);
 
-        const expectedCompass = ['up', 'right', 'down', 'left', 'up'];
+        const expectedCompass = (Array.isArray(STATE.user?.vault?.sequence) && STATE.user.vault.sequence.length === 5)
+          ? STATE.user.vault.sequence
+          : ['up', 'right', 'down', 'left', 'up'];
         if (STATE.compassSequence.length > expectedCompass.length) {
           STATE.compassSequence = STATE.compassSequence.slice(-expectedCompass.length);
         }
@@ -3248,12 +3386,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Copy Referral Link / Username In-App (Never opens an external browser tab!)
   document.getElementById('btnCopyRefLink')?.addEventListener('click', async () => {
     const refCode = STATE.user?.paxtaId || STATE.username;
-    const shareText = `🪙 $HOLD ga qoʻshiling!\n\n👉 ${location.origin}/r/${refCode}\n\nYoki @HOLDbot ga kirib /start ${refCode} deb yozing.\nHar ikkalamizga bepul $HOLD beriladi! 🚀`;
+    const shareText = `🪙 $HOLD ga qoʻshiling!\n\n👉 Bot: https://paxta.online/u/HOLDbot\n💬 Botga kirib shu buyruqni yuboring: /start ${refCode}\n\nHar ikkalamizga bepul $HOLD beriladi! 🚀`;
     try {
       await navigator.clipboard.writeText(shareText);
-      showToast(`Taklif xabari nusxalandi! Doʻstlaringizga yuboring`);
+      showToast(`Taklif xabari nusxalandi! @HOLDbot orqali ulashing`);
     } catch {
-      showToast(`Nikingiz: @${STATE.username}`);
+      showToast(`/start ${refCode}`);
     }
   });
 

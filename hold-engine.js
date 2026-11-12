@@ -37,6 +37,9 @@ export const HOLD_LEAGUES = [
     trophyImg: '/hold/trophies/bronze.png',
     minHold: 0,
     bonusTap: 0,
+    nftPoolCount: 5,
+    nftGuarantee: '5 ta Bonus NFT',
+    nftRule: 'Haftalik Lucky Draw orqali 5 ta tasodifiy faol ishtirokchiga Victory Medal NFT',
     color: '#d97706',
     glow: 'rgba(217, 119, 6, 0.42)'
   },
@@ -46,6 +49,9 @@ export const HOLD_LEAGUES = [
     trophyImg: '/hold/trophies/silver.png',
     minHold: 50_000,
     bonusTap: 1,
+    nftPoolCount: 10,
+    nftGuarantee: '10 ta Silver NFT',
+    nftRule: 'Silver liga yetakchilari va faol chipta egalari oʻrtasida 10 ta NFT',
     color: '#cbd5e1',
     glow: 'rgba(203, 213, 225, 0.42)'
   },
@@ -55,6 +61,9 @@ export const HOLD_LEAGUES = [
     trophyImg: '/hold/trophies/gold.png',
     minHold: 250_000,
     bonusTap: 2,
+    nftPoolCount: 15,
+    nftGuarantee: '15 ta Gold NFT',
+    nftRule: 'Gold ligadagi top konchilarga 15 ta Victory Medal & Desk Calendar NFT',
     color: '#fbbf24',
     glow: 'rgba(251, 191, 36, 0.48)'
   },
@@ -64,6 +73,9 @@ export const HOLD_LEAGUES = [
     trophyImg: '/hold/trophies/platinum.png',
     minHold: 1_000_000,
     bonusTap: 3,
+    nftPoolCount: 20,
+    nftGuarantee: '20 ta Platinum NFT',
+    nftRule: 'Platinum liga yetakchilariga 20 ta noyob seriyali NFT',
     color: '#94a3b8',
     glow: 'rgba(148, 163, 184, 0.46)'
   },
@@ -73,6 +85,9 @@ export const HOLD_LEAGUES = [
     trophyImg: '/hold/trophies/diamond.png',
     minHold: 5_000_000,
     bonusTap: 5,
+    nftPoolCount: 30,
+    nftGuarantee: '30 ta Premium NFT',
+    nftRule: 'All-Time Top-10 (#1–#10) mutlaq gʻoliblar + Diamond liga fondidan 30 ta eng noyob NFT',
     color: '#38bdf8',
     glow: 'rgba(56, 189, 248, 0.52)'
   }
@@ -274,6 +289,100 @@ export function getLeagueForHold(lifetimeHold) {
   return current;
 }
 
+const VAULT_DIRS = ['up', 'right', 'down', 'left'];
+export const VAULT_DIR_ARROWS = { up: '⬆️', right: '➡️', down: '⬇️', left: '⬅️' };
+export const VAULT_DIR_LABELS = { up: 'Tepa', right: 'Oʻng', down: 'Past', left: 'Chap' };
+
+export function formatVaultArrows(sequence) {
+  return (Array.isArray(sequence) ? sequence : []).map(d => VAULT_DIR_ARROWS[d] || d).join(' ');
+}
+
+export function formatVaultLabels(sequence) {
+  return (Array.isArray(sequence) ? sequence : []).map(d => VAULT_DIR_LABELS[d] || d).join(' → ');
+}
+
+export function buildVaultCombosCatalog(count = 120) {
+  const all = [];
+  for (const a of VAULT_DIRS) {
+    for (const b of VAULT_DIRS) {
+      for (const c of VAULT_DIRS) {
+        for (const d of VAULT_DIRS) {
+          for (const e of VAULT_DIRS) {
+            if (a === b && b === c && c === d && d === e) continue;
+            const seq = [a, b, c, d, e];
+            if (seq.join(',') === 'up,right,down,left,up') continue;
+            all.push(seq);
+          }
+        }
+      }
+    }
+  }
+  // Deterministic stride permutation so consecutive days pick varied directions
+  const list = [{
+    index: 1,
+    sequence: ['up', 'right', 'down', 'left', 'up'],
+    arrows: formatVaultArrows(['up', 'right', 'down', 'left', 'up']),
+    labels: formatVaultLabels(['up', 'right', 'down', 'left', 'up'])
+  }];
+  let cursor = 17;
+  const step = 37;
+  const used = new Set(['up,right,down,left,up']);
+  while (list.length < count && used.size < all.length) {
+    cursor = (cursor + step) % all.length;
+    const seq = all[cursor];
+    const key = seq.join(',');
+    if (used.has(key)) continue;
+    used.add(key);
+    list.push({
+      index: list.length + 1,
+      sequence: seq,
+      arrows: formatVaultArrows(seq),
+      labels: formatVaultLabels(seq)
+    });
+  }
+  return list;
+}
+
+export const HOLD_DAILY_VAULT_COMBOS = buildVaultCombosCatalog(120);
+
+export function getDailyVaultCombo(dateStr = todayStr(), catalog = HOLD_DAILY_VAULT_COMBOS) {
+  const list = Array.isArray(catalog) && catalog.length >= 100 ? catalog : HOLD_DAILY_VAULT_COMBOS;
+  let hash = 0;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = (hash * 37 + dateStr.charCodeAt(i)) >>> 0;
+  }
+  const picked = list[hash % list.length];
+  return {
+    date: dateStr,
+    index: picked.index || ((hash % list.length) + 1),
+    totalCombos: list.length,
+    sequence: [...picked.sequence],
+    arrows: picked.arrows || formatVaultArrows(picked.sequence),
+    labels: picked.labels || formatVaultLabels(picked.sequence)
+  };
+}
+
+export function getActiveDailyVault(st, persistFn = null) {
+  if (!st.config) st.config = {};
+  let dirty = false;
+  if (!Array.isArray(st.config.vaultCombos) || st.config.vaultCombos.length < 100) {
+    st.config.vaultCombos = HOLD_DAILY_VAULT_COMBOS.map(c => ({ ...c, sequence: [...c.sequence] }));
+    dirty = true;
+  }
+  const today = todayStr();
+  if (!st.config.dailyVault || st.config.dailyVault.date !== today || !Array.isArray(st.config.dailyVault.sequence) || st.config.dailyVault.sequence.length !== 5) {
+    st.config.dailyVault = getDailyVaultCombo(today, st.config.vaultCombos);
+    dirty = true;
+  }
+  if (dirty && typeof persistFn === 'function') {
+    persistFn(st);
+  }
+  return {
+    ...st.config.dailyVault,
+    totalCombos: st.config.vaultCombos.length
+  };
+}
+
 function isSyntheticUsername(uname) {
   const s = String(uname || '').trim().toLowerCase();
   return !s || s === 'holder' || s === 'user' || /^holder_\d+$/.test(s) || /^guest_\d+$/.test(s);
@@ -391,6 +500,107 @@ export function registerHoldEngine(app, deps) {
     };
   }
 
+  function buildSquadsList(st) {
+    const today = todayStr();
+    const wk = warWeekInfo().key;
+    const dayBySquad = {};
+    for (const usr of Object.values(st.users || {})) {
+      if (usr?.squadId && st.squads?.[usr.squadId]) {
+        dayBySquad[usr.squadId] = (dayBySquad[usr.squadId] || 0) + Math.floor(usr.dailyHold?.[today] || 0);
+      }
+    }
+    return Object.values(st.squads || {})
+      .map(sq => {
+        const totalHold = Math.floor(sq.totalHold || 0);
+        const lg = getLeagueForHold(totalHold);
+        return {
+          ...sq,
+          totalHold,
+          members: sq.members || 0,
+          dailyHoldToday: dayBySquad[sq.id] || 0,
+          weekScore: sq.weekKey === wk ? Math.floor(sq.weekScore || 0) : 0,
+          league: {
+            id: lg.id,
+            name: lg.name,
+            color: lg.color,
+            trophyImg: lg.trophyImg
+          }
+        };
+      })
+      .sort((a, b) => b.totalHold - a.totalHold);
+  }
+
+  function runLuckyDraw(st, weekKey = warWeekInfo().key) {
+    if (!st.config) st.config = {};
+    const participants = Object.values(st.users || {}).filter(
+      usr => usr && !isSyntheticUsername(usr.username) && (usr.luckyTickets || 0) > 0
+    );
+    const pool = [];
+    for (const usr of participants) {
+      const t = Math.floor(usr.luckyTickets || 0);
+      for (let i = 0; i < t; i++) pool.push(usr);
+    }
+    if (!pool.length) return null;
+
+    const winner = pool[crypto.randomInt(0, pool.length)];
+    const winnerTickets = Math.floor(winner.luckyTickets || 0);
+    const rewardHold = 100_000;
+    creditHold(winner, st, rewardHold);
+
+    const allItems = getVaultItems(st);
+    const top10Ids = new Set(getTop10PrizeAllocation(allItems, st).map(p => p.nft?.vaultId).filter(Boolean));
+    const claimedIds = new Set((st.nftClaims || []).map(c => c.vaultId).filter(Boolean));
+    const medalPool = allItems
+      .filter(i => i.nftType === 'medal' && !i.sold && !top10Ids.has(i.vaultId) && !claimedIds.has(i.vaultId))
+      .sort((a, b) => (Number(b.isBlack) - Number(a.isBlack)) || (a.number - b.number));
+    const pickedMedal = medalPool[0] || allItems.find(i => i.nftType === 'medal' && !i.sold) || null;
+    const prizeNftTitle = pickedMedal ? pickedMedal.title : 'Victory Medal NFT';
+
+    if (pickedMedal) {
+      if (!Array.isArray(winner.claimedNfts)) winner.claimedNfts = [];
+      if (!winner.claimedNfts.includes(pickedMedal.vaultId)) winner.claimedNfts.push(pickedMedal.vaultId);
+      if (!Array.isArray(st.nftClaims)) st.nftClaims = [];
+      st.nftClaims.push({
+        type: 'lucky_draw',
+        weekKey,
+        username: winner.username,
+        displayName: winner.displayName || winner.username,
+        paxtaId: winner.paxtaId || null,
+        vaultId: pickedMedal.vaultId,
+        title: prizeNftTitle,
+        link: pickedMedal.link || null,
+        rewardHold,
+        awardedAt: new Date().toISOString()
+      });
+    }
+
+    st.config.lastLuckyWinner = {
+      username: winner.username,
+      displayName: winner.displayName || winner.username,
+      ticketCount: winnerTickets,
+      poolSize: pool.length,
+      rewardHold,
+      prizeNft: prizeNftTitle,
+      vaultId: pickedMedal?.vaultId || null,
+      nftLink: pickedMedal?.link || null,
+      weekKey,
+      drawnAt: new Date().toISOString()
+    };
+    st.config.pendingLuckyNotify = {
+      username: winner.username,
+      paxtaId: winner.paxtaId || null,
+      rewardHold,
+      prizeNft: prizeNftTitle,
+      poolSize: pool.length
+    };
+
+    // Reset weekly tickets after each completed weekly draw
+    for (const usr of Object.values(st.users || {})) {
+      if (usr && (usr.luckyTickets || 0) > 0) usr.luckyTickets = 0;
+    }
+    return st.config.lastLuckyWinner;
+  }
+
   function settleWars(st) {
     if (!st.config) st.config = {};
     const cur = warWeekInfo();
@@ -417,6 +627,8 @@ export function registerHoldEngine(app, deps) {
           st.config.pendingWarNotify = { weekKey: prev, squadName: win.name, prize, userKeys: winnerKeys };
         }
       }
+      // Run automatic weekly Lucky Draw alongside week rollover
+      runLuckyDraw(st, prev);
     }
     st.config.warsWeekKey = cur.key;
   }
@@ -603,6 +815,17 @@ export function registerHoldEngine(app, deps) {
       if (!st.payments) st.payments = { invoices: {}, charges: {}, lastUpdateId: 0 };
       if (!st.config.secretCodes) st.config.secretCodes = { ...DEFAULT_SECRET_CODES };
       if (!Array.isArray(st.config.customQuests)) st.config.customQuests = [...DEFAULT_HOLD_QUESTS];
+      let vaultDirty = false;
+      if (!Array.isArray(st.config.vaultCombos) || st.config.vaultCombos.length < 100) {
+        st.config.vaultCombos = HOLD_DAILY_VAULT_COMBOS.map(c => ({ ...c, sequence: [...c.sequence] }));
+        vaultDirty = true;
+      }
+      const todayV = todayStr();
+      if (!st.config.dailyVault || st.config.dailyVault.date !== todayV) {
+        st.config.dailyVault = getDailyVaultCombo(todayV, st.config.vaultCombos);
+        vaultDirty = true;
+      }
+      if (vaultDirty) saveJSON(holdStateFile, st);
 
       // Full V3 Clean Reset requested by Admin: remove all fake holder_XXX accounts & reset all balances to Onboarding!
       if (!st.config.economyV3CleanReset) {
@@ -633,6 +856,7 @@ export function registerHoldEngine(app, deps) {
       return st;
     }
 
+    const initialVaultCatalog = HOLD_DAILY_VAULT_COMBOS.map(c => ({ ...c, sequence: [...c.sequence] }));
     const initial = {
       users: {},
       config: {
@@ -643,6 +867,8 @@ export function registerHoldEngine(app, deps) {
           reward: 25_000,
           hint: 'Loyihamizning asosiy 4 harfli nomi (H-O-L-D)'
         },
+        vaultCombos: initialVaultCatalog,
+        dailyVault: getDailyVaultCombo(todayStr(), initialVaultCatalog),
         secretCodes: { ...DEFAULT_SECRET_CODES },
         customQuests: [...DEFAULT_HOLD_QUESTS],
         happyHourForced: false,
@@ -1098,8 +1324,17 @@ export function registerHoldEngine(app, deps) {
         ? ((u.streakCount || 0) % 7) + 1
         : 1;
 
-    // Total lucky tickets in pool
-    const totalLuckyTickets = Object.values(st.users || {}).reduce((acc, usr) => acc + (usr.luckyTickets || 0), 0);
+    // Total lucky tickets in pool + active daily vault
+    const totalLuckyTickets = Object.values(st.users || {})
+      .filter(usr => usr && !isSyntheticUsername(usr.username))
+      .reduce((acc, usr) => acc + Math.floor(usr.luckyTickets || 0), 0);
+    const myTickets = Math.floor(u.luckyTickets || 0);
+    const winChancePct = totalLuckyTickets > 0 && myTickets > 0
+      ? Number(((myTickets / totalLuckyTickets) * 100).toFixed(1))
+      : 0;
+    const wkInfo = warWeekInfo();
+    const dailyVaultObj = getActiveDailyVault(st, saveHoldState);
+    const compassSolvedToday = (u.compassSolvedDays || []).includes(today);
 
     return {
       username: u.username,
@@ -1150,10 +1385,22 @@ export function registerHoldEngine(app, deps) {
         todayReward: DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000
       },
       luckyDraw: {
-        myTickets: u.luckyTickets || 0,
+        myTickets,
         totalPoolTickets: totalLuckyTickets,
+        winChancePct,
+        endsAt: wkInfo.endsAt,
+        weekKey: wkInfo.key,
         prizeTitle: 'Victory Medal NFT + 100,000 HOLD',
         lastWinner: st.config?.lastLuckyWinner || null
+      },
+      vault: {
+        date: dailyVaultObj.date,
+        index: dailyVaultObj.index,
+        totalCombos: dailyVaultObj.totalCombos,
+        sequence: dailyVaultObj.sequence,
+        arrows: dailyVaultObj.arrows,
+        reward: 30_000,
+        solvedToday: compassSolvedToday
       },
       squadWarPrize: st.config?.squadWarPrize || 25_000,
       morse: {
@@ -1167,7 +1414,7 @@ export function registerHoldEngine(app, deps) {
         lettersGuide: morseOverlay
       },
       squadId: u.squadId,
-      squads: Object.values(st.squads || {}).sort((a, b) => b.totalHold - a.totalHold),
+      squads: buildSquadsList(st),
       referredBy: u.referredBy || null,
       referrals: (u.referrals || []).map(rKey => {
         const rUser = st.users[rKey];
@@ -1679,10 +1926,13 @@ export function registerHoldEngine(app, deps) {
 
     let bonusMsg = `🔥 Kun ${u.streakCount}/7 · +${reward.toLocaleString()} HOLD!`;
     if (u.streakCount === 7) {
+      u.luckyTickets = (u.luckyTickets || 0) + 1;
       if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
       if (!u.ownedSkins.includes('cookie')) {
         u.ownedSkins.push('cookie');
-        bonusMsg = `🔥 7-Kunlik Streak! +${reward.toLocaleString()} HOLD + Cookie Skin ochildi!`;
+        bonusMsg = `🔥 7-Kunlik Streak! +${reward.toLocaleString()} HOLD + Cookie Skin + 1 🎟️ Lucky Ticket!`;
+      } else {
+        bonusMsg = `🔥 7-Kunlik Streak! +${reward.toLocaleString()} HOLD + 1 🎟️ Lucky Ticket!`;
       }
     }
 
@@ -2276,8 +2526,8 @@ cp();
   });
 
   // ---- 10. Top-10 Leaderboard & Allocated NFT / HOLD Prizes ----
-  function getVaultItems() {
-    const st = loadHoldState();
+  function getVaultItems(existingSt = null) {
+    const st = existingSt || loadHoldState();
     const settings = loadJSON(path.join(path.dirname(usersFile), 'settings.json'), {});
     const soldCalendars = settings.soldCalendars || {};
     const soldMedals = st.soldMedals || {};
@@ -2338,16 +2588,22 @@ cp();
     return [...vaultMedals, ...vaultCalendars];
   }
 
-  function getTop10PrizeAllocation(allItems) {
-    const avail = allItems.filter(i => !i.sold);
+  function getTop10PrizeAllocation(allItems, existingSt = null) {
+    const claimedIds = new Set(((existingSt && existingSt.nftClaims) || []).map(c => c.vaultId).filter(Boolean));
+    const avail = allItems.filter(i => !i.sold && !claimedIds.has(i.vaultId));
+    const sortCatalog = (a, b) => (Number(b.isBlack) - Number(a.isBlack)) || ((a.number || 99999) - (b.number || 99999));
+    const calendars = avail.filter(x => x.nftType === 'calendar').sort(sortCatalog);
+    const medals = avail.filter(x => x.nftType === 'medal').sort(sortCatalog);
+    const allSorted = [...avail].sort(sortCatalog);
+
     const usedIds = new Set();
-    const pick = (predicate) => {
-      const found = avail.find(x => !usedIds.has(x.vaultId) && predicate(x));
+    const takeFrom = (pool) => {
+      const found = pool.find(x => !usedIds.has(x.vaultId));
       if (found) {
         usedIds.add(found.vaultId);
         return found;
       }
-      const fallback = avail.find(x => !usedIds.has(x.vaultId));
+      const fallback = allSorted.find(x => !usedIds.has(x.vaultId));
       if (fallback) usedIds.add(fallback.vaultId);
       return fallback || null;
     };
@@ -2357,39 +2613,43 @@ cp();
       100_000, 75_000, 50_000, 35_000, 25_000
     ];
 
-    const selected = [
-      pick(x => x.nftType === 'calendar' && x.number < 100),
-      pick(x => x.nftType === 'calendar' && x.isBlack),
-      pick(x => x.nftType === 'medal' && x.isBlack),
-      pick(x => x.nftType === 'calendar' && x.crafted),
-      pick(x => x.nftType === 'medal'),
-      pick(x => x.nftType === 'calendar'),
-      pick(x => x.nftType === 'medal'),
-      pick(x => x.nftType === 'calendar'),
-      pick(x => x.nftType === 'medal'),
-      pick(x => x.nftType === 'calendar')
+    const slotPlan = [
+      { kind: 'calendar', reason: 'Mutlaq #1 All-Time chempion' },
+      { kind: 'calendar', reason: '#2 All-Time vitse-chempion' },
+      { kind: 'medal', reason: '#3 All-Time bronza podiumi' },
+      { kind: 'calendar', reason: '#4 All-Time reyting' },
+      { kind: 'medal', reason: '#5 All-Time reyting' },
+      { kind: 'calendar', reason: '#6 All-Time reyting' },
+      { kind: 'medal', reason: '#7 All-Time reyting' },
+      { kind: 'calendar', reason: '#8 All-Time reyting' },
+      { kind: 'medal', reason: '#9 All-Time reyting' },
+      { kind: 'calendar', reason: '#10 All-Time reyting' }
     ];
 
-    return selected.map((nft, idx) => ({
-      rank: idx + 1,
-      holdBonus: holdBonusByRank[idx],
-      nft: nft ? {
-        vaultId: nft.vaultId,
-        title: nft.title,
-        model: nft.model,
-        backdrop: nft.backdrop,
-        img: nft.img,
-        centerColor: nft.centerColor,
-        edgeColor: nft.edgeColor,
-        link: nft.link
-      } : null
-    }));
+    return slotPlan.map((slot, idx) => {
+      const nft = takeFrom(slot.kind === 'medal' ? medals : calendars);
+      return {
+        rank: idx + 1,
+        holdBonus: holdBonusByRank[idx],
+        reason: slot.reason,
+        nft: nft ? {
+          vaultId: nft.vaultId,
+          title: nft.title,
+          model: nft.model,
+          backdrop: nft.backdrop,
+          img: nft.img,
+          centerColor: nft.centerColor,
+          edgeColor: nft.edgeColor,
+          link: nft.link
+        } : null
+      };
+    });
   }
 
   app.get('/api/hold/vault', (req, res) => {
-    const allItems = getVaultItems();
-    const top10Prizes = getTop10PrizeAllocation(allItems);
     const st = loadHoldState();
+    const allItems = getVaultItems(st);
+    const top10Prizes = getTop10PrizeAllocation(allItems, st);
     const today = todayStr();
     const allUsers = Object.values(st.users || {}).filter(u => !isSyntheticUsername(u.username));
 
@@ -2419,11 +2679,11 @@ cp();
     const sortedDayUsers = [...allUsers]
       .sort((a, b) => (b.dailyHold?.[today] || 0) - (a.dailyHold?.[today] || 0));
 
+    // NOTE: Top-10 NFT prizes strictly follow All-Time rank, never daily rank
     const leaderboardDay = sortedDayUsers
       .slice(0, 100)
       .map((u, idx) => {
         const rank = idx + 1;
-        const prize = rank <= 10 ? top10Prizes[rank - 1] : null;
         const dayVal = Math.floor(u.dailyHold?.[today] || 0);
         return {
           rank,
@@ -2436,14 +2696,34 @@ cp();
           holdBalance: Math.floor(u.holdBalance || 0),
           league: getLeagueForHold(u.lifetimeHold || 0),
           referralsCount: (u.referrals || []).length,
-          prize
+          prize: null
         };
       });
+
+    const availNfts = allItems.filter(i => !i.sold);
+    const nftPoolSummary = {
+      totalAvailable: availNfts.length,
+      medalsAvailable: availNfts.filter(i => i.nftType === 'medal').length,
+      calendarsAvailable: availNfts.filter(i => i.nftType === 'calendar').length,
+      top10AllTimeCount: 10,
+      weeklyLuckyDrawCount: 1,
+      leagueQuotas: HOLD_LEAGUES.map(lg => ({
+        id: lg.id,
+        name: lg.name,
+        minHold: lg.minHold,
+        nftPoolCount: lg.nftPoolCount,
+        nftGuarantee: lg.nftGuarantee,
+        nftRule: lg.nftRule,
+        color: lg.color
+      }))
+    };
 
     res.json({
       ok: true,
       totalPlayers: sortedUsers.length,
       top10Prizes,
+      nftPoolSummary,
+      squads: buildSquadsList(st),
       leaderboard,
       leaderboardDay
     });
@@ -2728,27 +3008,24 @@ cp();
     }
 
     if (action === 'draw_lucky_winner') {
-      const pool = [];
-      for (const usr of Object.values(st.users || {})) {
-        const t = usr.luckyTickets || 0;
-        for (let i = 0; i < t; i++) pool.push(usr);
+      const winnerInfo = runLuckyDraw(st);
+      if (!winnerInfo) {
+        return res.status(400).json({ ok: false, error: 'Hozircha hech kimda Lucky Ticket yoʻq (Kunlik Vault/Morze yoki 7-kunlik Streak orqali olinadi)' });
       }
-      if (!pool.length) {
-        return res.status(400).json({ ok: false, error: 'Hozircha hech kimda Lucky Ticket yoʻq (Kunlik Morze yechilganda beriladi)' });
-      }
-      const winner = pool[crypto.randomInt(0, pool.length)];
-      creditHold(winner, st, 100_000);
-      st.config.lastLuckyWinner = {
-        username: winner.username,
-        displayName: winner.displayName || winner.username,
-        rewardHold: 100_000,
-        prizeNft: 'Victory Medal NFT',
-        drawnAt: new Date().toISOString()
-      };
+      delete st.config.pendingLuckyNotify;
       saveHoldState(st);
+      const winUser = st.users?.[winnerInfo.username];
+      if (winUser?.paxtaId) {
+        holdBotCall('sendMessage', {
+          chat_id: winUser.paxtaId,
+          text: `🎟️ **Lucky Draw gʻolibi boʻldingiz!**\n\nTabriklaymiz @${winnerInfo.username}! Siz **+${winnerInfo.rewardHold.toLocaleString()} $HOLD** va **${winnerInfo.prizeNft}** yutdingiz! 🎉`,
+          parse_mode: 'Markdown',
+          reply_markup: botOpenHoldMarkup(winUser, '🎟️ Natijani koʻrish')
+        }).catch(() => {});
+      }
       return res.json({
         ok: true,
-        message: `🎟️ Omadli Chipta Gʻolibi: @${winner.username} (+100,000 HOLD + Victory Medal)!`,
+        message: `🎟️ Omadli Chipta Gʻolibi: @${winnerInfo.username} (+${winnerInfo.rewardHold.toLocaleString()} HOLD + ${winnerInfo.prizeNft})!`,
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
@@ -2827,19 +3104,20 @@ cp();
     res.json({ ok: true, user: formatHoldUserResponse(st, u, mainUser) });
   });
 
-  // ---- 14. Hidden Compass Secret Mystery (/api/hold/solve-compass) ----
+  // ---- 14. Daily Vault Secret Combo Mystery (/api/hold/solve-compass) ----
   app.post('/api/hold/solve-compass', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const seq = req.body?.sequence;
-    const expected = ['up', 'right', 'down', 'left', 'up'];
+    const activeVault = getActiveDailyVault(st, saveHoldState);
+    const expected = activeVault.sequence;
     if (!Array.isArray(seq) || seq.length !== expected.length || !seq.every((v, i) => v === expected[i])) {
-      return res.status(400).json({ ok: false, error: 'Kombinatsiya xato' });
+      return res.status(400).json({ ok: false, error: 'Bugungi Vault kombinatsiyasi xato! @HOLDbot dan Bugungi Vault kodini tekshiring.' });
     }
 
     const today = todayStr();
     if (!Array.isArray(u.compassSolvedDays)) u.compassSolvedDays = [];
     if (u.compassSolvedDays.includes(today)) {
-      return res.status(400).json({ ok: false, error: 'Bugungi kompas siri ochilgan! Ertaga qayta urinib koʻring.' });
+      return res.status(400).json({ ok: false, error: 'Bugungi Vault kodi allaqachon ochilgan! Ertaga yangi kod chiqadi.' });
     }
 
     u.compassSolvedDays.push(today);
@@ -2851,7 +3129,7 @@ cp();
     res.json({
       ok: true,
       reward,
-      message: '🧭 Qadimiy kompas siri ochildi! +30,000 HOLD va +1 Lucky Ticket!',
+      message: `🔐 Kunlik Vault ochildi (#${activeVault.index}/${activeVault.totalCombos})! +30,000 HOLD va +1 Lucky Ticket!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -2971,12 +3249,14 @@ cp();
 
       if (!st.config.notifs) st.config.notifs = {};
 
-      // Settle Squad Wars on week rollover and notify winners
+      // Settle Squad Wars & Weekly Lucky Draw on week rollover and notify winners
       const prevWk = st.config.warsWeekKey;
       settleWars(st);
-      if (prevWk !== st.config.warsWeekKey || st.config.pendingWarNotify?.userKeys?.length) {
+      if (prevWk !== st.config.warsWeekKey || st.config.pendingWarNotify?.userKeys?.length || st.config.pendingLuckyNotify) {
         const warNote = st.config.pendingWarNotify;
+        const luckyNote = st.config.pendingLuckyNotify;
         delete st.config.pendingWarNotify;
+        delete st.config.pendingLuckyNotify;
         saveHoldState(st);
         if (warNote?.userKeys?.length) {
           for (const k of warNote.userKeys) {
@@ -2992,6 +3272,17 @@ cp();
               await new Promise(r => setTimeout(r, 45));
             } catch {}
           }
+        }
+        if (luckyNote?.paxtaId) {
+          try {
+            const luckyUsr = st.users?.[luckyNote.username];
+            await holdBotCall('sendMessage', {
+              chat_id: luckyNote.paxtaId,
+              text: `🎟️ **Haftalik Lucky Draw gʻolibi boʻldingiz!**\n\nTabriklaymiz @${luckyNote.username}! ${luckyNote.poolSize} ta chipta ichidan sizning chiptangiz yutdi:\n🎁 **+${Number(luckyNote.rewardHold || 100_000).toLocaleString()} $HOLD** va **${luckyNote.prizeNft}**! 🎉`,
+              parse_mode: 'Markdown',
+              reply_markup: luckyUsr ? botOpenHoldMarkup(luckyUsr, '🎟️ Mukofotni koʻrish') : undefined
+            });
+          } catch {}
         }
       }
 
@@ -3077,7 +3368,7 @@ cp();
     } catch {}
   }, 60_000);
 
-  // ---- 17. @HOLDbot Polling Loop (Handles /start, Referrals & Stars Payments) ----
+  // ---- 17. @HOLDbot Polling Loop (Handles /start, /vault, /tickets, Referrals & Stars Payments) ----
   async function startHoldBotLoop() {
     const holdWebAppUrl = `${PUBLIC_APP_URL}/hold`;
     holdBotCall('setChatMenuButton', {
@@ -3087,6 +3378,51 @@ cp();
         web_app: { url: holdWebAppUrl }
       }
     }).catch(() => {});
+
+    holdBotCall('setMyCommands', {
+      commands: [
+        { command: 'start', description: 'HOLD boshlash va referal' },
+        { command: 'vault', description: 'Bugungi Vault kodi' },
+        { command: 'tickets', description: 'Lucky Ticket va shanslar' }
+      ]
+    }).catch(() => {});
+
+    function formatBotVaultReply(stObj, usr) {
+      const v = getActiveDailyVault(stObj, saveHoldState);
+      const solved = (usr?.compassSolvedDays || []).includes(v.date);
+      return (
+        `🔐 **Bugungi Vault kodi (${v.date})** · #${v.index}/${v.totalCombos}\n\n` +
+        `Yoʻnalish: ${v.arrows}\n` +
+        `Tartib: **${v.labels}**\n\n` +
+        `🎁 Mukofot: **+30,000 $HOLD + 1 🎟️ Lucky Ticket**\n` +
+        `Holat: ${solved ? '✅ Bugungi kod allaqachon ochildi!' : '⏳ Hali ochilmagan'}\n\n` +
+        `_Ilova ichida markaziy tanga chetlarini (Tepa / Oʻng / Past / Chap) shu ketma-ketlikda bosing._`
+      );
+    }
+
+    function formatBotTicketsReply(stObj, usr) {
+      const myT = Math.floor(usr?.luckyTickets || 0);
+      const totalT = Object.values(stObj.users || {})
+        .filter(x => x && !isSyntheticUsername(x.username))
+        .reduce((acc, x) => acc + Math.floor(x.luckyTickets || 0), 0);
+      const chance = totalT > 0 && myT > 0 ? ((myT / totalT) * 100).toFixed(1) : '0';
+      const last = stObj.config?.lastLuckyWinner;
+      const lastLine = last
+        ? `🏆 Oxirgi gʻolib: **@${last.username}** (${last.prizeNft} + ${Number(last.rewardHold || 100_000).toLocaleString()} $HOLD)`
+        : '🏆 Birinchi haftalik gʻolib shu dushanba aniqlanadi';
+      return (
+        `🎟️ **Weekly Lucky Draw — Chiptalarim**\n\n` +
+        `🎫 Sizda: **${myT} ta chipta**\n` +
+        `🌍 Umumiy pul: **${totalT} ta chipta**\n` +
+        `📊 Yutish ehtimoli: **${chance}%**\n` +
+        `🎁 Haftalik sovrin: **Victory Medal NFT + 100,000 $HOLD**\n\n` +
+        `📌 **Qayerdan olinadi:**\n` +
+        `• 🔐 Bugungi Vault kodini ochish: **+1 chipta**\n` +
+        `• 🕵️ Kunlik Morze kodini yechish: **+1 chipta**\n` +
+        `• 🔥 7-kunlik Daily Streak: **+1 chipta**\n\n` +
+        `⏰ Har dushanba (00:00 UTC+5) avtomatik oʻynaladi.\n${lastLine}`
+      );
+    }
 
     let st = loadHoldState();
     let offset = (st.payments?.lastUpdateId || 0) + 1;
@@ -3099,7 +3435,7 @@ cp();
           for (const item of u.result) {
             offset = item.update_id + 1;
             st = loadHoldState();
-            const fromUser = item.pre_checkout_query?.from || item.message?.from;
+            const fromUser = item.pre_checkout_query?.from || item.callback_query?.from || item.message?.from;
             const uKey = fromUser ? cleanKey(fromUser.username || fromUser.first_name || `paxta_${fromUser.id}`) : null;
 
             if (item.pre_checkout_query) {
@@ -3107,6 +3443,47 @@ cp();
                 pre_checkout_query_id: item.pre_checkout_query.id,
                 ok: true
               });
+            }
+
+            if (item.callback_query) {
+              const cq = item.callback_query;
+              const cqFrom = cq.from || {};
+              const cqKey = cleanKey(cqFrom.username || cqFrom.first_name || `paxta_${cqFrom.id}`);
+              await holdBotCall('answerCallbackQuery', { callback_query_id: cq.id }).catch(() => {});
+              if (cqKey) {
+                const cqRes = getOrCreateHoldUser(cqKey, cqFrom.first_name || cqFrom.username, cqFrom.id, null, null);
+                st = cqRes.st;
+                const cqUser = cqRes.u;
+                const cqChatId = cq.message?.chat?.id || cqFrom.id;
+                const cqChatType = cq.message?.chat?.type;
+                const token = createSessionToken(cqUser.username, cqFrom.id);
+                const personalUrl = `${holdWebAppUrl}?auth=${encodeURIComponent(token)}`;
+                if (cq.data === 'daily_vault' && !['channel', 'group', 'supergroup'].includes(cqChatType) && cqChatId) {
+                  await holdBotCall('sendMessage', {
+                    chat_id: cqChatId,
+                    text: formatBotVaultReply(st, cqUser),
+                    parse_mode: 'Markdown',
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: 'HOLD', web_app: { url: personalUrl } }],
+                        [{ text: '🎟️ Lucky Tickets', callback_data: 'lucky_info' }]
+                      ]
+                    }
+                  });
+                } else if (cq.data === 'lucky_info' && cqChatId) {
+                  await holdBotCall('sendMessage', {
+                    chat_id: cqChatId,
+                    text: formatBotTicketsReply(st, cqUser),
+                    parse_mode: 'Markdown',
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: 'HOLD', web_app: { url: personalUrl } }],
+                        [{ text: '🔐 Bugungi Vault kodi', callback_data: 'daily_vault' }]
+                      ]
+                    }
+                  });
+                }
+              }
             }
 
             if (item.message?.successful_payment) {
@@ -3163,13 +3540,19 @@ cp();
               const senderKey = cleanKey(sender.username || sender.first_name || `paxta_${sender.id}`);
               if (!senderKey) continue;
 
+              const chatType = item.message?.chat?.type;
+              const isPrivate = !['channel', 'group', 'supergroup'].includes(chatType);
+
+              const isVaultCmd = txt === '/vault' || txt.startsWith('/vault@') || txt.toLowerCase() === 'bugungi vault kodi' || txt.toLowerCase() === 'vault';
+              const isTicketsCmd = txt === '/tickets' || txt.startsWith('/tickets@') || txt === '/lucky' || txt.startsWith('/lucky@');
+
               const isSlashCmd = txt.startsWith('/start') || txt.startsWith('/hold') || txt.startsWith('/play') || txt.startsWith('/ref');
               const parts = txt.split(/\s+/);
 
               let rawRef = '';
               if (isSlashCmd && parts.length > 1) {
                 rawRef = parts.slice(1).join(' ').trim();
-              } else if (!txt.startsWith('/') && (txt.startsWith('@') || /^[a-zA-Z0-9_]{3,32}$/.test(txt))) {
+              } else if (!txt.startsWith('/') && !isVaultCmd && !isTicketsCmd && (txt.startsWith('@') || /^[a-zA-Z0-9_]{3,32}$/.test(txt))) {
                 rawRef = txt;
               }
 
@@ -3243,26 +3626,61 @@ cp();
               const personalUrl = `${holdWebAppUrl}?auth=${encodeURIComponent(token)}${refKey ? `&ref=${encodeURIComponent(refKey)}` : ''}`;
               const myRefCode = sender.id || senderUser.username;
 
-              let replyText = '';
-              if (refAttributed) {
-                replyText = `🎉 **Doʻstingiz @${refKey} taklifi muvaffaqiyatli qabul qilindi!**\n\n💰 Sizga **+5,000 $HOLD** bonusi berildi!\n\nNothing to sell. Just hold. @hold`;
-              } else if (alreadyReferred && refKey && refKey !== senderUser.referredBy) {
-                replyText = `ℹ️ Siz allaqachon **@${senderUser.referredBy}** ning taklifi bilan roʻyxatdan oʻtgansiz.\n\nNothing to sell. Just hold. @hold`;
-              } else {
-                replyText = `🪙 **HOLD — Nothing to sell. Just hold.**\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagicha yozishini ayting:\n\`/start ${myRefCode}\`\n\nYoki havola: ${PUBLIC_APP_URL}/r/${myRefCode}\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
-              }
-
               if (item.message?.chat?.id) {
-                await holdBotCall('sendMessage', {
-                  chat_id: item.message.chat.id,
-                  text: replyText,
-                  parse_mode: 'Markdown',
-                  reply_markup: {
-                    inline_keyboard: [
-                      [{ text: 'HOLD', web_app: { url: personalUrl } }]
-                    ]
+                if (isVaultCmd && isPrivate) {
+                  await holdBotCall('sendMessage', {
+                    chat_id: item.message.chat.id,
+                    text: formatBotVaultReply(st, senderUser),
+                    parse_mode: 'Markdown',
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: 'HOLD', web_app: { url: personalUrl } }],
+                        [{ text: '🎟️ Lucky Tickets', callback_data: 'lucky_info' }]
+                      ]
+                    }
+                  });
+                } else if (isTicketsCmd) {
+                  await holdBotCall('sendMessage', {
+                    chat_id: item.message.chat.id,
+                    text: formatBotTicketsReply(st, senderUser),
+                    parse_mode: 'Markdown',
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: 'HOLD', web_app: { url: personalUrl } }],
+                        [{ text: '🔐 Bugungi Vault kodi', callback_data: 'daily_vault' }]
+                      ]
+                    }
+                  });
+                } else {
+                  const v = getActiveDailyVault(st, saveHoldState);
+                  const vaultSolved = (senderUser.compassSolvedDays || []).includes(v.date);
+                  const vaultLine = isPrivate
+                    ? `\n\n🔐 **Bugungi Vault kodi (${v.date}):** ${v.arrows}\n_${vaultSolved ? '✅ Bugungi Vault ochildi!' : 'Tangani shu yoʻnalishda bosing: +30,000 $HOLD + 1 🎟️'}_`
+                    : '';
+                  let replyText = '';
+                  if (refAttributed) {
+                    replyText = `🎉 **Doʻstingiz @${refKey} taklifi muvaffaqiyatli qabul qilindi!**\n\n💰 Sizga **+5,000 $HOLD** bonusi berildi!${vaultLine}\n\nNothing to sell. Just hold. @hold`;
+                  } else if (alreadyReferred && refKey && refKey !== senderUser.referredBy) {
+                    replyText = `ℹ️ Siz allaqachon **@${senderUser.referredBy}** ning taklifi bilan roʻyxatdan oʻtgansiz.${vaultLine}\n\nNothing to sell. Just hold. @hold`;
+                  } else {
+                    replyText = `🪙 **HOLD — Nothing to sell. Just hold.**${vaultLine}\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagi buyruqni yuborishini ayting:\n\`/start ${myRefCode}\`\n\n👉 Bot: https://paxta.online/u/HOLDbot\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
                   }
-                });
+
+                  await holdBotCall('sendMessage', {
+                    chat_id: item.message.chat.id,
+                    text: replyText,
+                    parse_mode: 'Markdown',
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: 'HOLD', web_app: { url: personalUrl } }],
+                        [
+                          { text: '🔐 Bugungi Vault kodi', callback_data: 'daily_vault' },
+                          { text: '🎟️ Lucky Tickets', callback_data: 'lucky_info' }
+                        ]
+                      ]
+                    }
+                  });
+                }
               }
             }
           }
