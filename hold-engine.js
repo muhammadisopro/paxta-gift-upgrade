@@ -1132,11 +1132,40 @@ export function registerHoldEngine(app, deps) {
   }
 
   // Verify a real PaxtaGram user or channel on paxta.online
+  function normalizePaxtaMediaUrl(u) {
+    if (!u || typeof u !== 'string') return null;
+    if (u.startsWith('http://') || u.startsWith('https://')) return u;
+    return `https://paxta.online${u.startsWith('/') ? '' : '/'}${u}`;
+  }
+
   async function verifyOnPaxtaGram(handleRaw) {
-    const clean = String(handleRaw || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, '').trim();
+    const clean = String(handleRaw || '')
+      .replace(/^https?:\/\/(www\.)?paxta\.online\//i, '')
+      .replace(/^@/, '')
+      .replace(/[/?#].*$/, '')
+      .trim();
     if (!clean || isSyntheticUsername(clean)) return null;
 
-    // 1. Try Bot API getChat
+    // 1. Official PaxtaGram Search API (/api/search?q=) — resolves channels, groups & users with real titles
+    try {
+      if (typeof moonClient?.resolveChatByUsername === 'function') {
+        const ch = await moonClient.resolveChatByUsername(clean);
+        if (ch && (ch.id || ch.title || ch.username)) {
+          return {
+            id: ch.id ? Number(ch.id) : null,
+            username: ch.username || clean,
+            title: ch.title || ch.name || ch.username || clean,
+            avatar: normalizePaxtaMediaUrl(ch.photo || ch.avatar_url || null),
+            membersCount: Number(ch.members_count || 0),
+            isVerified: !!ch.verified,
+            type: ch.type || 'channel',
+            verified: true
+          };
+        }
+      }
+    } catch {}
+
+    // 2. Fallback Bot API getChat (if supported)
     try {
       const chatRes = await holdBotCall('getChat', { chat_id: `@${clean}` });
       if (chatRes && chatRes.ok && chatRes.result) {
@@ -1151,7 +1180,7 @@ export function registerHoldEngine(app, deps) {
       }
     } catch {}
 
-    // 2. Try MoonClient resolveUserByUsername
+    // 3. Fallback MoonClient resolveUserByUsername
     try {
       const u = await moonClient.resolveUserByUsername(clean);
       if (u && u.id) {
@@ -1159,7 +1188,7 @@ export function registerHoldEngine(app, deps) {
           id: Number(u.id),
           username: u.username || clean,
           title: u.name || u.first_name || u.username || clean,
-          avatar: u.avatar_url || null,
+          avatar: normalizePaxtaMediaUrl(u.avatar_url || null),
           isVerified: !!u.is_verified,
           isPremium: !!u.is_premium,
           createdAt: u.created_at || null,
@@ -1169,7 +1198,7 @@ export function registerHoldEngine(app, deps) {
       }
     } catch {}
 
-    // 3. Try checking public PaxtaGram page
+    // 4. Only accept public page if explicit non-generic og:title exists (never match SPA shell <title>PaxtaGram</title>)
     try {
       const res = await fetch(`https://paxta.online/${encodeURIComponent(clean)}`, {
         method: 'GET',
@@ -1177,15 +1206,17 @@ export function registerHoldEngine(app, deps) {
       });
       if (res.ok) {
         const html = await res.text();
-        const titleMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/i) || html.match(/<title>([^<]+)<\/title>/i);
-        const title = titleMatch ? titleMatch[1].replace(/\s*[-|]\s*PaxtaGram.*/i, '').trim() : clean;
-        return {
-          id: null,
-          username: clean,
-          title: title || clean,
-          type: 'channel',
-          verified: true
-        };
+        const ogMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/i);
+        const ogTitle = ogMatch ? ogMatch[1].replace(/\s*[-|]\s*PaxtaGram.*/i, '').trim() : '';
+        if (ogTitle && ogTitle.toLowerCase() !== 'paxtagram') {
+          return {
+            id: null,
+            username: clean,
+            title: ogTitle,
+            type: 'channel',
+            verified: true
+          };
+        }
       }
     } catch {}
 
@@ -2395,30 +2426,52 @@ export function registerHoldEngine(app, deps) {
     const channelHandle = req.body?.channelHandle;
 
     if (channelHandle && !squadId) {
-      const cleanH = cleanKey(String(channelHandle).replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, ''));
-      if (st.squads[cleanH]) {
-        squadId = cleanH;
-        const sqx = st.squads[cleanH];
-        if (!sqx.name || sqx.name === `@${cleanH}`) {
+      const cleanH = cleanKey(
+        String(channelHandle)
+          .replace(/^https?:\/\/(www\.)?paxta\.online\//i, '')
+          .replace(/^@/, '')
+          .replace(/[/?#].*$/, '')
+      );
+      if (!cleanH || cleanH.length < 2) {
+        return res.status(400).json({ ok: false, error: 'Kanal @username manzilini toʻgʻri kiriting' });
+      }
+      const existingByHandle = st.squads[cleanH] || Object.values(st.squads || {}).find(
+        s => cleanKey(s?.handle || '') === cleanH || cleanKey(s?.id || '') === cleanH
+      );
+      if (existingByHandle) {
+        squadId = existingByHandle.id;
+        if (!existingByHandle.name || existingByHandle.name === `@${cleanH}` || normSquadName(existingByHandle.name) === 'paxtagram') {
           try {
             const vc = await verifyOnPaxtaGram(cleanH);
-            if (vc?.title && vc.title !== cleanH && !findSquadByName(st, vc.title, sqx.id)) sqx.name = vc.title;
+            const vcTitle = vc?.title ? cleanSquadName(vc.title) : '';
+            if (vcTitle && normSquadName(vcTitle) !== 'paxtagram' && !findSquadByName(st, vcTitle, existingByHandle.id)) {
+              existingByHandle.name = vcTitle;
+            }
+            if (vc?.avatar && !existingByHandle.avatarUrl) existingByHandle.avatarUrl = vc.avatar;
           } catch {}
         }
       } else {
         const verifiedCh = await verifyOnPaxtaGram(cleanH);
         if (!verifiedCh) {
-          return res.status(404).json({ ok: false, error: `@${cleanH} rasmiy PaxtaGram kanali topilmadi` });
+          return res.status(404).json({ ok: false, error: `@${cleanH} kanali yoki guruhi PaxtaGramda topilmadi` });
         }
-        const sqName = cleanSquadName(verifiedCh.title) || `@${cleanH}`;
+        let sqName = cleanSquadName(verifiedCh.title) || `@${cleanH}`;
+        if (normSquadName(sqName) === 'paxtagram' && cleanH !== 'xaydarov') {
+          sqName = `@${verifiedCh.username || cleanH}`;
+        }
         const dupSq = findSquadByName(st, sqName, cleanH);
         if (dupSq) {
-          return res.status(409).json({ ok: false, error: `Bu nomdagi squad allaqachon mavjud: ${dupSq.name}. Unga qoʻshiling yoki kanal nomini oʻzgartiring` });
+          return res.status(409).json({
+            ok: false,
+            existingSquadId: dupSq.id,
+            error: `Bu nomdagi squad allaqachon mavjud: ${dupSq.name} (@${dupSq.handle || dupSq.id}).`
+          });
         }
         st.squads[cleanH] = {
           id: cleanH,
           handle: verifiedCh.username || cleanH,
           name: sqName,
+          avatarUrl: verifiedCh.avatar || null,
           members: 0,
           totalHold: 0,
           verified: true,
@@ -2435,13 +2488,61 @@ export function registerHoldEngine(app, deps) {
     }
     if (u.squadId !== squadId) {
       u.squadId = squadId;
-      reconcileSquads(st);
-      saveHoldState(st);
     }
+    reconcileSquads(st);
+    saveHoldState(st);
     res.json({
       ok: true,
+      joinedSquadId: squadId,
       message: `🛡️ ${st.squads[squadId].name} jamoasiga qoʻshildingiz!`,
       user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 7A. Search Existing Squads + Direct PaxtaGram Channel Lookup ----
+  app.get('/api/hold/search-squad', async (req, res) => {
+    const st = loadHoldState();
+    const raw = String(req.query?.q || '').trim();
+    const qClean = raw.replace(/^https?:\/\/(www\.)?paxta\.online\//i, '').replace(/^@/, '').trim();
+    const qNorm = normSquadName(qClean);
+    const qHandle = cleanKey(qClean.replace(/[/?#].*$/, ''));
+    const all = buildSquadsList(st);
+
+    const matches = qNorm
+      ? all.filter(sq =>
+          normSquadName(sq.name).includes(qNorm) ||
+          cleanKey(sq.handle || sq.id).includes(qHandle)
+        )
+      : all;
+
+    let paxtaMatch = null;
+    const looksLikeHandle = qHandle.length >= 2 && !/\s/.test(qClean);
+    const alreadyExact = matches.some(sq => cleanKey(sq.handle || sq.id) === qHandle);
+    if (looksLikeHandle && !alreadyExact) {
+      try {
+        const v = await verifyOnPaxtaGram(qHandle);
+        if (v) {
+          let title = cleanSquadName(v.title) || `@${qHandle}`;
+          if (normSquadName(title) === 'paxtagram' && qHandle !== 'xaydarov') title = `@${v.username || qHandle}`;
+          paxtaMatch = {
+            id: qHandle,
+            handle: v.username || qHandle,
+            name: title,
+            avatarUrl: v.avatar || null,
+            membersCount: Number(v.membersCount || 0),
+            type: v.type || 'channel',
+            verified: !!v.isVerified,
+            isNew: true
+          };
+        }
+      } catch {}
+    }
+
+    res.json({
+      ok: true,
+      query: raw,
+      squads: matches.slice(0, 50),
+      paxtaMatch
     });
   });
 

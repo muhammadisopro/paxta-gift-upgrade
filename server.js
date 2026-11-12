@@ -542,6 +542,45 @@ class MoonPaxtaClient {
     }
   }
 
+  async resolveChatByUsername(rawHandle) {
+    const clean = String(rawHandle || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, '').trim().toLowerCase();
+    if (!clean) return null;
+    await this.ensureLoggedIn();
+    try {
+      let res = await this.request(`/search?q=${encodeURIComponent(clean)}`);
+      if (res.status === 401) {
+        this.isLoggedIn = false;
+        await this.ensureLoggedIn();
+        res = await this.request(`/search?q=${encodeURIComponent(clean)}`);
+      }
+      if (!res.ok) return null;
+      const data = await res.json();
+      const chats = Array.isArray(data.chats) ? data.chats : [];
+      const exactChat = chats.find(c => {
+        const u = String(c?.username || '').toLowerCase();
+        const also = Array.isArray(c?.also_usernames) ? c.also_usernames.map(x => String(x || '').toLowerCase()) : [];
+        return u === clean || also.includes(clean);
+      });
+      if (exactChat) return exactChat;
+      const users = Array.isArray(data.users) ? data.users : [];
+      const exactUser = users.find(u => String(u?.username || '').toLowerCase() === clean);
+      if (exactUser) {
+        return {
+          id: exactUser.id,
+          username: exactUser.username,
+          title: exactUser.name || exactUser.first_name || exactUser.username,
+          photo: exactUser.avatar_url || null,
+          type: 'user',
+          verified: !!exactUser.is_verified,
+          members_count: 0
+        };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
   async transferNftGift({ giftId, targetUserId }) {
     const numGiftId = Number(giftId);
     if (FORBIDDEN_GIFT_IDS.has(numGiftId)) {

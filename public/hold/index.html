@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=32" />
+  <link rel="stylesheet" href="/hold/style.css?v=33" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -344,10 +344,14 @@
         <div class="dark-group-box" id="frensInvitedList"></div>
 
         <!-- Official PaxtaGram Squads -->
-        <div class="section-flex-head">
-          <h3 class="not-section-heading">Squads (PaxtaGram Channels)</h3>
-          <button type="button" class="bb-link-btn" id="btnAddCustomSquad">+ Add channel</button>
+        <div class="section-flex-head squad-section-head">
+          <h3 class="not-section-heading">Squads</h3>
+          <div class="squad-hdr-actions">
+            <button type="button" class="squad-hdr-btn" id="btnSearchSquads">🔍 Qidirish</button>
+            <button type="button" class="squad-hdr-btn primary" id="btnAddCustomSquad">+ Squad qoʻshish</button>
+          </div>
         </div>
+        <div id="mySquadSpotlight"></div>
         <div class="dark-group-box" id="squadsList"></div>
       </div>
     </section>
@@ -588,6 +592,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=32"></script>
+  <script src="/hold/app.js?v=33"></script>
 </body>
 </html>

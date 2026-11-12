@@ -1544,8 +1544,32 @@ function renderLeaguesSheet() {
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
   if (STATE.leagueMainTab === 'squads') {
-    const allSquads = (STATE.squads && STATE.squads.length) ? STATE.squads : (u.squads || []);
+    const allSquads = (u.squads && u.squads.length) ? u.squads : (STATE.squads || []);
     const isDay = STATE.leagueTimePeriod === 'day';
+    const jumpButtons = leagues
+      .map((item, lIdx) => {
+        const cnt = allSquads.filter(s => (s.league?.id || 'bronze') === item.id).length;
+        if (!cnt) return '';
+        const active = lIdx === STATE.viewedLeagueIdx;
+        return `<button type="button" class="league-jump-pill" data-jump-lidx="${lIdx}" style="${active ? 'background:rgba(56,189,248,0.28);border-color:rgba(56,189,248,0.7);color:#fff;' : ''}">${esc(item.name)} (${cnt})</button>`;
+      })
+      .filter(Boolean)
+      .join('');
+
+    if (jumpButtons) {
+      const bar = document.createElement('div');
+      bar.style.cssText = 'display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:10px;';
+      bar.innerHTML = jumpButtons;
+      bar.querySelectorAll('[data-jump-lidx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          STATE.viewedLeagueIdx = Number(btn.dataset.jumpLidx) || 0;
+          haptic('light');
+          renderLeaguesSheet();
+        });
+      });
+      listWrap.appendChild(bar);
+    }
+
     const filteredSquads = allSquads
       .filter(sq => (sq.league?.id || 'bronze') === lg.id)
       .sort((a, b) => isDay
@@ -1554,29 +1578,13 @@ function renderLeaguesSheet() {
       );
 
     if (!filteredSquads.length) {
-      const jumpButtons = leagues
-        .map((item, lIdx) => {
-          const cnt = allSquads.filter(s => (s.league?.id || 'bronze') === item.id).length;
-          return cnt > 0
-            ? `<button type="button" class="league-jump-pill" data-jump-lidx="${lIdx}">${esc(item.name)} (${cnt})</button>`
-            : '';
-        })
-        .filter(Boolean)
-        .join('');
-      listWrap.innerHTML = `
-        <div style="padding:22px 14px;text-align:center;color:var(--text-2);font-size:13px;line-height:1.5;">
-          Hozircha <b>${esc(lg.name)}</b> ligasida squadlar yoʻq.<br/>
-          <span style="font-size:12px;opacity:0.75;">Squad jami kuchi ${fmtInt(lg.minHold)}+ HOLD boʻlganda shu ligaga kiradi.</span>
-          ${jumpButtons ? `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px;">${jumpButtons}</div>` : ''}
-        </div>
+      const emptyEl = document.createElement('div');
+      emptyEl.style.cssText = 'padding:22px 14px;text-align:center;color:var(--text-2);font-size:13px;line-height:1.5;';
+      emptyEl.innerHTML = `
+        Hozircha <b>${esc(lg.name)}</b> ligasida squadlar yoʻq.<br/>
+        <span style="font-size:12px;opacity:0.75;">Squad jami kuchi ${fmtInt(lg.minHold)}+ HOLD boʻlganda shu ligaga kiradi.</span>
       `;
-      listWrap.querySelectorAll('[data-jump-lidx]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          STATE.viewedLeagueIdx = Number(btn.dataset.jumpLidx) || 0;
-          haptic('light');
-          renderLeaguesSheet();
-        });
-      });
+      listWrap.appendChild(emptyEl);
       return;
     }
 
@@ -1584,16 +1592,20 @@ function renderLeaguesSheet() {
       const rank = sIdx + 1;
       const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}`;
       const scoreVal = isDay ? (sq.dailyHoldToday || 0) : (sq.totalHold || 0);
+      const sqAvatar = sq.avatarUrl
+        ? `<img src="${esc(sq.avatarUrl)}" alt="" class="lb-avatar-circle" style="object-fit:cover;" />`
+        : `<div class="lb-avatar-circle">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>`;
       const row = document.createElement('div');
       row.className = 'lb-row-item';
       row.style.cursor = 'pointer';
       row.innerHTML = `
         <div class="lb-left">
           <div class="lb-medal-col">${medal}</div>
-          <div class="lb-avatar-circle">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>
+          ${sqAvatar}
           <div class="lb-user-meta">
             <div class="lb-user-name">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
             <div class="lb-user-score">
+              <span style="opacity:0.7;">@${esc(sq.handle || sq.id)} ·</span>
               <img src="${esc(coinImg)}" class="inline-c" alt="" />
               <span>${fmtInt(scoreVal)} ${isDay ? '(bugun) · ' : '· '}${fmtInt(sq.members || 0)} a'zo</span>
             </div>
@@ -2414,20 +2426,52 @@ function renderFrensSheet() {
     }
   }
 
+  const spotEl = document.getElementById('mySquadSpotlight');
+  const mySq = u.squadId ? (u.squads || []).find(s => s.id === u.squadId) : null;
+  if (spotEl) {
+    if (mySq) {
+      const av = mySq.avatarUrl
+        ? `<img src="${esc(mySq.avatarUrl)}" alt="" class="squad-avatar-img" />`
+        : `<div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((mySq.name || 'S').charAt(0).toUpperCase())}</div>`;
+      spotEl.innerHTML = `
+        <div class="squad-my-card">
+          ${av}
+          <div class="nri-center" style="min-width:0;">
+            <div style="font-size:10.5px;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:0.4px;">🛡️ Mening Squadim</div>
+            <div class="nri-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(mySq.name)} <span style="opacity:0.65;font-size:12px;">@${esc(mySq.handle || mySq.id)}</span></div>
+            <div class="nri-sub">${esc(mySq.league?.name || 'Bronze')} · ${fmtInt(mySq.members)} aʼzo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(mySq.totalHold)} mining</div>
+          </div>
+          <button type="button" class="skin-pill-btn" id="btnOpenMySquadSpot">Ochish</button>
+        </div>
+      `;
+      spotEl.querySelector('#btnOpenMySquadSpot')?.addEventListener('click', () => openSquadModal(mySq.id));
+    } else {
+      spotEl.innerHTML = '';
+    }
+  }
+
   const sList = document.getElementById('squadsList');
   if (sList) {
     sList.innerHTML = '';
-    (u.squads || []).forEach((sq, idx) => {
+    const squads = [...(u.squads || [])].sort((a, b) => {
+      if (a.id === u.squadId) return -1;
+      if (b.id === u.squadId) return 1;
+      return (b.totalHold || 0) - (a.totalHold || 0);
+    });
+    squads.forEach((sq, idx) => {
       const joined = u.squadId === sq.id;
+      const av = sq.avatarUrl
+        ? `<img src="${esc(sq.avatarUrl)}" alt="" class="squad-avatar-img" />`
+        : `<div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>`;
       const row = document.createElement('div');
       row.className = 'not-row-item';
       row.innerHTML = `
-        <div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>
-        <div class="nri-center">
-          <div class="nri-title">${idx === 0 ? '👑 ' : ''}${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
-          <div class="nri-sub">${esc(sq.league?.name || 'Bronze')} · ${fmtInt(sq.members)} a'zo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
+        ${av}
+        <div class="nri-center" style="min-width:0;">
+          <div class="nri-title">${idx === 0 && !u.squadId ? '👑 ' : ''}${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
+          <div class="nri-sub">@${esc(sq.handle || sq.id)} · ${esc(sq.league?.name || 'Bronze')} · ${fmtInt(sq.members)} aʼzo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)}</div>
         </div>
-        <button type="button" class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined' : 'Join'}</button>
+        <button type="button" class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined ✓' : 'Join'}</button>
       `;
       row.addEventListener('click', async () => {
         if (!joined) {
@@ -2437,9 +2481,12 @@ function renderFrensSheet() {
           });
           if (res.ok && res.user) {
             STATE.user = res.user;
+            if (Array.isArray(res.user.squads)) STATE.squads = res.user.squads;
             haptic('medium');
             renderAll();
             showToast(res.message);
+          } else {
+            showToast(res.error || 'Qoʻshilib boʻlmadi');
           }
         } else {
           openSquadModal(sq.id);
@@ -2450,25 +2497,145 @@ function renderFrensSheet() {
   }
 }
 
+function openSearchSquadsModal() {
+  const coinImg = (STATE.user?.allSkins || []).find(s => s.id === STATE.user?.skin)?.img || '/hold/skins/skin-4.png';
+  openModal('🔍 Squad qidirish', `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
+        Squad nomi yoki doʻstingiz bergan kanal <b>@username</b> manzilini yozing — darhol aʼzolar soni va mining koʻrinadi, <b>+</b> bosib toʻgʻridan-toʻgʻri qoʻshilasiz.
+      </p>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="inpSearchSquad" placeholder="@kanal_user yoki nom..." class="apple-search-input" style="flex:1;min-width:0;" />
+        <button type="button" class="skin-pill-btn" id="btnRunSearchSquad" style="padding:0 14px;">Topish</button>
+      </div>
+      <div id="searchSquadResults" style="max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  `, (body) => {
+    const inp = body.querySelector('#inpSearchSquad');
+    const resultsBox = body.querySelector('#searchSquadResults');
+    const runBtn = body.querySelector('#btnRunSearchSquad');
+
+    const joinDirect = async (payload) => {
+      const res = await api('/api/hold/join-squad', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, ...payload })
+      });
+      if (res.ok && res.user) {
+        STATE.user = res.user;
+        if (Array.isArray(res.user.squads)) STATE.squads = res.user.squads;
+        haptic('heavy');
+        closeModal();
+        renderAll();
+        showToast(res.message);
+      } else {
+        showToast(res.error || 'Qoʻshilib boʻlmadi');
+      }
+    };
+
+    const runSearch = async (qStr) => {
+      if (!resultsBox) return;
+      resultsBox.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text-2);font-size:13px;">Qidirilmoqda...</div>`;
+      const res = await api(`/api/hold/search-squad?q=${encodeURIComponent(qStr || '')}`);
+      if (!res || !res.ok) {
+        resultsBox.innerHTML = `<div style="padding:14px;text-align:center;color:#f87171;font-size:13px;">Qidirishda xatolik</div>`;
+        return;
+      }
+      const list = Array.isArray(res.squads) ? res.squads : [];
+      const pm = res.paxtaMatch;
+      resultsBox.innerHTML = '';
+
+      if (pm) {
+        const pmCard = document.createElement('div');
+        pmCard.className = 'squad-my-card';
+        pmCard.style.marginBottom = '2px';
+        const av = pm.avatarUrl
+          ? `<img src="${esc(pm.avatarUrl)}" alt="" class="squad-avatar-img" />`
+          : `<div class="cp-avatar" style="width:42px;height:42px;border-radius:12px;">${esc((pm.name || 'S').charAt(0).toUpperCase())}</div>`;
+        pmCard.innerHTML = `
+          ${av}
+          <div class="nri-center" style="min-width:0;">
+            <div style="font-size:10.5px;font-weight:700;color:#4ade80;">✨ PaxtaGramda topildi</div>
+            <div class="nri-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(pm.name)}</div>
+            <div class="nri-sub">@${esc(pm.handle)} · Hali HOLDda yoʻq · ${fmtInt(pm.membersCount || 0)} obunachi</div>
+          </div>
+          <button type="button" class="skin-pill-btn" data-add-handle="${esc(pm.handle)}">+ Qoʻshish</button>
+        `;
+        pmCard.querySelector('[data-add-handle]')?.addEventListener('click', () => joinDirect({ channelHandle: pm.handle }));
+        resultsBox.appendChild(pmCard);
+      }
+
+      if (!list.length && !pm) {
+        resultsBox.innerHTML = `<div style="padding:18px;text-align:center;color:var(--text-2);font-size:13px;">Mos squad topilmadi. Kanal @username manzilini toʻliq yozib koʻring.</div>`;
+        return;
+      }
+
+      for (const sq of list) {
+        const joined = STATE.user?.squadId === sq.id;
+        const av = sq.avatarUrl
+          ? `<img src="${esc(sq.avatarUrl)}" alt="" class="squad-avatar-img" />`
+          : `<div class="cp-avatar" style="width:42px;height:42px;border-radius:12px;">${esc((sq.name || 'S').charAt(0).toUpperCase())}</div>`;
+        const item = document.createElement('div');
+        item.className = 'not-row-item';
+        item.style.background = 'rgba(255,255,255,0.04)';
+        item.style.borderRadius = '14px';
+        item.style.padding = '10px';
+        item.innerHTML = `
+          ${av}
+          <div class="nri-center" style="min-width:0;">
+            <div class="nri-title">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
+            <div class="nri-sub">@${esc(sq.handle || sq.id)} · ${fmtInt(sq.members)} aʼzo · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.totalHold)} (${esc(sq.league?.name || 'Bronze')})</div>
+          </div>
+          <button type="button" class="skin-pill-btn ${joined ? 'enabled' : ''}">${joined ? 'Joined ✓' : '+ Join'}</button>
+        `;
+        item.addEventListener('click', () => {
+          if (joined) { closeModal(); openSquadModal(sq.id); }
+          else joinDirect({ squadId: sq.id });
+        });
+        resultsBox.appendChild(item);
+      }
+    };
+
+    let t = null;
+    inp?.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => runSearch(inp.value.trim()), 320);
+    });
+    runBtn?.addEventListener('click', () => runSearch(inp?.value.trim() || ''));
+    inp?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); runSearch(inp.value.trim()); }
+    });
+    runSearch('');
+    setTimeout(() => inp?.focus(), 60);
+  });
+}
+
 function openAddPaxtaChannelSquadModal() {
-  openModal('Add PaxtaGram Channel Squad', `
+  openModal('+ Yangi Kanal Squad qoʻshish', `
     <div style="display:flex;flex-direction:column;gap:12px;">
       <p style="font-size:13px;color:var(--text-2);line-height:1.45;">
-        Rasmiy PaxtaGram kanalingiz <b>@username</b> manzilini kiriting. Bot kanalning PaxtaGramda mavjudligini avtomatik tekshiradi va Squad sifatida qoʻshadi.
+        Rasmiy PaxtaGram kanalingiz yoki guruhingiz <b>@username</b> (yoki havola) manzilini kiriting. Bot kanalni tekshirib, real nomi bilan Squad yaratadi va sizni darhol qoʻshadi.
       </p>
-      <input type="text" id="inpSquadHandle" placeholder="@kanal_nomi" class="apple-search-input" />
+      <input type="text" id="inpSquadHandle" placeholder="@kanal_nomi yoki https://paxta.online/..." class="apple-search-input" />
       <button type="button" class="btn-sapphire-primary" id="btnVerifyAndJoinSquad">Tekshirish va Qoʻshish</button>
     </div>
   `, (body) => {
-    body.querySelector('#btnVerifyAndJoinSquad')?.addEventListener('click', async () => {
-      const channelHandle = body.querySelector('#inpSquadHandle')?.value.trim();
+    const btn = body.querySelector('#btnVerifyAndJoinSquad');
+    const inp = body.querySelector('#inpSquadHandle');
+    btn?.addEventListener('click', async () => {
+      const channelHandle = inp?.value.trim();
       if (!channelHandle) return;
+      btn.disabled = true;
+      btn.textContent = 'Tekshirilmoqda...';
       const res = await api('/api/hold/join-squad', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, channelHandle })
       });
+      btn.disabled = false;
+      btn.textContent = 'Tekshirish va Qoʻshish';
       if (res.ok && res.user) {
         STATE.user = res.user;
+        if (Array.isArray(res.user.squads)) STATE.squads = res.user.squads;
+        haptic('heavy');
         closeModal();
         renderAll();
         showToast(res.message);
@@ -2476,6 +2643,7 @@ function openAddPaxtaChannelSquadModal() {
         showToast(res.error || 'Kanal topilmadi');
       }
     });
+    setTimeout(() => inp?.focus(), 60);
   });
 }
 
@@ -3230,6 +3398,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnOpenStarsTopup')?.addEventListener('click', () => openTopUpStarsModal(250));
   document.getElementById('btnOpenAdminModal')?.addEventListener('click', () => openSheet('admin'));
   document.getElementById('btnEarnInviteCard')?.addEventListener('click', () => openSheet('frens'));
+  document.getElementById('btnSearchSquads')?.addEventListener('click', openSearchSquadsModal);
   document.getElementById('btnAddCustomSquad')?.addEventListener('click', openAddPaxtaChannelSquadModal);
 
   // Admin Full-Screen Sheet Tab Switcher

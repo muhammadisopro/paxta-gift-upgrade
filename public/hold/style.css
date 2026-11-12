@@ -1382,6 +1382,54 @@ body.turbo-active .coin-radial-glow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+}
+
+.squad-hdr-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.squad-hdr-btn {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 99px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.squad-hdr-btn.primary {
+  background: linear-gradient(135deg, var(--theme-accent), var(--theme-secondary));
+  border-color: transparent;
+}
+
+.squad-hdr-btn:active {
+  transform: scale(0.96);
+}
+
+.squad-my-card {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(37, 99, 235, 0.08));
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.squad-avatar-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .btn-sapphire-primary {
