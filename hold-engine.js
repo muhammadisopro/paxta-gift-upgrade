@@ -310,8 +310,9 @@ export function registerHoldEngine(app, deps) {
     if (!u.dailyHold || typeof u.dailyHold !== 'object') u.dailyHold = {};
     u.dailyHold[today] = (u.dailyHold[today] || 0) + val;
     const wk = warWeekInfo().key;
-    if (u.warWeek !== wk) { u.warWeek = wk; u.warEarned = 0; }
+    if (u.warWeek !== wk) { u.warWeek = wk; u.warEarned = 0; u.warSquadId = null; }
     u.warEarned = (u.warEarned || 0) + val;
+    if (u.squadId) u.warSquadId = u.squadId;
     if (u.squadId && st?.squads?.[u.squadId]) {
       const sq = st.squads[u.squadId];
       sq.totalHold = (sq.totalHold || 0) + val;
@@ -396,7 +397,7 @@ export function registerHoldEngine(app, deps) {
         const prize = st.config.squadWarPrize || 25_000;
         let n = 0;
         for (const usr of Object.values(st.users || {})) {
-          if (usr.squadId === win.id && usr.warWeek === prev && (usr.warEarned || 0) > 0) {
+          if (usr.squadId === win.id && usr.warSquadId === win.id && usr.warWeek === prev && (usr.warEarned || 0) > 0) {
             usr.holdBalance = (usr.holdBalance || 0) + prize;
             usr.lifetimeHold = (usr.lifetimeHold || 0) + prize;
             n++;
@@ -794,7 +795,7 @@ export function registerHoldEngine(app, deps) {
       if (refCode) {
         const refKey = cleanKey(String(refCode).replace(/^ref_/i, '').replace(/^@/, ''));
         if (refKey && refKey !== key) {
-          if (!st.users[refKey]) {
+          if (!st.users[refKey] && mainUsers[refKey]) {
             st.users[refKey] = {
               username: refKey,
               displayName: cleanName(mainUsers[refKey]?.displayName || refKey),
@@ -860,7 +861,7 @@ export function registerHoldEngine(app, deps) {
       if (refCode && !st.users[key].referredBy) {
         const refKey = cleanKey(String(refCode).replace(/^ref_/i, '').replace(/^@/, ''));
         if (refKey && refKey !== key) {
-          if (!st.users[refKey]) {
+          if (!st.users[refKey] && mainUsers[refKey]) {
             st.users[refKey] = {
               username: refKey,
               displayName: cleanName(mainUsers[refKey]?.displayName || refKey),
@@ -1139,6 +1140,42 @@ export function registerHoldEngine(app, deps) {
     };
   }
 
+  // ---- Auth guard: game actions are bound to the authenticated PaxtaGram account (never trust body.username) ----
+  const AUTH_POSTS = new Set([
+    '/claim-ref', '/claim-og', '/farm-claim', '/farm-upgrade', '/farm-claim-ref', '/footprint-claim',
+    '/claim-streak', '/tap', '/boost', '/skin', '/solve-morse', '/join-squad', '/start-quest',
+    '/claim-quest', '/buy-vip-pack', '/create-invoice', '/solve-compass'
+  ]);
+  app.use('/api/hold', (req, res, next) => {
+    if (req.method !== 'POST' || !AUTH_POSTS.has(req.path)) return next();
+    let uname = null;
+    let pid = null;
+    const session = verifySessionToken(req.headers['x-auth-token'] || req.body?.authToken);
+    if (session && !isSyntheticUsername(session.username)) {
+      uname = session.username;
+      pid = Number(session.paxtaId) || null;
+    } else {
+      const iu = verifyWebAppInitData(req.headers['x-init-data'] || req.body?.initData);
+      if (iu) {
+        uname = iu.username || iu.first_name || `paxta_${iu.id}`;
+        pid = Number(iu.id) || null;
+      }
+    }
+    if (!uname) {
+      return res.status(401).json({ ok: false, error: 'Avtorizatsiya talab qilinadi. Ilovani qayta oching.' });
+    }
+    try {
+      if (pid) {
+        const st0 = loadHoldState();
+        const owner = Object.values(st0.users || {}).find(x => x && Number(x.paxtaId) === pid);
+        if (owner) uname = owner.username;
+      }
+    } catch {}
+    req.body = req.body || {};
+    req.body.username = uname;
+    next();
+  });
+
   // ---- Serve /hold WebApp Page ----
   app.get(['/hold', '/hold/'], (req, res) => {
     res.sendFile(path.join(publicDir, 'hold', 'index.html'));
@@ -1279,14 +1316,19 @@ export function registerHoldEngine(app, deps) {
       return res.status(400).json({ ok: false, error: `Siz allaqachon @${u.referredBy} tomonidan taklif qilingansiz` });
     }
     const rawFriend = req.body?.friendUsername || req.body?.refUsername || req.body?.refCode || '';
-    const friendKey = cleanKey(String(rawFriend).replace(/^ref_/i, '').replace(/^@/, ''));
+    const friendKey0 = cleanKey(String(rawFriend).replace(/^ref_/i, '').replace(/^@/, ''));
+    const friendKey = (st.users[friendKey0] ? friendKey0 : (st.aliases?.[friendKey0] || friendKey0));
     if (!friendKey || friendKey === u.username) {
       return res.status(400).json({ ok: false, error: 'Doʻstingizning @username manzilini kiriting' });
     }
-    const { u: friendUser } = getOrCreateHoldUser(friendKey);
+    const friendUser = st.users[friendKey];
     if (!friendUser) {
-      return res.status(404).json({ ok: false, error: `@${friendKey} topilmadi` });
+      return res.status(404).json({ ok: false, error: `@${friendKey0} HOLD'da topilmadi. Avval u botga kirishi kerak` });
     }
+    if (friendUser.referredBy === u.username) {
+      return res.status(400).json({ ok: false, error: 'Bu foydalanuvchi sizni allaqachon taklif qilgan' });
+    }
+    if (!Array.isArray(friendUser.referrals)) friendUser.referrals = [];
 
     u.referredBy = friendKey;
     creditHold(u, st, 5_000);
