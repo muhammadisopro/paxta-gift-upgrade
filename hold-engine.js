@@ -30,6 +30,25 @@ export const DAILY_STREAK_REWARDS = [
   50_000   // Day 7 (+ Exclusive Skin)
 ];
 
+// Hard-Capped 100,000,000 $HOLD Tokenomics (Notcoin-style "00" zero drop: 100 pts = 1 $HOLD)
+export const HOLD_TOTAL_SUPPLY_TOKENS = 100_000_000;
+export const HOLD_DEFAULT_REDENOM_FACTOR = 100;
+
+export const HOLD_TOKENOMICS_ALLOCATION = [
+  { id: 'mining',    label: 'Community Mining Pool', pct: 45, tokens: 45_000_000, color: '#38bdf8' },
+  { id: 'airdrop',   label: 'Airdrop & The Final',   pct: 20, tokens: 20_000_000, color: '#4ade80' },
+  { id: 'ecosystem', label: 'Squad Wars & Quests',   pct: 10, tokens: 10_000_000, color: '#a78bfa' },
+  { id: 'liquidity', label: 'Likvidlik & Market',    pct: 15, tokens: 15_000_000, color: '#fbbf24' },
+  { id: 'team',      label: 'Jamoa (Vesting 12 oy)', pct: 10, tokens: 10_000_000, color: '#f472b6' }
+];
+
+export const HOLD_HALVING_STAGES = [
+  { stage: 1, name: 'Genesis',      minPct: 0,   maxPct: 25,  multiplier: 1.0,  label: '1.0x' },
+  { stage: 2, name: 'Halving I',    minPct: 25,  maxPct: 50,  multiplier: 0.5,  label: '0.5x' },
+  { stage: 3, name: 'Halving II',   minPct: 50,  maxPct: 75,  multiplier: 0.25, label: '0.25x' },
+  { stage: 4, name: 'Final Phase',  minPct: 75,  maxPct: 100, multiplier: 0.1,  label: '0.1x' }
+];
+
 export const HOLD_LEAGUES = [
   {
     id: 'bronze',
@@ -415,11 +434,172 @@ export function registerHoldEngine(app, deps) {
     return Math.round(base * Math.pow(Math.max(1, level), 2.1));
   }
 
-  function creditHold(u, st, amount) {
-    const val = Math.max(0, Math.floor(Number(amount) || 0));
-    if (val <= 0) return;
+  function createFreshTokenomics(st = null) {
+    const factor = HOLD_DEFAULT_REDENOM_FACTOR;
+    let sumLife = 0;
+    let sumBal = 0;
+    if (st && st.users) {
+      for (const usr of Object.values(st.users)) {
+        if (!usr || isSyntheticUsername(usr.username)) continue;
+        sumLife += Math.max(0, Math.floor(usr.lifetimeHold || 0));
+        sumBal += Math.max(0, Math.floor(usr.holdBalance || 0));
+      }
+    }
+    const burned = Math.max(0, sumLife - sumBal);
+    return {
+      totalSupplyTokens: HOLD_TOTAL_SUPPLY_TOKENS,
+      redenomFactor: factor,
+      mintedPoints: sumLife,
+      burnedPoints: burned,
+      poolPoints: {
+        mining: sumLife,
+        airdrop: 0,
+        ecosystem: 0
+      },
+      snapshotLocked: false,
+      migratedV4: true
+    };
+  }
+
+  function ensureTokenomics(st) {
+    if (!st.tokenomics || !st.tokenomics.migratedV4) {
+      st.tokenomics = createFreshTokenomics(st);
+    }
+    if (!st.tokenomics.poolPoints || typeof st.tokenomics.poolPoints !== 'object') {
+      st.tokenomics.poolPoints = { mining: st.tokenomics.mintedPoints || 0, airdrop: 0, ecosystem: 0 };
+    }
+    if (!st.tokenomics.totalSupplyTokens) st.tokenomics.totalSupplyTokens = HOLD_TOTAL_SUPPLY_TOKENS;
+    if (!st.tokenomics.redenomFactor) st.tokenomics.redenomFactor = HOLD_DEFAULT_REDENOM_FACTOR;
+    return st.tokenomics;
+  }
+
+  function getTokenomicsSummary(st) {
+    const tk = ensureTokenomics(st);
+    const factor = tk.redenomFactor || HOLD_DEFAULT_REDENOM_FACTOR;
+    const totalSupplyTokens = tk.totalSupplyTokens || HOLD_TOTAL_SUPPLY_TOKENS;
+    const miningPoolTokens = 45_000_000;
+    const airdropPoolTokens = 20_000_000;
+    const ecosystemPoolTokens = 10_000_000;
+    const gameCapTokens = miningPoolTokens + airdropPoolTokens + ecosystemPoolTokens; // 75M
+
+    const miningCapPoints = miningPoolTokens * factor;
+    const airdropCapPoints = airdropPoolTokens * factor;
+    const ecosystemCapPoints = ecosystemPoolTokens * factor;
+    const gameCapPoints = gameCapTokens * factor;
+
+    const miningUsedPoints = Math.max(0, Math.floor(tk.poolPoints?.mining ?? tk.mintedPoints ?? 0));
+    const airdropUsedPoints = Math.max(0, Math.floor(tk.poolPoints?.airdrop || 0));
+    const ecosystemUsedPoints = Math.max(0, Math.floor(tk.poolPoints?.ecosystem || 0));
+    const mintedPoints = Math.max(0, Math.floor(tk.mintedPoints || 0));
+    const burnedPoints = Math.max(0, Math.floor(tk.burnedPoints || 0));
+    const circulatingPoints = Math.max(0, mintedPoints - burnedPoints);
+
+    const rawMiningPct = miningCapPoints > 0 ? (miningUsedPoints / miningCapPoints) * 100 : 100;
+    const miningProgressPct = Number(Math.min(100, rawMiningPct).toFixed(4));
+    const miningExhausted = miningUsedPoints >= miningCapPoints;
+
+    let halving;
+    if (miningExhausted) {
+      halving = { stage: 5, name: 'Pool Tugagan', minPct: 100, maxPct: 100, multiplier: 0, label: '0x' };
+    } else {
+      halving = HOLD_HALVING_STAGES.find(h => rawMiningPct >= h.minPct && rawMiningPct < h.maxPct) || HOLD_HALVING_STAGES[3];
+    }
+
+    const mintedTokens = Number((mintedPoints / factor).toFixed(2));
+    const burnedTokens = Number((burnedPoints / factor).toFixed(2));
+    const circulatingTokens = Number((circulatingPoints / factor).toFixed(2));
+    const miningUsedTokens = Number((miningUsedPoints / factor).toFixed(2));
+    const remainingMiningTokens = Math.max(0, Number(((miningCapPoints - miningUsedPoints) / factor).toFixed(2)));
+    const effectiveMaxSupplyTokens = Math.max(0, Number((totalSupplyTokens - burnedPoints / factor).toFixed(2)));
+
+    return {
+      totalSupplyTokens,
+      effectiveMaxSupplyTokens,
+      redenomFactor: factor,
+      conversionRule: `${factor} in-game = 1 $HOLD`,
+      airdropBasis: 'holdBalance',
+      snapshotLocked: !!tk.snapshotLocked,
+      mintedPoints,
+      burnedPoints,
+      circulatingPoints,
+      mintedTokens,
+      burnedTokens,
+      circulatingTokens,
+      miningCapTokens: miningPoolTokens,
+      miningCapPoints,
+      miningUsedPoints,
+      miningUsedTokens,
+      remainingMiningTokens,
+      miningProgressPct,
+      miningExhausted,
+      gameCapPoints,
+      poolCaps: {
+        mining: miningCapPoints,
+        airdrop: airdropCapPoints,
+        ecosystem: ecosystemCapPoints
+      },
+      poolUsed: {
+        mining: miningUsedPoints,
+        airdrop: airdropUsedPoints,
+        ecosystem: ecosystemUsedPoints
+      },
+      halving,
+      stages: HOLD_HALVING_STAGES,
+      allocations: HOLD_TOKENOMICS_ALLOCATION
+    };
+  }
+
+  function scaleByHalving(st, rawAmount) {
+    const val = Math.max(0, Number(rawAmount) || 0);
+    if (val <= 0) return 0;
+    const tk = getTokenomicsSummary(st);
+    if (tk.snapshotLocked || tk.halving.multiplier <= 0) return 0;
+    return Math.floor(val * tk.halving.multiplier);
+  }
+
+  function debitHold(u, st, cost) {
+    const c = Math.max(0, Math.floor(Number(cost) || 0));
+    if (c <= 0) return false;
+    if ((u.holdBalance || 0) < c) return false;
+    const tk = ensureTokenomics(st);
+    u.holdBalance -= c;
+    tk.burnedPoints = Math.max(0, Math.floor(tk.burnedPoints || 0)) + c;
+    return true;
+  }
+
+  function creditHold(u, st, amount, opts = {}) {
+    const raw = Math.max(0, Number(amount) || 0);
+    if (raw <= 0) return 0;
+    const tk = ensureTokenomics(st);
+    if (tk.snapshotLocked && !opts.forceFull) return 0;
+
+    const summary = getTokenomicsSummary(st);
+    const pool = ['mining', 'airdrop', 'ecosystem'].includes(opts.pool) ? opts.pool : 'mining';
+    const applyHalving = opts.applyHalving !== undefined ? !!opts.applyHalving : true;
+    const mult = applyHalving ? (summary.halving?.multiplier ?? 1) : 1;
+    if (mult <= 0 && !opts.forceFull) return 0;
+
+    const scaled = raw * mult + (Number(u.pendingFrac) || 0);
+    let val = Math.floor(scaled);
+    u.pendingFrac = Math.max(0, scaled - val);
+    if (val <= 0) return 0;
+
+    if (!opts.forceFull) {
+      const poolCap = summary.poolCaps[pool] || summary.miningCapPoints;
+      const poolUsed = tk.poolPoints?.[pool] || 0;
+      const roomPool = Math.max(0, poolCap - poolUsed);
+      const roomGame = Math.max(0, summary.gameCapPoints - (tk.mintedPoints || 0));
+      const room = Math.min(roomPool, roomGame);
+      if (room <= 0) return 0;
+      if (val > room) val = room;
+    }
+
     u.holdBalance = (u.holdBalance || 0) + val;
     u.lifetimeHold = (u.lifetimeHold || 0) + val;
+    tk.mintedPoints = (tk.mintedPoints || 0) + val;
+    if (!tk.poolPoints) tk.poolPoints = { mining: 0, airdrop: 0, ecosystem: 0 };
+    tk.poolPoints[pool] = (tk.poolPoints[pool] || 0) + val;
+
     const today = todayStr();
     if (!u.dailyHold || typeof u.dailyHold !== 'object') u.dailyHold = {};
     u.dailyHold[today] = (u.dailyHold[today] || 0) + val;
@@ -433,6 +613,7 @@ export function registerHoldEngine(app, deps) {
       if (sq.weekKey !== wk) { sq.weekKey = wk; sq.weekScore = 0; }
       sq.weekScore = (sq.weekScore || 0) + val;
     }
+    return val;
   }
 
   // ================= SQUAD WARS (weekly) + FARM ENGINE HELPERS =================
@@ -544,8 +725,7 @@ export function registerHoldEngine(app, deps) {
 
     const winner = pool[crypto.randomInt(0, pool.length)];
     const winnerTickets = Math.floor(winner.luckyTickets || 0);
-    const rewardHold = 100_000;
-    creditHold(winner, st, rewardHold);
+    const rewardHold = creditHold(winner, st, 100_000, { pool: 'ecosystem', applyHalving: false }) || 0;
 
     const allItems = getVaultItems(st);
     const top10Ids = new Set(getTop10PrizeAllocation(allItems, st).map(p => p.nft?.vaultId).filter(Boolean));
@@ -616,8 +796,7 @@ export function registerHoldEngine(app, deps) {
         const winnerKeys = [];
         for (const usr of Object.values(st.users || {})) {
           if (usr.squadId === win.id && usr.warSquadId === win.id && usr.warWeek === prev && (usr.warEarned || 0) > 0) {
-            usr.holdBalance = (usr.holdBalance || 0) + prize;
-            usr.lifetimeHold = (usr.lifetimeHold || 0) + prize;
+            creditHold(usr, st, prize, { pool: 'ecosystem', applyHalving: false });
             winnerKeys.push(usr.username);
             n++;
           }
@@ -666,6 +845,7 @@ export function registerHoldEngine(app, deps) {
     u.luckyTickets = 0;
     u.compassSolvedDays = [];
     u.turboActiveUntil = 0;
+    u.pendingFrac = 0;
   }
 
   function getDefaultSquads() {
@@ -851,6 +1031,11 @@ export function registerHoldEngine(app, deps) {
           }
         }
         st.squads = getDefaultSquads();
+        st.tokenomics = createFreshTokenomics(st);
+        saveJSON(holdStateFile, st);
+      }
+      if (!st.tokenomics || !st.tokenomics.migratedV4) {
+        ensureTokenomics(st);
         saveJSON(holdStateFile, st);
       }
       return st;
@@ -879,7 +1064,8 @@ export function registerHoldEngine(app, deps) {
       squads: getDefaultSquads(),
       soldMedals: {},
       nftClaims: [],
-      payments: { invoices: {}, charges: {}, lastUpdateId: 0 }
+      payments: { invoices: {}, charges: {}, lastUpdateId: 0 },
+      tokenomics: createFreshTokenomics(null)
     };
     saveJSON(holdStateFile, initial);
     return initial;
@@ -1145,10 +1331,10 @@ export function registerHoldEngine(app, deps) {
           }
           if (st.users[refKey]) {
             st.users[key].referredBy = refKey;
-            creditHold(st.users[key], st, 5_000);
+            creditHold(st.users[key], st, 5_000, { pool: 'ecosystem', applyHalving: true });
             if (!st.users[refKey].referrals.includes(key)) {
               st.users[refKey].referrals.push(key);
-              creditHold(st.users[refKey], st, 10_000);
+              creditHold(st.users[refKey], st, 10_000, { pool: 'ecosystem', applyHalving: true });
             }
           }
         }
@@ -1211,9 +1397,9 @@ export function registerHoldEngine(app, deps) {
           }
           if (st.users[refKey] && !st.users[refKey].referrals.includes(key)) {
             st.users[key].referredBy = refKey;
-            creditHold(st.users[key], st, 5_000);
+            creditHold(st.users[key], st, 5_000, { pool: 'ecosystem', applyHalving: true });
             st.users[refKey].referrals.push(key);
-            creditHold(st.users[refKey], st, 10_000);
+            creditHold(st.users[refKey], st, 10_000, { pool: 'ecosystem', applyHalving: true });
           }
         }
       }
@@ -1248,15 +1434,15 @@ export function registerHoldEngine(app, deps) {
       u.lastEnergyAt = now;
     }
 
-    // Auto Tap Bot offline earnings (if autoBotEnabled)
+    // Auto Tap Bot offline earnings (capped hourly & halved by active epoch)
     let passiveEarned = 0;
     const botElapsedMs = Math.max(0, now - (u.lastAutoBotClaimAt || now));
     if (u.autoBotEnabled && botElapsedMs >= 30_000) {
       const cappedHours = Math.min(8, botElapsedMs / (3600 * 1000));
-      const hourlyRate = ((u.tapLevel || 1) * 350);
-      passiveEarned = Math.floor(hourlyRate * cappedHours);
-      if (passiveEarned > 0) {
-        creditHold(u, st, passiveEarned);
+      const hourlyRate = Math.min(5_000, (u.tapLevel || 1) * 350);
+      const rawPassive = Math.floor(hourlyRate * cappedHours);
+      if (rawPassive > 0) {
+        passiveEarned = creditHold(u, st, rawPassive, { pool: 'mining', applyHalving: true });
       }
       u.lastAutoBotClaimAt = now;
     } else if (botElapsedMs >= 30_000) {
@@ -1296,11 +1482,14 @@ export function registerHoldEngine(app, deps) {
 
     const solvedToday = (u.morseSolvedDays || []).includes(today) && u.lastSolvedMorseWord === morseWord;
 
+    const tkSummary = getTokenomicsSummary(st);
+    const halvingMult = tkSummary.halving?.multiplier ?? 1;
+
     // 8-Hour Farming calculation
     const fpm = getFarmParams(st, u);
     const farmDuration = fpm.durationMs;
-    const farmRate = fpm.rate;
-    const farmRewardMax = fpm.reward;
+    const farmRate = Math.floor(fpm.rate * halvingMult);
+    const farmRewardMax = Math.floor(fpm.reward * halvingMult);
     const farmElapsed = Math.max(0, now - (u.farmStartedAt || (now - 3600_000)));
     const farmRatio = Math.min(1, farmElapsed / farmDuration);
     const currentFarmed = Math.min(farmRewardMax, Math.floor(farmRewardMax * farmRatio));
@@ -1348,9 +1537,14 @@ export function registerHoldEngine(app, deps) {
       isAdmin: Number(u.paxtaId) === ADMIN_PAXTA_ID || u.username === 'moon' || u.username === 'shade' || u.username === 'muhammadiso',
       stars: 0,
       holdBalance: Math.floor(u.holdBalance || 0),
+      holdTokens: Number((Math.floor(u.holdBalance || 0) / tkSummary.redenomFactor).toFixed(2)),
       lifetimeHold: Math.floor(u.lifetimeHold || 0),
       dailyHoldToday: Math.floor(u.dailyHold?.[today] || 0),
       passiveEarnedJustNow: passiveEarned,
+      tokenomics: {
+        ...tkSummary,
+        userHoldTokens: Number((Math.floor(u.holdBalance || 0) / tkSummary.redenomFactor).toFixed(2))
+      },
       tapPower,
       baseTapPower,
       tapLevel: u.tapLevel || 1,
@@ -1379,10 +1573,10 @@ export function registerHoldEngine(app, deps) {
         canClaimToday: !streakClaimedToday,
         currentDay: streakClaimedToday ? (u.streakCount || 1) : (streakAlive ? (u.streakCount || 0) : 0),
         nextDay: currentStreakDay,
-        nextRewardHold: DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000,
+        nextRewardHold: scaleByHalving(st, DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000),
         streakCount: streakAlive ? (u.streakCount || 0) : 0,
-        rewards: DAILY_STREAK_REWARDS.map((hold, i) => ({ day: i + 1, hold })),
-        todayReward: DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000
+        rewards: DAILY_STREAK_REWARDS.map((hold, i) => ({ day: i + 1, hold: scaleByHalving(st, hold) })),
+        todayReward: scaleByHalving(st, DAILY_STREAK_REWARDS[currentStreakDay - 1] || 1_000)
       },
       luckyDraw: {
         myTickets,
@@ -1399,7 +1593,7 @@ export function registerHoldEngine(app, deps) {
         totalCombos: dailyVaultObj.totalCombos,
         sequence: dailyVaultObj.sequence,
         arrows: dailyVaultObj.arrows,
-        reward: 30_000,
+        reward: scaleByHalving(st, 30_000),
         solvedToday: compassSolvedToday
       },
       squadWarPrize: st.config?.squadWarPrize || 25_000,
@@ -1409,7 +1603,7 @@ export function registerHoldEngine(app, deps) {
         secretWords: Object.keys(st.config?.secretCodes || DEFAULT_SECRET_CODES),
         secretCodesMap: st.config?.secretCodes || DEFAULT_SECRET_CODES,
         hint: dailyMorseObj?.hint || 'Maxfiy soʻzni Morze alifbosida tering',
-        reward: morseReward,
+        reward: scaleByHalving(st, morseReward),
         solvedToday,
         lettersGuide: morseOverlay
       },
@@ -1697,18 +1891,19 @@ export function registerHoldEngine(app, deps) {
     if (!Array.isArray(friendUser.referrals)) friendUser.referrals = [];
 
     u.referredBy = friendKey;
-    creditHold(u, st, 5_000);
+    const inviteeAward = creditHold(u, st, 5_000, { pool: 'ecosystem', applyHalving: true });
+    let inviterAward = 0;
     if (!friendUser.referrals.includes(u.username)) {
       friendUser.referrals.push(u.username);
-      creditHold(friendUser, st, 10_000);
+      inviterAward = creditHold(friendUser, st, 10_000, { pool: 'ecosystem', applyHalving: true });
     }
     saveHoldState(st);
 
-    if (friendUser.paxtaId && String(friendUser.paxtaId) !== String(u.paxtaId)) {
+    if (friendUser.paxtaId && String(friendUser.paxtaId) !== String(u.paxtaId) && inviterAward > 0) {
       try {
         await holdBotCall('sendMessage', {
           chat_id: friendUser.paxtaId,
-          text: `🎉 **Yangi doʻstingiz qoʻshildi!**\n\n**@${u.username}** ilovada sizni taklif qiluvchi deb kiritdi!\n💰 Hisobingizga **+10,000 $HOLD** qoʻshildi! 🚀`,
+          text: `🎉 **Yangi doʻstingiz qoʻshildi!**\n\n**@${u.username}** ilovada sizni taklif qiluvchi deb kiritdi!\n💰 Hisobingizga **+${inviterAward.toLocaleString()} $HOLD** qoʻshildi! 🚀`,
           parse_mode: 'Markdown',
           reply_markup: {
             inline_keyboard: [
@@ -1721,7 +1916,7 @@ export function registerHoldEngine(app, deps) {
 
     res.json({
       ok: true,
-      message: `🎉 @${friendKey} taklifi qabul qilindi · +5,000 HOLD!`,
+      message: `🎉 @${friendKey} taklifi qabul qilindi · +${inviteeAward.toLocaleString()} HOLD!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -1751,14 +1946,14 @@ export function registerHoldEngine(app, deps) {
     const totalBonus = idBonus + activityBonus;
 
     u.ogBonusClaimed = true;
+    const ogCredited = creditHold(u, st, totalBonus, { pool: 'airdrop', applyHalving: false });
     u.ogDetails = {
       paxtaId: pid,
       tierName,
       idBonus,
       activityBonus,
-      totalBonus
+      totalBonus: ogCredited
     };
-    creditHold(u, st, totalBonus);
     saveHoldState(st);
 
     res.json({
@@ -1785,16 +1980,19 @@ export function registerHoldEngine(app, deps) {
       });
     }
 
-    // Award farmed HOLD
-    creditHold(u, st, totalFarmReward);
-    u.farmClaimedHold = (u.farmClaimedHold || 0) + totalFarmReward;
+    // Award farmed HOLD (subject to active halving + mining pool hard cap)
+    const creditedFarm = creditHold(u, st, totalFarmReward, { pool: 'mining', applyHalving: true });
+    if (creditedFarm <= 0) {
+      return res.status(400).json({ ok: false, error: 'Mining Pool toʻldi yoki Snapshot muzlatilgan!' });
+    }
+    u.farmClaimedHold = (u.farmClaimedHold || 0) + creditedFarm;
     u.farmStartedAt = now; // Restart farming timer immediately!
     delete u.farmNotifiedFor;
 
     // 10% referral kickback to inviter
     if (u.referredBy && st.users[u.referredBy]) {
       const inviter = st.users[u.referredBy];
-      const refShare = Math.floor(totalFarmReward * 0.10);
+      const refShare = Math.floor(creditedFarm * 0.10);
       inviter.farmRefEarnings = (inviter.farmRefEarnings || 0) + refShare;
     }
 
@@ -1802,26 +2000,24 @@ export function registerHoldEngine(app, deps) {
 
     res.json({
       ok: true,
-      reward: totalFarmReward,
-      message: `🌾 +${totalFarmReward.toLocaleString()} $HOLD hosili yig'ib olindi!`,
+      reward: creditedFarm,
+      message: `🌾 +${creditedFarm.toLocaleString()} $HOLD hosili yig'ib olindi!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
 
-  // ---- 2B1b. Upgrade Farm (speed / storage) ----
+  // ---- 2B1b. Upgrade Farm (speed / storage -> BURNED) ----
   app.post('/api/hold/farm-upgrade', (req, res) => {
     const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
     const type = req.body?.type;
     const p = getFarmParams(st, u);
     if (type === 'speed') {
       if (p.speedLevel >= p.speedMax) return res.status(400).json({ ok: false, error: 'Maksimal darajaga yetgan' });
-      if ((u.holdBalance || 0) < p.nextSpeedCost) return res.status(400).json({ ok: false, error: 'Balans yetarli emas' });
-      u.holdBalance -= p.nextSpeedCost;
+      if (!debitHold(u, st, p.nextSpeedCost)) return res.status(400).json({ ok: false, error: 'Balans yetarli emas' });
       u.farmSpeedLevel = p.speedLevel + 1;
     } else if (type === 'cap') {
       if (p.capLevel >= p.capMax) return res.status(400).json({ ok: false, error: 'Maksimal darajaga yetgan' });
-      if ((u.holdBalance || 0) < p.nextCapCost) return res.status(400).json({ ok: false, error: 'Balans yetarli emas' });
-      u.holdBalance -= p.nextCapCost;
+      if (!debitHold(u, st, p.nextCapCost)) return res.status(400).json({ ok: false, error: 'Balans yetarli emas' });
       u.farmCapLevel = p.capLevel + 1;
     } else {
       return res.status(400).json({ ok: false, error: 'Notoʻgʻri tur' });
@@ -1829,7 +2025,7 @@ export function registerHoldEngine(app, deps) {
     saveHoldState(st);
     res.json({
       ok: true,
-      message: type === 'speed' ? '⚡ Farm tezligi oshirildi!' : '📦 Farm sigʻimi oshirildi!',
+      message: type === 'speed' ? '⚡ Farm tezligi oshirildi! (🔥 Burn)' : '📦 Farm sigʻimi oshirildi! (🔥 Burn)',
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -1842,14 +2038,14 @@ export function registerHoldEngine(app, deps) {
       return res.status(400).json({ ok: false, error: 'Do\'stlar hosilidan ulush mavjud emas' });
     }
 
-    creditHold(u, st, refEarnings);
+    const creditedRef = creditHold(u, st, refEarnings, { pool: 'ecosystem', applyHalving: false });
     u.farmRefEarnings = 0;
     saveHoldState(st);
 
     res.json({
       ok: true,
-      reward: refEarnings,
-      message: `🎉 Do'stlaringizdan +${refEarnings.toLocaleString()} $HOLD ulush olindi!`,
+      reward: creditedRef,
+      message: `🎉 Do'stlaringizdan +${creditedRef.toLocaleString()} $HOLD ulush olindi!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -1884,21 +2080,21 @@ export function registerHoldEngine(app, deps) {
     const totalAirdrop = ageBonus + nftBonus + communityBonus;
 
     u.footprintClaimed = true;
+    const creditedFp = creditHold(u, st, totalAirdrop, { pool: 'airdrop', applyHalving: false });
     u.footprintDetails = {
       paxtaId: pid,
       tierName,
       ageBonus,
       nftBonus,
       communityBonus,
-      totalAirdrop,
+      totalAirdrop: creditedFp,
       claimedAt: new Date().toISOString()
     };
-    creditHold(u, st, totalAirdrop);
     saveHoldState(st);
 
     res.json({
       ok: true,
-      message: `🎉 +${totalAirdrop.toLocaleString()} $HOLD qadriyat bonusi berildi!`,
+      message: `🎉 +${creditedFp.toLocaleString()} $HOLD qadriyat bonusi berildi!`,
       footprintDetails: u.footprintDetails,
       user: formatHoldUserResponse(st, u, mainUser)
     });
@@ -1921,8 +2117,8 @@ export function registerHoldEngine(app, deps) {
     }
     u.lastStreakDate = today;
 
-    const reward = DAILY_STREAK_REWARDS[u.streakCount - 1] || 1_000;
-    creditHold(u, st, reward);
+    const rewardRaw = DAILY_STREAK_REWARDS[u.streakCount - 1] || 1_000;
+    const reward = creditHold(u, st, rewardRaw, { pool: 'mining', applyHalving: true });
 
     let bonusMsg = `🔥 Kun ${u.streakCount}/7 · +${reward.toLocaleString()} HOLD!`;
     if (u.streakCount === 7) {
@@ -1977,10 +2173,8 @@ export function registerHoldEngine(app, deps) {
       }
     }
 
-    const earned = actualTaps * perTap;
-    if (earned > 0) {
-      creditHold(u, st, earned);
-    }
+    const rawEarned = actualTaps * perTap;
+    const earned = rawEarned > 0 ? creditHold(u, st, rawEarned, { pool: 'mining', applyHalving: true }) : 0;
     u.lastEnergyAt = Date.now();
 
     saveHoldState(st);
@@ -2019,26 +2213,24 @@ export function registerHoldEngine(app, deps) {
 
     if (type === 'multitap') {
       const cost = upgradeCost(u.tapLevel || 1, 600);
-      if (u.holdBalance < cost) {
+      if (!debitHold(u, st, cost)) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
-      u.holdBalance -= cost;
       u.tapLevel = (u.tapLevel || 1) + 1;
       saveHoldState(st);
-      return res.json({ ok: true, message: `☝️ Multitap · ${u.tapLevel} level`, user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: `☝️ Multitap · ${u.tapLevel} level (🔥 Burn)`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'energy_limit') {
       const cost = upgradeCost(u.energyLevel || 1, 400);
-      if (u.holdBalance < cost) {
+      if (!debitHold(u, st, cost)) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
-      u.holdBalance -= cost;
       u.energyLevel = (u.energyLevel || 1) + 1;
       u.maxEnergy = 1000 + u.energyLevel * 500;
       u.energy = u.maxEnergy;
       saveHoldState(st);
-      return res.json({ ok: true, message: `🔋 Energy Limit · ${u.energyLevel} level`, user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: `🔋 Energy Limit · ${u.energyLevel} level (🔥 Burn)`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'recharging_speed') {
@@ -2047,13 +2239,12 @@ export function registerHoldEngine(app, deps) {
         return res.status(400).json({ ok: false, error: 'Max level reached' });
       }
       const cost = upgradeCost(curLvl, 1200);
-      if (u.holdBalance < cost) {
+      if (!debitHold(u, st, cost)) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
-      u.holdBalance -= cost;
       u.rechargingSpeedLevel = curLvl + 1;
       saveHoldState(st);
-      return res.json({ ok: true, message: `⚡ Recharging speed · ${u.rechargingSpeedLevel} level`, user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: `⚡ Recharging speed · ${u.rechargingSpeedLevel} level (🔥 Burn)`, user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     if (type === 'autobot') {
@@ -2061,14 +2252,13 @@ export function registerHoldEngine(app, deps) {
         return res.status(400).json({ ok: false, error: 'Auto tap bot already active' });
       }
       const cost = 50_000;
-      if (u.holdBalance < cost) {
+      if (!debitHold(u, st, cost)) {
         return res.status(400).json({ ok: false, error: `Need ${cost.toLocaleString()} HOLD` });
       }
-      u.holdBalance -= cost;
       u.autoBotEnabled = true;
       u.lastAutoBotClaimAt = Date.now();
       saveHoldState(st);
-      return res.json({ ok: true, message: '🤖 Auto tap bot enabled!', user: formatHoldUserResponse(st, u, mainUser) });
+      return res.json({ ok: true, message: '🤖 Auto tap bot enabled! (🔥 Burn)', user: formatHoldUserResponse(st, u, mainUser) });
     }
 
     res.status(400).json({ ok: false, error: 'Unknown boost type' });
@@ -2096,21 +2286,20 @@ export function registerHoldEngine(app, deps) {
     }
 
     const cost = skinDef.priceHold || 0;
-    if (u.holdBalance < cost) {
+    if (cost > 0 && !debitHold(u, st, cost)) {
       return res.status(400).json({
         ok: false,
         error: `Need ${cost.toLocaleString()} HOLD for ${skinDef.name}`
       });
     }
 
-    u.holdBalance -= cost;
     u.ownedSkins.push(skinId);
     u.skin = skinId;
     saveHoldState(st);
 
     res.json({
       ok: true,
-      message: `${skinDef.name} unlocked & enabled!`,
+      message: `${skinDef.name} unlocked${cost > 0 ? ' (🔥 Burn)' : ''}!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -2150,14 +2339,14 @@ export function registerHoldEngine(app, deps) {
       }
       u.lastSolvedMorseWord = dailyWord;
       u.luckyTickets = (u.luckyTickets || 0) + 1;
-      creditHold(u, st, dailyReward);
+      const morseCredited = creditHold(u, st, dailyReward, { pool: 'mining', applyHalving: true });
       saveHoldState(st);
       return res.json({
         ok: true,
         type: 'daily_morse',
         word: dailyWord,
-        reward: dailyReward,
-        message: `✨ "${dailyWord}" · +${dailyReward.toLocaleString()} HOLD + 🎟️ 1 Lucky Ticket!`,
+        reward: morseCredited,
+        message: `✨ "${dailyWord}" · +${morseCredited.toLocaleString()} HOLD + 🎟️ 1 Lucky Ticket!`,
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
@@ -2176,7 +2365,7 @@ export function registerHoldEngine(app, deps) {
         });
       }
       u.secretCodesClaimed.push(wordInput);
-      creditHold(u, st, secret.reward);
+      const secCredited = creditHold(u, st, secret.reward, { pool: 'mining', applyHalving: true });
       if (secret.skin) {
         if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
         if (!u.ownedSkins.includes(secret.skin)) u.ownedSkins.push(secret.skin);
@@ -2187,8 +2376,8 @@ export function registerHoldEngine(app, deps) {
         ok: true,
         type: 'secret_code',
         word: wordInput,
-        reward: secret.reward,
-        message: `✨ ${secret.title || wordInput} · +${secret.reward.toLocaleString()} HOLD!`,
+        reward: secCredited,
+        message: `✨ ${secret.title || wordInput} · +${secCredited.toLocaleString()} HOLD!`,
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
@@ -2478,13 +2667,13 @@ cp();
       return res.status(400).json({ ok: false, error: 'Completed' });
     }
     u.tasksCompleted.push(questId);
-    creditHold(u, st, quest.reward);
+    const questCredited = creditHold(u, st, quest.reward, { pool: 'ecosystem', applyHalving: true });
     saveHoldState(st);
 
     res.json({
       ok: true,
-      reward: quest.reward,
-      message: `✅ Vazifa tasdiqlandi · +${quest.reward.toLocaleString()} HOLD!`,
+      reward: questCredited,
+      message: `✅ Vazifa tasdiqlandi · +${questCredited.toLocaleString()} HOLD!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -2513,14 +2702,14 @@ cp();
     userRecord.stars -= pack.starsPrice;
     saveJSON(usersFile, users);
 
-    creditHold(u, st, pack.holdGrant);
+    const granted = creditHold(u, st, pack.holdGrant, { pool: 'mining', applyHalving: false });
     u.tapLevel = (u.tapLevel || 1) + (pack.tapBoost || 0);
     if (pack.enableAutoBot) u.autoBotEnabled = true;
     saveHoldState(st);
 
     res.json({
       ok: true,
-      message: `${pack.name} · +${pack.holdGrant.toLocaleString()} HOLD`,
+      message: `${pack.name} · +${granted.toLocaleString()} HOLD`,
       user: formatHoldUserResponse(st, u, userRecord)
     });
   });
@@ -2721,11 +2910,20 @@ cp();
     res.json({
       ok: true,
       totalPlayers: sortedUsers.length,
+      tokenomics: getTokenomicsSummary(st),
       top10Prizes,
       nftPoolSummary,
       squads: buildSquadsList(st),
       leaderboard,
       leaderboardDay
+    });
+  });
+
+  app.get('/api/hold/tokenomics', (req, res) => {
+    const st = loadHoldState();
+    res.json({
+      ok: true,
+      tokenomics: getTokenomicsSummary(st)
     });
   });
 
@@ -2995,7 +3193,7 @@ cp();
       let rewardedCount = 0;
       for (const usr of Object.values(st.users || {})) {
         if (usr.squadId === topSq.id) {
-          creditHold(usr, st, prize);
+          creditHold(usr, st, prize, { pool: 'ecosystem', applyHalving: false });
           rewardedCount++;
         }
       }
@@ -3003,6 +3201,17 @@ cp();
       return res.json({
         ok: true,
         message: `🏆 #1 Squad (${topSq.name}) aʼzolariga (${rewardedCount} kishi) +${prize.toLocaleString()} HOLD tarqatildi!`,
+        user: formatHoldUserResponse(st, u, mainUser)
+      });
+    }
+
+    if (action === 'toggle_snapshot') {
+      const tk = ensureTokenomics(st);
+      tk.snapshotLocked = req.body?.locked !== undefined ? !!req.body.locked : !tk.snapshotLocked;
+      saveHoldState(st);
+      return res.json({
+        ok: true,
+        message: tk.snapshotLocked ? '🔒 TGE Snapshot muzlatildi (emissiya toʻxtatildi)' : '🔓 TGE Snapshot ochildi (emissiya davom etadi)',
         user: formatHoldUserResponse(st, u, mainUser)
       });
     }
@@ -3053,6 +3262,7 @@ cp();
         }
       }
       st.squads = getDefaultSquads();
+      st.tokenomics = createFreshTokenomics(st);
       saveHoldState(st);
       return res.json({
         ok: true,
@@ -3082,9 +3292,11 @@ cp();
       const targetUser = st.users[targetKey];
       if (!targetUser) return res.status(404).json({ ok: false, error: `@${targetKey} topilmadi` });
 
-      if (holdDelta !== 0) {
-        targetUser.holdBalance = Math.max(0, (targetUser.holdBalance || 0) + holdDelta);
-        if (holdDelta > 0) targetUser.lifetimeHold = (targetUser.lifetimeHold || 0) + holdDelta;
+      if (holdDelta > 0) {
+        creditHold(targetUser, st, holdDelta, { pool: 'airdrop', applyHalving: false, forceFull: true });
+      } else if (holdDelta < 0) {
+        const deduct = Math.min(targetUser.holdBalance || 0, Math.abs(holdDelta));
+        debitHold(targetUser, st, deduct);
       }
       if (req.body?.grantAllSkins) {
         targetUser.ownedSkins = HOLD_SKINS.map(s => s.id);
@@ -3121,15 +3333,14 @@ cp();
     }
 
     u.compassSolvedDays.push(today);
-    const reward = 30_000;
-    creditHold(u, st, reward);
+    const reward = creditHold(u, st, 30_000, { pool: 'mining', applyHalving: true });
     u.luckyTickets = (u.luckyTickets || 0) + 1;
     saveHoldState(st);
 
     res.json({
       ok: true,
       reward,
-      message: `🔐 Kunlik Vault ochildi (#${activeVault.index}/${activeVault.totalCombos})! +30,000 HOLD va +1 Lucky Ticket!`,
+      message: `🔐 Kunlik Vault ochildi (#${activeVault.index}/${activeVault.totalCombos})! +${reward.toLocaleString()} HOLD va +1 Lucky Ticket!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
   });
@@ -3507,9 +3718,9 @@ cp();
 
                 // Direct HOLD Reward (1 Star = 1,000 HOLD) + Boosts (Direct from PaxtaGram, zero stars wallet needed!)
                 const targetHoldUser = st.users[targetKey];
-                const holdAward = starsAdded * 1_000;
+                let holdAward = starsAdded * 1_000;
                 if (targetHoldUser) {
-                  creditHold(targetHoldUser, st, holdAward);
+                  holdAward = creditHold(targetHoldUser, st, holdAward, { pool: 'mining', applyHalving: false });
                   if (starsAdded >= 100) {
                     targetHoldUser.tapLevel = (targetHoldUser.tapLevel || 1) + Math.floor(starsAdded / 100);
                   }
@@ -3594,20 +3805,21 @@ cp();
                   inviterUser = st.users[refKey];
                   if (!Array.isArray(inviterUser.referrals)) inviterUser.referrals = [];
                   senderUser.referredBy = refKey;
-                  creditHold(senderUser, st, 5_000);
+                  creditHold(senderUser, st, 5_000, { pool: 'ecosystem', applyHalving: true });
                   refAttributed = true;
 
+                  let botInviterAward = 10_000;
                   if (!inviterUser.referrals.includes(senderUser.username)) {
                     inviterUser.referrals.push(senderUser.username);
-                    creditHold(inviterUser, st, 10_000);
+                    botInviterAward = creditHold(inviterUser, st, 10_000, { pool: 'ecosystem', applyHalving: true });
                   }
                   saveHoldState(st);
 
-                  if (inviterUser.paxtaId && String(inviterUser.paxtaId) !== String(sender.id)) {
+                  if (inviterUser.paxtaId && String(inviterUser.paxtaId) !== String(sender.id) && botInviterAward > 0) {
                     try {
                       await holdBotCall('sendMessage', {
                         chat_id: inviterUser.paxtaId,
-                        text: `🎉 **Yangi doʻstingiz qoʻshildi!**\n\n**@${senderKey}** sizning taklifingiz bilan $HOLD ga kirdi!\n💰 Hisobingizga **+10,000 $HOLD** qoʻshildi! 🚀`,
+                        text: `🎉 **Yangi doʻstingiz qoʻshildi!**\n\n**@${senderKey}** sizning taklifingiz bilan $HOLD ga kirdi!\n💰 Hisobingizga **+${botInviterAward.toLocaleString()} $HOLD** qoʻshildi! 🚀`,
                         parse_mode: 'Markdown',
                         reply_markup: {
                           inline_keyboard: [

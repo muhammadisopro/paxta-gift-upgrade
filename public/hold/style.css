@@ -2430,13 +2430,21 @@ body.turbo-active .coin-radial-glow {
 }
 
 
-/* ==================== SQUAD WARS + ARENA FARM CHIP ==================== */
-.arena-farm-chip {
+/* ==================== SQUAD WARS + ARENA FARM & TOKENOMICS CHIPS ==================== */
+.arena-chips-row {
   margin-top: 8px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.arena-farm-chip,
+.arena-token-pill {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  padding: 6px 13px;
+  padding: 6px 12px;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2447,7 +2455,16 @@ body.turbo-active .coin-radial-glow {
   font-variant-numeric: tabular-nums;
   transition: transform 0.12s ease;
 }
-.arena-farm-chip:active { transform: scale(0.96); }
+.arena-farm-chip:active,
+.arena-token-pill:active { transform: scale(0.96); }
+.arena-token-pill .token-phase-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+}
 .arena-farm-chip.ready {
   background: linear-gradient(135deg, var(--theme-accent), var(--theme-secondary));
   border-color: transparent;

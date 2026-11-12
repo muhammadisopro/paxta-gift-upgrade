@@ -1310,6 +1310,22 @@ function renderAll() {
   const balEl = document.getElementById('uiHoldBalance');
   if (balEl) balEl.textContent = fmtInt(u.holdBalance);
 
+  const tk = u.tokenomics || {};
+  const factor = tk.redenomFactor || 100;
+  const tokEl = document.getElementById('uiArenaTokensText');
+  if (tokEl) {
+    const tVal = (Math.floor(u.holdBalance || 0) / factor);
+    tokEl.textContent = `${tVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $HOLD`;
+  }
+  const hTagEl = document.getElementById('uiArenaHalvingTag');
+  if (hTagEl) {
+    if (tk.snapshotLocked) {
+      hTagEl.textContent = '🔒 Snapshot';
+    } else if (tk.halving) {
+      hTagEl.textContent = tk.halving.label || '1.0x';
+    }
+  }
+
   // The Final (Footprint disabled for now, saved for the finale)
   const fpBtn = document.getElementById('btnOpenFootprint');
   if (fpBtn) fpBtn.hidden = true;
@@ -1380,9 +1396,21 @@ function handleCoinTap(clientX, clientY) {
   const u = STATE.user;
   if (!u) return;
 
+  const tk = u.tokenomics || {};
+  if (tk.snapshotLocked) {
+    showToast('🔒 TGE Snapshot muzlatilgan');
+    return;
+  }
+  if (tk.halving && tk.halving.multiplier <= 0) {
+    showToast('⛏️ Mining Pool (45M $HOLD) toʻlgan');
+    return;
+  }
+
   const isTurbo = Date.now() < STATE.turboActiveUntil;
   const hhMult = u.happyHour?.active ? 2 : 1;
-  const tapVal = (isTurbo ? u.tapPower * 7 : u.tapPower) * hhMult;
+  const hm = tk.halving?.multiplier ?? 1;
+  const rawTapVal = (isTurbo ? u.tapPower * 7 : u.tapPower) * hhMult;
+  const tapVal = hm >= 1 ? rawTapVal : Math.max(1, Math.round(rawTapVal * hm));
 
   if (!isTurbo && u.energy < u.tapPower) {
     showToast('⚡ Energiya toʻlmoqda...');
@@ -1397,6 +1425,11 @@ function handleCoinTap(clientX, clientY) {
   STATE.pendingTaps++;
 
   document.getElementById('uiHoldBalance').textContent = fmtInt(u.holdBalance);
+  const tokEl = document.getElementById('uiArenaTokensText');
+  if (tokEl) {
+    const f = tk.redenomFactor || 100;
+    tokEl.textContent = `${(Math.floor(u.holdBalance) / f).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $HOLD`;
+  }
   document.getElementById('uiEnergyNow').textContent = fmtInt(u.energy);
   document.getElementById('uiEnergyBarFill').style.width = `${Math.min(100, Math.round((u.energy / Math.max(1, u.maxEnergy)) * 100))}%`;
 
@@ -1868,6 +1901,19 @@ function renderEarnSheet() {
     });
     ltBtn.addEventListener('click', openLuckyDrawModal);
     dailyEl.appendChild(ltBtn);
+
+    const tk = u.tokenomics || {};
+    const tkBtn = document.createElement('button');
+    tkBtn.type = 'button';
+    tkBtn.className = 'not-row-item';
+    tkBtn.innerHTML = rowHtml({
+      icon: '🪙',
+      title: 'Tokenomics & Burn',
+      sub: `100M $HOLD · Fazasi: <b>${esc(tk.halving?.name || 'Genesis')} (${esc(tk.halving?.label || '1.0x')})</b> · 🔥 ${fmtInt(Math.floor(tk.burnedTokens || 0))} yoqilgan`,
+      right: '›'
+    });
+    tkBtn.addEventListener('click', openTokenomicsModal);
+    dailyEl.appendChild(tkBtn);
   }
 
   // 2. Quests — Notcoin-style rows, verified in-app (no external tabs)
@@ -1984,6 +2030,91 @@ function renderEarnSheet() {
       });
     });
   }
+}
+
+function openTokenomicsModal() {
+  const u = STATE.user;
+  if (!u) return;
+  const tk = u.tokenomics || {};
+  const factor = tk.redenomFactor || 100;
+  const userTokens = (Math.floor(u.holdBalance || 0) / factor).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const totalSupply = fmtInt(tk.totalSupplyTokens || 100_000_000);
+  const effSupply = fmtInt(Math.floor(tk.effectiveMaxSupplyTokens || 100_000_000));
+  const mintedTok = (tk.mintedTokens || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const burnedTok = (tk.burnedTokens || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const circTok = (tk.circulatingTokens || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const pct = Math.min(100, Number(tk.miningProgressPct || 0));
+  const h = tk.halving || { stage: 1, name: 'Genesis', label: '1.0x' };
+  const stages = Array.isArray(tk.stages) ? tk.stages : [
+    { stage: 1, name: 'Genesis', minPct: 0, maxPct: 25, label: '1.0x' },
+    { stage: 2, name: 'Halving I', minPct: 25, maxPct: 50, label: '0.5x' },
+    { stage: 3, name: 'Halving II', minPct: 50, maxPct: 75, label: '0.25x' },
+    { stage: 4, name: 'Final Phase', minPct: 75, maxPct: 100, label: '0.1x' }
+  ];
+  const allocs = Array.isArray(tk.allocations) ? tk.allocations : [];
+
+  openModal('🪙 $HOLD Tokenomics & Burn', `
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5;">
+      <div style="background:linear-gradient(135deg,rgba(56,189,248,0.16),rgba(59,130,246,0.08));border:1px solid rgba(56,189,248,0.28);border-radius:14px;padding:12px;">
+        <div style="font-size:11.5px;color:#7dd3fc;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;">Sizning TGE ulushingiz (faqat holdBalance)</div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:4px;">
+          <div style="font-size:22px;font-weight:800;color:#fff;">≈ ${userTokens} <span style="color:#38bdf8;">$HOLD</span></div>
+          <div style="font-size:12px;color:var(--text-2);">${fmtInt(u.holdBalance || 0)} pts ÷ ${factor}</div>
+        </div>
+        <div style="margin-top:6px;font-size:11.5px;color:var(--text-2);">Notcoin uslubida <b>00</b> qisqaradi (100 coin = 1 $HOLD). Faqat qoʻldagi <b>holdBalance</b> hisoblanadi — boost va skinlarga sarflangan coinlar <b>Burn</b> boʻlib yoqiladi.</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
+          <div style="font-size:10.5px;color:var(--text-2);">Hard Cap</div>
+          <div style="font-size:14px;font-weight:800;color:#fff;">100M</div>
+          <div style="font-size:10px;color:var(--text-2);">Eff: ${effSupply}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
+          <div style="font-size:10.5px;color:var(--text-2);">Muomalada</div>
+          <div style="font-size:14px;font-weight:800;color:#4ade80;">${circTok}</div>
+          <div style="font-size:10px;color:var(--text-2);">Minted: ${mintedTok}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
+          <div style="font-size:10.5px;color:var(--text-2);">🔥 Yoqilgan</div>
+          <div style="font-size:14px;font-weight:800;color:#fb923c;">${burnedTok}</div>
+          <div style="font-size:10px;color:var(--text-2);">${fmtInt(tk.burnedPoints || 0)} pts</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;">
+        <div style="display:flex;justify-content:space-between;font-weight:700;color:#fff;margin-bottom:6px;">
+          <span>⛏️ Mining Pool (45M $HOLD)</span>
+          <span>${pct.toFixed(2)}%</span>
+        </div>
+        <div style="height:8px;border-radius:99px;background:rgba(255,255,255,0.08);overflow:hidden;">
+          <div style="height:100%;width:${Math.max(1.5, pct)}%;border-radius:99px;background:linear-gradient(90deg,#38bdf8,#4ade80);"></div>
+        </div>
+        <div style="margin-top:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;">
+          ${stages.map(s => {
+            const active = s.stage === h.stage;
+            return `<div style="padding:6px 4px;border-radius:8px;background:${active ? 'rgba(56,189,248,0.18)' : 'rgba(255,255,255,0.04)'};border:1px solid ${active ? 'rgba(56,189,248,0.5)' : 'transparent'};">
+              <div style="font-size:10px;color:${active ? '#7dd3fc' : 'var(--text-2)'};">${s.minPct}-${s.maxPct}%</div>
+              <div style="font-size:12px;font-weight:800;color:#fff;">${esc(s.label)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;">
+        <div style="font-weight:700;color:#fff;margin-bottom:6px;">📊 Taqsimot (${totalSupply} $HOLD)</div>
+        ${allocs.map(a => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:12px;">
+            <span style="display:flex;align-items:center;gap:6px;">
+              <span style="width:8px;height:8px;border-radius:99px;background:${esc(a.color)};display:inline-block;"></span>
+              <span>${esc(a.label)}</span>
+            </span>
+            <b>${a.pct}% (${Math.round((a.tokens || 0) / 1_000_000)}M)</b>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `);
 }
 
 function openLuckyDrawModal() {
@@ -3064,6 +3195,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     openSheet('farm');
   });
   document.getElementById('btnArenaFarmChip')?.addEventListener('click', () => openSheet('farm'));
+  document.getElementById('btnOpenTokenomics')?.addEventListener('click', openTokenomicsModal);
   document.getElementById('btnOpenWarsCard')?.addEventListener('click', () => openSheet('wars'));
   document.getElementById('btnWarsInvite')?.addEventListener('click', () => openSheet('frens'));
   document.getElementById('btnClaimFarm')?.addEventListener('click', claimFarmYield);

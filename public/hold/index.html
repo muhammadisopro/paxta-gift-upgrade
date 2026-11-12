@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=31" />
+  <link rel="stylesheet" href="/hold/style.css?v=32" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -87,9 +87,14 @@
           </span>
         </button>
 
-        <button type="button" class="arena-farm-chip" id="btnArenaFarmChip">
-          <span>🌾</span><span id="uiArenaFarmText">Farm</span>
-        </button>
+        <div class="arena-chips-row">
+          <button type="button" class="arena-farm-chip" id="btnArenaFarmChip">
+            <span>🌾</span><span id="uiArenaFarmText">Farm</span>
+          </button>
+          <button type="button" class="arena-token-pill" id="btnOpenTokenomics">
+            <span>🪙</span><span id="uiArenaTokensText">0 $HOLD</span><span class="token-phase-tag" id="uiArenaHalvingTag">1.0x</span>
+          </button>
+        </div>
       </div>
 
       <!-- 3. Enlarged Center 3D Coin + Pure Mid-Air Floating Morse Letters -->
@@ -583,6 +588,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=31"></script>
+  <script src="/hold/app.js?v=32"></script>
 </body>
 </html>
