@@ -452,9 +452,69 @@ export function registerHoldEngine(app, deps) {
     };
   }
 
+  // Squad totals are always derived from real members (no drift / double counting on join-leave)
+  function reconcileSquads(st) {
+    let changed = false;
+    const members = {};
+    const totals = {};
+    for (const usr of Object.values(st.users || {})) {
+      if (usr?.squadId && st.squads?.[usr.squadId]) {
+        members[usr.squadId] = (members[usr.squadId] || 0) + 1;
+        totals[usr.squadId] = (totals[usr.squadId] || 0) + Math.floor(usr.lifetimeHold || 0);
+      }
+    }
+    for (const sq of Object.values(st.squads || {})) {
+      const m = members[sq.id] || 0;
+      const t = totals[sq.id] || 0;
+      if (sq.members !== m || sq.totalHold !== t) {
+        sq.members = m;
+        sq.totalHold = t;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  // Merge accounts that share the same PaxtaGram ID (created after a username change)
+  function mergeDuplicateUsers(st) {
+    const byPid = {};
+    for (const [k, usr] of Object.entries(st.users || {})) {
+      const pid = Number(usr?.paxtaId) || 0;
+      if (!pid) continue;
+      (byPid[pid] = byPid[pid] || []).push(k);
+    }
+    let changed = false;
+    if (!st.aliases || typeof st.aliases !== 'object') st.aliases = {};
+    for (const keys of Object.values(byPid)) {
+      if (keys.length < 2) continue;
+      keys.sort((a, b) => (st.users[b].lifetimeHold || 0) - (st.users[a].lifetimeHold || 0));
+      const keep = keys[0];
+      for (const drop of keys.slice(1)) {
+        const d = st.users[drop];
+        const kp = st.users[keep];
+        if (!kp.squadId && d.squadId) kp.squadId = d.squadId;
+        if (!kp.referredBy && d.referredBy && d.referredBy !== keep) kp.referredBy = d.referredBy;
+        kp.referrals = Array.from(new Set([...(kp.referrals || []), ...(d.referrals || [])])).filter(r => r !== keep);
+        st.aliases[drop] = keep;
+        delete st.users[drop];
+        for (const o of Object.values(st.users)) {
+          if (o.referredBy === drop) o.referredBy = keep;
+          if (Array.isArray(o.referrals) && o.referrals.includes(drop)) {
+            o.referrals = Array.from(new Set(o.referrals.map(r => (r === drop ? keep : r)))).filter(r => r !== o.username);
+          }
+        }
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
   function loadHoldState() {
     const st = loadJSON(holdStateFile, null);
     if (st && st.users && st.config && st.squads) {
+      const merged = mergeDuplicateUsers(st);
+      const recon = reconcileSquads(st);
+      if (merged || recon) saveJSON(holdStateFile, st);
       if (!st.soldMedals) st.soldMedals = {};
       if (!Array.isArray(st.nftClaims)) st.nftClaims = [];
       if (!st.payments) st.payments = { invoices: {}, charges: {}, lastUpdateId: 0 };
@@ -645,8 +705,24 @@ export function registerHoldEngine(app, deps) {
 
   function getOrCreateHoldUser(usernameRaw, displayNameRaw, paxtaId = null, refCode = null, avatarUrl = null) {
     const st = loadHoldState();
-    const key = cleanKey(usernameRaw);
+    let key = cleanKey(usernameRaw);
     const mainUsers = loadJSON(usersFile, {});
+
+    // Identity is bound to PaxtaGram ID, not to @username (users may rename themselves)
+    if (!st.aliases || typeof st.aliases !== 'object') st.aliases = {};
+    if (!st.users[key] && st.aliases[key] && st.users[st.aliases[key]]) {
+      key = st.aliases[key];
+    }
+    const earlyPid = Number(paxtaId || mainUsers[key]?.paxtaId || 0) || null;
+    if (earlyPid) {
+      const owner = Object.values(st.users).find(x => x && Number(x.paxtaId) === earlyPid);
+      if (owner && owner.username !== key) {
+        st.aliases[cleanKey(usernameRaw)] = owner.username;
+        st.aliases[key] = owner.username;
+        key = owner.username;
+        saveHoldState(st);
+      }
+    }
 
     if (!mainUsers[key]) {
       mainUsers[key] = {
@@ -1711,6 +1787,13 @@ export function registerHoldEngine(app, deps) {
       const cleanH = cleanKey(String(channelHandle).replace(/^@/, '').replace(/^https?:\/\/(www\.)?paxta\.online\//i, ''));
       if (st.squads[cleanH]) {
         squadId = cleanH;
+        const sqx = st.squads[cleanH];
+        if (!sqx.name || sqx.name === `@${cleanH}`) {
+          try {
+            const vc = await verifyOnPaxtaGram(cleanH);
+            if (vc?.title && vc.title !== cleanH) sqx.name = vc.title;
+          } catch {}
+        }
       } else {
         const verifiedCh = await verifyOnPaxtaGram(cleanH);
         if (!verifiedCh) {
@@ -1733,12 +1816,8 @@ export function registerHoldEngine(app, deps) {
       return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
     }
     if (u.squadId !== squadId) {
-      if (u.squadId && st.squads[u.squadId]) {
-        st.squads[u.squadId].members = Math.max(0, (st.squads[u.squadId].members || 1) - 1);
-      }
       u.squadId = squadId;
-      st.squads[squadId].members = (st.squads[squadId].members || 0) + 1;
-      st.squads[squadId].totalHold = (st.squads[squadId].totalHold || 0) + Math.floor(u.lifetimeHold || 0);
+      reconcileSquads(st);
       saveHoldState(st);
     }
     res.json({
