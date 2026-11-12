@@ -1483,11 +1483,12 @@ function renderLeaguesSheet() {
 
   if (titleEl) titleEl.textContent = `${lg.name} league`;
   if (subEl) {
+    const nftQuota = lg.nftPoolCount ? ` · ${fmtInt(lg.nftPoolCount)} NFT` : '';
     if (lg.id === u.league?.id) {
       const targetStr = nextLg ? fmtInt(nextLg.minHold) : '∞';
-      subEl.textContent = `${fmtInt(u.lifetimeHold)} / ${targetStr}`;
+      subEl.textContent = `${fmtInt(u.lifetimeHold)} / ${targetStr}${nftQuota}`;
     } else {
-      subEl.textContent = `from ${fmtInt(lg.minHold)} HOLD`;
+      subEl.textContent = `from ${fmtInt(lg.minHold)} HOLD${nftQuota}`;
     }
   }
   if (barEl) {
@@ -1501,11 +1502,6 @@ function renderLeaguesSheet() {
       const pct = Math.min(100, Math.max(2, Math.round((u.lifetimeHold / Math.max(1, lg.minHold)) * 100)));
       barEl.style.width = `${pct}%`;
     }
-  }
-
-  const rewardBannerEl = document.getElementById('uiLeagueRewardBanner');
-  if (rewardBannerEl) {
-    rewardBannerEl.innerHTML = `🎁 <span>${esc(lg.nftGuarantee || `${lg.nftPoolCount || 5} ta NFT`)} · ${esc(lg.name)} fondi</span>`;
   }
 
   const listWrap = document.getElementById('leagueBoardList');
@@ -1579,30 +1575,6 @@ function renderLeaguesSheet() {
   }
 
   if (STATE.leagueMainTab === 'prizes') {
-    const poolSummary = STATE.nftPoolSummary;
-    const quotas = poolSummary?.leagueQuotas || leagues;
-    const infoCard = document.createElement('div');
-    infoCard.className = 'nft-explain-card';
-    infoCard.innerHTML = `
-      <div style="font-weight:700;color:#fff;margin-bottom:4px;">🏆 Top-10 NFT & 5 ta Liga taqsimoti</div>
-      <div>
-        Top-10 NFT faqat <b style="color:#fff;">All-Time (umumiy HOLD)</b> reyting boʻyicha beriladi (#1–#10 Desk Calendar va Victory Medal).
-        ${poolSummary ? `Hozirgi zaxira: <b style="color:#fff;">${fmtInt(poolSummary.totalAvailable)} ta NFT</b>.` : ''}
-      </div>
-      <div class="nft-quota-grid">
-        ${quotas.map(q => `
-          <div class="nft-quota-chip ${q.id === lg.id ? 'active' : ''}">
-            <div style="font-weight:700;color:${esc(q.color || '#fff')};">${esc(q.name)}</div>
-            <div style="color:#fff;font-weight:800;">${fmtInt(q.nftPoolCount || 0)} NFT</div>
-          </div>
-        `).join('')}
-      </div>
-      <div style="margin-top:8px;font-size:12px;color:#cbd5e1;">
-        <b style="color:${esc(lg.color || '#fff')};">${esc(lg.name)}:</b> ${esc(lg.nftRule || lg.nftGuarantee || '')}
-      </div>
-    `;
-    listWrap.appendChild(infoCard);
-
     for (const p of STATE.top10Prizes) {
       const holder = STATE.leaderboard.find(x => x.rank === p.rank);
       const nft = p.nft;
@@ -1621,7 +1593,7 @@ function renderLeaguesSheet() {
             <div class="lb-user-name">${nft ? esc(nft.title) : `Top #${p.rank} Prize`}</div>
             <div class="lb-user-score">
               <span style="color:var(--theme-accent);font-weight:700;">+${fmtInt(p.holdBonus)} HOLD</span>
-              <span>· ${holder ? `@${esc(holder.username)}` : 'Boʻsh oʻrin'}${p.reason ? ` · ${esc(p.reason)}` : ''}</span>
+              <span>· ${holder ? `@${esc(holder.username)}` : 'Boʻsh oʻrin'}</span>
             </div>
           </div>
         </div>

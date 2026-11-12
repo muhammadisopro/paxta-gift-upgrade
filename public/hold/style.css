@@ -2494,52 +2494,6 @@ body.turbo-active .coin-radial-glow {
 .not-row-item:disabled { opacity: 0.72; cursor: default; }
 .not-row-item:disabled:active { background: transparent; }
 
-.league-nft-banner {
-  margin-top: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.nft-explain-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 12px 13px;
-  margin-bottom: 10px;
-  font-size: 12.5px;
-  line-height: 1.48;
-  color: var(--text-2);
-}
-
-.nft-quota-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
-  margin-top: 8px;
-}
-
-.nft-quota-chip {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 6px 4px;
-  text-align: center;
-  font-size: 11px;
-}
-
-.nft-quota-chip.active {
-  border-color: var(--theme-accent, #38bdf8);
-  background: rgba(56, 189, 248, 0.14);
-}
-
 .league-jump-pill {
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.08);
