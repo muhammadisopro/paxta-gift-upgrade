@@ -341,6 +341,8 @@ export function registerHoldEngine(app, deps) {
       name: sq.name,
       members: sq.members || 0,
       verified: !!sq.verified,
+      owner: sq.ownerUsername || null,
+      isOwner: !!((sq.ownerId && Number(sq.ownerId) === Number(u.paxtaId)) || (sq.ownerUsername && sq.ownerUsername === u.username)),
       score: sq.weekKey === w.key ? Math.floor(sq.weekScore || 0) : 0
     })).sort((a, b) => b.score - a.score);
     const myIdx = u.squadId ? list.findIndex(s => s.id === u.squadId) : -1;
@@ -508,6 +510,22 @@ export function registerHoldEngine(app, deps) {
       }
     }
     return changed;
+  }
+
+  // Resolve a referral code: @username, old username (alias) or numeric PaxtaGram ID -> canonical HOLD username
+  function resolveRefKey(st, mainUsers, raw) {
+    const s = cleanKey(String(raw || '').replace(/^ref_/i, '').replace(/^@/, ''));
+    if (!s) return null;
+    if (/^\d{1,12}$/.test(s)) {
+      const pid = Number(s);
+      const byId = Object.values(st.users || {}).find(x => x && Number(x.paxtaId) === pid);
+      if (byId) return byId.username;
+      const mu = Object.values(mainUsers || {}).find(x => x && Number(x.paxtaId) === pid);
+      return mu ? cleanKey(mu.username) : null;
+    }
+    if (st.users?.[s]) return s;
+    if (st.aliases?.[s] && st.users?.[st.aliases[s]]) return st.aliases[s];
+    return s;
   }
 
   function loadHoldState() {
@@ -793,7 +811,7 @@ export function registerHoldEngine(app, deps) {
 
       // Handle Referral attribution (+10,000 HOLD to inviter, +5,000 HOLD to friend)
       if (refCode) {
-        const refKey = cleanKey(String(refCode).replace(/^ref_/i, '').replace(/^@/, ''));
+        const refKey = resolveRefKey(st, mainUsers, refCode);
         if (refKey && refKey !== key) {
           if (!st.users[refKey] && mainUsers[refKey]) {
             st.users[refKey] = {
@@ -859,7 +877,7 @@ export function registerHoldEngine(app, deps) {
       }
       // If user hasn't been referred yet and refCode is provided
       if (refCode && !st.users[key].referredBy) {
-        const refKey = cleanKey(String(refCode).replace(/^ref_/i, '').replace(/^@/, ''));
+        const refKey = resolveRefKey(st, mainUsers, refCode);
         if (refKey && refKey !== key) {
           if (!st.users[refKey] && mainUsers[refKey]) {
             st.users[refKey] = {
@@ -1144,7 +1162,8 @@ export function registerHoldEngine(app, deps) {
   const AUTH_POSTS = new Set([
     '/claim-ref', '/claim-og', '/farm-claim', '/farm-upgrade', '/farm-claim-ref', '/footprint-claim',
     '/claim-streak', '/tap', '/boost', '/skin', '/solve-morse', '/join-squad', '/start-quest',
-    '/claim-quest', '/buy-vip-pack', '/create-invoice', '/solve-compass'
+    '/claim-quest', '/buy-vip-pack', '/create-invoice', '/solve-compass',
+    '/squad-rename', '/squad-claim', '/squad-members'
   ]);
   app.use('/api/hold', (req, res, next) => {
     if (req.method !== 'POST' || !AUTH_POSTS.has(req.path)) return next();
@@ -1317,7 +1336,7 @@ export function registerHoldEngine(app, deps) {
     }
     const rawFriend = req.body?.friendUsername || req.body?.refUsername || req.body?.refCode || '';
     const friendKey0 = cleanKey(String(rawFriend).replace(/^ref_/i, '').replace(/^@/, ''));
-    const friendKey = (st.users[friendKey0] ? friendKey0 : (st.aliases?.[friendKey0] || friendKey0));
+    const friendKey = resolveRefKey(st, loadJSON(usersFile, {}), rawFriend) || friendKey0;
     if (!friendKey || friendKey === u.username) {
       return res.status(400).json({ ok: false, error: 'Doʻstingizning @username manzilini kiriting' });
     }
@@ -1848,6 +1867,8 @@ export function registerHoldEngine(app, deps) {
           members: 0,
           totalHold: 0,
           verified: true,
+          ownerId: Number(u.paxtaId) || null,
+          ownerUsername: u.username,
           link: `https://paxta.online/${verifiedCh.username || cleanH}`
         };
         squadId = cleanH;
@@ -1867,6 +1888,126 @@ export function registerHoldEngine(app, deps) {
       message: `🛡️ ${st.squads[squadId].name} jamoasiga qoʻshildingiz!`,
       user: formatHoldUserResponse(st, u, mainUser)
     });
+  });
+
+  // ---- 7B. Squad ownership, rename & members ----
+  function cleanSquadName(raw) {
+    return String(raw || '')
+      .replace(/[\u0000-\u001f\u007f<>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 28);
+  }
+
+  async function isChannelAdminOf(handle, paxtaId) {
+    if (!handle || !paxtaId) return false;
+    try {
+      const r = await holdBotCall('getChatMember', { chat_id: `@${String(handle).replace(/^@/, '')}`, user_id: Number(paxtaId) });
+      const status = r?.result?.status;
+      return !!(r?.ok && (status === 'creator' || status === 'administrator'));
+    } catch { return false; }
+  }
+
+  function canManageSquad(req, st, u, sq) {
+    if (!sq) return false;
+    if (sq.ownerId && Number(sq.ownerId) === Number(u.paxtaId)) return true;
+    if (sq.ownerUsername && sq.ownerUsername === u.username) return true;
+    try { return !!checkAdminAccess(req, u); } catch { return false; }
+  }
+
+  app.post('/api/hold/squad-rename', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const sq = st.squads[req.body?.squadId];
+    if (!sq) return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
+    if (!canManageSquad(req, st, u, sq)) {
+      return res.status(403).json({ ok: false, error: 'Faqat squad egasi nomni oʻzgartira oladi' });
+    }
+    const name = cleanSquadName(req.body?.name);
+    if (name.length < 2) return res.status(400).json({ ok: false, error: 'Nom kamida 2 ta belgi boʻlsin' });
+    sq.name = name;
+    saveHoldState(st);
+    res.json({ ok: true, message: `✅ Squad nomi: ${name}`, user: formatHoldUserResponse(st, u, mainUser) });
+  });
+
+  app.post('/api/hold/squad-claim', async (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const sq = st.squads[req.body?.squadId];
+    if (!sq) return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
+    if (sq.ownerId && Number(sq.ownerId) === Number(u.paxtaId)) {
+      return res.json({ ok: true, message: 'Siz allaqachon egasisiz', user: formatHoldUserResponse(st, u, mainUser) });
+    }
+    const ok = await isChannelAdminOf(sq.handle || sq.id, u.paxtaId);
+    if (!ok) {
+      return res.status(403).json({ ok: false, error: 'Siz bu kanalning admini emassiz (bot kanalda admin boʻlishi kerak)' });
+    }
+    sq.ownerId = Number(u.paxtaId);
+    sq.ownerUsername = u.username;
+    saveHoldState(st);
+    res.json({ ok: true, message: '👑 Siz endi squad egasisiz!', user: formatHoldUserResponse(st, u, mainUser) });
+  });
+
+  app.post('/api/hold/squad-members', (req, res) => {
+    const { st, u } = getOrCreateHoldUser(req.body?.username);
+    const sq = st.squads[req.body?.squadId];
+    if (!sq) return res.status(404).json({ ok: false, error: 'Squad topilmadi' });
+    const wk = warWeekInfo().key;
+    const members = Object.values(st.users || {})
+      .filter(x => x && x.squadId === sq.id)
+      .sort((a, b) => (b.lifetimeHold || 0) - (a.lifetimeHold || 0))
+      .slice(0, 50)
+      .map(x => ({
+        username: x.username,
+        displayName: x.displayName || x.username,
+        avatarUrl: x.avatarUrl || null,
+        lifetimeHold: Math.floor(x.lifetimeHold || 0),
+        weekEarned: x.warWeek === wk ? Math.floor(x.warEarned || 0) : 0,
+        isOwner: !!(sq.ownerId && Number(sq.ownerId) === Number(x.paxtaId)) || sq.ownerUsername === x.username
+      }));
+    res.json({
+      ok: true,
+      squad: {
+        id: sq.id,
+        name: sq.name,
+        handle: sq.handle || sq.id,
+        link: sq.link || null,
+        ownerUsername: sq.ownerUsername || null,
+        count: Object.values(st.users || {}).filter(x => x && x.squadId === sq.id).length,
+        canManage: canManageSquad(req, st, u, sq),
+        canClaim: !(sq.ownerId || sq.ownerUsername)
+      },
+      members
+    });
+  });
+
+  // ---- Shareable invite landing page (works in any browser; opens HOLDbot in PaxtaGram) ----
+  app.get('/r/:code', (req, res) => {
+    const code = String(req.params.code || '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 32);
+    const cmd = `/start ${code}`;
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HOLD — taklif</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#fff;font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+.c{width:min(380px,92vw);text-align:center;padding:28px 22px}
+h1{font-size:26px;margin:0 0 6px}p{color:#9aa0aa;font-size:14px;line-height:1.5;margin:6px 0 18px}
+code{display:block;background:#15171c;border:1px solid #262a33;border-radius:12px;padding:12px;font-size:16px;margin:0 0 14px}
+a,button{display:block;width:100%;box-sizing:border-box;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:700;margin:8px 0;cursor:pointer;text-decoration:none}
+a{background:#fff;color:#000}button{background:#1c1f26;color:#fff}
+</style></head><body><div class="c">
+<h1>🪙 $HOLD</h1>
+<p>Doʻstingiz sizni taklif qildi. Ikkalangizga ham bepul HOLD beriladi!</p>
+<code id="cmd">${cmd}</code>
+<a href="https://paxta.online/u/HOLDbot" id="open">@HOLDbot ni ochish</a>
+<button id="copy">Buyruqni nusxalash</button>
+<p>1. Buyruqni nusxalang<br>2. @HOLDbot ga kirib yuboring</p>
+</div>
+<script>
+const t=document.getElementById('cmd').textContent;
+function cp(){try{navigator.clipboard.writeText(t)}catch(e){}}
+document.getElementById('copy').onclick=function(){cp();this.textContent='Nusxalandi ✓'};
+document.getElementById('open').onclick=cp;
+cp();
+</script></body></html>`);
   });
 
   // ---- 8A. Start Quest Verification Step (Records Timestamp on Server) ----
@@ -2773,7 +2914,7 @@ export function registerHoldEngine(app, deps) {
           st = loadHoldState();
           for (const item of u.result) {
             offset = item.update_id + 1;
-
+            st = loadHoldState();
             const fromUser = item.pre_checkout_query?.from || item.message?.from;
             const uKey = fromUser ? cleanKey(fromUser.username || fromUser.first_name || `paxta_${fromUser.id}`) : null;
 
@@ -2861,16 +3002,30 @@ export function registerHoldEngine(app, deps) {
                 }
               }
 
-              const { u: senderUser } = getOrCreateHoldUser(senderKey, sender.first_name || sender.username, sender.id, null, null);
+              {
+                const mu0 = loadJSON(usersFile, {});
+                if (refKey) {
+                  const rr = resolveRefKey(st, mu0, refKey);
+                  refKey = rr && rr !== senderKey ? rr : null;
+                }
+                // Real PaxtaGram inviter who never opened HOLD yet -> create once (persisted)
+                if (refKey && !st.users[refKey] && mu0[refKey]) getOrCreateHoldUser(refKey);
+              }
+
+              // IMPORTANT: always continue on the SAME state object that getOrCreateHoldUser loaded/saved
+              const senderRes = getOrCreateHoldUser(senderKey, sender.first_name || sender.username, sender.id, null, null);
+              st = senderRes.st;
+              const senderUser = senderRes.u;
               let refAttributed = false;
               let alreadyReferred = !!senderUser.referredBy;
               let inviterUser = null;
 
-              if (refKey) {
-                if (!senderUser.referredBy) {
-                  const inviterObj = getOrCreateHoldUser(refKey);
-                  inviterUser = inviterObj.u;
+              if (refKey && st.users[refKey] && st.users[refKey].referredBy === senderUser.username) refKey = null;
 
+              if (refKey && st.users[refKey]) {
+                if (!senderUser.referredBy) {
+                  inviterUser = st.users[refKey];
+                  if (!Array.isArray(inviterUser.referrals)) inviterUser.referrals = [];
                   senderUser.referredBy = refKey;
                   creditHold(senderUser, st, 5_000);
                   refAttributed = true;
@@ -2909,7 +3064,7 @@ export function registerHoldEngine(app, deps) {
               } else if (alreadyReferred && refKey && refKey !== senderUser.referredBy) {
                 replyText = `ℹ️ Siz allaqachon **@${senderUser.referredBy}** ning taklifi bilan roʻyxatdan oʻtgansiz.\n\nNothing to sell. Just hold. @hold`;
               } else {
-                replyText = `🪙 **HOLD — Nothing to sell. Just hold.**\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagicha yozishini ayting:\n\`/start ${senderKey}\`\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
+                replyText = `🪙 **HOLD — Nothing to sell. Just hold.**\n\n👥 **Doʻstlaringizni taklif qiling:**\nDoʻstingizga @HOLDbot ga kirib quyidagicha yozishini ayting:\n\`/start ${sender.id}\`\n\nYoki havola: ${PUBLIC_APP_URL}/r/${sender.id}\n\nHar bir doʻstingiz uchun sizga **+10,000 $HOLD**, doʻstingizga esa **+5,000 $HOLD** beriladi! 🚀`;
               }
 
               if (item.message?.chat?.id) {

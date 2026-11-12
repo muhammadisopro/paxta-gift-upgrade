@@ -379,14 +379,15 @@ function renderWarsSheet() {
       document.getElementById('btnWarsJoin')?.addEventListener('click', () => openSheet('frens'));
     } else {
       my.innerHTML = `
-        <div class="not-row-item">
+        <button type="button" class="not-row-item" id="btnWarsMySquad">
           <div class="cp-avatar" style="width:44px;height:44px;border-radius:12px;">${esc((w.mySquadName || 'S').charAt(0).toUpperCase())}</div>
           <div class="nri-center">
             <div class="nri-title">${esc(w.mySquadName)} ${w.isLeader ? '👑' : ''}</div>
             <div class="nri-sub">#${w.myRank} · <img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(w.myScore)} · siz: ${fmtInt(w.myEarned)}</div>
           </div>
           <span class="war-rank-badge">#${w.myRank}</span>
-        </div>`;
+        </button>`;
+      document.getElementById('btnWarsMySquad')?.addEventListener('click', () => openSquadModal(w.mySquadId));
     }
   }
 
@@ -396,14 +397,17 @@ function renderWarsSheet() {
       list.innerHTML = '<div class="not-row-item"><div class="nri-center"><div class="nri-sub">Hali squadlar yoʻq</div></div></div>';
     } else {
       list.innerHTML = w.top.map((sq, i) => `
-        <div class="not-row-item ${sq.id === w.mySquadId ? 'war-row-me' : ''}">
+        <button type="button" class="not-row-item ${sq.id === w.mySquadId ? 'war-row-me' : ''}" data-squad-id="${esc(sq.id)}">
           <span class="war-rank-num">${i + 1}</span>
           <div class="nri-center">
-            <div class="nri-title">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''}</div>
-            <div class="nri-sub">${fmtInt(sq.members)} a'zo</div>
+            <div class="nri-title">${esc(sq.name)} ${sq.verified ? '<span style="color:#38b6ff;">✓</span>' : ''} ${sq.isOwner ? '👑' : ''}</div>
+            <div class="nri-sub">${fmtInt(sq.members)} a'zo${sq.owner ? ' · @' + esc(sq.owner) : ''}</div>
           </div>
           <span class="war-score"><img src="${esc(coinImg)}" class="inline-c" alt="" /> ${fmtInt(sq.score)}</span>
-        </div>`).join('');
+        </button>`).join('');
+      list.querySelectorAll('[data-squad-id]').forEach(b => {
+        b.addEventListener('click', () => openSquadModal(b.dataset.squadId));
+      });
     }
   }
 
@@ -414,6 +418,55 @@ function renderWarsSheet() {
       : 'Birinchi haftalik jang davom etmoqda';
   }
   tickWars();
+}
+
+async function openSquadModal(squadId) {
+  if (!squadId) return;
+  const res = await api('/api/hold/squad-members', {
+    method: 'POST',
+    body: JSON.stringify({ username: STATE.username, squadId })
+  });
+  if (!res || !res.ok) { showToast(res?.error || 'Squad yuklanmadi'); return; }
+  const sq = res.squad;
+  const rows = res.members.length ? res.members.map((m, i) => `
+    <div class="not-row-item" style="padding:8px 6px;">
+      <span class="war-rank-num">${i + 1}</span>
+      <div class="nri-center">
+        <div class="nri-title">${esc(m.displayName)} ${m.isOwner ? '👑' : ''}</div>
+        <div class="nri-sub">@${esc(m.username)} · hafta: ${fmtInt(m.weekEarned)}</div>
+      </div>
+      <span class="war-score">${fmtInt(m.lifetimeHold)}</span>
+    </div>`).join('') : '<div class="nri-sub" style="padding:10px;">Hali a\'zolar yo\'q</div>';
+  const manage = sq.canManage ? `
+    <div style="display:flex;gap:8px;margin:10px 0;">
+      <input id="squadRenameInput" maxlength="28" value="${esc(sq.name)}" style="flex:1;min-width:0;background:#15171c;border:1px solid #262a33;border-radius:12px;color:#fff;padding:10px 12px;font-size:15px;" />
+      <button type="button" class="skin-pill-btn" id="btnSquadRename">Saqlash</button>
+    </div>` : '';
+  const claim = (!sq.canManage && sq.canClaim) ? `
+    <button type="button" class="btn-sapphire-primary" id="btnSquadClaim" style="margin:10px 0;">👑 Men kanal adminiman — egalik qilish</button>` : '';
+  openModal(sq.name, `
+    <div class="nri-sub" style="margin-bottom:4px;">${fmtInt(sq.count)} a'zo${sq.ownerUsername ? ' · ega: @' + esc(sq.ownerUsername) : ''}</div>
+    ${manage}${claim}
+    <div class="dark-group-box" style="max-height:46vh;overflow:auto;">${rows}</div>`,
+  () => {
+    document.getElementById('btnSquadRename')?.addEventListener('click', async () => {
+      const name = document.getElementById('squadRenameInput')?.value || '';
+      const r = await api('/api/hold/squad-rename', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, squadId, name })
+      });
+      if (r?.ok && r.user) { STATE.user = r.user; renderAll(); closeModal(); showToast(r.message); }
+      else showToast(r?.error || 'Xatolik');
+    });
+    document.getElementById('btnSquadClaim')?.addEventListener('click', async () => {
+      const r = await api('/api/hold/squad-claim', {
+        method: 'POST',
+        body: JSON.stringify({ username: STATE.username, squadId })
+      });
+      if (r?.ok && r.user) { STATE.user = r.user; renderAll(); closeModal(); showToast(r.message); }
+      else showToast(r?.error || 'Xatolik');
+    });
+  });
 }
 
 function tickWars() {
@@ -3194,7 +3247,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Copy Referral Link / Username In-App (Never opens an external browser tab!)
   document.getElementById('btnCopyRefLink')?.addEventListener('click', async () => {
-    const shareText = `🪙 **$HOLD ga qoʻshiling!**\n\n1. https://paxta.online/u/HOLDbot ga kiring\n2. **/start ${STATE.username}** deb yozing\n\nHar ikkalamizga bepul $HOLD beriladi! 🚀`;
+    const refCode = STATE.user?.paxtaId || STATE.username;
+    const shareText = `🪙 $HOLD ga qoʻshiling!\n\n👉 ${location.origin}/r/${refCode}\n\nYoki @HOLDbot ga kirib /start ${refCode} deb yozing.\nHar ikkalamizga bepul $HOLD beriladi! 🚀`;
     try {
       await navigator.clipboard.writeText(shareText);
       showToast(`Taklif xabari nusxalandi! Doʻstlaringizga yuboring`);
