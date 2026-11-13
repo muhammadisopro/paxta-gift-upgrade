@@ -914,11 +914,16 @@ body.turbo-active .coin-radial-glow {
 
 .sheet-content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-bottom: 28px;
+  padding-bottom: 44px;
+}
+.sheet-content > * {
+  flex-shrink: 0;
 }
 
 /* ==================== LEAGUES SHOWCASE (100% OPAQUE + 5 3D TROPHY CUPS) ==================== */
