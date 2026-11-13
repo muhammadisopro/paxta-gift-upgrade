@@ -263,6 +263,177 @@ export const STARS_VIP_PACKS = [
   }
 ];
 
+export const STARS_SERVICES = [
+  {
+    id: 'turbo_24h',
+    category: 'turbo',
+    badge: '⚡ 24h · 2x',
+    name: 'Turbo Mining Pass (24h)',
+    desc: '24 soat davomida barcha mining daromadi 2x ga oshadi',
+    starsPrice: 50,
+    durationMs: 24 * 3600 * 1000,
+    mult: 2
+  },
+  {
+    id: 'turbo_7d',
+    category: 'turbo',
+    badge: '🔥 7 kun · 3x',
+    name: 'Turbo Mining Pass (7 kun)',
+    desc: '7 kun davomida barcha mining daromadi 3x ga oshadi',
+    starsPrice: 250,
+    durationMs: 7 * 24 * 3600 * 1000,
+    mult: 3
+  },
+  {
+    id: 'halving_shield',
+    category: 'shield',
+    badge: '🛡️ Doimiy',
+    name: 'Halving Shield (1.0x)',
+    desc: 'Halving bosqichlarida ham 1.0x mining stavkasini saqlab qoladi',
+    starsPrice: 500,
+    permanent: true
+  },
+  {
+    id: 'pro_bot_lv2',
+    category: 'autobot',
+    badge: '🤖 Lv.2 · 2x',
+    name: 'Pro Auto-Bot Lv.2',
+    desc: 'Offline Auto-Botni yoqadi va tezligini 2x ga oshiradi',
+    starsPrice: 300,
+    botLevel: 2
+  },
+  {
+    id: 'pro_bot_lv3',
+    category: 'autobot',
+    badge: '🚀 Lv.3 · 3x',
+    name: 'Pro Auto-Bot Lv.3',
+    desc: 'Offline Auto-Botni yoqadi va maksimal 3x tezlikka chiqaradi',
+    starsPrice: 600,
+    botLevel: 3
+  },
+  {
+    id: 'squad_buff_24h',
+    category: 'squad',
+    badge: '👥 24h · 2x',
+    name: 'Squad Power-Up (24h)',
+    desc: 'Siz aʼzo boʻlgan butun Squadga 24 soatlik 2x mining buff beradi',
+    starsPrice: 200,
+    durationMs: 24 * 3600 * 1000,
+    mult: 2
+  },
+  {
+    id: 'ref_booster_2x',
+    category: 'referral',
+    badge: '🤝 Doimiy · 2x',
+    name: '2x Referral Booster',
+    desc: 'Har bir doʻstingiz uchun 10,000 oʻrniga 20,000 HOLD olasiz',
+    starsPrice: 150,
+    permanent: true
+  },
+  {
+    id: 'streak_restore',
+    category: 'streak',
+    badge: '🔥 Tiklash',
+    name: 'Streak Restore',
+    desc: 'Uzilib qolgan kunlik streak zanjiringizni saqlab tiklaydi',
+    starsPrice: 30
+  },
+  {
+    id: 'founder_badge',
+    category: 'founder',
+    badge: '👑 0% Fee',
+    name: 'Founder Badge + Priority Claim',
+    desc: 'Leaderboardda 👑 Founder nishoni va TGEda 0% komissiya',
+    starsPrice: 200,
+    permanent: true
+  }
+];
+
+function validateHoldServicePurchase(u, st, serviceId) {
+  const svc = STARS_SERVICES.find(s => s.id === serviceId);
+  if (!svc) return { ok: false, status: 404, error: 'Xizmat topilmadi' };
+  const today = todayStr();
+  const yesterday = yesterdayStr();
+
+  if (svc.id === 'halving_shield' && u.halvingShield) {
+    return { ok: false, status: 400, error: 'Halving Shield allaqachon faol!' };
+  }
+  if (svc.id === 'ref_booster_2x' && u.refBooster2x) {
+    return { ok: false, status: 400, error: '2x Referral Booster allaqachon faol!' };
+  }
+  if (svc.id === 'founder_badge' && u.founderBadge) {
+    return { ok: false, status: 400, error: 'Founder Badge allaqachon faol!' };
+  }
+  if (svc.id === 'pro_bot_lv2' && (u.autoBotLevel || 1) >= 2) {
+    return { ok: false, status: 400, error: 'Auto-Bot darajangiz allaqachon Lv.2 yoki yuqori!' };
+  }
+  if (svc.id === 'pro_bot_lv3' && (u.autoBotLevel || 1) >= 3) {
+    return { ok: false, status: 400, error: 'Auto-Bot darajangiz allaqachon Lv.3!' };
+  }
+  if (svc.id === 'squad_buff_24h' && (!u.squadId || !st?.squads?.[u.squadId])) {
+    return { ok: false, status: 400, error: 'Squad Power-Up uchun avval Squadga qoʻshiling!' };
+  }
+  if (svc.id === 'streak_restore') {
+    if (u.lastStreakDate === today || u.lastStreakDate === yesterday) {
+      return { ok: false, status: 400, error: 'Kunlik streakingiz uzilmagan!' };
+    }
+  }
+  return { ok: true, service: svc };
+}
+
+function applyHoldService(u, st, serviceId) {
+  const check = validateHoldServicePurchase(u, st, serviceId);
+  if (!check.ok) return check;
+  const svc = check.service;
+  const now = Date.now();
+  let message = `${svc.name} faollashtirildi!`;
+
+  if (svc.category === 'turbo') {
+    const active = (u.turboPassUntil || 0) > now;
+    u.turboPassUntil = (active ? u.turboPassUntil : now) + svc.durationMs;
+    u.turboPassMult = active ? Math.max(u.turboPassMult || 1, svc.mult) : svc.mult;
+    message = `⚡ ${svc.name} faol (${u.turboPassMult}x mining)!`;
+  } else if (svc.id === 'halving_shield') {
+    u.halvingShield = true;
+    message = '🛡️ Halving Shield faollashtirildi (doimiy 1.0x stavka)!';
+  } else if (svc.category === 'autobot') {
+    u.autoBotEnabled = true;
+    u.autoBotLevel = Math.max(u.autoBotLevel || 1, svc.botLevel);
+    if (!u.lastAutoBotClaimAt) u.lastAutoBotClaimAt = now;
+    message = `🤖 Pro Auto-Bot Lv.${u.autoBotLevel} faollashtirildi (${u.autoBotLevel}x offline tezlik)!`;
+  } else if (svc.id === 'squad_buff_24h') {
+    const sq = st.squads[u.squadId];
+    const sqActive = (sq.buffUntil || 0) > now;
+    sq.buffUntil = (sqActive ? sq.buffUntil : now) + svc.durationMs;
+    sq.buffMult = 2;
+    sq.buffBy = u.username;
+    message = `👥 "${sq.name}" squadiga 24 soatlik 2x mining buff yoqildi!`;
+  } else if (svc.id === 'ref_booster_2x') {
+    u.refBooster2x = true;
+    message = '🤝 2x Referral Booster faollashtirildi (20,000 HOLD/doʻst)!';
+  } else if (svc.id === 'streak_restore') {
+    u.lastStreakDate = yesterdayStr();
+    u.streakCount = Math.max(1, u.streakCount || 1);
+    message = `🔥 Streak tiklandi (${u.streakCount}-kun)! Endi bugungi mukofotni olishingiz mumkin.`;
+  } else if (svc.id === 'founder_badge') {
+    u.founderBadge = true;
+    u.priorityClaimZeroFee = true;
+    message = '👑 Founder Badge va 0% Fee Priority Claim faollashtirildi!';
+  }
+
+  if (!Array.isArray(u.purchasedServices)) u.purchasedServices = [];
+  u.purchasedServices.push({ id: svc.id, starsPrice: svc.starsPrice, at: new Date().toISOString() });
+  return { ok: true, service: svc, message };
+}
+
+function getUserMiningBoostMultiplier(u, st) {
+  const now = Date.now();
+  const turboMult = (u?.turboPassUntil || 0) > now ? Math.max(1, Number(u.turboPassMult) || 2) : 1;
+  const sq = u?.squadId && st?.squads?.[u.squadId];
+  const squadMult = sq && (sq.buffUntil || 0) > now ? Math.max(1, Number(sq.buffMult) || 2) : 1;
+  return turboMult * squadMult;
+}
+
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -639,10 +810,17 @@ export function registerHoldEngine(app, deps) {
     const summary = getTokenomicsSummary(st);
     const pool = ['mining', 'airdrop', 'ecosystem'].includes(opts.pool) ? opts.pool : 'mining';
     const applyHalving = opts.applyHalving !== undefined ? !!opts.applyHalving : true;
-    const mult = applyHalving ? (summary.halving?.multiplier ?? 1) : 1;
+    let mult = applyHalving ? (summary.halving?.multiplier ?? 1) : 1;
+    if (applyHalving && u?.halvingShield && mult > 0 && mult < 1) {
+      mult = 1;
+    }
     if (mult <= 0 && !opts.forceFull) return 0;
 
-    const scaled = raw * mult + (Number(u.pendingFrac) || 0);
+    const serviceMult = (!opts.skipServiceBoost && pool === 'mining')
+      ? getUserMiningBoostMultiplier(u, st)
+      : 1;
+
+    const scaled = raw * mult * serviceMult + (Number(u.pendingFrac) || 0);
     let val = Math.floor(scaled);
     u.pendingFrac = Math.max(0, scaled - val);
     if (val <= 0) return 0;
@@ -677,6 +855,11 @@ export function registerHoldEngine(app, deps) {
       sq.weekScore = (sq.weekScore || 0) + val;
     }
     return val;
+  }
+
+  function creditReferralInviter(inviter, st) {
+    const baseAmt = inviter?.refBooster2x ? 20_000 : 10_000;
+    return creditHold(inviter, st, baseAmt, { pool: 'ecosystem', applyHalving: true });
   }
 
   // ================= SQUAD WARS (weekly) + FARM ENGINE HELPERS =================
@@ -1537,7 +1720,7 @@ export function registerHoldEngine(app, deps) {
             creditHold(st.users[key], st, 5_000, { pool: 'ecosystem', applyHalving: true });
             if (!st.users[refKey].referrals.includes(key)) {
               st.users[refKey].referrals.push(key);
-              creditHold(st.users[refKey], st, 10_000, { pool: 'ecosystem', applyHalving: true });
+              creditReferralInviter(st.users[refKey], st);
             }
           }
         }
@@ -1602,7 +1785,7 @@ export function registerHoldEngine(app, deps) {
             st.users[key].referredBy = refKey;
             creditHold(st.users[key], st, 5_000, { pool: 'ecosystem', applyHalving: true });
             st.users[refKey].referrals.push(key);
-            creditHold(st.users[refKey], st, 10_000, { pool: 'ecosystem', applyHalving: true });
+            creditReferralInviter(st.users[refKey], st);
           }
         }
       }
@@ -1643,7 +1826,8 @@ export function registerHoldEngine(app, deps) {
     const botElapsedMs = Math.max(0, now - (u.lastAutoBotClaimAt || now));
     if (u.autoBotEnabled && botElapsedMs >= 30_000) {
       const cappedHours = Math.min(8, botElapsedMs / (3600 * 1000));
-      const hourlyRate = Math.min(5_000, (u.tapLevel || 1) * 350);
+      const botMult = (u.autoBotLevel || 1) >= 3 ? 3 : ((u.autoBotLevel || 1) === 2 ? 2 : 1);
+      const hourlyRate = Math.min(5_000, (u.tapLevel || 1) * 350) * botMult;
       const rawPassive = Math.floor(hourlyRate * cappedHours);
       if (rawPassive > 0) {
         passiveEarned = creditHold(u, st, rawPassive, { pool: 'mining', applyHalving: true });
@@ -1826,6 +2010,19 @@ export function registerHoldEngine(app, deps) {
       questStartedAt: u.questStartedAt || {},
       quests: st.config?.customQuests || DEFAULT_HOLD_QUESTS,
       vipPacks: STARS_VIP_PACKS,
+      starsServices: STARS_SERVICES,
+      services: {
+        turboPassUntil: u.turboPassUntil || 0,
+        turboPassMult: (u.turboPassUntil || 0) > now ? (u.turboPassMult || 2) : 1,
+        halvingShield: !!u.halvingShield,
+        autoBotLevel: u.autoBotLevel || (u.autoBotEnabled ? 1 : 0),
+        refBooster2x: !!u.refBooster2x,
+        founderBadge: !!u.founderBadge,
+        priorityClaimZeroFee: !!u.priorityClaimZeroFee,
+        squadBuffUntil: (u.squadId && st?.squads?.[u.squadId]?.buffUntil) || 0,
+        canRestoreStreak: u.lastStreakDate !== todayStr() && u.lastStreakDate !== yesterdayStr(),
+        activeMiningMultiplier: getUserMiningBoostMultiplier(u, st)
+      },
       claimedNfts: u.claimedNfts || [],
       secretCodesClaimed: u.secretCodesClaimed || [],
       compassSolvedToday: (u.compassSolvedDays || []).includes(todayStr()),
@@ -1873,7 +2070,7 @@ export function registerHoldEngine(app, deps) {
   const AUTH_POSTS = new Set([
     '/claim-ref', '/claim-og', '/farm-claim', '/farm-upgrade', '/farm-claim-ref', '/footprint-claim',
     '/claim-streak', '/tap', '/boost', '/skin', '/solve-morse', '/join-squad', '/start-quest',
-    '/claim-quest', '/buy-vip-pack', '/create-invoice', '/solve-compass',
+    '/claim-quest', '/buy-vip-pack', '/buy-service', '/create-invoice', '/solve-compass',
     '/squad-rename', '/squad-claim', '/squad-members'
   ]);
   app.use('/api/hold', (req, res, next) => {
@@ -2098,7 +2295,7 @@ export function registerHoldEngine(app, deps) {
     let inviterAward = 0;
     if (!friendUser.referrals.includes(u.username)) {
       friendUser.referrals.push(u.username);
-      inviterAward = creditHold(friendUser, st, 10_000, { pool: 'ecosystem', applyHalving: true });
+      inviterAward = creditReferralInviter(friendUser, st);
     }
     saveHoldState(st);
 
@@ -2990,31 +3187,35 @@ cp();
     });
   });
 
-  // ---- 9. Buy VIP Pack with Stars ----
+  // ---- 9. Buy VIP Pack / Stars Services ----
+  function chargeLocalStars(username, starsPrice) {
+    const users = loadJSON(usersFile, {});
+    const userRecord = users[username];
+    const currentStars = userRecord?.stars || 0;
+    if (currentStars < starsPrice) {
+      return {
+        ok: false,
+        needStars: true,
+        deficit: starsPrice - currentStars,
+        required: starsPrice,
+        error: `Need ${starsPrice} Stars`
+      };
+    }
+    userRecord.stars -= starsPrice;
+    saveJSON(usersFile, users);
+    return { ok: true, userRecord };
+  }
+
   app.post('/api/hold/buy-vip-pack', (req, res) => {
-    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const { st, u } = getOrCreateHoldUser(req.body?.username);
     const packId = req.body?.packId;
     const pack = STARS_VIP_PACKS.find(p => p.id === packId);
     if (!pack) return res.status(404).json({ ok: false, error: 'Pack not found' });
 
-    const users = loadJSON(usersFile, {});
-    const userRecord = users[u.username];
-    const currentStars = userRecord?.stars || 0;
+    const charge = chargeLocalStars(u.username, pack.starsPrice);
+    if (!charge.ok) return res.status(400).json(charge);
 
-    if (currentStars < pack.starsPrice) {
-      return res.status(400).json({
-        ok: false,
-        needStars: true,
-        deficit: pack.starsPrice - currentStars,
-        required: pack.starsPrice,
-        error: `Need ${pack.starsPrice} Stars`
-      });
-    }
-
-    userRecord.stars -= pack.starsPrice;
-    saveJSON(usersFile, users);
-
-    const granted = creditHold(u, st, pack.holdGrant, { pool: 'mining', applyHalving: false });
+    const granted = creditHold(u, st, pack.holdGrant, { pool: 'mining', applyHalving: false, skipServiceBoost: true });
     u.tapLevel = (u.tapLevel || 1) + (pack.tapBoost || 0);
     if (pack.enableAutoBot) u.autoBotEnabled = true;
     saveHoldState(st);
@@ -3022,7 +3223,30 @@ cp();
     res.json({
       ok: true,
       message: `${pack.name} · +${granted.toLocaleString()} HOLD`,
-      user: formatHoldUserResponse(st, u, userRecord)
+      user: formatHoldUserResponse(st, u, charge.userRecord)
+    });
+  });
+
+  app.post('/api/hold/buy-service', (req, res) => {
+    const { st, u } = getOrCreateHoldUser(req.body?.username);
+    const serviceId = String(req.body?.serviceId || '').trim();
+    const check = validateHoldServicePurchase(u, st, serviceId);
+    if (!check.ok) return res.status(check.status || 400).json({ ok: false, error: check.error });
+
+    const charge = chargeLocalStars(u.username, check.service.starsPrice);
+    if (!charge.ok) return res.status(400).json(charge);
+
+    const applied = applyHoldService(u, st, serviceId);
+    if (!applied.ok) return res.status(400).json({ ok: false, error: applied.error });
+
+    invalidateHoldAggCache('all');
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      serviceId,
+      message: applied.message,
+      user: formatHoldUserResponse(st, u, charge.userRecord)
     });
   });
 
@@ -3182,6 +3406,7 @@ cp();
           holdBalance: Math.floor(u.holdBalance || 0),
           league: getLeagueForHold(u.lifetimeHold || 0),
           referralsCount: (u.referrals || []).length,
+          founderBadge: !!u.founderBadge,
           prize
         };
       });
@@ -3206,6 +3431,7 @@ cp();
           holdBalance: Math.floor(u.holdBalance || 0),
           league: getLeagueForHold(u.lifetimeHold || 0),
           referralsCount: (u.referrals || []).length,
+          founderBadge: !!u.founderBadge,
           prize: null
         };
       });
@@ -3253,15 +3479,25 @@ cp();
   // ---- 12. Create Stars Invoice via @HOLDbot (In-App Slug + Polling) ----
   app.post('/api/hold/create-invoice', async (req, res) => {
     const { st, u } = getOrCreateHoldUser(req.body?.username);
-    const amount = Math.max(1, Math.min(100_000, parseInt(req.body?.amount, 10) || 100));
-    const title = String(req.body?.title || `HOLD Boost (+${amount} ⭐)`).slice(0, 32);
+    const serviceId = req.body?.serviceId ? String(req.body.serviceId).trim() : null;
+    let amount = Math.max(1, Math.min(100_000, parseInt(req.body?.amount, 10) || 100));
+    let title = String(req.body?.title || `HOLD Boost (+${amount} ⭐)`).slice(0, 32);
+    let description = `@${u.username} hisobiga +${amount} Stars qoʻshish (HOLD)`;
+
+    if (serviceId) {
+      const check = validateHoldServicePurchase(u, st, serviceId);
+      if (!check.ok) return res.status(check.status || 400).json({ ok: false, error: check.error });
+      amount = check.service.starsPrice;
+      title = check.service.name.slice(0, 32);
+      description = `${check.service.name} — ${check.service.desc}`.slice(0, 255);
+    }
 
     const invoiceId = `holdinv_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
     const payload = `holdstars:${u.username}:${amount}:${invoiceId}`;
 
     const apiRes = await holdBotCall('createInvoiceLink', {
       title,
-      description: `@${u.username} hisobiga +${amount} Stars qoʻshish (HOLD)`,
+      description,
       payload,
       provider_token: '',
       currency: 'XTR',
@@ -3284,6 +3520,7 @@ cp();
       slug,
       username: u.username,
       amount,
+      serviceId: serviceId || null,
       status: 'pending',
       createdAt: new Date().toISOString()
     };
@@ -4116,32 +4353,44 @@ cp();
                     targetKey = targetHoldUser.username;
                   }
 
+                  const paidServiceId = invId ? st.payments.invoices[invId]?.serviceId : null;
                   st.payments.charges[chargeId] = {
                     username: targetKey || 'holder',
                     amount: starsAdded,
+                    serviceId: paidServiceId || null,
                     paidAt: new Date().toISOString()
                   };
 
-                  const matchedPack = STARS_VIP_PACKS.find(p => p.starsPrice === starsAdded) || null;
-                  let holdAward = matchedPack ? matchedPack.holdGrant : (starsAdded * 1_000);
-                  if (targetHoldUser) {
-                    holdAward = creditHold(targetHoldUser, st, holdAward, { pool: 'mining', applyHalving: false });
-                    if (matchedPack) {
-                      if (matchedPack.tapBoost > 0) {
-                        targetHoldUser.tapLevel = (targetHoldUser.tapLevel || 1) + matchedPack.tapBoost;
-                      }
-                      if (matchedPack.enableAutoBot) {
-                        targetHoldUser.autoBotEnabled = true;
-                      }
-                    } else {
-                      if (starsAdded >= 100) {
-                        targetHoldUser.tapLevel = (targetHoldUser.tapLevel || 1) + Math.floor(starsAdded / 100);
-                      }
-                      if (starsAdded >= 500) {
-                        targetHoldUser.autoBotEnabled = true;
-                      }
-                    }
+                  let paymentNotice = '';
+                  if (paidServiceId && targetHoldUser) {
+                    const applied = applyHoldService(targetHoldUser, st, paidServiceId);
+                    paymentNotice = applied.ok
+                      ? `✅ Toʻlov qabul qilindi!\n\n${applied.message}`
+                      : `✅ Toʻlov qabul qilindi (${starsAdded} ⭐).`;
                     invalidateHoldAggCache('all');
+                  } else {
+                    const matchedPack = STARS_VIP_PACKS.find(p => p.starsPrice === starsAdded) || null;
+                    let holdAward = matchedPack ? matchedPack.holdGrant : (starsAdded * 1_000);
+                    if (targetHoldUser) {
+                      holdAward = creditHold(targetHoldUser, st, holdAward, { pool: 'mining', applyHalving: false, skipServiceBoost: true });
+                      if (matchedPack) {
+                        if (matchedPack.tapBoost > 0) {
+                          targetHoldUser.tapLevel = (targetHoldUser.tapLevel || 1) + matchedPack.tapBoost;
+                        }
+                        if (matchedPack.enableAutoBot) {
+                          targetHoldUser.autoBotEnabled = true;
+                        }
+                      } else {
+                        if (starsAdded >= 100) {
+                          targetHoldUser.tapLevel = (targetHoldUser.tapLevel || 1) + Math.floor(starsAdded / 100);
+                        }
+                        if (starsAdded >= 500) {
+                          targetHoldUser.autoBotEnabled = true;
+                        }
+                      }
+                      invalidateHoldAggCache('all');
+                    }
+                    paymentNotice = `✅ Toʻlov qabul qilindi!\n\nHisobingizga +${holdAward.toLocaleString()} HOLD qoʻshildi!`;
                   }
                   saveHoldState(st);
 
@@ -4149,7 +4398,7 @@ cp();
                     const token = createSessionToken(targetKey || 'holder', fromUser?.id);
                     await holdBotCall('sendMessage', {
                       chat_id: item.message.chat.id,
-                      text: `✅ Toʻlov qabul qilindi!\n\nHisobingizga +${holdAward.toLocaleString()} HOLD qoʻshildi!`,
+                      text: paymentNotice,
                       reply_markup: {
                         inline_keyboard: [
                           [{ text: '🪙 HOLD ni ochish', web_app: { url: `${holdWebAppUrl}?auth=${encodeURIComponent(token)}` } }]
@@ -4233,10 +4482,10 @@ cp();
                     creditHold(senderUser, st, 5_000, { pool: 'ecosystem', applyHalving: true });
                     refAttributed = true;
 
-                    let botInviterAward = 10_000;
+                    let botInviterAward = inviterUser.refBooster2x ? 20_000 : 10_000;
                     if (!inviterUser.referrals.includes(senderUser.username)) {
                       inviterUser.referrals.push(senderUser.username);
-                      botInviterAward = creditHold(inviterUser, st, 10_000, { pool: 'ecosystem', applyHalving: true });
+                      botInviterAward = creditReferralInviter(inviterUser, st);
                     }
                     invalidateHoldAggCache('all');
                     saveHoldState(st);

@@ -1971,7 +1971,7 @@ function renderLeaguesSheet() {
         <div class="lb-medal-col">${medal}</div>
         <div class="lb-avatar-circle">${esc((p.displayName || p.username || 'U').charAt(0).toUpperCase())}</div>
         <div class="lb-user-meta">
-          <div class="lb-user-name">${esc(p.displayName || p.username)} <span style="opacity:0.55;font-size:12px;">@${esc(p.username)}</span></div>
+          <div class="lb-user-name">${p.founderBadge ? '👑 ' : ''}${esc(p.displayName || p.username)} <span style="opacity:0.55;font-size:12px;">@${esc(p.username)}</span></div>
           <div class="lb-user-score">
             <img src="${esc(coinImg)}" class="inline-c" alt="" />
             <span>${fmtInt(scoreVal)}</span>
@@ -2284,7 +2284,120 @@ function renderEarnSheet() {
   const web3Count = document.getElementById('uiWeb3Count');
   if (web3Count) web3Count.textContent = `${web3List.filter(q => done.includes(q.id)).length}/${web3List.length}`;
 
-  // 4. Stars VIP Packs inside Earn
+  async function startStarsInvoicePurchase({ row, amount, title, serviceId = null, successMsg }) {
+    if (row.dataset.busy === '1') return;
+    row.dataset.busy = '1';
+    haptic('light');
+    showToast('Toʻlov oynasi ochilmoqda...');
+    let res;
+    try {
+      res = await api('/api/hold/create-invoice', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: STATE.username,
+          amount,
+          title,
+          ...(serviceId ? { serviceId } : {})
+        })
+      });
+    } finally {
+      row.dataset.busy = '0';
+    }
+
+    if (res && res.ok && res.invoiceUrl) {
+      const slug = res.slug || String(res.invoiceUrl).split('/').pop();
+      notifyPaxtaMiniApp('web_app_open_invoice', { slug, url: res.invoiceUrl });
+      try {
+        if (window.Telegram?.WebApp?.openInvoice) {
+          window.Telegram.WebApp.openInvoice(res.invoiceUrl, async (st) => {
+            if (st === 'paid') {
+              clearInvoicePoll();
+              await syncHoldUser();
+              showToast(successMsg);
+            } else if (st === 'cancelled' || st === 'failed') {
+              clearInvoicePoll();
+            }
+          });
+        }
+      } catch {}
+
+      if (res.invoiceId) {
+        clearInvoicePoll();
+        let polls = 0;
+        STATE.invoicePollTimer = setInterval(async () => {
+          polls++;
+          if (polls > 90) {
+            clearInvoicePoll();
+            return;
+          }
+          const stRes = await api(`/api/hold/invoice-status/${encodeURIComponent(res.invoiceId)}`);
+          if (stRes.ok && stRes.status === 'paid') {
+            clearInvoicePoll();
+            await syncHoldUser();
+            showToast(successMsg);
+          } else if (stRes.status === 'not_found' || stRes.status === 'failed' || stRes.status === 'cancelled') {
+            clearInvoicePoll();
+          }
+        }, 2000);
+      }
+    } else {
+      showToast(res?.error || 'Invoice ochilmadi');
+    }
+  }
+
+  // 4. Stars Services (Fixed Utility · No Gambling)
+  const svcList = document.getElementById('starsServicesList');
+  if (svcList) {
+    const sv = u.services || {};
+    const nowMs = Date.now();
+    const isServiceOwned = (s) => {
+      if (s.id === 'halving_shield') return !!sv.halvingShield;
+      if (s.id === 'ref_booster_2x') return !!sv.refBooster2x;
+      if (s.id === 'founder_badge') return !!sv.founderBadge;
+      if (s.id === 'pro_bot_lv2') return (sv.autoBotLevel || 0) >= 2;
+      if (s.id === 'pro_bot_lv3') return (sv.autoBotLevel || 0) >= 3;
+      return false;
+    };
+    const isServiceActiveTemp = (s) => {
+      if (s.category === 'turbo') return (sv.turboPassUntil || 0) > nowMs && (sv.turboPassMult || 1) >= (s.mult || 2);
+      if (s.id === 'squad_buff_24h') return (sv.squadBuffUntil || 0) > nowMs;
+      return false;
+    };
+    svcList.innerHTML = (u.starsServices || []).map(s => {
+      const owned = isServiceOwned(s);
+      const activeTemp = isServiceActiveTemp(s);
+      const pill = owned
+        ? '<span class="skin-pill-btn" style="background:rgba(52,199,89,0.18);color:#34c759;">✓ Faol</span>'
+        : `<span class="skin-pill-btn">${activeTemp ? '⏳ ' : ''}${s.starsPrice} ⭐</span>`;
+      return `
+        <div class="not-row-item" data-service="${esc(s.id)}">
+          <div class="nri-icon-box">${esc((s.badge || '⚡').split(' ')[0])}</div>
+          <div class="nri-center">
+            <div class="nri-title">${esc(s.name)}</div>
+            <div class="nri-sub">${esc(s.desc)}</div>
+          </div>
+          ${pill}
+        </div>
+      `;
+    }).join('');
+
+    svcList.querySelectorAll('[data-service]').forEach(row => {
+      row.addEventListener('click', () => {
+        const serviceId = row.dataset.service;
+        const svcObj = (u.starsServices || []).find(x => x.id === serviceId);
+        if (!svcObj) return;
+        startStarsInvoicePurchase({
+          row,
+          amount: svcObj.starsPrice,
+          title: svcObj.name,
+          serviceId: svcObj.id,
+          successMsg: `🎉 ${svcObj.name} faollashtirildi!`
+        });
+      });
+    });
+  }
+
+  // 5. Stars VIP Packs inside Earn
   const vipList = document.getElementById('vipPacksList');
   if (vipList) {
     vipList.innerHTML = (u.vipPacks || []).map(p => `
@@ -2299,68 +2412,16 @@ function renderEarnSheet() {
     `).join('');
 
     vipList.querySelectorAll('[data-pack]').forEach(row => {
-      row.addEventListener('click', async () => {
-        if (row.dataset.busy === '1') return;
+      row.addEventListener('click', () => {
         const packId = row.dataset.pack;
         const packObj = (u.vipPacks || []).find(x => x.id === packId);
         if (!packObj) return;
-
-        row.dataset.busy = '1';
-        haptic('light');
-        showToast('Toʻlov oynasi ochilmoqda...');
-        let res;
-        try {
-          res = await api('/api/hold/create-invoice', {
-            method: 'POST',
-            body: JSON.stringify({
-              username: STATE.username,
-              amount: packObj.starsPrice,
-              title: packObj.name
-            })
-          });
-        } finally {
-          row.dataset.busy = '0';
-        }
-
-        if (res && res.ok && res.invoiceUrl) {
-          const slug = res.slug || String(res.invoiceUrl).split('/').pop();
-          notifyPaxtaMiniApp('web_app_open_invoice', { slug, url: res.invoiceUrl });
-          try {
-            if (window.Telegram?.WebApp?.openInvoice) {
-              window.Telegram.WebApp.openInvoice(res.invoiceUrl, async (st) => {
-                if (st === 'paid') {
-                  clearInvoicePoll();
-                  await syncHoldUser();
-                  showToast(`🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`);
-                } else if (st === 'cancelled' || st === 'failed') {
-                  clearInvoicePoll();
-                }
-              });
-            }
-          } catch {}
-
-          if (res.invoiceId) {
-            clearInvoicePoll();
-            let polls = 0;
-            STATE.invoicePollTimer = setInterval(async () => {
-              polls++;
-              if (polls > 90) {
-                clearInvoicePoll();
-                return;
-              }
-              const stRes = await api(`/api/hold/invoice-status/${encodeURIComponent(res.invoiceId)}`);
-              if (stRes.ok && stRes.status === 'paid') {
-                clearInvoicePoll();
-                await syncHoldUser();
-                showToast(`🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`);
-              } else if (stRes.status === 'not_found' || stRes.status === 'failed' || stRes.status === 'cancelled') {
-                clearInvoicePoll();
-              }
-            }, 2000);
-          }
-        } else {
-          showToast(res?.error || 'Invoice ochilmadi');
-        }
+        startStarsInvoicePurchase({
+          row,
+          amount: packObj.starsPrice,
+          title: packObj.name,
+          successMsg: `🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`
+        });
       });
     });
   }
