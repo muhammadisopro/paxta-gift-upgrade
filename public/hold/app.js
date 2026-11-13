@@ -275,30 +275,129 @@ function openFootprintStoryModal() {
 
 // ==================== SOLAR ECLIPSE SECRET EASTER EGG ====================
 let eclipseCountdownTimer = null;
+let eclipseCleanup = null;
+let argAudioCtx = null;
+
+function playArgSonarChirp() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    if (!argAudioCtx) argAudioCtx = new AudioCtx();
+    if (argAudioCtx.state === 'suspended') {
+      argAudioCtx.resume().catch(() => {});
+    }
+    const now = argAudioCtx.currentTime;
+    const osc = argAudioCtx.createOscillator();
+    const gain = argAudioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(440, now + 0.14);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.03, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    osc.connect(gain);
+    gain.connect(argAudioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.17);
+  } catch {
+    // Ignore Web Audio errors on restricted/unsupported devices
+  }
+}
+
+class TextScramble {
+  constructor(el) {
+    this.el = el;
+    this.chars = '!<>-_\\/[]{}—=+*^?#01Ø§λ';
+    this.frameRequest = null;
+    this.frame = 0;
+    this.queue = [];
+    this.resolve = null;
+    this.update = this.update.bind(this);
+  }
+
+  escapeHtml(ch) {
+    if (ch === '<') return '&lt;';
+    if (ch === '>') return '&gt;';
+    if (ch === '&') return '&amp;';
+    return ch;
+  }
+
+  randomChar() {
+    return this.chars[Math.floor(Math.random() * this.chars.length)];
+  }
+
+  setText(newText) {
+    if (!this.el) return Promise.resolve();
+    const oldText = this.el.textContent || '';
+    const length = Math.max(oldText.length, newText.length);
+    const promise = new Promise((resolve) => {
+      this.resolve = resolve;
+    });
+    this.queue = [];
+    for (let i = 0; i < length; i++) {
+      const from = oldText[i] || '';
+      const to = newText[i] || '';
+      const start = Math.floor(Math.random() * 24);
+      const end = start + Math.floor(Math.random() * 28);
+      this.queue.push({ from, to, start, end, char: '' });
+    }
+    this.cancel();
+    this.frame = 0;
+    this.update();
+    return promise;
+  }
+
+  cancel() {
+    if (this.frameRequest) {
+      cancelAnimationFrame(this.frameRequest);
+      this.frameRequest = null;
+    }
+  }
+
+  update() {
+    let output = '';
+    let complete = 0;
+    for (let i = 0; i < this.queue.length; i++) {
+      const item = this.queue[i];
+      if (this.frame >= item.end) {
+        complete++;
+        output += this.escapeHtml(item.to);
+      } else if (this.frame >= item.start) {
+        if (!item.char || Math.random() < 0.28) {
+          item.char = this.randomChar();
+        }
+        output += `<span style="opacity:0.42;color:rgba(0,229,176,0.65)">${this.escapeHtml(item.char)}</span>`;
+      } else {
+        output += this.escapeHtml(item.from);
+      }
+    }
+    this.el.innerHTML = output;
+    if (complete === this.queue.length) {
+      this.frameRequest = null;
+      if (this.resolve) this.resolve();
+    } else {
+      this.frame++;
+      this.frameRequest = requestAnimationFrame(this.update);
+    }
+  }
+}
 
 function triggerSolarEclipseEasterEgg() {
   const modal = document.getElementById('eclipseSecretModal');
   if (!modal) return;
 
+  if (eclipseCleanup) {
+    eclipseCleanup();
+    eclipseCleanup = null;
+  }
+
   haptic('heavy');
   const dateEl = document.getElementById('eclipseDateText');
   const finalDate = '15 \u00b7 12 \u00b7 2026';
-  if (dateEl) {
-    const glyphs = '0123456789ABCDEF#@%';
-    let step = 0;
-    const decodeTimer = setInterval(() => {
-      step++;
-      if (step >= 10) {
-        clearInterval(decodeTimer);
-        dateEl.textContent = finalDate;
-        return;
-      }
-      dateEl.textContent = finalDate.split('').map((ch, idx) => {
-        if (ch === ' ' || ch === '\u00b7') return ch;
-        if (idx < step * 1.4) return ch;
-        return glyphs[Math.floor(Math.random() * glyphs.length)];
-      }).join('');
-    }, 40);
+  const dateScramble = dateEl ? new TextScramble(dateEl) : null;
+  if (dateEl && dateScramble) {
+    dateEl.textContent = '00 \u00b7 00 \u00b7 0000';
+    dateScramble.setText(finalDate);
   }
 
   // Interactive ARG signal decryption
@@ -313,15 +412,21 @@ function triggerSolarEclipseEasterEgg() {
   const txtEl = document.getElementById('tgeCipherText');
   const cipherBox = document.getElementById('tgeCipherBtn');
   const argCore = document.getElementById('tgeArgCore');
+  const cipherScramble = txtEl ? new TextScramble(txtEl) : null;
   if (tagEl) tagEl.textContent = 'FILE_01 // LOCKED';
   if (txtEl) txtEl.textContent = '0x48\u00b74F\u00b74C\u00b744 — Ochish uchun tangaga bosing';
 
   const revealNextSignal = () => {
     haptic('medium');
+    playArgSonarChirp();
     sigIdx = (sigIdx + 1) % argSignals.length;
     const s = argSignals[sigIdx];
     if (tagEl) tagEl.textContent = s.tag;
-    if (txtEl) txtEl.textContent = s.text;
+    if (cipherScramble) {
+      cipherScramble.setText(s.text);
+    } else if (txtEl) {
+      txtEl.textContent = s.text;
+    }
     if (cipherBox) {
       cipherBox.classList.remove('is-decoded');
       void cipherBox.offsetWidth;
@@ -386,13 +491,239 @@ function triggerSolarEclipseEasterEgg() {
     }
   };
 
+  // Canvas 2D Living Void (#argVoidCanvas)
+  const canvas = document.getElementById('argVoidCanvas');
+  let voidRafId = null;
+  let cleanedUp = false;
+  let modalObserver = null;
+
+  const pointer = { x: 0, y: 0, active: false };
+  const onPointerMove = (e) => {
+    const touch = e.touches && e.touches[0];
+    pointer.x = touch ? touch.clientX : e.clientX;
+    pointer.y = touch ? touch.clientY : e.clientY;
+    pointer.active = true;
+  };
+  const onPointerLeave = () => {
+    pointer.active = false;
+  };
+
+  let cw = window.innerWidth;
+  let ch = window.innerHeight;
+  let ctx = null;
+  const particles = [];
+  const blips = [];
+  let sweepAngle = -Math.PI / 2;
+
+  const initVoidScene = () => {
+    if (!canvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cw = window.innerWidth;
+    ch = window.innerHeight;
+    canvas.width = Math.floor(cw * dpr);
+    canvas.height = Math.floor(ch * dpr);
+    canvas.style.width = `${cw}px`;
+    canvas.style.height = `${ch}px`;
+    ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = '#020408';
+      ctx.fillRect(0, 0, cw, ch);
+    }
+  };
+
+  if (canvas) {
+    initVoidScene();
+    const count = 60;
+    for (let i = 0; i < count; i++) {
+      const baseVx = (Math.random() - 0.5) * 0.28;
+      const baseVy = (Math.random() - 0.5) * 0.28;
+      particles.push({
+        x: Math.random() * cw,
+        y: Math.random() * ch,
+        vx: baseVx,
+        vy: baseVy,
+        baseVx,
+        baseVy,
+        r: 0.9 + Math.random() * 1.4,
+        alpha: 0.18 + Math.random() * 0.42
+      });
+    }
+    for (let i = 0; i < 7; i++) {
+      blips.push({
+        angle: Math.random() * Math.PI * 2,
+        distRatio: 0.22 + Math.random() * 0.62,
+        intensity: 0
+      });
+    }
+
+    const renderVoid = () => {
+      if (cleanedUp || modal.hidden) {
+        cleanupEclipse();
+        return;
+      }
+      if (!ctx) return;
+
+      // Trailing alpha decay instead of clearRect
+      ctx.fillStyle = 'rgba(2, 4, 8, 0.08)';
+      ctx.fillRect(0, 0, cw, ch);
+
+      const cx = cw * 0.5;
+      const cy = ch * 0.38;
+      const minDim = Math.min(cw, ch);
+      const maxR = Math.hypot(cw, ch) * 0.55;
+
+      // Subtle polar sonar rings
+      ctx.strokeStyle = 'rgba(0, 229, 176, 0.035)';
+      ctx.lineWidth = 1;
+      for (const frac of [0.22, 0.42, 0.66]) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, minDim * frac, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Polar radar/sonar sweep beam
+      sweepAngle = (sweepAngle + 0.014) % (Math.PI * 2);
+      const bx = cx + Math.cos(sweepAngle) * maxR;
+      const by = cy + Math.sin(sweepAngle) * maxR;
+      const beamGrad = ctx.createLinearGradient(cx, cy, bx, by);
+      beamGrad.addColorStop(0, 'rgba(0, 229, 176, 0.16)');
+      beamGrad.addColorStop(0.55, 'rgba(0, 229, 176, 0.06)');
+      beamGrad.addColorStop(1, 'rgba(0, 229, 176, 0)');
+      ctx.strokeStyle = beamGrad;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+
+      // Faint occult teal blips triggered by sweep beam
+      for (let i = 0; i < blips.length; i++) {
+        const b = blips[i];
+        let diff = Math.abs(sweepAngle - b.angle);
+        if (diff > Math.PI) diff = Math.PI * 2 - diff;
+        if (diff < 0.09) {
+          b.intensity = 1;
+        } else {
+          b.intensity *= 0.965;
+        }
+        if (b.intensity > 0.02) {
+          const r = minDim * b.distRatio;
+          const px = cx + Math.cos(b.angle) * r;
+          const py = cy + Math.sin(b.angle) * r;
+          ctx.fillStyle = `rgba(0, 229, 176, ${(b.intensity * 0.55).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = `rgba(0, 229, 176, ${(b.intensity * 0.22).toFixed(3)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(px, py, 4 + (1 - b.intensity) * 10, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      // Drifting constellation / cosmic dust particles with pointer radial repulsion
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        if (pointer.active) {
+          const dx = p.x - pointer.x;
+          const dy = p.y - pointer.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 0.5 && dist < 135) {
+            const force = (1 - dist / 135) * 0.42;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
+          }
+        }
+        p.vx = p.vx * 0.96 + p.baseVx * 0.04;
+        p.vy = p.vy * 0.96 + p.baseVy * 0.04;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < -10) p.x = cw + 10;
+        else if (p.x > cw + 10) p.x = -10;
+        if (p.y < -10) p.y = ch + 10;
+        else if (p.y > ch + 10) p.y = -10;
+
+        ctx.fillStyle = `rgba(0, 229, 176, ${p.alpha.toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Subtle constellation tethers
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < 8100) {
+            const alpha = (1 - Math.sqrt(d2) / 90) * 0.075;
+            ctx.strokeStyle = `rgba(0, 229, 176, ${alpha.toFixed(3)})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      voidRafId = requestAnimationFrame(renderVoid);
+    };
+
+    window.addEventListener('resize', initVoidScene);
+    modal.addEventListener('pointermove', onPointerMove, { passive: true });
+    modal.addEventListener('pointerdown', onPointerMove, { passive: true });
+    modal.addEventListener('touchmove', onPointerMove, { passive: true });
+    modal.addEventListener('pointerleave', onPointerLeave, { passive: true });
+    voidRafId = requestAnimationFrame(renderVoid);
+  }
+
+  function cleanupEclipse() {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    if (voidRafId !== null) {
+      cancelAnimationFrame(voidRafId);
+      voidRafId = null;
+    }
+    if (dateScramble) dateScramble.cancel();
+    if (cipherScramble) cipherScramble.cancel();
+    if (eclipseCountdownTimer) {
+      clearInterval(eclipseCountdownTimer);
+      eclipseCountdownTimer = null;
+    }
+    window.removeEventListener('resize', initVoidScene);
+    modal.removeEventListener('pointermove', onPointerMove);
+    modal.removeEventListener('pointerdown', onPointerMove);
+    modal.removeEventListener('touchmove', onPointerMove);
+    modal.removeEventListener('pointerleave', onPointerLeave);
+    if (modalObserver) {
+      modalObserver.disconnect();
+      modalObserver = null;
+    }
+  }
+
+  eclipseCleanup = cleanupEclipse;
+
+  if (typeof MutationObserver !== 'undefined') {
+    modalObserver = new MutationObserver(() => {
+      if (modal.hidden) cleanupEclipse();
+    });
+    modalObserver.observe(modal, { attributes: true, attributeFilter: ['hidden'] });
+  }
+
   const closeEclipseModal = () => {
     modal.hidden = true;
-    timers.forEach(t => { clearTimeout(t); clearInterval(t); });
-    if (eclipseCountdownTimer) clearInterval(eclipseCountdownTimer);
-    if (coinBtn) {
-      coinBtn.style.transition = 'transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1)';
-      coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+    cleanupEclipse();
+    const coinEl = document.getElementById('holdCoinBtn');
+    if (coinEl) {
+      coinEl.style.transition = 'transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      coinEl.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
     }
   };
   const btnClose = document.getElementById('btnCloseEclipse');

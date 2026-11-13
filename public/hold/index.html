@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=46" />
+  <link rel="stylesheet" href="/hold/style.css?v=47" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -554,27 +554,26 @@
 
     <!-- ==================== $HOLD ARG / CLASSIFIED TGE PROTOCOL ==================== -->
     <div class="eclipse-secret-modal" id="eclipseSecretModal" hidden>
-      <div class="tge-bg-grid" aria-hidden="true"></div>
+      <canvas id="argVoidCanvas" class="arg-void-canvas" aria-hidden="true"></canvas>
+      <div class="tge-vignette" aria-hidden="true"></div>
       <div class="tge-scanlines" aria-hidden="true"></div>
-      <div class="tge-bg-glow" aria-hidden="true"></div>
 
       <div class="tge-stage">
         <div class="tge-net-pill">
-          <span class="tge-net-dot"></span>
-          <span>PROTOCOL // 0x1512 · CLASSIFIED</span>
+          <span class="tge-net-dot" aria-hidden="true"></span>
+          <span>[NODE_07 // PROTOCOL 0x1512 · CLASSIFIED]</span>
         </div>
 
         <button type="button" class="tge-coin-hero" id="tgeArgCore" aria-label="Decrypt signal">
-          <div class="tge-orbit-outer"></div>
-          <div class="tge-orbit-inner"></div>
-          <div class="tge-coin-aura"></div>
+          <div class="tge-orbit-outer" aria-hidden="true"></div>
+          <div class="tge-orbit-inner" aria-hidden="true"></div>
           <img src="/hold/skins/skin-4.png" alt="$HOLD" class="tge-coin-img" id="tgeHeroCoinImg" />
-          <span class="tge-coin-tag">KEY · $HOLD</span>
+          <span class="tge-coin-tag">41.2995° N · 69.2401° E // $HOLD</span>
         </button>
 
         <div class="tge-headline">
-          <div class="tge-title-label">ENCRYPTED GENESIS // T-MINUS</div>
-          <div class="tge-date-hero" id="eclipseDateText">15 · 12 · 2026</div>
+          <div class="tge-title-label">// ENCRYPTED GENESIS · T-MINUS</div>
+          <div class="tge-date-hero" id="eclipseDateText" data-text="15 · 12 · 2026">15 · 12 · 2026</div>
         </div>
 
         <div class="tge-countdown">
@@ -585,22 +584,22 @@
         </div>
 
         <button type="button" class="tge-cipher-box" id="tgeCipherBtn">
-          <span class="tge-cipher-prefix" id="tgeCipherTag">FILE_01 // LOCKED</span>
-          <span class="tge-cipher-text" id="tgeCipherText">0x48·4F·4C·44 — Ochish uchun tangaga bosing</span>
+          <span class="tge-cipher-prefix" id="tgeCipherTag">&gt; FILE_01 // LOCKED</span>
+          <span class="tge-cipher-text" id="tgeCipherText">0x48·4F·4C·44 — Ochish uchun yadroga bosing</span>
         </button>
 
         <div class="tge-alloc-card">
           <div class="tge-alloc-top">
             <div>
-              <div class="tge-alloc-kicker">Maxfiy zaxira (Allocation)</div>
+              <div class="tge-alloc-kicker">DOSSIER // ALLOCATION_EST</div>
               <div class="tge-alloc-val" id="tgeUserAllocVal">≈ 0 $HOLD</div>
             </div>
-            <span class="tge-status-pill" id="tgeStatusBadge">✓ CLEARANCE</span>
+            <span class="tge-status-pill" id="tgeStatusBadge">[CLEARANCE: OK]</span>
           </div>
 
           <div class="tge-pool-wrap">
             <div class="tge-pool-row">
-              <span>Mining Pool</span>
+              <span>POOL_SATURATION</span>
               <span id="tgePoolPct">0.00%</span>
             </div>
             <div class="tge-pool-track">
@@ -626,11 +625,13 @@
           </div>
         </div>
 
+        <div class="arg-hidden-clue" onselectstart="event.stopPropagation();">FREQ: 1420.4 MHz // KEY: HOLD_GENESIS</div>
+
         <div class="tge-actions">
           <button type="button" class="tge-btn-primary" id="btnShareEclipse">
-            <span>📡 Sirli signalni ulashish</span>
+            <span>[ TRANSMIT SIGNAL ]</span>
           </button>
-          <button type="button" class="tge-btn-secondary" id="btnCloseEclipse">Yopish</button>
+          <button type="button" class="tge-btn-secondary" id="btnCloseEclipse">[ DISCONNECT ]</button>
         </div>
       </div>
     </div>
@@ -654,6 +655,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=46"></script>
+  <script src="/hold/app.js?v=47"></script>
 </body>
 </html>
