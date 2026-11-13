@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=44" />
+  <link rel="stylesheet" href="/hold/style.css?v=45" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -554,21 +554,27 @@
 
     <!-- ==================== $HOLD TGE / LISTING COUNTDOWN ==================== -->
     <div class="eclipse-secret-modal" id="eclipseSecretModal" hidden>
-      <div class="tge-bg-glow"></div>
+      <div class="tge-bg-grid" aria-hidden="true"></div>
+      <div class="tge-bg-glow" aria-hidden="true"></div>
 
       <div class="tge-stage">
         <div class="tge-net-pill">
           <span class="tge-net-dot"></span>
-          <span>TON NETWORK · TGE COUNTDOWN</span>
+          <span>TON MAINNET · TGE EVENT</span>
         </div>
 
         <div class="tge-coin-hero">
+          <div class="tge-orbit-outer"></div>
+          <div class="tge-orbit-inner"></div>
           <div class="tge-coin-aura"></div>
           <img src="/hold/skins/skin-4.png" alt="$HOLD" class="tge-coin-img" id="tgeHeroCoinImg" />
+          <span class="tge-coin-tag">$HOLD</span>
         </div>
 
-        <div class="tge-title-label">$HOLD LISTING DAY</div>
-        <div class="tge-date-hero" id="eclipseDateText">15 · 12 · 2026</div>
+        <div class="tge-headline">
+          <div class="tge-title-label">OFFICIAL LISTING DAY</div>
+          <div class="tge-date-hero" id="eclipseDateText">15 · 12 · 2026</div>
+        </div>
 
         <div class="tge-countdown">
           <div class="tge-cd"><span class="tge-cd-num" id="eclipseDays">00</span><span class="tge-cd-lab">DAYS</span></div>
@@ -585,17 +591,39 @@
             </div>
             <span class="tge-status-pill" id="tgeStatusBadge">✓ TGE Ready</span>
           </div>
-          <div class="tge-pool-row">
-            <span>Mining Pool</span>
-            <span id="tgePoolPct">0.00%</span>
+
+          <div class="tge-pool-wrap">
+            <div class="tge-pool-row">
+              <span>Mining Pool</span>
+              <span id="tgePoolPct">0.00%</span>
+            </div>
+            <div class="tge-pool-track">
+              <div class="tge-pool-fill" id="tgePoolBar" style="width:2%;"></div>
+            </div>
           </div>
-          <div class="tge-pool-track">
-            <div class="tge-pool-fill" id="tgePoolBar" style="width:2%;"></div>
+
+          <div class="tge-roadmap">
+            <div class="tge-step is-active">
+              <span class="tge-step-dot"></span>
+              <span class="tge-step-txt">Mining</span>
+            </div>
+            <div class="tge-step-line"></div>
+            <div class="tge-step">
+              <span class="tge-step-dot"></span>
+              <span class="tge-step-txt">Snapshot</span>
+            </div>
+            <div class="tge-step-line"></div>
+            <div class="tge-step">
+              <span class="tge-step-dot"></span>
+              <span class="tge-step-txt">DEX / CEX</span>
+            </div>
           </div>
         </div>
 
         <div class="tge-actions">
-          <button type="button" class="tge-btn-primary" id="btnShareEclipse">🚀 Doʻstlarga ulashish</button>
+          <button type="button" class="tge-btn-primary" id="btnShareEclipse">
+            <span>🚀 Doʻstlarga ulashish</span>
+          </button>
           <button type="button" class="tge-btn-secondary" id="btnCloseEclipse">Yopish</button>
         </div>
       </div>
@@ -620,6 +648,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=44"></script>
+  <script src="/hold/app.js?v=45"></script>
 </body>
 </html>
