@@ -2888,7 +2888,11 @@ const PORT = process.env.PORT || 4000;
 loadCloudStateOnStartup().then(() => {
   const server = app.listen(PORT, () => {
     console.log(`\n🚀 Paxta Gifts & $HOLD Coin (@HOLDbot) | http://localhost:${PORT}\n`);
-    startPaxtaBotLoop();
+    if (process.env.HOLD_ONLY !== '1') {
+      startPaxtaBotLoop();
+    } else {
+      console.log('HOLD_ONLY=1: other bot loops disabled');
+    }
     startHoldBotLoop();
 
     if (process.env.RENDER_EXTERNAL_URL) {
