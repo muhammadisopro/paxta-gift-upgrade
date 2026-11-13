@@ -366,7 +366,7 @@ class TextScramble {
         if (!item.char || Math.random() < 0.28) {
           item.char = this.randomChar();
         }
-        output += `<span style="opacity:0.42;color:rgba(0,229,176,0.65)">${this.escapeHtml(item.char)}</span>`;
+        output += `<span style="opacity:0.45;color:var(--theme-accent, #38b6ff)">${this.escapeHtml(item.char)}</span>`;
       } else {
         output += this.escapeHtml(item.from);
       }
@@ -402,10 +402,10 @@ function triggerSolarEclipseEasterEgg() {
 
   // Interactive ARG signal decryption
   const argSignals = [
-    { tag: 'FILE_01 // SIGNAL', text: '«Kuzatuvchilar allaqachon roʻyxatda. Faqat sabrlilar kalitni oladi.»' },
-    { tag: 'FILE_02 // 0x1512', text: '«15.12.2026 — Tarmoq darvozasi ochiladi. Birinchi toʻlqin: $HOLD.»' },
-    { tag: 'FILE_03 // KEY', text: '«Tangangiz — shunchaki balans emas, bu Genesis blokiga kirish chiptasi.»' },
-    { tag: 'FILE_04 // OMEGA', text: '«Shovqinsiz yigʻilgan kuch bir kunda hammani uygʻotadi. Sirni saqlang.»' }
+    { tag: '01 · SIGNAL', text: '«Haqiqiy narsalar shovqinsiz yaratiladi. Sabr qilganlar hammasini koʻradi.»' },
+    { tag: '02 · 15 · 12 · 2026', text: '«Kuzatuvchilar allaqachon roʻyxatda. Faqat ishonganlar kalitni oladi.»' },
+    { tag: '03 · KALIT', text: '«Tangangiz — shunchaki balans emas, bu birinchi toʻlqinga kirish chiptasi.»' },
+    { tag: '04 · MAXFIY', text: '«Bu sanani hech kimga aytmang... faqat eng yaqin doʻstingizga belgi bering.»' }
   ];
   let sigIdx = -1;
   const tagEl = document.getElementById('tgeCipherTag');
@@ -413,8 +413,8 @@ function triggerSolarEclipseEasterEgg() {
   const cipherBox = document.getElementById('tgeCipherBtn');
   const argCore = document.getElementById('tgeArgCore');
   const cipherScramble = txtEl ? new TextScramble(txtEl) : null;
-  if (tagEl) tagEl.textContent = 'FILE_01 // LOCKED';
-  if (txtEl) txtEl.textContent = '0x48\u00b74F\u00b74C\u00b744 — Ochish uchun tangaga bosing';
+  if (tagEl) tagEl.textContent = '01 · SIRLI XABAR';
+  if (txtEl) txtEl.textContent = 'Sirni ochish uchun tangaga bosing';
 
   const revealNextSignal = () => {
     haptic('medium');
@@ -447,7 +447,7 @@ function triggerSolarEclipseEasterEgg() {
 
     const badgeEl = document.getElementById('tgeStatusBadge');
     if (badgeEl) {
-      badgeEl.textContent = u.services?.founderBadge ? '👑 0% Fee Priority' : '✓ TGE Ready';
+      badgeEl.textContent = u.services?.founderBadge ? '👑 0% Komissiya' : '✓ Tayyor';
     }
 
     const pct = Math.min(100, Number(tk.miningProgressPct || 0));
@@ -565,16 +565,16 @@ function triggerSolarEclipseEasterEgg() {
       if (!ctx) return;
 
       // Trailing alpha decay instead of clearRect
-      ctx.fillStyle = 'rgba(2, 4, 8, 0.08)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
       ctx.fillRect(0, 0, cw, ch);
 
       const cx = cw * 0.5;
-      const cy = ch * 0.38;
+      const cy = ch * 0.34;
       const minDim = Math.min(cw, ch);
       const maxR = Math.hypot(cw, ch) * 0.55;
 
       // Subtle polar sonar rings
-      ctx.strokeStyle = 'rgba(0, 229, 176, 0.035)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
       ctx.lineWidth = 1;
       for (const frac of [0.22, 0.42, 0.66]) {
         ctx.beginPath();
@@ -583,21 +583,21 @@ function triggerSolarEclipseEasterEgg() {
       }
 
       // Polar radar/sonar sweep beam
-      sweepAngle = (sweepAngle + 0.014) % (Math.PI * 2);
+      sweepAngle = (sweepAngle + 0.012) % (Math.PI * 2);
       const bx = cx + Math.cos(sweepAngle) * maxR;
       const by = cy + Math.sin(sweepAngle) * maxR;
       const beamGrad = ctx.createLinearGradient(cx, cy, bx, by);
-      beamGrad.addColorStop(0, 'rgba(0, 229, 176, 0.16)');
-      beamGrad.addColorStop(0.55, 'rgba(0, 229, 176, 0.06)');
-      beamGrad.addColorStop(1, 'rgba(0, 229, 176, 0)');
+      beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
+      beamGrad.addColorStop(0.55, 'rgba(255, 255, 255, 0.05)');
+      beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.strokeStyle = beamGrad;
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(bx, by);
       ctx.stroke();
 
-      // Faint occult teal blips triggered by sweep beam
+      // Faint starlight blips triggered by sweep beam
       for (let i = 0; i < blips.length; i++) {
         const b = blips[i];
         let diff = Math.abs(sweepAngle - b.angle);
@@ -611,12 +611,12 @@ function triggerSolarEclipseEasterEgg() {
           const r = minDim * b.distRatio;
           const px = cx + Math.cos(b.angle) * r;
           const py = cy + Math.sin(b.angle) * r;
-          ctx.fillStyle = `rgba(0, 229, 176, ${(b.intensity * 0.55).toFixed(3)})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${(b.intensity * 0.5).toFixed(3)})`;
           ctx.beginPath();
-          ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+          ctx.arc(px, py, 2, 0, Math.PI * 2);
           ctx.fill();
 
-          ctx.strokeStyle = `rgba(0, 229, 176, ${(b.intensity * 0.22).toFixed(3)})`;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${(b.intensity * 0.18).toFixed(3)})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.arc(px, py, 4 + (1 - b.intensity) * 10, 0, Math.PI * 2);
