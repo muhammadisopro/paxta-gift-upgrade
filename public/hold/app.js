@@ -2060,30 +2060,39 @@ function renderBoostsAndSkinsSheet() {
     });
   }
 
-  // Buy Skins List
+  // Buy Skins List (5-by-5 horizontal swipeable pages)
   const skinsWrap = document.getElementById('skinsListContainer');
   if (skinsWrap) {
     const owned = u.ownedSkins || ['basic'];
-    skinsWrap.innerHTML = (u.allSkins || []).map(sk => {
-      const isOwned = owned.includes(sk.id);
-      const isEnabled = u.skin === sk.id;
-      return `
-        <div class="not-row-item" data-skin-id="${esc(sk.id)}">
-          <div class="nri-skin-box">
-            <img src="${esc(sk.img)}" alt="${esc(sk.name)}" />
-          </div>
-          <div class="nri-center">
-            <div class="nri-title">${esc(sk.name)}</div>
-            <div class="nri-sub ${!isOwned ? 'gold-lock' : ''}">
-              ${isOwned ? 'You own it' : `🔒 ${fmtInt(sk.priceHold)} HOLD`}
+    const allSkins = u.allSkins || [];
+    const pages = [];
+    for (let i = 0; i < allSkins.length; i += 5) {
+      pages.push(allSkins.slice(i, i + 5));
+    }
+    skinsWrap.innerHTML = pages.map(group => `
+      <div class="dark-group-box skins-page">
+        ${group.map(sk => {
+          const isOwned = owned.includes(sk.id);
+          const isEnabled = u.skin === sk.id;
+          return `
+            <div class="not-row-item" data-skin-id="${esc(sk.id)}">
+              <div class="nri-skin-box">
+                <img src="${esc(sk.img)}" alt="${esc(sk.name)}" />
+              </div>
+              <div class="nri-center">
+                <div class="nri-title">${esc(sk.name)}</div>
+                <div class="nri-sub ${!isOwned ? 'gold-lock' : ''}">
+                  ${isOwned ? 'You own it' : `🔒 ${fmtInt(sk.priceHold)} HOLD`}
+                </div>
+              </div>
+              <button type="button" class="skin-pill-btn ${isEnabled ? 'enabled' : ''}" data-skin-action="${esc(sk.id)}">
+                ${isEnabled ? 'enabled' : isOwned ? 'turn on' : 'buy'}
+              </button>
             </div>
-          </div>
-          <button type="button" class="skin-pill-btn ${isEnabled ? 'enabled' : ''}" data-skin-action="${esc(sk.id)}">
-            ${isEnabled ? 'enabled' : isOwned ? 'turn on' : 'buy'}
-          </button>
-        </div>
-      `;
-    }).join('');
+          `;
+        }).join('')}
+      </div>
+    `).join('');
 
     skinsWrap.querySelectorAll('[data-skin-id]').forEach(row => {
       row.addEventListener('click', async () => {

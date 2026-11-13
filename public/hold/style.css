@@ -1925,6 +1925,25 @@ body.turbo-active .coin-radial-glow {
   cursor: default;
 }
 
+/* Horizontal 5-by-5 Skins Carousel */
+.skins-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.skins-carousel::-webkit-scrollbar {
+  display: none;
+}
+.skins-page {
+  flex: 0 0 90%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
 .earn-claim-dot {
   width: 8px;
   height: 8px;
