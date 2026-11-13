@@ -279,39 +279,35 @@ let eclipseCountdownTimer = null;
 function triggerSolarEclipseEasterEgg() {
   const modal = document.getElementById('eclipseSecretModal');
   if (!modal) return;
-  const coinBtn = document.getElementById('holdCoinBtn');
 
   haptic('heavy');
-  if (coinBtn) {
-    coinBtn.style.transition = 'transform 1.4s cubic-bezier(0.16, 1, 0.3, 1)';
-    coinBtn.style.transform = 'rotateY(180deg) scale(1.05)';
-  }
-
-  const timers = [];
-  const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
-  later(() => haptic('light'), 700);
-  later(() => haptic('medium'), 1900);
-  later(() => haptic('heavy'), 3500);
-  later(() => haptic('heavy'), 3750);
-
   const dateEl = document.getElementById('eclipseDateText');
-  const finalText = '15 \u00b7 12 \u00b7 2026';
-  if (dateEl) dateEl.textContent = '?? \u00b7 ?? \u00b7 ????';
-  later(() => {
-    const t0 = Date.now();
-    const iv = setInterval(() => {
-      const p = Math.min(1, (Date.now() - t0) / 1500);
-      let out = '';
-      for (let i = 0; i < finalText.length; i++) {
-        const ch = finalText[i];
-        if (!/\d/.test(ch)) { out += ch; continue; }
-        out += (i / finalText.length < p) ? ch : String(Math.floor(Math.random() * 10));
-      }
-      if (dateEl) dateEl.textContent = out;
-      if (p >= 1) clearInterval(iv);
-    }, 50);
-    timers.push(iv);
-  }, 4300);
+  if (dateEl) dateEl.textContent = '15 \u00b7 12 \u00b7 2026';
+
+  // Populate live TGE user allocation & pool progress
+  const u = STATE.user;
+  if (u) {
+    const tk = u.tokenomics || {};
+    const factor = tk.redenomFactor || 1000;
+    const tokens = (Math.floor(u.holdBalance || 0) / factor).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    const allocEl = document.getElementById('tgeUserAllocVal');
+    if (allocEl) allocEl.innerHTML = `≈ ${tokens} <span>$HOLD</span>`;
+
+    const badgeEl = document.getElementById('tgeStatusBadge');
+    if (badgeEl) {
+      badgeEl.textContent = u.services?.founderBadge ? '👑 0% Fee Priority' : '✓ TGE Ready';
+    }
+
+    const pct = Math.min(100, Number(tk.miningProgressPct || 0));
+    const pctEl = document.getElementById('tgePoolPct');
+    const barEl = document.getElementById('tgePoolBar');
+    if (pctEl) pctEl.textContent = `${pct.toFixed(2)}%`;
+    if (barEl) barEl.style.width = `${Math.max(2, pct)}%`;
+
+    const coinImgEl = document.getElementById('tgeHeroCoinImg');
+    const activeSkin = (u.allSkins || []).find(s => s.id === u.skin);
+    if (coinImgEl && activeSkin?.img) coinImgEl.src = activeSkin.img;
+  }
 
   modal.hidden = false;
 

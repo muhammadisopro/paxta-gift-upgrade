@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=43" />
+  <link rel="stylesheet" href="/hold/style.css?v=44" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -552,38 +552,51 @@
       </div>
     </div>
 
-    <!-- ==================== THE DAY: MONOCHROME SOLAR ECLIPSE SECRET ==================== -->
+    <!-- ==================== $HOLD TGE / LISTING COUNTDOWN ==================== -->
     <div class="eclipse-secret-modal" id="eclipseSecretModal" hidden>
-      <div class="ecl-stars"></div>
-      <div class="ecl-grain"></div>
-      <div class="ecl-flash"></div>
+      <div class="tge-bg-glow"></div>
 
-      <div class="ecl-stage">
-        <div class="ecl-orb">
-          <div class="ecl-corona"></div>
-          <div class="ecl-sun"></div>
-          <div class="ecl-moon"></div>
+      <div class="tge-stage">
+        <div class="tge-net-pill">
+          <span class="tge-net-dot"></span>
+          <span>TON NETWORK · TGE COUNTDOWN</span>
         </div>
 
-        <div class="ecl-text">
-          <div class="ecl-eyebrow ecl-rv" style="--d:4.0s">FILE 001 &nbsp;/&nbsp; CLASSIFIED</div>
-          <div class="ecl-title ecl-rv" style="--d:4.15s">THE DAY</div>
-          <div class="ecl-date ecl-rv" id="eclipseDateText" style="--d:4.3s">?? · ?? · ????</div>
-          <div class="ecl-line ecl-rv" style="--d:5.6s"></div>
+        <div class="tge-coin-hero">
+          <div class="tge-coin-aura"></div>
+          <img src="/hold/skins/skin-4.png" alt="$HOLD" class="tge-coin-img" id="tgeHeroCoinImg" />
+        </div>
 
-          <div class="ecl-countdown ecl-rv" style="--d:5.8s">
-            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseDays">00</span><span class="ecl-cd-lab">DAYS</span></div>
-            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseHours">00</span><span class="ecl-cd-lab">HRS</span></div>
-            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseMinutes">00</span><span class="ecl-cd-lab">MIN</span></div>
-            <div class="ecl-cd"><span class="ecl-cd-num" id="eclipseSeconds">00</span><span class="ecl-cd-lab">SEC</span></div>
+        <div class="tge-title-label">$HOLD LISTING DAY</div>
+        <div class="tge-date-hero" id="eclipseDateText">15 · 12 · 2026</div>
+
+        <div class="tge-countdown">
+          <div class="tge-cd"><span class="tge-cd-num" id="eclipseDays">00</span><span class="tge-cd-lab">DAYS</span></div>
+          <div class="tge-cd"><span class="tge-cd-num" id="eclipseHours">00</span><span class="tge-cd-lab">HRS</span></div>
+          <div class="tge-cd"><span class="tge-cd-num" id="eclipseMinutes">00</span><span class="tge-cd-lab">MIN</span></div>
+          <div class="tge-cd tge-cd-sec"><span class="tge-cd-num" id="eclipseSeconds">00</span><span class="tge-cd-lab">SEC</span></div>
+        </div>
+
+        <div class="tge-alloc-card">
+          <div class="tge-alloc-top">
+            <div>
+              <div class="tge-alloc-kicker">Sizning TGE ulushingiz</div>
+              <div class="tge-alloc-val" id="tgeUserAllocVal">≈ 0 $HOLD</div>
+            </div>
+            <span class="tge-status-pill" id="tgeStatusBadge">✓ TGE Ready</span>
           </div>
-
-          <p class="ecl-quote ecl-rv" style="--d:6.4s">Haqiqiy narsalar shovqinsiz yaratiladi.<br/>Sabr qilganlar hammasini koʻradi.</p>
-
-          <div class="ecl-actions ecl-rv" style="--d:6.8s">
-            <button type="button" class="ecl-btn-solid" id="btnShareEclipse">Sirni ulashish</button>
-            <button type="button" class="ecl-btn-ghost" id="btnCloseEclipse">Yopish</button>
+          <div class="tge-pool-row">
+            <span>Mining Pool</span>
+            <span id="tgePoolPct">0.00%</span>
           </div>
+          <div class="tge-pool-track">
+            <div class="tge-pool-fill" id="tgePoolBar" style="width:2%;"></div>
+          </div>
+        </div>
+
+        <div class="tge-actions">
+          <button type="button" class="tge-btn-primary" id="btnShareEclipse">🚀 Doʻstlarga ulashish</button>
+          <button type="button" class="tge-btn-secondary" id="btnCloseEclipse">Yopish</button>
         </div>
       </div>
     </div>
@@ -607,6 +620,6 @@
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=43"></script>
+  <script src="/hold/app.js?v=44"></script>
 </body>
 </html>
