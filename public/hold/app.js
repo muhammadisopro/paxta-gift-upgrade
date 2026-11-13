@@ -2233,6 +2233,61 @@ function renderEarnSheet() {
     dailyEl.appendChild(tkBtn);
   }
 
+  // 1B. 5,000,000 HOLD Beta Challenge (First 15 Winners, 5 Conditions)
+  const betaBox = document.getElementById('betaChallengeBox');
+  const betaSlotsEl = document.getElementById('uiBetaSlotsCount');
+  if (betaBox) {
+    const bc = u.betaChallenge || { reward: 5_000_000, maxWinners: 15, claimedCount: 0, remainingSlots: 15, conditions: [] };
+    if (betaSlotsEl) betaSlotsEl.textContent = `${bc.claimedCount}/${bc.maxWinners}`;
+    const condHtml = (bc.conditions || []).map(c => `
+      <div class="not-row-item${c.done ? ' is-done' : ''}" style="cursor:default;padding:10px 14px;">
+        <div class="nri-icon-box" style="width:28px;height:28px;font-size:15px;">${c.done ? '✅' : '⬜'}</div>
+        <div class="nri-center">
+          <div class="nri-title" style="font-size:13.5px;">${esc(c.label)}</div>
+        </div>
+      </div>
+    `).join('');
+
+    let actionBtnHtml = '';
+    if (bc.claimedByMe) {
+      actionBtnHtml = `<button type="button" class="not-primary-btn" disabled style="margin:10px 14px 14px;width:calc(100% - 28px);opacity:0.75;">🎉 #${bc.myRank}-oʻrinda +5,000,000 HOLD oldingiz!</button>`;
+    } else if (bc.isFull) {
+      actionBtnHtml = `<button type="button" class="not-primary-btn" disabled style="margin:10px 14px 14px;width:calc(100% - 28px);opacity:0.65;">🔒 15/15 oʻrin toʻldi — Tugadi</button>`;
+    } else {
+      actionBtnHtml = `<button type="button" class="not-primary-btn" id="btnClaimBetaChallenge" ${bc.allConditionsDone ? '' : 'disabled'} style="margin:10px 14px 14px;width:calc(100% - 28px);${bc.allConditionsDone ? '' : 'opacity:0.55;'}">🚀 5,000,000 HOLD Olish (${bc.remainingSlots} oʻrin qoldi)</button>`;
+    }
+
+    betaBox.innerHTML = `
+      <div style="padding:12px 14px 4px;font-size:12.5px;color:var(--text-2);line-height:1.4;">
+        5 ta shartni bajargan <b>ilk ${bc.maxWinners} kishi</b>ga <b>5,000,000 HOLD</b> (5,000 $HOLD) beriladi!
+      </div>
+      ${condHtml}
+      ${actionBtnHtml}
+    `;
+
+    const claimBtn = document.getElementById('btnClaimBetaChallenge');
+    if (claimBtn) {
+      claimBtn.addEventListener('click', async () => {
+        if (claimBtn.disabled) return;
+        claimBtn.disabled = true;
+        haptic('medium');
+        const res = await api('/api/hold/claim-beta-challenge', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username })
+        });
+        if (res.ok && res.user) {
+          STATE.user = res.user;
+          showToast(res.message || '🏆 +5,000,000 HOLD!');
+          renderAllSheets();
+          updateArenaUI();
+        } else {
+          showToast(res?.error || 'Xatolik yuz berdi');
+          claimBtn.disabled = false;
+        }
+      });
+    }
+  }
+
   // 2. Quests — Notcoin-style rows, verified in-app (no external tabs)
   const renderQuestRows = (containerId, list) => {
     const el = document.getElementById(containerId);

@@ -434,6 +434,105 @@ function getUserMiningBoostMultiplier(u, st) {
   return turboMult * squadMult;
 }
 
+export const BETA_CHALLENGE_REWARD = 5_000_000;
+export const BETA_CHALLENGE_MAX_WINNERS = 15;
+
+function getBetaChallengeStatus(st, u) {
+  if (!st.betaChallenge || typeof st.betaChallenge !== 'object') {
+    st.betaChallenge = { winners: [] };
+  }
+  const winners = Array.isArray(st.betaChallenge.winners) ? st.betaChallenge.winners : [];
+  const claimedEntry = u ? winners.find(w => w.username === u.username) : null;
+  const remainingSlots = Math.max(0, BETA_CHALLENGE_MAX_WINNERS - winners.length);
+
+  const conditions = u ? [
+    {
+      id: 'squad',
+      label: 'Squadga qoʻshiling',
+      done: !!(u.squadId && st?.squads?.[u.squadId])
+    },
+    {
+      id: 'referral',
+      label: 'Kamida 1 ta doʻst taklif qiling',
+      done: (u.referrals || []).length >= 1
+    },
+    {
+      id: 'streak',
+      label: 'Kunlik Streak mukofotini oling',
+      done: (u.streakCount || 0) >= 1
+    },
+    {
+      id: 'cipher',
+      label: 'Daily Morse yoki Compass yeching',
+      done: (u.morseSolvedDays || []).length >= 1 || (u.compassSolvedDays || []).length >= 1
+    },
+    {
+      id: 'skin',
+      label: 'Kamida 1 ta Skin oching / sotib oling',
+      done: (u.ownedSkins || []).some(s => s && s !== 'basic')
+    }
+  ] : [];
+
+  return {
+    reward: BETA_CHALLENGE_REWARD,
+    maxWinners: BETA_CHALLENGE_MAX_WINNERS,
+    claimedCount: winners.length,
+    remainingSlots,
+    isFull: remainingSlots <= 0,
+    claimedByMe: !!claimedEntry,
+    myRank: claimedEntry?.rank || null,
+    allConditionsDone: conditions.length === 5 && conditions.every(c => c.done),
+    conditions,
+    winners: winners.map(w => ({
+      rank: w.rank,
+      username: w.username,
+      displayName: w.displayName || w.username,
+      claimedAt: w.claimedAt
+    }))
+  };
+}
+
+function recordSkinUnlock(st, u, skinId, source = 'buy', pricePaid = 0) {
+  if (!u || !skinId) return;
+  if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
+  if (!u.ownedSkins.includes(skinId)) u.ownedSkins.push(skinId);
+
+  if (skinId === 'basic') return;
+  const nowIso = new Date().toISOString();
+
+  if (!Array.isArray(u.skinHistory)) u.skinHistory = [];
+  if (!u.skinHistory.some(h => h.skinId === skinId)) {
+    u.skinHistory.push({ skinId, source, pricePaid, at: nowIso });
+  }
+
+  if (!st.skinOwners || typeof st.skinOwners !== 'object') st.skinOwners = {};
+  if (!Array.isArray(st.skinOwners[skinId])) st.skinOwners[skinId] = [];
+  if (!st.skinOwners[skinId].some(e => e.username === u.username)) {
+    st.skinOwners[skinId].push({
+      username: u.username,
+      displayName: u.displayName || u.username,
+      paxtaId: u.paxtaId || null,
+      skinId,
+      source,
+      pricePaid,
+      at: nowIso
+    });
+  }
+}
+
+function syncAllSkinOwners(st) {
+  if (!st.skinOwners || typeof st.skinOwners !== 'object') st.skinOwners = {};
+  for (const usr of Object.values(st.users || {})) {
+    for (const sk of (usr?.ownedSkins || [])) {
+      if (sk && sk !== 'basic') {
+        const hist = (usr.skinHistory || []).find(h => h.skinId === sk);
+        recordSkinUnlock(st, usr, sk, hist?.source || 'legacy', hist?.pricePaid || 0);
+      }
+    }
+  }
+  return st.skinOwners;
+}
+
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -2023,6 +2122,7 @@ export function registerHoldEngine(app, deps) {
         canRestoreStreak: u.lastStreakDate !== todayStr() && u.lastStreakDate !== yesterdayStr(),
         activeMiningMultiplier: getUserMiningBoostMultiplier(u, st)
       },
+      betaChallenge: getBetaChallengeStatus(st, u),
       claimedNfts: u.claimedNfts || [],
       secretCodesClaimed: u.secretCodesClaimed || [],
       compassSolvedToday: (u.compassSolvedDays || []).includes(todayStr()),
@@ -2070,7 +2170,7 @@ export function registerHoldEngine(app, deps) {
   const AUTH_POSTS = new Set([
     '/claim-ref', '/claim-og', '/farm-claim', '/farm-upgrade', '/farm-claim-ref', '/footprint-claim',
     '/claim-streak', '/tap', '/boost', '/skin', '/solve-morse', '/join-squad', '/start-quest',
-    '/claim-quest', '/buy-vip-pack', '/buy-service', '/create-invoice', '/solve-compass',
+    '/claim-quest', '/buy-vip-pack', '/buy-service', '/create-invoice', '/solve-compass', '/claim-beta-challenge',
     '/squad-rename', '/squad-claim', '/squad-members'
   ]);
   app.use('/api/hold', (req, res, next) => {
@@ -2525,7 +2625,7 @@ export function registerHoldEngine(app, deps) {
       u.luckyTickets = (u.luckyTickets || 0) + 1;
       if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
       if (!u.ownedSkins.includes('cookie')) {
-        u.ownedSkins.push('cookie');
+        recordSkinUnlock(st, u, 'cookie', 'streak_7', 0);
         bonusMsg = `🔥 7-Kunlik Streak! +${reward.toLocaleString()} HOLD + Cookie Skin + 1 🎟️ Lucky Ticket!`;
       } else {
         bonusMsg = `🔥 7-Kunlik Streak! +${reward.toLocaleString()} HOLD + 1 🎟️ Lucky Ticket!`;
@@ -2694,7 +2794,7 @@ export function registerHoldEngine(app, deps) {
       });
     }
 
-    u.ownedSkins.push(skinId);
+    recordSkinUnlock(st, u, skinId, 'buy', cost);
     u.skin = skinId;
     saveHoldState(st);
 
@@ -2768,8 +2868,7 @@ export function registerHoldEngine(app, deps) {
       u.secretCodesClaimed.push(wordInput);
       const secCredited = creditHold(u, st, secret.reward, { pool: 'mining', applyHalving: true });
       if (secret.skin) {
-        if (!Array.isArray(u.ownedSkins)) u.ownedSkins = ['basic'];
-        if (!u.ownedSkins.includes(secret.skin)) u.ownedSkins.push(secret.skin);
+        recordSkinUnlock(st, u, secret.skin, 'secret_code', 0);
         u.skin = secret.skin;
       }
       saveHoldState(st);
@@ -3248,6 +3347,72 @@ cp();
       message: applied.message,
       user: formatHoldUserResponse(st, u, charge.userRecord)
     });
+  });
+
+  // ---- 9B. 5,000,000 HOLD Beta Challenge (First 15 Winners, 5 Conditions) ----
+  app.post('/api/hold/claim-beta-challenge', (req, res) => {
+    const { st, u, mainUser } = getOrCreateHoldUser(req.body?.username);
+    const status = getBetaChallengeStatus(st, u);
+
+    if (status.claimedByMe) {
+      return res.status(400).json({ ok: false, error: `Siz allaqachon #${status.myRank}-oʻrinda 5,000,000 HOLD olgansiz!` });
+    }
+    if (status.isFull) {
+      return res.status(400).json({ ok: false, error: 'Ilk 15 kishilik oʻrin allaqachon toʻldi (15/15)!' });
+    }
+    if (!status.allConditionsDone) {
+      const missing = status.conditions.filter(c => !c.done).map(c => c.label).join(', ');
+      return res.status(400).json({ ok: false, error: `Barcha 5 ta shart bajarilmagan: ${missing}` });
+    }
+
+    const rank = st.betaChallenge.winners.length + 1;
+    const credited = creditHold(u, st, BETA_CHALLENGE_REWARD, { pool: 'airdrop', applyHalving: false, skipServiceBoost: true });
+    if (credited <= 0) {
+      return res.status(400).json({ ok: false, error: 'Airdrop fondi limiti tugadi' });
+    }
+
+    u.betaChallengeRank = rank;
+    st.betaChallenge.winners.push({
+      rank,
+      username: u.username,
+      displayName: u.displayName || u.username,
+      paxtaId: u.paxtaId || null,
+      reward: credited,
+      claimedAt: new Date().toISOString()
+    });
+    invalidateHoldAggCache('all');
+    saveHoldState(st);
+
+    res.json({
+      ok: true,
+      rank,
+      reward: credited,
+      message: `🏆 Tabriklaymiz! Siz #${rank}/15-oʻrinda +${credited.toLocaleString()} HOLD oldingiz!`,
+      user: formatHoldUserResponse(st, u, mainUser)
+    });
+  });
+
+  // ---- 9C. Skin Owners Registry (Future Utility & Rewards) ----
+  app.get('/api/hold/skin-owners', (req, res) => {
+    const st = loadHoldState();
+    const skinOwners = syncAllSkinOwners(st);
+    const skinFilter = req.query?.skinId ? String(req.query.skinId).trim() : null;
+    saveHoldState(st);
+
+    if (skinFilter) {
+      return res.json({
+        ok: true,
+        skinId: skinFilter,
+        count: (skinOwners[skinFilter] || []).length,
+        owners: skinOwners[skinFilter] || []
+      });
+    }
+
+    const summary = {};
+    for (const [sid, list] of Object.entries(skinOwners)) {
+      summary[sid] = { count: list.length, owners: list };
+    }
+    res.json({ ok: true, skins: summary });
   });
 
   // ---- 10. Top-10 Leaderboard & Allocated NFT / HOLD Prizes ----
@@ -3899,12 +4064,11 @@ cp();
         }
       }
       if (grantSkin && HOLD_SKINS.some(s => s.id === grantSkin)) {
-        if (!Array.isArray(targetUser.ownedSkins)) targetUser.ownedSkins = ['basic'];
-        if (!targetUser.ownedSkins.includes(grantSkin)) targetUser.ownedSkins.push(grantSkin);
+        recordSkinUnlock(st, targetUser, grantSkin, 'admin', 0);
         targetUser.skin = grantSkin;
       }
       if (req.body?.grantAllSkins) {
-        targetUser.ownedSkins = HOLD_SKINS.map(s => s.id);
+        for (const s of HOLD_SKINS) recordSkinUnlock(st, targetUser, s.id, 'admin', 0);
       }
       if (req.body?.resetOnboarding) {
         targetUser.ogBonusClaimed = false;
