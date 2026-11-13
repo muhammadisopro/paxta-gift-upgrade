@@ -196,6 +196,62 @@ export const HOLD_SKINS = [
       glow2: 'rgba(219, 39, 119, 0.30)',
       bgBottom: '#2d0620'
     }
+  },
+  {
+    id: 'donut',
+    name: 'Gold Donut',
+    subtitle: '250,000 HOLD',
+    img: '/hold/skins/skin-7.png',
+    priceHold: 250_000,
+    theme: {
+      accent: '#fb7185',
+      secondary: '#f43f5e',
+      glow1: 'rgba(251, 113, 133, 0.54)',
+      glow2: 'rgba(244, 63, 94, 0.30)',
+      bgBottom: '#2b0714'
+    }
+  },
+  {
+    id: 'eclipse',
+    name: 'Black Hole',
+    subtitle: '500,000 HOLD',
+    img: '/hold/skins/skin-8.png',
+    priceHold: 500_000,
+    theme: {
+      accent: '#fbbf24',
+      secondary: '#8b5cf6',
+      glow1: 'rgba(251, 191, 36, 0.52)',
+      glow2: 'rgba(139, 92, 246, 0.32)',
+      bgBottom: '#140826'
+    }
+  },
+  {
+    id: 'dragon',
+    name: 'Cyber Dragon',
+    subtitle: '750,000 HOLD',
+    img: '/hold/skins/skin-9.png',
+    priceHold: 750_000,
+    theme: {
+      accent: '#22d3ee',
+      secondary: '#e879f9',
+      glow1: 'rgba(34, 211, 238, 0.54)',
+      glow2: 'rgba(232, 121, 249, 0.30)',
+      bgBottom: '#13072b'
+    }
+  },
+  {
+    id: 'astrocat',
+    name: 'Astro Cat',
+    subtitle: '1,000,000 HOLD',
+    img: '/hold/skins/skin-10.png',
+    priceHold: 1_000_000,
+    theme: {
+      accent: '#a78bfa',
+      secondary: '#38bdf8',
+      glow1: 'rgba(167, 139, 250, 0.56)',
+      glow2: 'rgba(56, 189, 248, 0.30)',
+      bgBottom: '#100a2c'
+    }
   }
 ];
 
