@@ -2503,65 +2503,61 @@ function openTokenomicsModal() {
   ];
   const allocs = Array.isArray(tk.allocations) ? tk.allocations : [];
 
-  openModal('🪙 $HOLD Tokenomics & Burn', `
-    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5;">
-      <div style="background:linear-gradient(135deg,rgba(56,189,248,0.16),rgba(59,130,246,0.08));border:1px solid rgba(56,189,248,0.28);border-radius:14px;padding:12px;">
-        <div style="font-size:11.5px;color:#7dd3fc;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;">Sizning TGE ulushingiz (faqat holdBalance)</div>
-        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:4px;">
-          <div style="font-size:22px;font-weight:800;color:#fff;">≈ ${userTokens} <span style="color:#38bdf8;">$HOLD</span></div>
-          <div style="font-size:12px;color:var(--text-2);">${fmtInt(u.holdBalance || 0)} pts ÷ ${factor}</div>
-        </div>
-        <div style="margin-top:6px;font-size:11.5px;color:var(--text-2);">Notcoin uslubida <b>000</b> qisqaradi (${fmtInt(factor)} coin = 1 $HOLD). Faqat qoʻldagi <b>holdBalance</b> hisoblanadi — boost va skinlarga sarflangan coinlar <b>Burn</b> boʻlib yoqiladi.</div>
+  const miningCapLabel = (tk.miningCapTokens || 450_000) >= 1_000_000
+    ? `${Math.round((tk.miningCapTokens || 0) / 1_000_000)}M`
+    : `${Math.round((tk.miningCapTokens || 450_000) / 1_000)}K`;
+
+  openModal('🪙 $HOLD Tokenomics', `
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:13.5px;line-height:1.45;">
+      <div style="background:linear-gradient(135deg,rgba(42,171,238,0.18),rgba(0,122,255,0.08));border:1px solid rgba(56,189,248,0.28);border-radius:18px;padding:16px;">
+        <div style="font-size:11px;color:#7dd3fc;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;">Sizning TGE ulushingiz</div>
+        <div style="font-size:28px;font-weight:800;color:#fff;margin-top:4px;letter-spacing:-0.5px;">≈ ${userTokens} <span style="color:#38bdf8;">$HOLD</span></div>
+        <div style="margin-top:8px;font-size:12px;color:rgba(255,255,255,0.68);">${fmtInt(factor)} coin = 1 $HOLD · Jami supply: ${totalSupply} $HOLD</div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
-        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
-          <div style="font-size:10.5px;color:var(--text-2);">Hard Cap</div>
-          <div style="font-size:14px;font-weight:800;color:#fff;">1M</div>
-          <div style="font-size:10px;color:var(--text-2);">Eff: ${effSupply}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px 14px;">
+          <div style="font-size:11.5px;color:var(--text-2);">Muomalada</div>
+          <div style="font-size:17px;font-weight:800;color:#4ade80;margin-top:2px;">${circTok} $HOLD</div>
         </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
-          <div style="font-size:10.5px;color:var(--text-2);">Muomalada</div>
-          <div style="font-size:14px;font-weight:800;color:#4ade80;">${circTok}</div>
-          <div style="font-size:10px;color:var(--text-2);">Minted: ${mintedTok}</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
-          <div style="font-size:10.5px;color:var(--text-2);">🔥 Yoqilgan</div>
-          <div style="font-size:14px;font-weight:800;color:#fb923c;">${burnedTok}</div>
-          <div style="font-size:10px;color:var(--text-2);">${fmtInt(tk.burnedPoints || 0)} pts</div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px 14px;">
+          <div style="font-size:11.5px;color:var(--text-2);">🔥 Yoqilgan (Burn)</div>
+          <div style="font-size:17px;font-weight:800;color:#fb923c;margin-top:2px;">${burnedTok} $HOLD</div>
         </div>
       </div>
 
-      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;">
-        <div style="display:flex;justify-content:space-between;font-weight:700;color:#fff;margin-bottom:6px;">
-          <span>⛏️ Mining Pool (${(tk.miningCapTokens || 450_000) >= 1_000_000 ? `${Math.round((tk.miningCapTokens || 0) / 1_000_000)}M` : `${Math.round((tk.miningCapTokens || 450_000) / 1_000)}K`} $HOLD)</span>
-          <span>${pct.toFixed(2)}%</span>
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-weight:700;color:#fff;">⛏️ Mining Pool (${miningCapLabel})</span>
+          <span style="font-weight:800;color:#38bdf8;">${pct.toFixed(2)}%</span>
         </div>
         <div style="height:8px;border-radius:99px;background:rgba(255,255,255,0.08);overflow:hidden;">
-          <div style="height:100%;width:${Math.max(1.5, pct)}%;border-radius:99px;background:linear-gradient(90deg,#38bdf8,#4ade80);"></div>
+          <div style="height:100%;width:${Math.max(2, pct)}%;border-radius:99px;background:linear-gradient(90deg,#38bdf8,#4ade80);"></div>
         </div>
-        <div style="margin-top:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;">
-          ${stages.map(s => {
-            const active = s.stage === h.stage;
-            return `<div style="padding:6px 4px;border-radius:8px;background:${active ? 'rgba(56,189,248,0.18)' : 'rgba(255,255,255,0.04)'};border:1px solid ${active ? 'rgba(56,189,248,0.5)' : 'transparent'};">
-              <div style="font-size:10px;color:${active ? '#7dd3fc' : 'var(--text-2)'};">${s.minPct}-${s.maxPct}%</div>
-              <div style="font-size:12px;font-weight:800;color:#fff;">${esc(s.label)}</div>
-            </div>`;
-          }).join('')}
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-2);">
+          <span>Hozirgi faza: <b style="color:#fff;">${esc(h.name)}</b></span>
+          <span style="padding:3px 9px;border-radius:99px;background:rgba(56,189,248,0.16);color:#7dd3fc;font-weight:700;">${esc(h.label)}</span>
         </div>
       </div>
 
-      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;">
-        <div style="font-weight:700;color:#fff;margin-bottom:6px;">📊 Taqsimot (${totalSupply} $HOLD)</div>
-        ${allocs.map(a => `
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:12px;">
-            <span style="display:flex;align-items:center;gap:6px;">
-              <span style="width:8px;height:8px;border-radius:99px;background:${esc(a.color)};display:inline-block;"></span>
-              <span>${esc(a.label)}</span>
-            </span>
-            <b>${a.pct}% (${(a.tokens || 0) >= 1_000_000 ? `${Math.round(a.tokens / 1_000_000)}M` : `${Math.round((a.tokens || 0) / 1_000)}K`})</b>
-          </div>
-        `).join('')}
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px;">
+        <div style="font-weight:700;color:#fff;margin-bottom:8px;">📊 Taqsimot</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${allocs.map(a => {
+            const tokLabel = (a.tokens || 0) >= 1_000_000
+              ? `${Math.round(a.tokens / 1_000_000)}M`
+              : `${Math.round((a.tokens || 0) / 1_000)}K`;
+            return `
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px;">
+                <span style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.86);">
+                  <span style="width:8px;height:8px;border-radius:99px;background:${esc(a.color)};display:inline-block;flex-shrink:0;"></span>
+                  <span>${esc(a.label)}</span>
+                </span>
+                <b style="color:#fff;white-space:nowrap;">${a.pct}% · ${tokLabel}</b>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
     </div>
   `);
