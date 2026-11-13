@@ -402,19 +402,19 @@ function triggerSolarEclipseEasterEgg() {
 
   // Interactive ARG signal decryption
   const argSignals = [
-    { tag: '01 · SIGNAL', text: '«Haqiqiy narsalar shovqinsiz yaratiladi. Sabr qilganlar hammasini koʻradi.»' },
-    { tag: '02 · 15 · 12 · 2026', text: '«Kuzatuvchilar allaqachon roʻyxatda. Faqat ishonganlar kalitni oladi.»' },
-    { tag: '03 · KALIT', text: '«Tangangiz — shunchaki balans emas, bu birinchi toʻlqinga kirish chiptasi.»' },
-    { tag: '04 · MAXFIY', text: '«Bu sanani hech kimga aytmang... faqat eng yaqin doʻstingizga belgi bering.»' }
+    { tag: '01 / 04', text: 'Haqiqiy narsalar shovqinsiz yaratiladi. Sabr qilganlar hammasini koʻradi.' },
+    { tag: '02 / 04', text: 'Kuzatuvchilar allaqachon roʻyxatda. Faqat ishonganlar kalitni oladi.' },
+    { tag: '03 / 04', text: 'Tangangiz — shunchaki balans emas, bu birinchi toʻlqinga kirish chiptasi.' },
+    { tag: '04 / 04', text: 'Bu sanani hech kimga aytmang... faqat eng yaqin doʻstingizga belgi bering.' }
   ];
-  let sigIdx = -1;
+  let sigIdx = 0;
   const tagEl = document.getElementById('tgeCipherTag');
   const txtEl = document.getElementById('tgeCipherText');
   const cipherBox = document.getElementById('tgeCipherBtn');
   const argCore = document.getElementById('tgeArgCore');
   const cipherScramble = txtEl ? new TextScramble(txtEl) : null;
-  if (tagEl) tagEl.textContent = '01 · SIRLI XABAR';
-  if (txtEl) txtEl.textContent = 'Sirni ochish uchun tangaga bosing';
+  if (tagEl) tagEl.textContent = argSignals[0].tag;
+  if (txtEl) txtEl.textContent = argSignals[0].text;
 
   const revealNextSignal = () => {
     haptic('medium');
