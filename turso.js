@@ -11,6 +11,13 @@ const TURSO_PIPELINE = `https://${TURSO_HOST}/v2/pipeline`;
 
 let isInitialized = false;
 const debounceTimers = new Map();
+const latestDebouncedData = new Map();
+const inFlightSaves = new Map();
+const pendingSaves = new Map();
+const DEFAULT_DEBOUNCE_MS = 400;
+const KEY_DEBOUNCE_MS = {
+  hold_state: 1500
+};
 
 /**
  * Executes a single SQL statement on Turso
@@ -18,7 +25,7 @@ const debounceTimers = new Map();
 export async function tursoExecute(sql, args = []) {
   try {
     const formattedArgs = args.map(a => {
-      if (typeof a === 'number') return { type: 'integer', value: String(a) };
+      if (typeof a === 'number') return { type: Number.isInteger(a) ? 'integer' : 'real', value: String(a) };
       return { type: 'text', value: String(a) };
     });
 
@@ -38,7 +45,8 @@ export async function tursoExecute(sql, args = []) {
             }
           }
         ]
-      })
+      }),
+      signal: AbortSignal.timeout(10000)
     });
 
     if (!res.ok) {
@@ -93,57 +101,104 @@ export async function initTursoSync(dataDir) {
 
   const keys = ['inventory', 'users', 'settings', 'payments', 'activity', 'promocodes', 'hold_state', 'channel_calendars', 'channel_medals'];
 
-  for (const k of keys) {
+  await Promise.all(keys.map(async (k) => {
     const localFile = path.join(dataDir, `${k}.json`);
-    let localData = null;
-    let localExists = fs.existsSync(localFile);
-
-    if (localExists) {
-      try {
-        localData = JSON.parse(fs.readFileSync(localFile, 'utf8'));
-      } catch (e) {
-        console.error(`[Turso] Error parsing local ${k}.json:`, e.message);
-      }
-    }
-
     const remoteEntry = remoteMap.get(k);
 
     if (remoteEntry && remoteEntry.val) {
       try {
-        const parsedRemote = JSON.parse(remoteEntry.val);
-        fs.writeFileSync(localFile, JSON.stringify(parsedRemote, null, 2), 'utf8');
+        JSON.parse(remoteEntry.val);
+        await fs.promises.writeFile(localFile, remoteEntry.val, 'utf8');
         console.log(`[Turso] Synced ${k} from Turso to local disk.`);
+        return;
       } catch (err) {
         console.error(`[Turso] Error applying remote data for ${k}:`, err.message);
       }
-    } else if (localData !== null) {
-      // Remote is empty for this key, push local data to Turso
-      console.log(`[Turso] Seeding remote database with local ${k}...`);
-      await saveToTurso(k, localData, false);
     }
-  }
+
+    try {
+      const rawLocal = await fs.promises.readFile(localFile, 'utf8');
+      const localData = JSON.parse(rawLocal);
+      if (localData !== null) {
+        console.log(`[Turso] Seeding remote database with local ${k}...`);
+        await saveToTurso(k, localData, false);
+      }
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        console.error(`[Turso] Error reading local ${k}.json:`, e.message);
+      }
+    }
+  }));
 
   isInitialized = true;
   console.log('[Turso] Database synchronization complete and active!');
 }
 
 /**
- * Save data to Turso database (debounced to prevent excessive HTTP calls during bursts)
+ * Save data to Turso database (debounced and serialized per key to prevent excessive HTTP calls and races during bursts)
  */
 export async function saveToTurso(key, data, debounce = true) {
   if (debounce) {
     if (debounceTimers.has(key)) {
       clearTimeout(debounceTimers.get(key));
     }
-    const timer = setTimeout(async () => {
+    latestDebouncedData.set(key, data);
+    const delayMs = KEY_DEBOUNCE_MS[key] || DEFAULT_DEBOUNCE_MS;
+    const timer = setTimeout(() => {
       debounceTimers.delete(key);
-      await executeSave(key, data);
-    }, 400);
+      const latest = latestDebouncedData.get(key);
+      latestDebouncedData.delete(key);
+      enqueueSave(key, latest !== undefined ? latest : data);
+    }, delayMs);
     debounceTimers.set(key, timer);
     return;
   }
 
-  await executeSave(key, data);
+  if (debounceTimers.has(key)) {
+    clearTimeout(debounceTimers.get(key));
+    debounceTimers.delete(key);
+  }
+  latestDebouncedData.delete(key);
+  await enqueueSave(key, data);
+}
+
+/**
+ * Flush all pending debounced or in-flight Turso saves (for graceful shutdown)
+ */
+export async function flushTursoSaves() {
+  const keysToFlush = Array.from(debounceTimers.keys());
+  for (const key of keysToFlush) {
+    clearTimeout(debounceTimers.get(key));
+    debounceTimers.delete(key);
+    if (latestDebouncedData.has(key)) {
+      const data = latestDebouncedData.get(key);
+      latestDebouncedData.delete(key);
+      enqueueSave(key, data);
+    }
+  }
+  await Promise.all(Array.from(inFlightSaves.values()));
+}
+
+function enqueueSave(key, data) {
+  pendingSaves.set(key, data);
+  if (inFlightSaves.has(key)) {
+    return inFlightSaves.get(key);
+  }
+
+  const run = (async () => {
+    try {
+      while (pendingSaves.has(key)) {
+        const latest = pendingSaves.get(key);
+        pendingSaves.delete(key);
+        await executeSave(key, latest);
+      }
+    } finally {
+      inFlightSaves.delete(key);
+    }
+  })();
+
+  inFlightSaves.set(key, run);
+  return run;
 }
 
 async function executeSave(key, data) {

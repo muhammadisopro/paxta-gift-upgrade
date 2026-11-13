@@ -664,6 +664,7 @@ body.turbo-active .coin-radial-glow {
   touch-action: none;
   -webkit-user-drag: none;
   transform-style: preserve-3d;
+  will-change: transform;
   transition: transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: 2;
   display: flex;
@@ -684,25 +685,41 @@ body.turbo-active .coin-radial-glow {
   transition: transform 0.22s ease;
 }
 
+.tap-float-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+  overflow: hidden;
+  contain: layout style;
+}
+
 .tap-float-num {
   position: fixed;
+  left: 0;
+  top: 0;
   pointer-events: none;
   font-size: 34px;
   font-weight: 800;
   color: #ffffff;
   text-shadow: 0 4px 18px var(--theme-secondary);
   z-index: 99;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+.tap-float-num.active {
   animation: floatUpFade 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes floatUpFade {
   0% {
     opacity: 1;
-    transform: translateY(0) scale(0.92);
+    transform: translate3d(0, 0, 0) scale(0.92);
   }
   100% {
     opacity: 0;
-    transform: translateY(-94px) scale(1.08);
+    transform: translate3d(0, -94px, 0) scale(1.08);
   }
 }
 
@@ -1584,7 +1601,8 @@ body.turbo-active .coin-radial-glow {
   color: #e0f2fe;
 }
 
-.arena-hh-pill[hidden] {
+.arena-hh-pill[hidden],
+.arena-streak-pill[hidden] {
   display: none !important;
 }
 

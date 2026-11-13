@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>HOLD</title>
-  <link rel="stylesheet" href="/hold/style.css?v=34" />
+  <link rel="stylesheet" href="/hold/style.css?v=36" />
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
   <div class="hold-app" id="holdApp">
@@ -94,6 +94,10 @@
           <button type="button" class="arena-token-pill" id="btnOpenTokenomics">
             <span>🪙</span><span id="uiArenaTokensText">0 $HOLD</span><span class="token-phase-tag" id="uiArenaHalvingTag">1.0x</span>
           </button>
+          <button type="button" class="arena-streak-pill ready" id="btnArenaStreakPill" hidden>
+            <span>🔥</span><span id="uiArenaStreakText">Bonus!</span>
+          </button>
+          <span class="arena-hh-pill" id="uiArenaHappyHourPill" hidden>⚡ 2x LIVE</span>
         </div>
       </div>
 
@@ -154,7 +158,7 @@
       <div class="sheet-top-nav">
         <button type="button" class="sheet-back-btn" data-close-sheet>‹ Back</button>
         <div class="players-stats-pill" id="btnSwitchTop10Tab">
-          <img src="/hold/skins/skin-4.png" alt="" class="mini-pill-coin" />
+          <img src="/hold/skins/skin-4.png" alt="" class="mini-pill-coin" id="uiLeaguesPillCoin" />
           <span id="uiTotalPlayersCount">0</span> game players · <span class="stats-accent">Top 10 ›</span>
         </div>
         <div style="width:52px;"></div>
@@ -589,9 +593,12 @@
     </div>
   </div>
 
+  <!-- POOLED FLOATING TAP NUMBERS LAYER -->
+  <div class="tap-float-layer" id="tapFloatLayer" aria-hidden="true"></div>
+
   <!-- MINIMAL APPLE TOAST -->
   <div class="hold-toast" id="holdToast" hidden></div>
 
-  <script src="/hold/app.js?v=34"></script>
+  <script src="/hold/app.js?v=36"></script>
 </body>
 </html>

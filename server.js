@@ -4,9 +4,12 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { initTursoSync, saveToTurso } from './turso.js';
+import { initTursoSync, saveToTurso, flushTursoSaves } from './turso.js';
 import { registerHoldEngine } from './hold-engine.js';
+
+const gunzipAsync = promisify(zlib.gunzip);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, 'data');
@@ -53,7 +56,12 @@ if (!fs.existsSync(holdStateFile)) fs.writeFileSync(holdStateFile, '{}');
 // ---- High-Speed In-Memory RAM Cache + Non-Blocking Async Disk Persistence ----
 const memStore = new Map();
 const diskWriteTimers = new Map();
+const diskWriteLatest = new Map();
+const diskWriteInFlight = new Map();
+const diskWritePending = new Map();
 let invStatsVersion = 1;
+let usersVersion = 1;
+let activityVersion = 1;
 
 function hydrateMemoryFromDisk() {
   for (const f of [usersFile, inventoryFile, settingsFile, paymentsFile, activityFile, promocodesFile, indexFile, channelCalendarsFile, channelMedalsFile, holdStateFile]) {
@@ -64,6 +72,8 @@ function hydrateMemoryFromDisk() {
     }
   }
   invStatsVersion++;
+  usersVersion++;
+  activityVersion++;
 }
 
 const loadJSON = (f, fb) => {
@@ -77,36 +87,78 @@ const loadJSON = (f, fb) => {
   }
 };
 
+function enqueueDiskWrite(f, data) {
+  diskWritePending.set(f, data);
+  if (diskWriteInFlight.has(f)) {
+    return diskWriteInFlight.get(f);
+  }
+  const run = (async () => {
+    try {
+      while (diskWritePending.has(f)) {
+        const latest = diskWritePending.get(f);
+        diskWritePending.delete(f);
+        try {
+          const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
+          await fs.promises.writeFile(tmp, JSON.stringify(latest));
+          await fs.promises.rename(tmp, f);
+        } catch {}
+      }
+    } finally {
+      diskWriteInFlight.delete(f);
+    }
+  })();
+  diskWriteInFlight.set(f, run);
+  return run;
+}
+
+async function flushDiskWrites() {
+  for (const [f, timer] of diskWriteTimers.entries()) {
+    clearTimeout(timer);
+    diskWriteTimers.delete(f);
+    if (diskWriteLatest.has(f)) {
+      const data = diskWriteLatest.get(f);
+      diskWriteLatest.delete(f);
+      enqueueDiskWrite(f, data);
+    }
+  }
+  await Promise.all(Array.from(diskWriteInFlight.values()));
+}
+
+const TURSO_KEY_MAP = {
+  [inventoryFile]: 'inventory',
+  [usersFile]: 'users',
+  [settingsFile]: 'settings',
+  [paymentsFile]: 'payments',
+  [activityFile]: 'activity',
+  [promocodesFile]: 'promocodes',
+  [holdStateFile]: 'hold_state',
+  [channelCalendarsFile]: 'channel_calendars',
+  [channelMedalsFile]: 'channel_medals'
+};
+
 const saveJSON = (f, d) => {
   memStore.set(f, d);
   if (f === inventoryFile || f === settingsFile) {
     invStatsVersion++;
+  } else if (f === usersFile) {
+    usersVersion++;
+  } else if (f === activityFile) {
+    activityVersion++;
   }
 
-  // Non-blocking debounced async disk write (never freezes Node.js event loop!)
+  // Non-blocking debounced & serialized async disk write (never freezes Node.js event loop!)
+  diskWriteLatest.set(f, d);
   if (diskWriteTimers.has(f)) clearTimeout(diskWriteTimers.get(f));
-  diskWriteTimers.set(f, setTimeout(async () => {
+  const diskDelayMs = f === holdStateFile ? 800 : 200;
+  diskWriteTimers.set(f, setTimeout(() => {
     diskWriteTimers.delete(f);
-    try {
-      const tmp = `${f}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
-      await fs.promises.writeFile(tmp, JSON.stringify(d));
-      await fs.promises.rename(tmp, f);
-    } catch {}
-  }, 200));
+    const latest = diskWriteLatest.get(f);
+    diskWriteLatest.delete(f);
+    enqueueDiskWrite(f, latest !== undefined ? latest : d);
+  }, diskDelayMs));
 
   // Instant Turso Cloud Database sync (debounced in turso.js)
-  const keyMap = {
-    [inventoryFile]: 'inventory',
-    [usersFile]: 'users',
-    [settingsFile]: 'settings',
-    [paymentsFile]: 'payments',
-    [activityFile]: 'activity',
-    [promocodesFile]: 'promocodes',
-    [holdStateFile]: 'hold_state',
-    [channelCalendarsFile]: 'channel_calendars',
-    [channelMedalsFile]: 'channel_medals'
-  };
-  const tursoKey = keyMap[f];
+  const tursoKey = TURSO_KEY_MAP[f];
   if (tursoKey) {
     saveToTurso(tursoKey, d);
   }
@@ -208,19 +260,34 @@ function normalizeTgsToJson(slug, url) {
   return u.replace(/\.tgs$/, '.json');
 }
 
+let imperialCrownModelIndex = null;
+
+function getImperialCrownModelIndex() {
+  if (imperialCrownModelIndex) return imperialCrownModelIndex;
+  const c = loadCollection('imperialcrown');
+  if (!c) return null;
+  const byId = new Map();
+  const byName = new Map();
+  for (const x of [...(c.models || []), ...(c.craftModels || [])]) {
+    if (x?.id) byId.set(x.id, x);
+    if (x?.name) byName.set(x.name, x);
+  }
+  imperialCrownModelIndex = { byId, byName, models: c.models || [] };
+  return imperialCrownModelIndex;
+}
+
 function formatModelForClient(slug, m) {
   if (!m) return null;
   let img = normalizeUrl(slug, m.img);
   let tgs = normalizeTgsToJson(slug, m.tgs || m.img);
 
   if (slug === 'imperialcrown') {
-    const c = loadCollection('imperialcrown');
-    if (c) {
-      const allModels = [...(c.models || []), ...(c.craftModels || [])];
-      let match = allModels.find(x => x.id === m.id || x.name === m.name);
-      if (!match && c.models && c.models.length > 0) {
+    const idx = getImperialCrownModelIndex();
+    if (idx) {
+      let match = (m.id && idx.byId.get(m.id)) || (m.name && idx.byName.get(m.name));
+      if (!match && idx.models.length > 0) {
         const hash = String(m.name || m.id || '').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-        match = c.models[hash % c.models.length];
+        match = idx.models[hash % idx.models.length];
       }
       if (match) {
         img = normalizeUrl(slug, match.img);
@@ -394,6 +461,7 @@ function isRequestAdmin(req) {
 
 // ---- PaxtaGram Bot API Helpers ----
 async function paxtaBotCall(method, body = {}) {
+  const timeoutMs = method === 'getUpdates' ? 12000 : 8000;
   try {
     const res = await fetch(`${PAXTA_API_BASE}/bot${PAXTA_BOT_TOKEN}/${method}`, {
       method: 'POST',
@@ -402,7 +470,8 @@ async function paxtaBotCall(method, body = {}) {
         'Accept': 'application/json',
         'User-Agent': BROWSER_UA
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(timeoutMs)
     });
     return await res.json();
   } catch (err) {
@@ -411,6 +480,7 @@ async function paxtaBotCall(method, body = {}) {
 }
 
 async function holdBotCall(method, body = {}) {
+  const timeoutMs = method === 'getUpdates' ? 12000 : 8000;
   try {
     const res = await fetch(`${PAXTA_API_BASE}/bot${HOLD_BOT_TOKEN}/${method}`, {
       method: 'POST',
@@ -419,7 +489,8 @@ async function holdBotCall(method, body = {}) {
         'Accept': 'application/json',
         'User-Agent': BROWSER_UA
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(timeoutMs)
     });
     return await res.json();
   } catch (err) {
@@ -437,6 +508,7 @@ class MoonPaxtaClient {
     this.isLoggedIn = false;
     this.user = null;
     this.lastLoginAt = 0;
+    this._loginPromise = null;
   }
 
   updateCookies(headers) {
@@ -501,31 +573,37 @@ class MoonPaxtaClient {
     if (this.isLoggedIn && Date.now() - this.lastLoginAt < 25 * 60 * 1000) {
       return true;
     }
-    try {
-      const csrfRes = await fetch(`${PAXTA_API_BASE}/sanctum/csrf-cookie`, {
-        headers: { 'User-Agent': BROWSER_UA, Referer: `${PAXTA_API_BASE}/` },
-        signal: AbortSignal.timeout(6000)
-      });
-      this.updateCookies(csrfRes.headers);
-
-      for (const uname of this.loginAliases) {
-        const loginRes = await this.request('/auth/login', {
-          method: 'POST',
-          body: { username: uname, password: this.password }
+    if (this._loginPromise) return this._loginPromise;
+    this._loginPromise = (async () => {
+      try {
+        const csrfRes = await fetch(`${PAXTA_API_BASE}/sanctum/csrf-cookie`, {
+          headers: { 'User-Agent': BROWSER_UA, Referer: `${PAXTA_API_BASE}/` },
+          signal: AbortSignal.timeout(6000)
         });
-        if (loginRes.ok) {
-          const data = await loginRes.json();
-          this.user = data.user;
-          this.isLoggedIn = true;
-          this.lastLoginAt = Date.now();
-          console.log(`[PaxtaClient] Logged in as @${this.user?.username} (ID: ${this.user?.id})`);
-          return true;
+        this.updateCookies(csrfRes.headers);
+
+        for (const uname of this.loginAliases) {
+          const loginRes = await this.request('/auth/login', {
+            method: 'POST',
+            body: { username: uname, password: this.password }
+          });
+          if (loginRes.ok) {
+            const data = await loginRes.json();
+            this.user = data.user;
+            this.isLoggedIn = true;
+            this.lastLoginAt = Date.now();
+            console.log(`[PaxtaClient] Logged in as @${this.user?.username} (ID: ${this.user?.id})`);
+            return true;
+          }
         }
+      } catch (err) {
+        console.error(`[PaxtaClient Login Error @${this.username}]`, err.message);
+      } finally {
+        this._loginPromise = null;
       }
-    } catch (err) {
-      console.error(`[PaxtaClient Login Error @${this.username}]`, err.message);
-    }
-    return false;
+      return false;
+    })();
+    return this._loginPromise;
   }
 
   async resolveUserByUsername(rawUsername) {
@@ -533,7 +611,12 @@ class MoonPaxtaClient {
     if (!clean) return null;
     await this.ensureLoggedIn();
     try {
-      const res = await this.request(`/users/${encodeURIComponent(clean)}`);
+      let res = await this.request(`/users/${encodeURIComponent(clean)}`);
+      if (res.status === 401) {
+        this.isLoggedIn = false;
+        await this.ensureLoggedIn();
+        res = await this.request(`/users/${encodeURIComponent(clean)}`);
+      }
       if (!res.ok) return null;
       const data = await res.json();
       return data.user || null;
@@ -661,7 +744,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-// Fast built-in Gzip compression for JSON responses > 1 KB (cuts 500 KB responses to ~15 KB!)
+// Fast built-in async Gzip compression for JSON responses > 1 KB (cuts 500 KB responses to ~15 KB without blocking event loop)
 app.use((req, res, next) => {
   const origJson = res.json.bind(res);
   res.json = (body) => {
@@ -669,10 +752,15 @@ app.use((req, res, next) => {
     if (accept.includes('gzip')) {
       const str = JSON.stringify(body);
       if (str.length > 1024) {
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Content-Encoding', 'gzip');
-        res.setHeader('Vary', 'Accept-Encoding');
-        return res.send(zlib.gzipSync(Buffer.from(str, 'utf8'), { level: zlib.constants.Z_BEST_SPEED }));
+        zlib.gzip(Buffer.from(str, 'utf8'), { level: zlib.constants.Z_BEST_SPEED }, (err, compressed) => {
+          if (res.headersSent) return;
+          if (err) return origJson(body);
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.setHeader('Content-Encoding', 'gzip');
+          res.setHeader('Vary', 'Accept-Encoding');
+          res.send(compressed);
+        });
+        return res;
       }
     }
     return origJson(body);
@@ -720,19 +808,20 @@ async function serveGiftAsset(req, res) {
   const remoteFile = wantJson ? file.replace(/\.json$/, '.tgs') : file;
   const local = path.join(cacheDir, cacheKey);
 
-  if (fs.existsSync(local)) {
-    const buf = fs.readFileSync(local);
+  try {
+    const buf = await fs.promises.readFile(local);
     if (assetMemCache.size < 600) assetMemCache.set(cacheKey, buf);
     return res.type(type).send(buf);
-  }
+  } catch {}
 
   try {
     const r = await fetch(`https://fragment.com/file/gifts/${slug}/${remoteFile}`, {
-      headers: { 'User-Agent': BROWSER_UA }
+      headers: { 'User-Agent': BROWSER_UA },
+      signal: AbortSignal.timeout(8000)
     });
     if (!r.ok) return res.sendStatus(404);
     let buf = Buffer.from(await r.arrayBuffer());
-    if (wantJson) buf = zlib.gunzipSync(buf);
+    if (wantJson) buf = await gunzipAsync(buf);
     fs.promises.writeFile(local, buf).catch(() => {});
     if (assetMemCache.size < 600) assetMemCache.set(cacheKey, buf);
     res.type(type).send(buf);
@@ -758,11 +847,17 @@ function computeCalendarPrice(cal) {
   return 950;
 }
 
+let cachedCalVersion = -1;
+let cachedEnrichedCalendars = null;
+
 function getEnrichedChannelCalendars() {
+  if (cachedCalVersion === invStatsVersion && cachedEnrichedCalendars) {
+    return cachedEnrichedCalendars;
+  }
   const raw = loadJSON(channelCalendarsFile, []);
   const settings = loadSettings();
   const soldMap = settings.soldCalendars || {};
-  return raw.map(cal => {
+  cachedEnrichedCalendars = raw.map(cal => {
     const soldInfo = soldMap[cal.id] || null;
     const priceStars = computeCalendarPrice(cal);
     const maxTradeInDiscount = 300;
@@ -786,6 +881,8 @@ function getEnrichedChannelCalendars() {
       deliveryStatus: soldInfo?.deliveryStatus || null
     };
   });
+  cachedCalVersion = invStatsVersion;
+  return cachedEnrichedCalendars;
 }
 
 // ---- Real Channel Desk Calendar NFTs Vitrinasi (GET /api/channel-calendars) ----
@@ -1689,8 +1786,15 @@ app.get('/api/users/:username/profile', (req, res) => {
 });
 
 // ---- O(N) Single-Pass Users / Collectors Leaderboard & Search ----
+let cachedUsersLbKey = '';
+let cachedUsersLb = null;
+
 app.get('/api/users', (req, res) => {
   const q = String(req.query.q || '').trim().toLowerCase().replace(/^@/, '');
+  const cacheKey = `${invStatsVersion}:${usersVersion}`;
+  if (!q && cachedUsersLbKey === cacheKey && cachedUsersLb) {
+    return res.json(cachedUsersLb);
+  }
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
 
@@ -1780,7 +1884,12 @@ app.get('/api/users', (req, res) => {
     return b.stats.totalGifts - a.stats.totalGifts;
   });
 
-  res.json({ ok: true, users: list.slice(0, 60) });
+  const payload = { ok: true, users: list.slice(0, 60) };
+  if (!q) {
+    cachedUsersLbKey = `${invStatsVersion}:${usersVersion}`;
+    cachedUsersLb = payload;
+  }
+  res.json(payload);
 });
 
 // ---- Real PaxtaGram Stars Invoice Endpoints via @UpgradeBot ----
@@ -1966,7 +2075,8 @@ app.post('/api/gifts/buy', (req, res) => {
 // ---- Batch Burn Gifts (Tanlab turib 1 tadan 10 tagacha yoqish) ----
 app.post('/api/gifts/burn', (req, res) => {
   const key = cleanKey(req.body.username);
-  const giftIds = Array.isArray(req.body.giftIds) ? req.body.giftIds : (req.body.giftId ? [req.body.giftId] : []);
+  const rawGiftIds = Array.isArray(req.body.giftIds) ? req.body.giftIds : (req.body.giftId ? [req.body.giftId] : []);
+  const giftIds = Array.from(new Set(rawGiftIds.filter(Boolean)));
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
 
@@ -2157,7 +2267,7 @@ app.post('/api/gifts/upgrade', (req, res) => {
   const key = cleanKey(req.body.username);
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
-  const gift = inv.find(i => i.id === req.body.giftId && i.owner === key && i.state !== 'burned');
+  const gift = inv.find(i => i.id === req.body.giftId && i.owner === key && i.state !== 'burned' && i.state !== 'converted');
   if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval kiring' });
   if (!gift) return res.status(404).json({ ok: false, error: 'Sovg\'a topilmadi' });
   if (gift.isRealPaxtaNft) {
@@ -2282,17 +2392,18 @@ app.get('/api/gifts/:id/craft', (req, res) => {
 app.post('/api/gifts/craft', (req, res) => {
   const key = cleanKey(req.body.username);
   const giftId = req.body.giftId;
-  const withIds = Array.isArray(req.body.with) ? req.body.with.slice(0, 3) : [];
+  const rawWithIds = Array.isArray(req.body.with) ? req.body.with : [];
+  const withIds = Array.from(new Set(rawWithIds.filter(id => id && id !== giftId))).slice(0, 3);
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
 
   if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
-  const mainGift = inv.find(i => i.id === giftId && i.owner === key && i.state === 'upgraded' && !i.salePrice);
+  const mainGift = inv.find(i => i.id === giftId && i.owner === key && i.state === 'upgraded' && !i.salePrice && !i.isRealPaxtaNft);
   if (!mainGift) return res.status(404).json({ ok: false, error: 'Asosiy sovg\'a topilmadi yoki sotuvda turibdi' });
 
   const extraGifts = [];
   for (const wid of withIds) {
-    const eg = inv.find(i => i.id === wid && i.owner === key && i.slug === mainGift.slug && i.state === 'upgraded' && i.id !== mainGift.id && !i.salePrice);
+    const eg = inv.find(i => i.id === wid && i.owner === key && i.slug === mainGift.slug && i.state === 'upgraded' && i.id !== mainGift.id && !i.salePrice && !i.isRealPaxtaNft);
     if (!eg) return res.status(400).json({ ok: false, error: 'Tanlangan sovg\'alardan biri yaroqsiz' });
     extraGifts.push(eg);
   }
@@ -2402,7 +2513,7 @@ app.post('/api/gifts/action', (req, res) => {
   const { giftId, action } = req.body;
   const users = loadJSON(usersFile, {});
   const inv = loadJSON(inventoryFile, []);
-  const gift = inv.find(i => i.id === giftId && i.owner === key && i.state !== 'burned');
+  const gift = inv.find(i => i.id === giftId && i.owner === key && i.state !== 'burned' && i.state !== 'converted');
   if (!gift) return res.status(404).json({ ok: false, error: 'Sovg\'a topilmadi' });
 
   if (action === 'wear') {
@@ -2488,6 +2599,7 @@ app.post('/api/gifts/action', (req, res) => {
 
     return res.json({ ok: true, gift: enriched, newBalance: users[key]?.stars });
   } else if (action === 'convert') {
+    if (!users[key]) return res.status(401).json({ ok: false, error: 'Avval tizimga kiring' });
     if (gift.state !== 'regular') return res.status(400).json({ ok: false, error: 'Faqat oddiy sovg\'ani yulduzlarga almashtirish mumkin' });
     const refund = Math.max(10, Math.round((gift.paid || 250) * 0.85));
     gift.state = 'converted';
@@ -2526,8 +2638,15 @@ app.get('/api/gifts/:id', (req, res) => {
   res.json({ ok: true, gift: enrichGift(gift, inv, users) });
 });
 
-// ---- Activity Feed & Platform Stats (O(N) Fast Single-Pass) ----
+// ---- Activity Feed & Platform Stats (O(N) Fast Single-Pass + Version Memoized) ----
+let cachedFeedKey = '';
+let cachedFeedPayload = null;
+
 app.get('/api/feed', (req, res) => {
+  const cacheKey = `${invStatsVersion}:${usersVersion}:${activityVersion}`;
+  if (cachedFeedKey === cacheKey && cachedFeedPayload) {
+    return res.json(cachedFeedPayload);
+  }
   const inv = loadJSON(inventoryFile, []);
   const users = loadJSON(usersFile, {});
   const activity = loadJSON(activityFile, []);
@@ -2559,7 +2678,7 @@ app.get('/api/feed', (req, res) => {
 
   const recent = upRaw.slice(-20).reverse().map(g => enrichGift(g, inv, users));
 
-  res.json({
+  const payload = {
     ok: true,
     totalUsers: Object.keys(users).length,
     totalGifts,
@@ -2570,7 +2689,10 @@ app.get('/api/feed', (req, res) => {
     starsSpent,
     activity: activity.slice().reverse().slice(0, 50),
     recent
-  });
+  };
+  cachedFeedKey = cacheKey;
+  cachedFeedPayload = payload;
+  res.json(payload);
 });
 
 // ---- Background Poller for @UpgradeBot ----
@@ -2643,95 +2765,99 @@ async function startPaxtaBotLoop() {
   }).catch(() => {});
 
   while (true) {
+    let hadUpdates = false;
     try {
       const u = await paxtaBotCall('getUpdates', { offset, timeout: 2 });
       if (u && u.ok && Array.isArray(u.result) && u.result.length > 0) {
-        for (const item of u.result) {
-          offset = item.update_id + 1;
+        hadUpdates = true;
+        try {
+          for (const item of u.result) {
+            offset = item.update_id + 1;
 
-          // 1. Auto-link PaxtaGram User ID + Username on any interaction
-          const fromUser = item.pre_checkout_query?.from || item.message?.from;
-          if (fromUser && fromUser.id) {
-            const users = loadJSON(usersFile, {});
-            const uKey = cleanKey(fromUser.username || fromUser.first_name || `user_${fromUser.id}`);
-            if (!users[uKey]) {
-              users[uKey] = {
-                username: uKey,
-                displayName: fromUser.first_name || fromUser.username || uKey,
-                paxtaId: fromUser.id,
-                stars: 0,
-                createdAt: new Date().toISOString()
-              };
-              saveJSON(usersFile, users);
-            } else if (users[uKey].paxtaId !== fromUser.id) {
-              users[uKey].paxtaId = fromUser.id;
-              if (fromUser.first_name) users[uKey].displayName = fromUser.first_name;
-              saveJSON(usersFile, users);
+            // 1. Auto-link PaxtaGram User ID + Username on any interaction
+            const fromUser = item.pre_checkout_query?.from || item.message?.from;
+            if (fromUser && fromUser.id) {
+              const users = loadJSON(usersFile, {});
+              const uKey = cleanKey(fromUser.username || fromUser.first_name || `user_${fromUser.id}`);
+              if (!users[uKey]) {
+                users[uKey] = {
+                  username: uKey,
+                  displayName: fromUser.first_name || fromUser.username || uKey,
+                  paxtaId: fromUser.id,
+                  stars: 0,
+                  createdAt: new Date().toISOString()
+                };
+                saveJSON(usersFile, users);
+              } else if (users[uKey].paxtaId !== fromUser.id) {
+                users[uKey].paxtaId = fromUser.id;
+                if (fromUser.first_name) users[uKey].displayName = fromUser.first_name;
+                saveJSON(usersFile, users);
+              }
             }
-          }
 
-          // 2. Immediately approve PreCheckoutQuery
-          if (item.pre_checkout_query) {
-            const pcq = item.pre_checkout_query;
-            await paxtaBotCall('answerPreCheckoutQuery', {
-              pre_checkout_query_id: pcq.id,
-              ok: true
-            });
-          }
+            // 2. Immediately approve PreCheckoutQuery
+            if (item.pre_checkout_query) {
+              const pcq = item.pre_checkout_query;
+              await paxtaBotCall('answerPreCheckoutQuery', {
+                pre_checkout_query_id: pcq.id,
+                ok: true
+              });
+            }
 
-          // 3. Credit user balance on successful_payment
-          if (item.message?.successful_payment) {
-            const sp = item.message.successful_payment;
-            const res = creditStarsPayment({
-              payload: sp.invoice_payload,
-              amount: sp.total_amount,
-              chargeId: sp.telegram_payment_charge_id,
-              fromUser: item.message.from
-            });
-            if (res && item.message.chat?.id) {
-              const token = createSessionToken(res.targetKey, item.message.from?.id);
+            // 3. Credit user balance on successful_payment
+            if (item.message?.successful_payment) {
+              const sp = item.message.successful_payment;
+              const res = creditStarsPayment({
+                payload: sp.invoice_payload,
+                amount: sp.total_amount,
+                chargeId: sp.telegram_payment_charge_id,
+                fromUser: item.message.from
+              });
+              if (res && item.message.chat?.id) {
+                const token = createSessionToken(res.targetKey, item.message.from?.id);
+                await paxtaBotCall('sendMessage', {
+                  chat_id: item.message.chat.id,
+                  text: `✅ *Toʻlov muvaffaqiyatli qabul qilindi!*\n\nHisobingizga *+⭐ ${res.amount}* qoʻshildi.\nJoriy balans: *⭐ ${res.newBalance}*`,
+                  parse_mode: 'Markdown',
+                  reply_markup: {
+                    inline_keyboard: [
+                      [{ text: '🎁 Doʻkon va Upgrade\'ga qaytish', web_app: { url: `${PUBLIC_APP_URL}/?auth=${encodeURIComponent(token)}` } }]
+                    ]
+                  }
+                });
+              }
+            }
+
+            // 4. Respond to /start, /gifts, /shop, /admin in @UpgradeBot
+            const txt = (item.message?.text || '').trim();
+            if (txt.startsWith('/start') || txt.startsWith('/gifts') || txt.startsWith('/shop') || txt.startsWith('/admin')) {
+              const chatId = item.message.chat.id;
+              const sender = item.message.from || {};
+              const uKey = cleanKey(sender.username || sender.first_name || `user_${sender.id}`);
+              const token = createSessionToken(uKey, sender.id);
+              const appUrlWithAuth = `${PUBLIC_APP_URL}/?auth=${encodeURIComponent(token)}`;
+              const isOwnerAdmin = Number(sender.id) === ADMIN_PAXTA_ID;
+
               await paxtaBotCall('sendMessage', {
-                chat_id: item.message.chat.id,
-                text: `✅ *Toʻlov muvaffaqiyatli qabul qilindi!*\n\nHisobingizga *+⭐ ${res.amount}* qoʻshildi.\nJoriy balans: *⭐ ${res.newBalance}*`,
+                chat_id: chatId,
+                text: `🎁 *PaxtaGram Gifts — Doʻkon, Market, Upgrade & Craft*\n\nRasmiy kolleksion sovgʻalar platformasiga xush kelibsiz!\n\n• 🪙 *Doʻkon:* Coin Flip (500 ta tiraj) va boshqa sovgʻalar\n• ✨ *Upgrade:* Noyob Model, Fon va Naqsh olish\n• 🔨 *Craft:* 1–4 ta sovgʻani birlashtirib maxfiy modellarni ochish\n• 🏪 *Market:* Yaxshilangan sovgʻalarni qayta sotish va xarid qilish\n• 👤 *Profillar:* Sovgʻalarni taqish (👑), profilga qadash (📌) va boshqalar profilini koʻrish!${isOwnerAdmin ? '\n\n👑 *Sizda Admin Panel (ID: 100) huquqi mavjud.*' : ''}`,
                 parse_mode: 'Markdown',
                 reply_markup: {
                   inline_keyboard: [
-                    [{ text: '🎁 Doʻkon va Upgrade\'ga qaytish', web_app: { url: `${PUBLIC_APP_URL}/?auth=${encodeURIComponent(token)}` } }]
+                    [{ text: '🎁 Gifts, Market & Profilni ochish', web_app: { url: appUrlWithAuth } }]
                   ]
                 }
               });
             }
           }
-
-          // 4. Respond to /start, /gifts, /shop, /admin in @UpgradeBot
-          const txt = (item.message?.text || '').trim();
-          if (txt.startsWith('/start') || txt.startsWith('/gifts') || txt.startsWith('/shop') || txt.startsWith('/admin')) {
-            const chatId = item.message.chat.id;
-            const sender = item.message.from || {};
-            const uKey = cleanKey(sender.username || sender.first_name || `user_${sender.id}`);
-            const token = createSessionToken(uKey, sender.id);
-            const appUrlWithAuth = `${PUBLIC_APP_URL}/?auth=${encodeURIComponent(token)}`;
-            const isOwnerAdmin = Number(sender.id) === ADMIN_PAXTA_ID;
-
-            await paxtaBotCall('sendMessage', {
-              chat_id: chatId,
-              text: `🎁 *PaxtaGram Gifts — Doʻkon, Market, Upgrade & Craft*\n\nRasmiy kolleksion sovgʻalar platformasiga xush kelibsiz!\n\n• 🪙 *Doʻkon:* Coin Flip (500 ta tiraj) va boshqa sovgʻalar\n• ✨ *Upgrade:* Noyob Model, Fon va Naqsh olish\n• 🔨 *Craft:* 1–4 ta sovgʻani birlashtirib maxfiy modellarni ochish\n• 🏪 *Market:* Yaxshilangan sovgʻalarni qayta sotish va xarid qilish\n• 👤 *Profillar:* Sovgʻalarni taqish (👑), profilga qadash (📌) va boshqalar profilini koʻrish!${isOwnerAdmin ? '\n\n👑 *Sizda Admin Panel (ID: 100) huquqi mavjud.*' : ''}`,
-              parse_mode: 'Markdown',
-              reply_markup: {
-                inline_keyboard: [
-                  [{ text: '🎁 Gifts, Market & Profilni ochish', web_app: { url: appUrlWithAuth } }]
-                ]
-              }
-            });
-          }
+        } finally {
+          const latestPayments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: offset - 1 });
+          latestPayments.lastUpdateId = offset - 1;
+          saveJSON(paymentsFile, latestPayments);
         }
-
-        const latestPayments = loadJSON(paymentsFile, { invoices: {}, charges: {}, lastUpdateId: offset - 1 });
-        latestPayments.lastUpdateId = offset - 1;
-        saveJSON(paymentsFile, latestPayments);
       }
     } catch {}
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, hadUpdates ? 250 : 800));
   }
 }
 
@@ -2760,7 +2886,7 @@ const { startHoldBotLoop } = registerHoldEngine(app, {
 
 const PORT = process.env.PORT || 4000;
 loadCloudStateOnStartup().then(() => {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`\n🚀 Paxta Gifts & $HOLD Coin (@HOLDbot) | http://localhost:${PORT}\n`);
     startPaxtaBotLoop();
     startHoldBotLoop();
@@ -2771,4 +2897,14 @@ loadCloudStateOnStartup().then(() => {
       }, 9 * 60 * 1000);
     }
   });
+
+  const gracefulShutdown = async () => {
+    try {
+      server.close();
+      await Promise.all([flushDiskWrites(), flushTursoSaves()]);
+    } catch {}
+    process.exit(0);
+  };
+  process.on('SIGINT', gracefulShutdown);
+  process.on('SIGTERM', gracefulShutdown);
 });

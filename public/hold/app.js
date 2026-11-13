@@ -7,19 +7,21 @@ function renderFarmSheet() {
   if (!u) return;
   renderFarmExtras();
 
-  const farm = u.farm || {
-    startedAt: Date.now() - 3600_000,
-    durationMs: 8 * 3600 * 1000,
-    ratePerHour: 300,
-    totalFarmReward: 2400,
-    currentFarmed: 300,
-    elapsedMs: 3600_000,
-    remainingMs: 7 * 3600 * 1000,
-    canClaim: false,
-    refEarnings: 0
-  };
-
   const updateFarmUI = () => {
+    const curU = STATE.user;
+    if (!curU) return;
+    const farm = curU.farm || {
+      startedAt: Date.now() - 3600_000,
+      durationMs: 8 * 3600 * 1000,
+      ratePerHour: 300,
+      totalFarmReward: 2400,
+      currentFarmed: 300,
+      elapsedMs: 3600_000,
+      remainingMs: 7 * 3600 * 1000,
+      canClaim: false,
+      refEarnings: 0
+    };
+
     const now = Date.now();
     const duration = farm.durationMs || (8 * 3600 * 1000);
     const elapsed = Math.max(0, now - (farm.startedAt || now));
@@ -44,7 +46,7 @@ function renderFarmSheet() {
     if (canClaim) {
       if (elTimer) elTimer.textContent = '✨ Hosil yigʻishga tayyor!';
       if (elBtn) {
-        elBtn.disabled = false;
+        if (!STATE.farmClaimBusy) elBtn.disabled = false;
         elBtn.classList.add('ready-claim');
       }
       if (elBtnLabel) elBtnLabel.textContent = `🌾 Claim +${maxReward.toLocaleString()} $HOLD`;
@@ -67,7 +69,7 @@ function renderFarmSheet() {
     const elRefAmount = document.getElementById('uiFarmRefAmount');
     const elBtnRef = document.getElementById('btnClaimFarmRef');
     if (elRefAmount) elRefAmount.textContent = `+${refEarnings.toLocaleString()} $HOLD`;
-    if (elBtnRef) elBtnRef.disabled = refEarnings <= 0;
+    if (elBtnRef && !STATE.farmRefClaimBusy) elBtnRef.disabled = refEarnings <= 0;
   };
 
   updateFarmUI();
@@ -76,7 +78,9 @@ function renderFarmSheet() {
 }
 
 async function claimFarmYield() {
+  if (STATE.farmClaimBusy) return;
   const btn = document.getElementById('btnClaimFarm');
+  STATE.farmClaimBusy = true;
   if (btn) btn.disabled = true;
   haptic('medium');
   try {
@@ -85,7 +89,7 @@ async function claimFarmYield() {
       body: JSON.stringify({ username: STATE.username })
     });
     if (res.ok && res.user) {
-      STATE.user = res.user;
+      mergeUserState(res.user);
       haptic('heavy');
       renderAll();
       renderFarmSheet();
@@ -96,11 +100,16 @@ async function claimFarmYield() {
     }
   } catch (err) {
     showToast('Tarmoqda xatolik yuz berdi');
+  } finally {
+    STATE.farmClaimBusy = false;
+    renderFarmSheet();
   }
 }
 
 async function claimFarmRefYield() {
+  if (STATE.farmRefClaimBusy) return;
   const btn = document.getElementById('btnClaimFarmRef');
+  STATE.farmRefClaimBusy = true;
   if (btn) btn.disabled = true;
   haptic('medium');
   try {
@@ -109,7 +118,7 @@ async function claimFarmRefYield() {
       body: JSON.stringify({ username: STATE.username })
     });
     if (res.ok && res.user) {
-      STATE.user = res.user;
+      mergeUserState(res.user);
       haptic('heavy');
       renderAll();
       renderFarmSheet();
@@ -119,6 +128,9 @@ async function claimFarmRefYield() {
     }
   } catch (err) {
     showToast('Tarmoqda xatolik yuz berdi');
+  } finally {
+    STATE.farmRefClaimBusy = false;
+    renderFarmSheet();
   }
 }
 
@@ -393,10 +405,11 @@ function renderWarsSheet() {
 
   const list = document.getElementById('uiWarsList');
   if (list) {
-    if (!w.top.length) {
+    const topList = Array.isArray(w.top) ? w.top : [];
+    if (!topList.length) {
       list.innerHTML = '<div class="not-row-item"><div class="nri-center"><div class="nri-sub">Hali squadlar yoʻq</div></div></div>';
     } else {
-      list.innerHTML = w.top.map((sq, i) => `
+      list.innerHTML = topList.map((sq, i) => `
         <button type="button" class="not-row-item ${sq.id === w.mySquadId ? 'war-row-me' : ''}" data-squad-id="${esc(sq.id)}">
           <span class="war-rank-num">${i + 1}</span>
           <div class="nri-center">
@@ -421,11 +434,17 @@ function renderWarsSheet() {
 }
 
 async function openSquadModal(squadId) {
-  if (!squadId) return;
-  const res = await api('/api/hold/squad-members', {
-    method: 'POST',
-    body: JSON.stringify({ username: STATE.username, squadId })
-  });
+  if (!squadId || STATE.squadModalBusy) return;
+  STATE.squadModalBusy = true;
+  let res;
+  try {
+    res = await api('/api/hold/squad-members', {
+      method: 'POST',
+      body: JSON.stringify({ username: STATE.username, squadId })
+    });
+  } finally {
+    STATE.squadModalBusy = false;
+  }
   if (!res || !res.ok) { showToast(res?.error || 'Squad yuklanmadi'); return; }
   const sq = res.squad;
   const rows = res.members.length ? res.members.map((m, i) => `
@@ -467,28 +486,35 @@ async function openSquadModal(squadId) {
       openInternalPaxtaChannel(sq.handle || sq.link || sq.id);
       closeModal();
     });
-    document.getElementById('btnSquadRename')?.addEventListener('click', async () => {
+    const renameBtn = document.getElementById('btnSquadRename');
+    renameBtn?.addEventListener('click', async () => {
+      if (renameBtn.disabled) return;
       const name = document.getElementById('squadRenameInput')?.value || '';
+      renameBtn.disabled = true;
       const r = await api('/api/hold/squad-rename', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, squadId, name })
       });
+      renameBtn.disabled = false;
       if (r?.ok && r.user) {
-        STATE.user = r.user;
+        mergeUserState(r.user);
         if (Array.isArray(r.user.squads)) STATE.squads = r.user.squads;
+        STATE.lastVaultFetchedAt = 0;
         renderAll(); closeModal(); showToast(r.message);
       } else showToast(r?.error || 'Xatolik');
     });
     const doClaim = async (btnEl) => {
-      if (btnEl) { btnEl.disabled = true; }
+      if (btnEl?.disabled) return;
+      if (btnEl) btnEl.disabled = true;
       const r = await api('/api/hold/squad-claim', {
         method: 'POST',
         body: JSON.stringify({ username: STATE.username, squadId })
       });
-      if (btnEl) { btnEl.disabled = false; }
+      if (btnEl) btnEl.disabled = false;
       if (r?.ok && r.user) {
-        STATE.user = r.user;
+        mergeUserState(r.user);
         if (Array.isArray(r.user.squads)) STATE.squads = r.user.squads;
+        STATE.lastVaultFetchedAt = 0;
         renderAll(); closeModal(); showToast(r.message);
       } else if (r?.needProof && r?.claimCode) {
         const box = document.getElementById('squadClaimProofBox');
@@ -556,7 +582,7 @@ function renderFarmExtras() {
             body: JSON.stringify({ username: STATE.username, type: btn.dataset.farmUpg })
           });
           if (res.ok && res.user) {
-            STATE.user = res.user;
+            mergeUserState(res.user);
             renderAll();
             renderFarmSheet();
             showToast(res.message);
@@ -612,14 +638,19 @@ function updateArenaFarmChip() {
   if (!chip || !txt) return;
   if (ready) {
     chip.classList.add('ready');
-    txt.textContent = 'Farm ready · Claim +' + fmtInt(f.totalFarmReward);
+    const nextTxt = 'Farm ready · Claim +' + fmtInt(f.totalFarmReward);
+    if (txt.textContent !== nextTxt) txt.textContent = nextTxt;
   } else {
     chip.classList.remove('ready');
-    txt.textContent = 'Farming ' + Math.floor((elapsed / dur) * 100) + '% · ' + fmtClock(dur - elapsed);
+    const nextTxt = 'Farming ' + Math.floor((elapsed / dur) * 100) + '% · ' + fmtClock(dur - elapsed);
+    if (txt.textContent !== nextTxt) txt.textContent = nextTxt;
   }
 }
 
-setInterval(() => { tickWars(); updateArenaFarmChip(); }, 1000);
+setInterval(() => {
+  if (STATE.activeSheet === 'wars') tickWars();
+  if (!STATE.activeSheet) updateArenaFarmChip();
+}, 1000);
 
 
 // ==================== GLOBAL NATIVE SELECTION & CONTEXT MENU SUPPRESSION ====================
@@ -695,6 +726,14 @@ const STATE = {
   onboardingStep: 0,
   adminTab: 'overview',
   adminUsersData: null,
+  adminUsersFetchedAt: 0,
+  adminRenderSeq: 0,
+  activeSheet: null,
+  dirtySheets: { boosts: true, earn: true, frens: true, leagues: true, farm: true, wars: true },
+  lastVaultFetchedAt: 0,
+  vaultPromise: null,
+  vaultLoading: false,
+  lastSquadPillSig: '',
   // Pure Invisible Mid-Air Morse State
   morseSignal: '',
   morseDecodedLetters: [],
@@ -705,8 +744,16 @@ const STATE = {
   pointerDownTime: 0,
   pendingTaps: 0,
   tapSyncTimer: null,
+  tapSyncInFlight: false,
   turboActiveUntil: 0,
-  invoicePollTimer: null
+  turboEndTimer: null,
+  invoicePollTimer: null,
+  questCountdownTimer: null,
+  farmClaimBusy: false,
+  farmRefClaimBusy: false,
+  squadModalBusy: false,
+  boostBusy: false,
+  skinBusy: false
 };
 
 // ---- PaxtaGram Mini App PostMessage & InitData Parser (Zero External Tab Redirects) ----
@@ -828,13 +875,43 @@ function openModal(title, html, onMount) {
   if (typeof onMount === 'function') onMount(bEl);
 }
 
-function closeModal() {
+function clearInvoicePoll() {
   if (STATE.invoicePollTimer) {
     clearInterval(STATE.invoicePollTimer);
     STATE.invoicePollTimer = null;
   }
+}
+
+function closeModal() {
+  clearInvoicePoll();
+  if (STATE.questCountdownTimer) {
+    clearInterval(STATE.questCountdownTimer);
+    STATE.questCountdownTimer = null;
+  }
   const bd = document.getElementById('holdModalBackdrop');
   if (bd) bd.hidden = true;
+}
+
+function renderSheetByName(sheetName) {
+  if (!STATE.user) return;
+  if (sheetName === 'wars') {
+    renderWarsSheet();
+  } else if (sheetName === 'farm') {
+    renderFarmSheet();
+  } else if (sheetName === 'boosts') {
+    renderBoostsAndSkinsSheet();
+  } else if (sheetName === 'earn') {
+    renderEarnSheet();
+  } else if (sheetName === 'frens') {
+    renderFrensSheet();
+  } else if (sheetName === 'leagues') {
+    renderLeaguesSheet();
+  } else if (sheetName === 'admin') {
+    renderAdminSheet();
+  }
+  if (sheetName && sheetName in STATE.dirtySheets) {
+    STATE.dirtySheets[sheetName] = false;
+  }
 }
 
 function openSheet(sheetName) {
@@ -847,26 +924,28 @@ function openSheet(sheetName) {
     farm: 'sheetFarm',
     wars: 'sheetWars'
   };
+  if (sheetName !== 'farm' && farmTickerInterval) {
+    clearInterval(farmTickerInterval);
+    farmTickerInterval = null;
+  }
+  if (sheetName !== 'earn') clearInvoicePoll();
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
   const targetId = map[sheetName];
   if (targetId) {
+    STATE.activeSheet = sheetName;
     const el = document.getElementById(targetId);
     if (el) {
       el.hidden = false;
       document.body.classList.add('sheet-open');
     }
-    if (sheetName === 'wars') {
-      renderWarsSheet();
-    } else if (sheetName === 'farm') {
-      renderFarmSheet();
-    } else if (sheetName === 'leagues') {
+    if (sheetName === 'leagues') {
       const leagues = STATE.user?.allLeagues || [];
       const curIdx = leagues.findIndex(l => l.id === STATE.user?.league?.id);
       if (curIdx >= 0) STATE.viewedLeagueIdx = curIdx;
-      renderLeaguesSheet();
-      loadLeaderboardData();
-    } else if (sheetName === 'admin') {
-      renderAdminSheet();
+      renderSheetByName('leagues');
+      loadLeaderboardData(false);
+    } else if (sheetName === 'farm' || sheetName === 'admin' || STATE.dirtySheets[sheetName]) {
+      renderSheetByName(sheetName);
     }
   }
 }
@@ -876,8 +955,11 @@ function closeAllSheets() {
     clearInterval(farmTickerInterval);
     farmTickerInterval = null;
   }
+  clearInvoicePoll();
+  STATE.activeSheet = null;
   document.querySelectorAll('.apple-sheet').forEach(s => { s.hidden = true; });
   document.body.classList.remove('sheet-open');
+  updateArenaFarmChip();
 }
 
 // ---- API Helper ----
@@ -898,8 +980,46 @@ async function api(url, opts = {}) {
   const initData = getWebAppInitData();
   if (initData) headers['X-Init-Data'] = initData;
 
-  const res = await fetch(url, { ...opts, headers });
-  return await res.json();
+  try {
+    const res = await fetch(url, { ...opts, headers });
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      return await res.json();
+    }
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { ok: false, status: res.status, error: res.ok ? 'Notoʻgʻri server javobi' : `Server xatosi (${res.status})` };
+    }
+  } catch (err) {
+    return { ok: false, networkError: true, error: 'Tarmoqda xatolik yuz berdi' };
+  }
+}
+
+function mergeUserState(nextUser) {
+  if (!nextUser || typeof nextUser !== 'object') return STATE.user;
+  const prevFrac = STATE.user?._clientFrac || 0;
+  STATE.user = STATE.user ? { ...STATE.user, ...nextUser } : { ...nextUser };
+  if (nextUser._clientFrac === undefined) {
+    STATE.user._clientFrac = prevFrac;
+  }
+  const serverTurbo = Number(STATE.user.turboActiveUntil || 0);
+  if (serverTurbo > Date.now() && serverTurbo > STATE.turboActiveUntil) {
+    STATE.turboActiveUntil = serverTurbo;
+    scheduleTurboEnd(serverTurbo - Date.now());
+  }
+  return STATE.user;
+}
+
+function scheduleTurboEnd(ms) {
+  if (STATE.turboEndTimer) clearTimeout(STATE.turboEndTimer);
+  if (ms > 0) {
+    STATE.turboEndTimer = setTimeout(() => {
+      STATE.turboEndTimer = null;
+      renderArena();
+    }, ms + 50);
+  }
 }
 
 // ---- Apply Skin Theme & Coin Images Globally ----
@@ -928,7 +1048,7 @@ function applyActiveSkinTheme() {
     root.style.setProperty('--theme-bg-bottom', t.bgBottom);
   }
 
-  const coinIds = ['uiMainCoinImg', 'uiBalanceCoinIcon', 'uiDockCoinImg', 'uiBoostBalanceCoin', 'uiFarmHeroCoin'];
+  const coinIds = ['uiMainCoinImg', 'uiBalanceCoinIcon', 'uiDockCoinImg', 'uiBoostBalanceCoin', 'uiFarmHeroCoin', 'uiLeaguesPillCoin'];
   for (const id of coinIds) {
     const el = document.getElementById(id);
     if (el && el.getAttribute('src') !== activeSkin.img) {
@@ -984,8 +1104,9 @@ async function syncHoldUser() {
   if (loginOverlay) loginOverlay.hidden = true;
 
   if (data.ok && data.user) {
-    STATE.user = data.user;
-    STATE.username = data.user.username;
+    STATE.user = null;
+    mergeUserState(data.user);
+    STATE.username = STATE.user.username;
     localStorage.setItem('hold_username', STATE.username);
     if (data.authToken) {
       STATE.authToken = data.authToken;
@@ -993,13 +1114,15 @@ async function syncHoldUser() {
     }
     renderAll();
 
-    if (data.user.passiveEarnedJustNow > 100 && data.user.ogBonusClaimed) {
-      showToast(`🤖 Auto-Bot: +${fmtInt(data.user.passiveEarnedJustNow)} HOLD`);
+    if (STATE.user.passiveEarnedJustNow > 100 && STATE.user.ogBonusClaimed) {
+      showToast(`🤖 Auto-Bot: +${fmtInt(STATE.user.passiveEarnedJustNow)} HOLD`);
     }
 
-    if (!data.user.ogBonusClaimed) {
+    if (!STATE.user.ogBonusClaimed) {
       openOnboardingStory(0);
     }
+  } else if (data.error) {
+    showToast(data.error);
   }
 }
 
@@ -1007,6 +1130,7 @@ async function handlePaxtaLoginSubmit() {
   const inp = document.getElementById('inpPaxtaLoginUsername');
   const errEl = document.getElementById('paxtaLoginError');
   const btn = document.getElementById('btnPaxtaLoginSubmit');
+  if (btn?.disabled) return;
   const raw = (inp?.value || '').trim().replace(/^@/, '');
   if (!raw) {
     if (errEl) {
@@ -1039,8 +1163,9 @@ async function handlePaxtaLoginSubmit() {
   }
 
   if (res.ok && res.user) {
-    STATE.user = res.user;
-    STATE.username = res.user.username;
+    STATE.user = null;
+    mergeUserState(res.user);
+    STATE.username = STATE.user.username;
     localStorage.setItem('hold_username', STATE.username);
     if (res.authToken) {
       STATE.authToken = res.authToken;
@@ -1049,8 +1174,8 @@ async function handlePaxtaLoginSubmit() {
     const loginOverlay = document.getElementById('paxtaLoginOverlay');
     if (loginOverlay) loginOverlay.hidden = true;
     renderAll();
-    loadLeaderboardData();
-    if (!res.user.ogBonusClaimed) {
+    loadLeaderboardData(true);
+    if (!STATE.user.ogBonusClaimed) {
       openOnboardingStory(0);
     }
   } else {
@@ -1090,7 +1215,7 @@ function renderOnboardingSlide() {
   const pid = u.paxtaId || 245;
   const topPct = u.topPct || 5;
   const years = u.yearsEquivalent || 2;
-  const totalReward = pid <= 150 ? 14_500 : pid <= 600 ? 10_000 : 5_500;
+  const totalReward = pid <= 150 ? 14_500 : pid <= 600 ? 10_000 : pid <= 1400 ? 7_500 : 5_500;
 
   if (step === 0) {
     wrap.innerHTML = `
@@ -1139,6 +1264,8 @@ function renderOnboardingSlide() {
 }
 
 async function advanceOnboardingStory() {
+  const btn = document.getElementById('btnOsContinue');
+  if (btn?.disabled) return;
   haptic('medium');
   if (STATE.onboardingStep < 2) {
     STATE.onboardingStep++;
@@ -1148,18 +1275,24 @@ async function advanceOnboardingStory() {
 
   const overlay = document.getElementById('onboardingStoryOverlay');
   if (!STATE.user?.ogBonusClaimed) {
+    if (btn) btn.disabled = true;
     const res = await api('/api/hold/claim-og', {
       method: 'POST',
       body: JSON.stringify({ username: STATE.username })
     });
+    if (btn) btn.disabled = false;
     if (res.ok && res.user) {
-      STATE.user = res.user;
+      mergeUserState(res.user);
       renderAll();
-      loadLeaderboardData();
+      loadLeaderboardData(true);
       showToast(`🎉 +${fmtInt(res.ogDetails?.totalBonus || 5500)} HOLD!`);
+      if (overlay) overlay.hidden = true;
+    } else {
+      showToast(res.error || 'Xatolik yuz berdi');
     }
+  } else if (overlay) {
+    overlay.hidden = true;
   }
-  if (overlay) overlay.hidden = true;
 }
 
 // ============================================================================
@@ -1291,7 +1424,7 @@ async function evaluateInvisibleMorseLetter() {
     }, 1800);
 
     if (res.ok && res.user) {
-      STATE.user = res.user;
+      mergeUserState(res.user);
       renderAll();
       showToast(res.message || `✨ ${currentWord} · +${fmtInt(res.reward)} HOLD!`);
     } else if (res.error) {
@@ -1301,9 +1434,9 @@ async function evaluateInvisibleMorseLetter() {
 }
 
 // ============================================================================
-// RENDER ALL VIEWS
+// RENDER ALL VIEWS (SMART DIRTY-SHEET RENDERING — ZERO HIDDEN DOM REBUILDS)
 // ============================================================================
-function renderAll() {
+function renderArena() {
   const u = STATE.user;
   if (!u) return;
 
@@ -1314,52 +1447,57 @@ function renderAll() {
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
-  // 1. Top Squad Pill
+  // 1. Top Squad Pill (only rebuild innerHTML when squad/score/league/skin actually changes)
   const sqPill = document.getElementById('btnSquadPill');
   if (sqPill) {
     const activeSq = (u.squads || []).find(s => s.id === u.squadId);
-    if (!activeSq) {
-      sqPill.innerHTML = `<div class="nst-join-empty">Join Squad <span>›</span></div>`;
-    } else {
-      sqPill.innerHTML = `
-        <div class="nst-joined-row">
-          <div class="nst-left">
-            <div class="cp-avatar">${esc((activeSq.name || 'S').charAt(0).toUpperCase())}</div>
-            <div class="cp-meta">
-              <div class="cp-name">${esc(activeSq.name)}</div>
-              <div class="cp-sub">
-                <img src="${esc(coinImg)}" alt="" class="cp-mini-coin" />
-                <span>${fmtInt(activeSq.totalHold)}</span>
+    const sig = activeSq
+      ? `${activeSq.id}|${activeSq.name}|${activeSq.totalHold}|${u.league?.id}|${coinImg}`
+      : 'none';
+    if (STATE.lastSquadPillSig !== sig) {
+      STATE.lastSquadPillSig = sig;
+      if (!activeSq) {
+        sqPill.innerHTML = `<div class="nst-join-empty">Join Squad <span>›</span></div>`;
+      } else {
+        sqPill.innerHTML = `
+          <div class="nst-joined-row">
+            <div class="nst-left">
+              <div class="cp-avatar">${esc((activeSq.name || 'S').charAt(0).toUpperCase())}</div>
+              <div class="cp-meta">
+                <div class="cp-name">${esc(activeSq.name)}</div>
+                <div class="cp-sub">
+                  <img src="${esc(coinImg)}" alt="" class="cp-mini-coin" />
+                  <span>${fmtInt(activeSq.totalHold)}</span>
+                </div>
               </div>
             </div>
+            <div class="cp-badge">
+              <img src="${esc(u.league?.trophyImg || '/hold/trophies/bronze.png')}" class="mini-league-cup" alt="" />
+              <span>${esc(u.league?.name || 'Bronze')}</span>
+            </div>
           </div>
-          <div class="cp-badge">
-            <img src="${esc(u.league?.trophyImg || '/hold/trophies/bronze.png')}" class="mini-league-cup" alt="" />
-            <span>${esc(u.league?.name || 'Bronze')}</span>
-          </div>
-        </div>
-      `;
+        `;
+      }
     }
   }
 
   // 2. Balance & Wreath Rank + League Row
   const balEl = document.getElementById('uiHoldBalance');
-  if (balEl) balEl.textContent = fmtInt(u.holdBalance);
+  const balTxt = fmtInt(u.holdBalance);
+  if (balEl && balEl.textContent !== balTxt) balEl.textContent = balTxt;
 
   const tk = u.tokenomics || {};
-  const factor = tk.redenomFactor || 100;
+  const factor = tk.redenomFactor || 1000;
   const tokEl = document.getElementById('uiArenaTokensText');
   if (tokEl) {
     const tVal = (Math.floor(u.holdBalance || 0) / factor);
-    tokEl.textContent = `${tVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $HOLD`;
+    const tokTxt = `${tVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $HOLD`;
+    if (tokEl.textContent !== tokTxt) tokEl.textContent = tokTxt;
   }
   const hTagEl = document.getElementById('uiArenaHalvingTag');
   if (hTagEl) {
-    if (tk.snapshotLocked) {
-      hTagEl.textContent = '🔒 Snapshot';
-    } else if (tk.halving) {
-      hTagEl.textContent = tk.halving.label || '1.0x';
-    }
+    const tagTxt = tk.snapshotLocked ? '🔒 Snapshot' : (tk.halving?.label || '1.0x');
+    if (hTagEl.textContent !== tagTxt) hTagEl.textContent = tagTxt;
   }
 
   // The Final (Footprint disabled for now, saved for the finale)
@@ -1373,30 +1511,33 @@ function renderAll() {
   // Live farm indicator dot on bottom dock
   const dockFarmDot = document.getElementById('uiDockFarmDot');
   if (dockFarmDot && u.farm) {
-    dockFarmDot.hidden = !u.farm.canClaim;
+    const dur = u.farm.durationMs || 8 * 3600_000;
+    const elapsed = Math.max(0, Date.now() - (u.farm.startedAt || Date.now()));
+    dockFarmDot.hidden = elapsed < dur && !u.farm.canClaim;
   }
 
   const rankEl = document.getElementById('uiUserRankText');
-  if (rankEl) rankEl.textContent = fmtOrdinal(u.rank || 1);
+  const rankTxt = fmtOrdinal(u.rank || 1);
+  if (rankEl && rankEl.textContent !== rankTxt) rankEl.textContent = rankTxt;
 
   const miniCup = document.getElementById('uiMiniLeagueCup');
-  if (miniCup && u.league?.trophyImg) miniCup.src = u.league.trophyImg;
+  if (miniCup && u.league?.trophyImg && miniCup.getAttribute('src') !== u.league.trophyImg) {
+    miniCup.src = u.league.trophyImg;
+  }
 
   const lgText = document.getElementById('uiLeagueNameText');
-  if (lgText) lgText.textContent = u.league?.name || 'Bronze';
+  const lgName = u.league?.name || 'Bronze';
+  if (lgText && lgText.textContent !== lgName) lgText.textContent = lgName;
 
-  const starsEl = document.getElementById('uiStars');
-  if (starsEl) starsEl.textContent = fmtInt(u.stars);
-
-  // 2b. Arena Live Pills (Daily Streak & 2x Happy Hour)
+  // 2b. Arena Live Pills (Claimable Daily Streak & 2x Happy Hour)
   const streakPill = document.getElementById('btnArenaStreakPill');
   const streakText = document.getElementById('uiArenaStreakText');
   if (streakPill && streakText && u.streak) {
-    const canClaim = u.streak.canClaimToday;
-    streakPill.classList.toggle('ready', !!canClaim);
-    streakText.textContent = canClaim
-      ? `Day ${u.streak.nextDay} Bonus!`
-      : `Day ${u.streak.currentDay || 1} Streak`;
+    const canClaim = !!u.streak.canClaimToday;
+    streakPill.hidden = !canClaim;
+    if (canClaim) {
+      streakText.textContent = `Day ${u.streak.nextDay || 1} Bonus!`;
+    }
   }
 
   const hhPill = document.getElementById('uiArenaHappyHourPill');
@@ -1408,8 +1549,10 @@ function renderAll() {
   const eNow = document.getElementById('uiEnergyNow');
   const eMax = document.getElementById('uiEnergyMax');
   const eFill = document.getElementById('uiEnergyBarFill');
-  if (eNow) eNow.textContent = fmtInt(u.energy);
-  if (eMax) eMax.textContent = `/ ${fmtInt(u.maxEnergy)}`;
+  const eNowTxt = fmtInt(u.energy);
+  const eMaxTxt = `/ ${fmtInt(u.maxEnergy)}`;
+  if (eNow && eNow.textContent !== eNowTxt) eNow.textContent = eNowTxt;
+  if (eMax && eMax.textContent !== eMaxTxt) eMax.textContent = eMaxTxt;
   if (eFill) {
     const ePct = Math.min(100, Math.round((u.energy / Math.max(1, u.maxEnergy)) * 100));
     eFill.style.width = `${ePct}%`;
@@ -1419,12 +1562,60 @@ function renderAll() {
   const adminBtn = document.getElementById('btnOpenAdminModal');
   if (adminBtn) adminBtn.hidden = !u.isAdmin;
 
-  renderBoostsAndSkinsSheet();
-  renderEarnSheet();
-  renderFrensSheet();
-  renderWarsSheet();
   updateArenaFarmChip();
-  renderLeaguesSheet();
+}
+
+function renderAll() {
+  if (!STATE.user) return;
+  renderArena();
+
+  for (const key of Object.keys(STATE.dirtySheets)) {
+    STATE.dirtySheets[key] = true;
+  }
+  if (STATE.activeSheet && STATE.activeSheet !== 'admin') {
+    renderSheetByName(STATE.activeSheet);
+  }
+}
+
+// ---- Pooled Floating Tap Numbers (Zero GC / DOM Churn) ----
+const TAP_FLOAT_POOL_SIZE = 20;
+const tapFloatPool = [];
+let tapFloatCursor = 0;
+
+function spawnTapFloat(clientX, clientY, tapVal) {
+  const layer = document.getElementById('tapFloatLayer');
+  if (!layer) return;
+
+  if (tapFloatPool.length < TAP_FLOAT_POOL_SIZE) {
+    const el = document.createElement('div');
+    el.className = 'tap-float-num';
+    layer.appendChild(el);
+    tapFloatPool.push(el);
+  }
+
+  const el = tapFloatPool[tapFloatCursor];
+  tapFloatCursor = (tapFloatCursor + 1) % TAP_FLOAT_POOL_SIZE;
+
+  const x = (clientX || window.innerWidth / 2) - 18;
+  const y = (clientY || window.innerHeight / 2) - 28;
+  el.textContent = `+${tapVal}`;
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  el.classList.remove('active');
+  void el.offsetWidth;
+  el.classList.add('active');
+}
+
+function computeTapMetrics(u) {
+  const tk = u.tokenomics || {};
+  const isTurbo = Date.now() < STATE.turboActiveUntil;
+  const hhMult = u.happyHour?.active ? (u.happyHour.multiplier || 2) : 1;
+  const baseTap = Math.max(1, Number(u.baseTapPower) || ((Number(u.tapLevel) || 1) + (Number(u.league?.bonusTap) || 0)));
+  // Backend u.tapPower already includes happyHour.multiplier; avoid double-multiplying!
+  const effectiveTapPower = Number(u.tapPower) || (baseTap * hhMult);
+  const rawTapVal = isTurbo ? effectiveTapPower * 7 : effectiveTapPower;
+  const hm = tk.halving?.multiplier ?? 1;
+  return { isTurbo, baseTap, rawTapVal, hm };
 }
 
 // ---- Tap Handling ----
@@ -1442,81 +1633,134 @@ function handleCoinTap(clientX, clientY) {
     return;
   }
 
-  const isTurbo = Date.now() < STATE.turboActiveUntil;
-  const hhMult = u.happyHour?.active ? 2 : 1;
-  const hm = tk.halving?.multiplier ?? 1;
-  const rawTapVal = (isTurbo ? u.tapPower * 7 : u.tapPower) * hhMult;
-  const tapVal = hm >= 1 ? rawTapVal : Math.max(1, Math.round(rawTapVal * hm));
+  const { isTurbo, baseTap, rawTapVal, hm } = computeTapMetrics(u);
 
-  if (!isTurbo && u.energy < u.tapPower) {
+  if (!isTurbo && u.energy < baseTap) {
     showToast('⚡ Energiya toʻlmoqda...');
     return;
   }
 
+  const scaled = rawTapVal * hm + (Number(u._clientFrac) || 0);
+  const tapVal = Math.floor(scaled);
+  u._clientFrac = Math.max(0, scaled - tapVal);
+
   if (!isTurbo) {
-    u.energy = Math.max(0, u.energy - u.tapPower);
+    u.energy = Math.max(0, u.energy - baseTap);
   }
   u.holdBalance += tapVal;
   u.lifetimeHold += tapVal;
   STATE.pendingTaps++;
 
-  document.getElementById('uiHoldBalance').textContent = fmtInt(u.holdBalance);
+  const balEl = document.getElementById('uiHoldBalance');
+  if (balEl) balEl.textContent = fmtInt(u.holdBalance);
   const tokEl = document.getElementById('uiArenaTokensText');
   if (tokEl) {
-    const f = tk.redenomFactor || 100;
+    const f = tk.redenomFactor || 1000;
     tokEl.textContent = `${(Math.floor(u.holdBalance) / f).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} $HOLD`;
   }
-  document.getElementById('uiEnergyNow').textContent = fmtInt(u.energy);
-  document.getElementById('uiEnergyBarFill').style.width = `${Math.min(100, Math.round((u.energy / Math.max(1, u.maxEnergy)) * 100))}%`;
+  const eNow = document.getElementById('uiEnergyNow');
+  if (eNow) eNow.textContent = fmtInt(u.energy);
+  const eFill = document.getElementById('uiEnergyBarFill');
+  if (eFill) eFill.style.width = `${Math.min(100, Math.round((u.energy / Math.max(1, u.maxEnergy)) * 100))}%`;
 
-  const floatEl = document.createElement('div');
-  floatEl.className = 'tap-float-num';
-  floatEl.textContent = `+${tapVal}`;
-  floatEl.style.left = `${(clientX || window.innerWidth / 2) - 18}px`;
-  floatEl.style.top = `${(clientY || window.innerHeight / 2) - 28}px`;
-  document.body.appendChild(floatEl);
-  setTimeout(() => floatEl.remove(), 760);
+  spawnTapFloat(clientX, clientY, tapVal > 0 ? tapVal : `+${(rawTapVal * hm).toFixed(1)}`);
 
-  if (!STATE.tapSyncTimer) {
+  if (!STATE.tapSyncTimer && !STATE.tapSyncInFlight) {
     STATE.tapSyncTimer = setTimeout(flushPendingTaps, 850);
   }
 }
 
-async function flushPendingTaps() {
-  STATE.tapSyncTimer = null;
+async function flushPendingTaps({ keepalive = false } = {}) {
+  if (STATE.tapSyncTimer) {
+    clearTimeout(STATE.tapSyncTimer);
+    STATE.tapSyncTimer = null;
+  }
+  if (STATE.tapSyncInFlight) return;
   if (STATE.pendingTaps <= 0) return;
+
   const count = STATE.pendingTaps;
   STATE.pendingTaps = 0;
+  STATE.tapSyncInFlight = true;
 
   const isTurbo = Date.now() < STATE.turboActiveUntil;
-  const res = await api('/api/hold/tap', {
-    method: 'POST',
-    body: JSON.stringify({
-      username: STATE.username,
-      taps: count,
-      turbo: isTurbo
-    })
-  });
-  if (res.ok && res.user) {
-    STATE.user = res.user;
-    renderAll();
+  try {
+    const res = await api('/api/hold/tap', {
+      method: 'POST',
+      keepalive,
+      body: JSON.stringify({
+        username: STATE.username,
+        taps: count,
+        turbo: isTurbo
+      })
+    });
+
+    if (res.ok && res.user) {
+      const queuedDuringFlight = STATE.pendingTaps;
+      mergeUserState(res.user);
+
+      // Re-apply optimistic taps made while the request was in-flight so numbers never jump backward
+      if (queuedDuringFlight > 0 && STATE.user) {
+        const { isTurbo: turboNow, baseTap, rawTapVal, hm } = computeTapMetrics(STATE.user);
+        const estGain = Math.floor(queuedDuringFlight * rawTapVal * hm);
+        STATE.user.holdBalance = (STATE.user.holdBalance || 0) + estGain;
+        STATE.user.lifetimeHold = (STATE.user.lifetimeHold || 0) + estGain;
+        if (!turboNow) {
+          STATE.user.energy = Math.max(0, (STATE.user.energy || 0) - queuedDuringFlight * baseTap);
+        }
+      }
+
+      renderArena();
+      for (const key of Object.keys(STATE.dirtySheets)) {
+        STATE.dirtySheets[key] = true;
+      }
+      if (STATE.activeSheet && STATE.activeSheet !== 'admin' && STATE.activeSheet !== 'farm') {
+        renderSheetByName(STATE.activeSheet);
+      }
+    } else if (res.networkError) {
+      STATE.pendingTaps += count;
+    }
+  } finally {
+    STATE.tapSyncInFlight = false;
+    if (STATE.pendingTaps > 0 && !STATE.tapSyncTimer && !keepalive) {
+      STATE.tapSyncTimer = setTimeout(flushPendingTaps, 450);
+    }
   }
 }
 
 // ============================================================================
 // SHEET 1: LEAGUES SHOWCASE & 5 3D TROPHY CUPS (PER-LEAGUE FILTERED!)
 // ============================================================================
-async function loadLeaderboardData() {
-  const res = await api('/api/hold/vault');
-  if (res.ok) {
-    STATE.totalPlayers = res.totalPlayers || (res.leaderboard || []).length;
-    STATE.top10Prizes = res.top10Prizes || [];
-    STATE.nftPoolSummary = res.nftPoolSummary || null;
-    STATE.squads = res.squads || [];
-    STATE.leaderboard = res.leaderboard || [];
-    STATE.leaderboardDay = res.leaderboardDay || res.leaderboard || [];
-    renderLeaguesSheet();
+async function loadLeaderboardData(force = false) {
+  const now = Date.now();
+  if (!force && STATE.lastVaultFetchedAt && (now - STATE.lastVaultFetchedAt) < 15_000 && STATE.leaderboard.length) {
+    return;
   }
+  if (STATE.vaultPromise) return STATE.vaultPromise;
+
+  STATE.vaultLoading = true;
+  STATE.vaultPromise = (async () => {
+    try {
+      const res = await api('/api/hold/vault');
+      if (res && res.ok) {
+        STATE.totalPlayers = res.totalPlayers || (res.leaderboard || []).length;
+        STATE.top10Prizes = res.top10Prizes || [];
+        STATE.nftPoolSummary = res.nftPoolSummary || null;
+        STATE.squads = res.squads || [];
+        STATE.leaderboard = res.leaderboard || [];
+        STATE.leaderboardDay = res.leaderboardDay || res.leaderboard || [];
+        STATE.lastVaultFetchedAt = Date.now();
+        if (STATE.activeSheet === 'leagues') {
+          renderLeaguesSheet();
+        } else {
+          STATE.dirtySheets.leagues = true;
+        }
+      }
+    } finally {
+      STATE.vaultLoading = false;
+      STATE.vaultPromise = null;
+    }
+  })();
+  return STATE.vaultPromise;
 }
 
 function renderLeaguesSheet() {
@@ -1576,6 +1820,11 @@ function renderLeaguesSheet() {
   const listWrap = document.getElementById('leagueBoardList');
   if (!listWrap) return;
   listWrap.innerHTML = '';
+
+  const timeTabsEl = document.getElementById('leagueTimeTabs');
+  if (timeTabsEl) {
+    timeTabsEl.hidden = STATE.leagueMainTab === 'prizes';
+  }
 
   const coinImg = (u.allSkins || []).find(s => s.id === u.skin)?.img || '/hold/skins/skin-4.png';
 
@@ -1656,6 +1905,10 @@ function renderLeaguesSheet() {
   }
 
   if (STATE.leagueMainTab === 'prizes') {
+    if (STATE.vaultLoading && !STATE.top10Prizes.length) {
+      listWrap.innerHTML = `<div style="padding:26px 14px;text-align:center;color:var(--text-2);font-size:13.5px;">Yuklanmoqda...</div>`;
+      return;
+    }
     for (const p of STATE.top10Prizes) {
       const holder = STATE.leaderboard.find(x => x.rank === p.rank);
       const nft = p.nft;
@@ -1693,7 +1946,9 @@ function renderLeaguesSheet() {
   const leaguePlayers = sourceList.filter(p => (p.league?.id || 'bronze') === lg.id);
 
   if (!leaguePlayers.length) {
-    listWrap.innerHTML = `
+    listWrap.innerHTML = (STATE.vaultLoading && !sourceList.length)
+      ? `<div style="padding:26px 14px;text-align:center;color:var(--text-2);font-size:13.5px;">Yuklanmoqda...</div>`
+      : `
       <div style="padding:26px 14px;text-align:center;color:var(--text-2);font-size:13.5px;">
         Hozircha <b>${esc(lg.name)}</b> ligasida ishtirokchilar yoʻq.<br/>
         <span style="font-size:12px;opacity:0.75;">Kerakli chegara: ${fmtInt(lg.minHold)} HOLD</span>
@@ -1748,7 +2003,7 @@ function renderBoostsAndSkinsSheet() {
 
   const upgList = document.getElementById('boostUpgradesList');
   if (upgList) {
-    const rMaxed = (u.rechargingSpeedLevel || 1) >= (u.rechargingSpeedMax || 5);
+    const rMaxed = (u.rechargingSpeedLevel || 1) >= (u.rechargingSpeedMax || 10);
     upgList.innerHTML = `
       <button type="button" class="not-row-item" data-boost-upg="energy_limit">
         <div class="nri-icon-box">🔋</div>
@@ -1833,18 +2088,26 @@ function renderBoostsAndSkinsSheet() {
     skinsWrap.querySelectorAll('[data-skin-id]').forEach(row => {
       row.addEventListener('click', async () => {
         const skinId = row.dataset.skinId;
-        if (u.skin === skinId) return;
-        const res = await api('/api/hold/skin', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, skinId })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          haptic('heavy');
-          renderAll();
-          showToast(res.message);
-        } else {
-          showToast(res.error || 'Not enough HOLD');
+        if (STATE.user?.skin === skinId || STATE.skinBusy) return;
+        STATE.skinBusy = true;
+        const pillBtn = row.querySelector('[data-skin-action]');
+        if (pillBtn) pillBtn.disabled = true;
+        try {
+          const res = await api('/api/hold/skin', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, skinId })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            haptic('heavy');
+            renderAll();
+            showToast(res.message);
+          } else {
+            showToast(res.error || 'Not enough HOLD');
+          }
+        } finally {
+          STATE.skinBusy = false;
+          if (pillBtn) pillBtn.disabled = false;
         }
       });
     });
@@ -1852,22 +2115,28 @@ function renderBoostsAndSkinsSheet() {
 }
 
 async function triggerBoost(type) {
-  const res = await api('/api/hold/boost', {
-    method: 'POST',
-    body: JSON.stringify({ username: STATE.username, type })
-  });
-  if (res.ok && res.user) {
-    STATE.user = res.user;
-    if (res.turboDurationMs) {
-      STATE.turboActiveUntil = Date.now() + res.turboDurationMs;
-      setTimeout(() => renderAll(), res.turboDurationMs);
-      closeAllSheets();
+  if (STATE.boostBusy) return;
+  STATE.boostBusy = true;
+  try {
+    const res = await api('/api/hold/boost', {
+      method: 'POST',
+      body: JSON.stringify({ username: STATE.username, type })
+    });
+    if (res.ok && res.user) {
+      mergeUserState(res.user);
+      if (res.turboDurationMs) {
+        STATE.turboActiveUntil = Date.now() + res.turboDurationMs;
+        scheduleTurboEnd(res.turboDurationMs);
+        closeAllSheets();
+      }
+      haptic('medium');
+      renderAll();
+      showToast(res.message);
+    } else {
+      showToast(res.error || 'Limit reached');
     }
-    haptic('medium');
-    renderAll();
-    showToast(res.message);
-  } else {
-    showToast(res.error || 'Limit reached');
+  } finally {
+    STATE.boostBusy = false;
   }
 }
 
@@ -1957,7 +2226,7 @@ function renderEarnSheet() {
     tkBtn.innerHTML = rowHtml({
       icon: '🪙',
       title: 'Tokenomics & Burn',
-      sub: `100M $HOLD · Fazasi: <b>${esc(tk.halving?.name || 'Genesis')} (${esc(tk.halving?.label || '1.0x')})</b> · 🔥 ${fmtInt(Math.floor(tk.burnedTokens || 0))} yoqilgan`,
+      sub: `1M $HOLD · Fazasi: <b>${esc(tk.halving?.name || 'Genesis')} (${esc(tk.halving?.label || '1.0x')})</b> · 🔥 ${fmtInt(Math.floor(tk.burnedTokens || 0))} yoqilgan`,
       right: '›'
     });
     tkBtn.addEventListener('click', openTokenomicsModal);
@@ -2031,49 +2300,66 @@ function renderEarnSheet() {
 
     vipList.querySelectorAll('[data-pack]').forEach(row => {
       row.addEventListener('click', async () => {
+        if (row.dataset.busy === '1') return;
         const packId = row.dataset.pack;
         const packObj = (u.vipPacks || []).find(x => x.id === packId);
         if (!packObj) return;
 
+        row.dataset.busy = '1';
         haptic('light');
         showToast('Toʻlov oynasi ochilmoqda...');
-        const res = await api('/api/hold/create-invoice', {
-          method: 'POST',
-          body: JSON.stringify({
-            username: STATE.username,
-            amount: packObj.starsPrice,
-            title: packObj.name
-          })
-        });
+        let res;
+        try {
+          res = await api('/api/hold/create-invoice', {
+            method: 'POST',
+            body: JSON.stringify({
+              username: STATE.username,
+              amount: packObj.starsPrice,
+              title: packObj.name
+            })
+          });
+        } finally {
+          row.dataset.busy = '0';
+        }
 
-        if (res.ok && res.invoiceUrl) {
+        if (res && res.ok && res.invoiceUrl) {
           const slug = res.slug || String(res.invoiceUrl).split('/').pop();
           notifyPaxtaMiniApp('web_app_open_invoice', { slug, url: res.invoiceUrl });
           try {
             if (window.Telegram?.WebApp?.openInvoice) {
               window.Telegram.WebApp.openInvoice(res.invoiceUrl, async (st) => {
                 if (st === 'paid') {
+                  clearInvoicePoll();
                   await syncHoldUser();
                   showToast(`🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`);
+                } else if (st === 'cancelled' || st === 'failed') {
+                  clearInvoicePoll();
                 }
               });
             }
           } catch {}
 
           if (res.invoiceId) {
-            if (STATE.invoicePollTimer) clearInterval(STATE.invoicePollTimer);
+            clearInvoicePoll();
+            let polls = 0;
             STATE.invoicePollTimer = setInterval(async () => {
+              polls++;
+              if (polls > 90) {
+                clearInvoicePoll();
+                return;
+              }
               const stRes = await api(`/api/hold/invoice-status/${encodeURIComponent(res.invoiceId)}`);
               if (stRes.ok && stRes.status === 'paid') {
-                clearInterval(STATE.invoicePollTimer);
-                STATE.invoicePollTimer = null;
+                clearInvoicePoll();
                 await syncHoldUser();
                 showToast(`🎉 ${packObj.name} muvaffaqiyatli faollashtirildi!`);
+              } else if (stRes.status === 'not_found' || stRes.status === 'failed' || stRes.status === 'cancelled') {
+                clearInvoicePoll();
               }
             }, 2000);
           }
         } else {
-          showToast(res.error || 'Invoice ochilmadi');
+          showToast(res?.error || 'Invoice ochilmadi');
         }
       });
     });
@@ -2084,10 +2370,10 @@ function openTokenomicsModal() {
   const u = STATE.user;
   if (!u) return;
   const tk = u.tokenomics || {};
-  const factor = tk.redenomFactor || 100;
+  const factor = tk.redenomFactor || 1000;
   const userTokens = (Math.floor(u.holdBalance || 0) / factor).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  const totalSupply = fmtInt(tk.totalSupplyTokens || 100_000_000);
-  const effSupply = fmtInt(Math.floor(tk.effectiveMaxSupplyTokens || 100_000_000));
+  const totalSupply = fmtInt(tk.totalSupplyTokens || 1_000_000);
+  const effSupply = fmtInt(Math.floor(tk.effectiveMaxSupplyTokens || 1_000_000));
   const mintedTok = (tk.mintedTokens || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   const burnedTok = (tk.burnedTokens || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   const circTok = (tk.circulatingTokens || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -2109,13 +2395,13 @@ function openTokenomicsModal() {
           <div style="font-size:22px;font-weight:800;color:#fff;">≈ ${userTokens} <span style="color:#38bdf8;">$HOLD</span></div>
           <div style="font-size:12px;color:var(--text-2);">${fmtInt(u.holdBalance || 0)} pts ÷ ${factor}</div>
         </div>
-        <div style="margin-top:6px;font-size:11.5px;color:var(--text-2);">Notcoin uslubida <b>00</b> qisqaradi (100 coin = 1 $HOLD). Faqat qoʻldagi <b>holdBalance</b> hisoblanadi — boost va skinlarga sarflangan coinlar <b>Burn</b> boʻlib yoqiladi.</div>
+        <div style="margin-top:6px;font-size:11.5px;color:var(--text-2);">Notcoin uslubida <b>000</b> qisqaradi (${fmtInt(factor)} coin = 1 $HOLD). Faqat qoʻldagi <b>holdBalance</b> hisoblanadi — boost va skinlarga sarflangan coinlar <b>Burn</b> boʻlib yoqiladi.</div>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
         <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
           <div style="font-size:10.5px;color:var(--text-2);">Hard Cap</div>
-          <div style="font-size:14px;font-weight:800;color:#fff;">100M</div>
+          <div style="font-size:14px;font-weight:800;color:#fff;">1M</div>
           <div style="font-size:10px;color:var(--text-2);">Eff: ${effSupply}</div>
         </div>
         <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:9px 6px;">
@@ -2267,17 +2553,23 @@ function openDailyStreakModal() {
 }
 
 async function claimDailyStreakBonus() {
-  const res = await api('/api/hold/claim-streak', {
-    method: 'POST',
-    body: JSON.stringify({ username: STATE.username })
-  });
-  if (res.ok && res.user) {
-    STATE.user = res.user;
-    haptic('heavy');
-    renderAll();
-    showToast(res.message || '🔥 Kunlik bonus olindi!');
-  } else {
-    showToast(res.error || 'Bugungi bonus olingan');
+  if (STATE.streakBusy) return;
+  STATE.streakBusy = true;
+  try {
+    const res = await api('/api/hold/claim-streak', {
+      method: 'POST',
+      body: JSON.stringify({ username: STATE.username })
+    });
+    if (res.ok && res.user) {
+      mergeUserState(res.user);
+      haptic('heavy');
+      renderAll();
+      showToast(res.message || '🔥 Kunlik bonus olindi!');
+    } else {
+      showToast(res.error || 'Bugungi bonus olingan');
+    }
+  } finally {
+    STATE.streakBusy = false;
   }
 }
 
@@ -2323,22 +2615,35 @@ function openQuestVerificationModal(q) {
   `, (body) => {
     const verifyBtn = body.querySelector('#btnVerifyQuestNow');
     let started = !!STATE.openedQuestLinks[q.id] || !cleanHandle;
+    if (started && cleanHandle && verifyBtn) {
+      verifyBtn.textContent = '✅ Tekshirish va Olish';
+    }
 
     const triggerStartQuest = async () => {
-      STATE.openedQuestLinks[q.id] = Date.now();
+      const alreadyStarted = !!STATE.openedQuestLinks[q.id];
+      STATE.openedQuestLinks[q.id] = STATE.openedQuestLinks[q.id] || Date.now();
       started = true;
-      await api('/api/hold/start-quest', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, questId: q.id })
-      });
-      if (verifyBtn) {
-        let sec = 4;
+      if (!alreadyStarted) {
+        await api('/api/hold/start-quest', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, questId: q.id })
+        });
+      }
+      if (verifyBtn && !STATE.questCountdownTimer) {
+        const elapsed = Date.now() - STATE.openedQuestLinks[q.id];
+        let sec = Math.max(0, Math.ceil((4000 - elapsed) / 1000));
+        if (sec <= 0) {
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = '✅ Tekshirish va Olish';
+          return;
+        }
         verifyBtn.disabled = true;
         verifyBtn.textContent = `Tekshirish (${sec}s)...`;
-        const iv = setInterval(() => {
+        STATE.questCountdownTimer = setInterval(() => {
           sec--;
           if (sec <= 0) {
-            clearInterval(iv);
+            clearInterval(STATE.questCountdownTimer);
+            STATE.questCountdownTimer = null;
             verifyBtn.disabled = false;
             verifyBtn.textContent = '✅ Tekshirish va Olish';
           } else {
@@ -2363,6 +2668,7 @@ function openQuestVerificationModal(q) {
     });
 
     verifyBtn?.addEventListener('click', async () => {
+      if (verifyBtn.disabled) return;
       if (!started && cleanHandle) {
         await triggerStartQuest();
         openInternalPaxtaChannel(cleanHandle);
@@ -2378,7 +2684,7 @@ function openQuestVerificationModal(q) {
       verifyBtn.textContent = '✅ Tekshirish va Olish';
 
       if (res.ok && res.user) {
-        STATE.user = res.user;
+        mergeUserState(res.user);
         haptic('heavy');
         closeModal();
         renderAll();
@@ -2421,20 +2727,27 @@ function renderFrensSheet() {
           <button type="button" class="skin-pill-btn" id="btnClaimRefCode" style="padding:0 16px;">Olish</button>
         </div>
       `;
-      refClaimBox.querySelector('#btnClaimRefCode')?.addEventListener('click', async () => {
+      const btnClaimRef = refClaimBox.querySelector('#btnClaimRefCode');
+      btnClaimRef?.addEventListener('click', async () => {
+        if (btnClaimRef.disabled) return;
         const refVal = refClaimBox.querySelector('#inpInviterUsername')?.value.trim();
         if (!refVal) return;
-        const res = await api('/api/hold/claim-ref', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, refUsername: refVal, friendUsername: refVal })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          haptic('heavy');
-          renderAll();
-          showToast(res.message);
-        } else {
-          showToast(res.error || 'Topilmadi');
+        btnClaimRef.disabled = true;
+        try {
+          const res = await api('/api/hold/claim-ref', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, refUsername: refVal, friendUsername: refVal })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            haptic('heavy');
+            renderAll();
+            showToast(res.message);
+          } else {
+            showToast(res.error || 'Topilmadi');
+          }
+        } finally {
+          if (btnClaimRef.isConnected) btnClaimRef.disabled = false;
         }
       });
     }
@@ -2511,18 +2824,24 @@ function renderFrensSheet() {
       `;
       row.addEventListener('click', async () => {
         if (!joined) {
-          const res = await api('/api/hold/join-squad', {
-            method: 'POST',
-            body: JSON.stringify({ username: STATE.username, squadId: sq.id })
-          });
-          if (res.ok && res.user) {
-            STATE.user = res.user;
-            if (Array.isArray(res.user.squads)) STATE.squads = res.user.squads;
-            haptic('medium');
-            renderAll();
-            showToast(res.message);
-          } else {
-            showToast(res.error || 'Qoʻshilib boʻlmadi');
+          if (STATE.joinSquadBusy) return;
+          STATE.joinSquadBusy = true;
+          try {
+            const res = await api('/api/hold/join-squad', {
+              method: 'POST',
+              body: JSON.stringify({ username: STATE.username, squadId: sq.id })
+            });
+            if (res.ok && res.user) {
+              mergeUserState(res.user);
+              STATE.lastVaultFetchedAt = 0;
+              haptic('medium');
+              renderAll();
+              showToast(res.message);
+            } else {
+              showToast(res.error || 'Qoʻshilib boʻlmadi');
+            }
+          } finally {
+            STATE.joinSquadBusy = false;
           }
         } else {
           openSquadModal(sq.id);
@@ -2552,19 +2871,25 @@ function openSearchSquadsModal() {
     const runBtn = body.querySelector('#btnRunSearchSquad');
 
     const joinDirect = async (payload) => {
-      const res = await api('/api/hold/join-squad', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, ...payload })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        if (Array.isArray(res.user.squads)) STATE.squads = res.user.squads;
-        haptic('heavy');
-        closeModal();
-        renderAll();
-        showToast(res.message);
-      } else {
-        showToast(res.error || 'Qoʻshilib boʻlmadi');
+      if (STATE.joinSquadBusy) return;
+      STATE.joinSquadBusy = true;
+      try {
+        const res = await api('/api/hold/join-squad', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, ...payload })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          STATE.lastVaultFetchedAt = 0;
+          haptic('heavy');
+          closeModal();
+          renderAll();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Qoʻshilib boʻlmadi');
+        }
+      } finally {
+        STATE.joinSquadBusy = false;
       }
     };
 
@@ -2669,8 +2994,8 @@ function openAddPaxtaChannelSquadModal() {
       btn.disabled = false;
       btn.textContent = 'Tekshirish va Qoʻshish';
       if (res.ok && res.user) {
-        STATE.user = res.user;
-        if (Array.isArray(res.user.squads)) STATE.squads = res.user.squads;
+        mergeUserState(res.user);
+        STATE.lastVaultFetchedAt = 0;
         haptic('heavy');
         closeModal();
         renderAll();
@@ -2762,11 +3087,41 @@ function openTopUpStarsModal(defaultAmount = 250, reason = 'HOLD Boost') {
 // ============================================================================
 // SHEET 5: DEDICATED FULL-SCREEN ADMIN STUDIO (`#sheetAdmin` — NOT A POPUP!)
 // ============================================================================
-async function loadAdminUsersData() {
+async function loadAdminUsersData(force = false) {
+  if (!force && STATE.adminUsersData && (Date.now() - (STATE.adminUsersFetchedAt || 0)) < 15000) {
+    return { ok: true, cached: true };
+  }
   const res = await api(`/api/hold/admin-users?username=${encodeURIComponent(STATE.username)}`);
   if (res.ok) {
     STATE.adminUsersData = res;
+    STATE.adminUsersFetchedAt = Date.now();
   }
+  return res;
+}
+
+function confirmAdminAction({ title, message, confirmLabel = 'Tasdiqlash', danger = true, onConfirm }) {
+  openModal(title, `
+    <div class="dark-group-box" style="padding:14px;gap:12px;">
+      <p style="font-size:13.5px;color:var(--text-1);line-height:1.45;">${esc(message)}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button type="button" class="skin-pill-btn" id="btnAdmModalCancel" style="padding:11px;">Bekor qilish</button>
+        <button type="button" class="${danger ? 'skin-pill-btn danger' : 'btn-sapphire-primary'}" id="btnAdmModalConfirm" style="padding:11px;">${esc(confirmLabel)}</button>
+      </div>
+    </div>
+  `, (body) => {
+    body.querySelector('#btnAdmModalCancel')?.addEventListener('click', closeModal);
+    const btnOk = body.querySelector('#btnAdmModalConfirm');
+    btnOk?.addEventListener('click', async () => {
+      if (btnOk.disabled) return;
+      btnOk.disabled = true;
+      try {
+        closeModal();
+        await onConfirm();
+      } finally {
+        if (btnOk.isConnected) btnOk.disabled = false;
+      }
+    });
+  });
 }
 
 async function renderAdminSheet() {
@@ -2776,11 +3131,24 @@ async function renderAdminSheet() {
   const container = document.getElementById('adminSheetBody');
   if (!container) return;
 
-  await loadAdminUsersData();
+  const reqSeq = ++STATE.adminRenderSeq;
+  if (STATE.adminTab === 'overview' || STATE.adminTab === 'users') {
+    if (!STATE.adminUsersData) {
+      container.innerHTML = `<div class="dark-group-box" style="padding:18px;text-align:center;color:var(--text-2);font-size:13px;">⏳ Yuklanmoqda...</div>`;
+    }
+    await loadAdminUsersData();
+    if (reqSeq !== STATE.adminRenderSeq || STATE.activeSheet !== 'admin') return;
+  }
+
   const adm = STATE.adminUsersData || {};
-  const usersList = adm.users || [];
+  const usersList = Array.isArray(adm.users) ? adm.users : [];
   const stats = adm.stats || {};
   const curUser = STATE.user;
+  const totalPlayers = stats.totalPlayers ?? adm.totalUsers ?? usersList.length;
+  const totalHoldInCirculation = stats.totalHoldInCirculation ?? adm.totalHoldCirculation ?? usersList.reduce((s, x) => s + (x.holdBalance || 0), 0);
+  const hhActive = stats.happyHourActive ?? !!curUser.happyHour?.active;
+  const hhForced = stats.happyHourForceEnabled ?? !!curUser.happyHour?.forced ?? (!!curUser.happyHour?.active && curUser.happyHour?.scheduleText === '2x Tap Happy Hour faol!');
+  const lastWinner = stats.lastLuckyWinner || curUser.luckyDraw?.lastWinner || null;
   const secretMap = curUser.morse?.secretCodesMap || {};
   const quests = curUser.quests || [];
   const squads = curUser.squads || [];
@@ -2790,26 +3158,26 @@ async function renderAdminSheet() {
       <div class="admin-stat-grid">
         <div class="admin-stat-card">
           <span>Rasmiy Ishtirokchilar</span>
-          <strong>${fmtInt(stats.totalPlayers || usersList.length)}</strong>
+          <strong>${fmtInt(totalPlayers)}</strong>
         </div>
         <div class="admin-stat-card">
           <span>Jami Muomaladagi HOLD</span>
-          <strong>${fmtInt(stats.totalHoldInCirculation || 0)}</strong>
+          <strong>${fmtInt(totalHoldInCirculation)}</strong>
         </div>
         <div class="admin-stat-card">
           <span>2x Happy Hour Holati</span>
-          <strong style="color:${stats.happyHourActive ? '#4ade80' : '#facc15'};">${stats.happyHourActive ? 'YOQILGAN (2X)' : 'Jadval (20:00)'}</strong>
+          <strong style="color:${hhActive ? '#4ade80' : '#facc15'};">${hhActive ? 'YOQILGAN (2X)' : 'Jadval (20:00)'}</strong>
         </div>
         <div class="admin-stat-card">
           <span>Lucky Ticket Gʻolibi</span>
-          <strong style="font-size:15px;">${stats.lastLuckyWinner ? `@${esc(stats.lastLuckyWinner.username)}` : 'Oʻynalmagan'}</strong>
+          <strong style="font-size:15px;">${lastWinner ? `@${esc(lastWinner.username)}` : 'Oʻynalmagan'}</strong>
         </div>
       </div>
 
       <div class="dark-group-box" style="padding:14px;gap:10px;">
         <strong style="font-size:14.5px;">⚡ Tezkor Boshqaruv va Eventlar</strong>
         <button type="button" class="btn-sapphire-primary" id="btnAdmToggleHH">
-          ${stats.happyHourForceEnabled ? '🛑 2x Happy Hour Oʻchirish' : '⚡ 2x Happy Hour Yoqish (Barchaga)'}
+          ${hhForced ? '🛑 2x Happy Hour Oʻchirish' : '⚡ 2x Happy Hour Yoqish (Barchaga)'}
         </button>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <button type="button" class="skin-pill-btn" id="btnAdmRewardSquad" style="padding:12px;">⚔️ #1 Squadga +25K</button>
@@ -2831,77 +3199,127 @@ async function renderAdminSheet() {
       </div>
     `;
 
-    container.querySelector('#btnAdmToggleHH')?.addEventListener('click', async () => {
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'toggle_happy_hour' })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
+    const btnHH = container.querySelector('#btnAdmToggleHH');
+    btnHH?.addEventListener('click', async () => {
+      if (btnHH.disabled) return;
+      btnHH.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'toggle_happy_hour' })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          STATE.adminUsersFetchedAt = 0;
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnHH.isConnected) btnHH.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmRewardSquad')?.addEventListener('click', async () => {
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'reward_top_squad', rewardAmount: 25000 })
-      });
-      if (res.ok) {
-        if (res.user) STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
-      } else {
-        showToast(res.error || 'Xato');
+    const btnRewSq = container.querySelector('#btnAdmRewardSquad');
+    btnRewSq?.addEventListener('click', async () => {
+      if (btnRewSq.disabled) return;
+      btnRewSq.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'reward_top_squad', rewardAmount: 25000 })
+        });
+        if (res.ok) {
+          if (res.user) mergeUserState(res.user);
+          STATE.adminUsersFetchedAt = 0;
+          STATE.lastVaultFetchedAt = 0;
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnRewSq.isConnected) btnRewSq.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmDrawLucky')?.addEventListener('click', async () => {
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'draw_lucky_winner' })
-      });
-      if (res.ok) {
-        if (res.user) STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
-      } else {
-        showToast(res.error || 'Chiptali ishtirokchi yoʻq');
+    const btnDraw = container.querySelector('#btnAdmDrawLucky');
+    btnDraw?.addEventListener('click', async () => {
+      if (btnDraw.disabled) return;
+      btnDraw.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'draw_lucky_winner' })
+        });
+        if (res.ok) {
+          if (res.user) mergeUserState(res.user);
+          STATE.adminUsersFetchedAt = 0;
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Chiptali ishtirokchi yoʻq');
+        }
+      } finally {
+        if (btnDraw.isConnected) btnDraw.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmResetSelf')?.addEventListener('click', async () => {
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername: STATE.username })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        closeAllSheets();
-        renderAll();
-        loadLeaderboardData();
-        openOnboardingStory(0);
-        showToast('Hisobingiz 0 HOLD va Onboarding holatiga qaytarildi!');
+    const btnResetSelf = container.querySelector('#btnAdmResetSelf');
+    btnResetSelf?.addEventListener('click', async () => {
+      if (btnResetSelf.disabled) return;
+      btnResetSelf.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername: STATE.username })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          STATE.adminUsersFetchedAt = 0;
+          STATE.lastVaultFetchedAt = 0;
+          closeAllSheets();
+          renderAll();
+          loadLeaderboardData(true);
+          openOnboardingStory(0);
+          showToast('Hisobingiz 0 HOLD va Onboarding holatiga qaytarildi!');
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnResetSelf.isConnected) btnResetSelf.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmResetAllUsers')?.addEventListener('click', async () => {
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'reset_all_users' })
+    const btnResetAll = container.querySelector('#btnAdmResetAllUsers');
+    btnResetAll?.addEventListener('click', () => {
+      confirmAdminAction({
+        title: '⚠️ Full Season Reset',
+        message: 'Haqiqatan ham BARCHA foydalanuvchilar balansini 0 HOLD ga tushirib, mavsumni qayta boshlamoqchimisiz?',
+        confirmLabel: 'Ha, Barchasini Reset',
+        onConfirm: async () => {
+          const res = await api('/api/hold/admin-config', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, action: 'reset_all_users' })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            STATE.adminUsersFetchedAt = 0;
+            STATE.lastVaultFetchedAt = 0;
+            closeAllSheets();
+            renderAll();
+            loadLeaderboardData(true);
+            openOnboardingStory(0);
+            showToast(res.message);
+          } else {
+            showToast(res.error || 'Xato');
+          }
+        }
       });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        closeAllSheets();
-        renderAll();
-        loadLeaderboardData();
-        openOnboardingStory(0);
-        showToast(res.message);
-      }
     });
     return;
   }
@@ -2927,17 +3345,17 @@ async function renderAdminSheet() {
 
       <div class="not-section-heading">Barcha Foydalanuvchilar (${usersList.length})</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        ${usersList.map(uRow => `
+        ${usersList.map((uRow, idx) => `
           <div class="admin-user-card">
             <div class="admin-user-head">
               <div>
-                <strong style="font-size:14px;color:#fff;">#${uRow.rank} ${esc(uRow.displayName || uRow.username)}</strong>
+                <strong style="font-size:14px;color:#fff;">#${uRow.rank || (idx + 1)} ${esc(uRow.displayName || uRow.username)}</strong>
                 <span style="font-size:12px;color:var(--text-2);margin-left:6px;">@${esc(uRow.username)} · ${esc(uRow.league)}</span>
               </div>
               <b style="color:var(--theme-accent);font-size:13.5px;">${fmtInt(uRow.holdBalance)} HOLD</b>
             </div>
             <div style="font-size:11.5px;color:var(--text-2);">
-              Lifetime: ${fmtInt(uRow.lifetimeHold)} · Streak: D${uRow.streakDays} · Tickets: ${uRow.luckyTickets} 🎟️ · Onboarding: ${uRow.ogBonusClaimed ? 'Ha' : 'Yoʻq'}
+              Lifetime: ${fmtInt(uRow.lifetimeHold)} · Streak: D${uRow.streakDays ?? uRow.streakCount ?? 0} · Tickets: ${uRow.luckyTickets} 🎟️ · Onboarding: ${uRow.ogBonusClaimed ? 'Ha' : 'Yoʻq'}
             </div>
             <div class="admin-user-actions">
               <button type="button" class="skin-pill-btn" data-quick-select="${esc(uRow.username)}" style="font-size:11.5px;padding:5px 10px;">Tanlash</button>
@@ -2950,39 +3368,59 @@ async function renderAdminSheet() {
       </div>
     `;
 
-    container.querySelector('#btnAdmGrantUser')?.addEventListener('click', async () => {
+    const btnGrant = container.querySelector('#btnAdmGrantUser');
+    btnGrant?.addEventListener('click', async () => {
+      if (btnGrant.disabled) return;
       const targetUsername = container.querySelector('#admTargetUser')?.value.trim();
       const holdDelta = parseInt(container.querySelector('#admHoldDelta')?.value, 10) || 0;
       const starsDelta = parseInt(container.querySelector('#admStarsDelta')?.value, 10) || 0;
       const grantSkin = container.querySelector('#admGrantSkin')?.value || '';
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, holdDelta, starsDelta, grantSkin })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        loadLeaderboardData();
-        renderAdminSheet();
-        showToast(res.message);
-      } else {
-        showToast(res.error || 'Xato');
+      btnGrant.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername, holdDelta, starsDelta, grantSkin })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          STATE.adminUsersFetchedAt = 0;
+          STATE.lastVaultFetchedAt = 0;
+          renderAll();
+          loadLeaderboardData(true);
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnGrant.isConnected) btnGrant.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmResetTargetUser')?.addEventListener('click', async () => {
+    const btnResetTarget = container.querySelector('#btnAdmResetTargetUser');
+    btnResetTarget?.addEventListener('click', async () => {
+      if (btnResetTarget.disabled) return;
       const targetUsername = container.querySelector('#admTargetUser')?.value.trim();
       if (!targetUsername) return;
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        loadLeaderboardData();
-        renderAdminSheet();
-        showToast(res.message);
+      btnResetTarget.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          STATE.adminUsersFetchedAt = 0;
+          STATE.lastVaultFetchedAt = 0;
+          renderAll();
+          loadLeaderboardData(true);
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnResetTarget.isConnected) btnResetTarget.disabled = false;
       }
     });
 
@@ -2998,51 +3436,81 @@ async function renderAdminSheet() {
 
     container.querySelectorAll('[data-quick-reset]').forEach(b => {
       b.addEventListener('click', async () => {
+        if (b.disabled) return;
         const target = b.dataset.quickReset;
-        const res = await api('/api/hold/admin-config', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername: target })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          renderAll();
-          loadLeaderboardData();
-          renderAdminSheet();
-          showToast(res.message);
+        b.disabled = true;
+        try {
+          const res = await api('/api/hold/admin-config', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, action: 'reset_user', targetUsername: target })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            STATE.adminUsersFetchedAt = 0;
+            STATE.lastVaultFetchedAt = 0;
+            renderAll();
+            loadLeaderboardData(true);
+            renderAdminSheet();
+            showToast(res.message);
+          } else {
+            showToast(res.error || 'Xato');
+          }
+        } finally {
+          if (b.isConnected) b.disabled = false;
         }
       });
     });
 
     container.querySelectorAll('[data-quick-morse]').forEach(b => {
       b.addEventListener('click', async () => {
+        if (b.disabled) return;
         const target = b.dataset.quickMorse;
-        const res = await api('/api/hold/admin-config', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername: target, resetMorse: true })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          renderAll();
-          renderAdminSheet();
-          showToast(`@${target} uchun Morze reset qilindi!`);
+        b.disabled = true;
+        try {
+          const res = await api('/api/hold/admin-config', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, action: 'user_grant', targetUsername: target, resetMorse: true })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            STATE.adminUsersFetchedAt = 0;
+            renderAll();
+            renderAdminSheet();
+            showToast(`@${target} uchun Morze reset qilindi!`);
+          } else {
+            showToast(res.error || 'Xato');
+          }
+        } finally {
+          if (b.isConnected) b.disabled = false;
         }
       });
     });
 
     container.querySelectorAll('[data-quick-del]').forEach(b => {
-      b.addEventListener('click', async () => {
+      b.addEventListener('click', () => {
         const target = b.dataset.quickDel;
-        const res = await api('/api/hold/admin-config', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, action: 'delete_user', targetUsername: target })
+        confirmAdminAction({
+          title: '🗑️ Foydalanuvchini oʻchirish',
+          message: `@${target} hisobini butunlay oʻchirmoqchimisiz?`,
+          confirmLabel: 'Oʻchirish',
+          onConfirm: async () => {
+            const res = await api('/api/hold/admin-config', {
+              method: 'POST',
+              body: JSON.stringify({ username: STATE.username, action: 'delete_user', targetUsername: target })
+            });
+            if (res.ok && res.user) {
+              mergeUserState(res.user);
+              STATE.adminUsersFetchedAt = 0;
+              STATE.lastVaultFetchedAt = 0;
+              renderAll();
+              loadLeaderboardData(true);
+              renderAdminSheet();
+              showToast(res.message);
+            } else {
+              showToast(res.error || 'Xato');
+            }
+          }
         });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          renderAll();
-          loadLeaderboardData();
-          renderAdminSheet();
-          showToast(res.message);
-        }
       });
     });
     return;
@@ -3053,7 +3521,7 @@ async function renderAdminSheet() {
       <div class="dark-group-box" style="padding:14px;gap:10px;">
         <strong style="font-size:14px;">📢 Barcha Foydalanuvchilarga E'lon (Broadcast)</strong>
         <p style="font-size:12.5px;color:var(--text-2);line-height:1.45;">
-          Xabar @HOLDbot orqali botdan roʻyxatdan oʻtgan barcha faol PaxtaGram foydalanuvchilariga yetkaziladi. Markdown formatlash (**qalin**, *kursiv*) va emojilar qoʻllab-quvvatlanadi.
+          Xabar @HOLDbot orqali botdan roʻyxatdan oʻtgan barcha faol PaxtaGram foydalanuvchilariga yetkaziladi. HTML formatlash (&lt;b&gt;qalin&lt;/b&gt;, &lt;i&gt;kursiv&lt;/i&gt;) va emojilar qoʻllab-quvvatlanadi.
         </p>
         <textarea id="admBroadcastText" rows="4" placeholder="E'lon matnini kiriting..." class="apple-search-input" style="resize:vertical;min-height:90px;font-family:inherit;"></textarea>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -3091,7 +3559,9 @@ async function renderAdminSheet() {
       if (txt) txt.value = '🎁 <b>Yangi vazifalar qoʻshildi!</b>\n\nEarn boʻlimida yangi rasmiy kanallar paydo boʻldi. Bajarib qoʻshimcha $HOLD toʻplang!';
     });
 
-    container.querySelector('#btnAdmSendBroadcast')?.addEventListener('click', async () => {
+    const btnBroadcast = container.querySelector('#btnAdmSendBroadcast');
+    btnBroadcast?.addEventListener('click', () => {
+      if (btnBroadcast.disabled) return;
       const text = container.querySelector('#admBroadcastText')?.value.trim();
       if (!text) {
         showToast('Iltimos, xabar matnini kiriting!');
@@ -3100,41 +3570,46 @@ async function renderAdminSheet() {
       const buttonText = container.querySelector('#admBroadcastBtnText')?.value.trim();
       const buttonUrl = container.querySelector('#admBroadcastBtnUrl')?.value.trim();
       const prg = container.querySelector('#admBroadcastProgress');
-      const btn = container.querySelector('#btnAdmSendBroadcast');
 
-      if (!confirm('Haqiqatan ham barcha foydalanuvchilarga ushbu xabarni yubormoqchimisiz?')) return;
-
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Yuborilmoqda...';
-      }
-      if (prg) {
-        prg.hidden = false;
-        prg.textContent = '⏳ Xabar barcha ishtirokchilarga uzatilmoqda...';
-      }
-
-      const res = await api('/api/hold/admin-broadcast', {
-        method: 'POST',
-        body: JSON.stringify({
-          username: STATE.username,
-          text,
-          buttonText,
-          buttonUrl
-        })
+      confirmAdminAction({
+        title: '📢 Broadcastni tasdiqlang',
+        message: 'Haqiqatan ham barcha foydalanuvchilarga ushbu xabarni yubormoqchimisiz?',
+        confirmLabel: 'Yuborish',
+        danger: false,
+        onConfirm: async () => {
+          if (btnBroadcast) {
+            btnBroadcast.disabled = true;
+            btnBroadcast.textContent = 'Yuborilmoqda...';
+          }
+          if (prg) {
+            prg.hidden = false;
+            prg.textContent = '⏳ Xabar barcha ishtirokchilarga uzatilmoqda...';
+          }
+          try {
+            const res = await api('/api/hold/admin-broadcast', {
+              method: 'POST',
+              body: JSON.stringify({
+                username: STATE.username,
+                text,
+                buttonText,
+                buttonUrl
+              })
+            });
+            if (res.ok) {
+              if (prg) prg.innerHTML = `✅ <b>Muvaffaqiyatli:</b> ${res.sent} ta yetkazildi (Jami: ${res.total}).`;
+              showToast(res.message || 'Xabar yuborildi!');
+            } else {
+              if (prg) prg.innerHTML = `❌ Xatolik: ${esc(res.error || 'Yuborilmadi')}`;
+              showToast(res.error || 'Xatolik');
+            }
+          } finally {
+            if (btnBroadcast && btnBroadcast.isConnected) {
+              btnBroadcast.disabled = false;
+              btnBroadcast.textContent = '🚀 Xabarni Barchaga Yuborish';
+            }
+          }
+        }
       });
-
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = '🚀 Xabarni Barchaga Yuborish';
-      }
-
-      if (res.ok) {
-        if (prg) prg.innerHTML = `✅ <b>Muvaffaqiyatli:</b> ${res.sent} ta yetkazildi (Jami: ${res.total}).`;
-        showToast(res.message || 'Xabar yuborildi!');
-      } else {
-        if (prg) prg.innerHTML = `❌ Xatolik: ${esc(res.error || 'Yuborilmadi')}`;
-        showToast(res.error || 'Xatolik');
-      }
     });
     return;
   }
@@ -3172,62 +3647,95 @@ async function renderAdminSheet() {
       </div>
     `;
 
-    container.querySelector('#btnAdmSaveDailyMorse')?.addEventListener('click', async () => {
+    const btnSaveMorse = container.querySelector('#btnAdmSaveDailyMorse');
+    btnSaveMorse?.addEventListener('click', async () => {
+      if (btnSaveMorse.disabled) return;
       const morseWord = container.querySelector('#admMorseWord')?.value.trim();
       const morseHint = container.querySelector('#admMorseHint')?.value.trim();
       const morseReward = parseInt(container.querySelector('#admMorseReward')?.value, 10) || 50000;
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'save_morse', morseWord, morseHint, morseReward })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
+      btnSaveMorse.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'save_morse', morseWord, morseHint, morseReward })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnSaveMorse.isConnected) btnSaveMorse.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmPostMorseChannel')?.addEventListener('click', async () => {
+    const btnPostMorse = container.querySelector('#btnAdmPostMorseChannel');
+    btnPostMorse?.addEventListener('click', async () => {
+      if (btnPostMorse.disabled) return;
       const morseWord = container.querySelector('#admMorseWord')?.value.trim();
       const morseReward = parseInt(container.querySelector('#admMorseReward')?.value, 10) || 50000;
+      btnPostMorse.disabled = true;
       showToast('Kanalga post qilinmoqda...');
-      const res = await api('/api/hold/admin-post-morse-channel', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, word: morseWord, reward: morseReward })
-      });
-      if (res.ok) {
-        showToast(res.message);
-      } else {
-        showToast(res.error || 'Xatolik yuz berdi');
+      try {
+        const res = await api('/api/hold/admin-post-morse-channel', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, word: morseWord, reward: morseReward })
+        });
+        if (res.ok) {
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xatolik yuz berdi');
+        }
+      } finally {
+        if (btnPostMorse.isConnected) btnPostMorse.disabled = false;
       }
     });
 
-    container.querySelector('#btnAdmAddSecret')?.addEventListener('click', async () => {
+    const btnAddSec = container.querySelector('#btnAdmAddSecret');
+    btnAddSec?.addEventListener('click', async () => {
+      if (btnAddSec.disabled) return;
       const code = container.querySelector('#admSecCode')?.value.trim();
       const reward = parseInt(container.querySelector('#admSecReward')?.value, 10) || 25000;
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'add_secret_code', code, reward })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
+      btnAddSec.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'add_secret_code', code, reward })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnAddSec.isConnected) btnAddSec.disabled = false;
       }
     });
 
     container.querySelectorAll('[data-del-secret]').forEach(b => {
       b.addEventListener('click', async () => {
-        const res = await api('/api/hold/admin-config', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, action: 'delete_secret_code', code: b.dataset.delSecret })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          renderAll();
-          renderAdminSheet();
+        if (b.disabled) return;
+        b.disabled = true;
+        try {
+          const res = await api('/api/hold/admin-config', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, action: 'delete_secret_code', code: b.dataset.delSecret })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            renderAll();
+            renderAdminSheet();
+          } else {
+            showToast(res.error || 'Xato');
+          }
+        } finally {
+          if (b.isConnected) b.disabled = false;
         }
       });
     });
@@ -3274,35 +3782,52 @@ async function renderAdminSheet() {
       </div>
     `;
 
-    container.querySelector('#btnAdmAddTask')?.addEventListener('click', async () => {
+    const btnAddTask = container.querySelector('#btnAdmAddTask');
+    btnAddTask?.addEventListener('click', async () => {
+      if (btnAddTask.disabled) return;
       const title = container.querySelector('#admTaskTitle')?.value.trim();
       const cat = container.querySelector('#admTaskCat')?.value;
       const icon = container.querySelector('#admTaskIcon')?.value.trim();
       const reward = parseInt(container.querySelector('#admTaskReward')?.value, 10) || 15000;
       const minLeague = container.querySelector('#admTaskMinLeague')?.value || null;
       const link = container.querySelector('#admTaskLink')?.value.trim();
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'add_quest', title, cat, icon, reward, link, minLeague })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
+      btnAddTask.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'add_quest', title, cat, icon, reward, link, minLeague })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Xato');
+        }
+      } finally {
+        if (btnAddTask.isConnected) btnAddTask.disabled = false;
       }
     });
 
     container.querySelectorAll('[data-del-task]').forEach(b => {
       b.addEventListener('click', async () => {
-        const res = await api('/api/hold/admin-config', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, action: 'delete_quest', questId: b.dataset.delTask })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          renderAll();
-          renderAdminSheet();
+        if (b.disabled) return;
+        b.disabled = true;
+        try {
+          const res = await api('/api/hold/admin-config', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, action: 'delete_quest', questId: b.dataset.delTask })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            renderAll();
+            renderAdminSheet();
+          } else {
+            showToast(res.error || 'Xato');
+          }
+        } finally {
+          if (b.isConnected) b.disabled = false;
         }
       });
     });
@@ -3331,33 +3856,50 @@ async function renderAdminSheet() {
       </div>
     `;
 
-    container.querySelector('#btnAdmAddSquad')?.addEventListener('click', async () => {
+    const btnAddSquad = container.querySelector('#btnAdmAddSquad');
+    btnAddSquad?.addEventListener('click', async () => {
+      if (btnAddSquad.disabled) return;
       const handle = container.querySelector('#admSquadHandle')?.value.trim();
       const name = container.querySelector('#admSquadName')?.value.trim();
-      const res = await api('/api/hold/admin-config', {
-        method: 'POST',
-        body: JSON.stringify({ username: STATE.username, action: 'add_squad', handle, name })
-      });
-      if (res.ok && res.user) {
-        STATE.user = res.user;
-        renderAll();
-        renderAdminSheet();
-        showToast(res.message);
-      } else {
-        showToast(res.error || 'Kanal topilmadi');
+      btnAddSquad.disabled = true;
+      try {
+        const res = await api('/api/hold/admin-config', {
+          method: 'POST',
+          body: JSON.stringify({ username: STATE.username, action: 'add_squad', handle, name })
+        });
+        if (res.ok && res.user) {
+          mergeUserState(res.user);
+          STATE.lastVaultFetchedAt = 0;
+          renderAll();
+          renderAdminSheet();
+          showToast(res.message);
+        } else {
+          showToast(res.error || 'Kanal topilmadi');
+        }
+      } finally {
+        if (btnAddSquad.isConnected) btnAddSquad.disabled = false;
       }
     });
 
     container.querySelectorAll('[data-del-squad]').forEach(b => {
       b.addEventListener('click', async () => {
-        const res = await api('/api/hold/admin-config', {
-          method: 'POST',
-          body: JSON.stringify({ username: STATE.username, action: 'delete_squad', squadId: b.dataset.delSquad })
-        });
-        if (res.ok && res.user) {
-          STATE.user = res.user;
-          renderAll();
-          renderAdminSheet();
+        if (b.disabled) return;
+        b.disabled = true;
+        try {
+          const res = await api('/api/hold/admin-config', {
+            method: 'POST',
+            body: JSON.stringify({ username: STATE.username, action: 'delete_squad', squadId: b.dataset.delSquad })
+          });
+          if (res.ok && res.user) {
+            mergeUserState(res.user);
+            STATE.lastVaultFetchedAt = 0;
+            renderAll();
+            renderAdminSheet();
+          } else {
+            showToast(res.error || 'Xato');
+          }
+        } finally {
+          if (b.isConnected) b.disabled = false;
         }
       });
     });
@@ -3520,33 +4062,57 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnBoostFullTank')?.addEventListener('click', () => triggerBoost('full_tank'));
   document.getElementById('btnBoostTurbo')?.addEventListener('click', () => triggerBoost('rocket'));
 
-  // Main 3D Coin Pointer Events (100% Reliable Tap + Hold Dash Morse!)
+  // Main 3D Coin Pointer Events (Multi-touch Tap + Hold Dash Morse + Rim Eclipse + Compass!)
   const coinBtn = document.getElementById('holdCoinBtn');
   if (coinBtn) {
     coinBtn.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); return false; }, { capture: true });
     coinBtn.addEventListener('dragstart', (e) => { e.preventDefault(); return false; });
     coinBtn.addEventListener('selectstart', (e) => { e.preventDefault(); return false; });
 
+    const activePointers = new Map();
+    const circleTrace = {
+      active: false,
+      pointerId: null,
+      lastAngle: null,
+      accumulatedAngle: 0,
+      lastHalfStep: 0,
+      resetTimer: null
+    };
+
     coinBtn.addEventListener('pointerdown', (e) => {
       if (e.cancelable) e.preventDefault();
       try {
         coinBtn.setPointerCapture(e.pointerId);
       } catch {}
-      STATE.pointerDownTime = Date.now();
-      haptic('light');
-
-      // Initialize Rim Circle Tracing
-      circleTrace.active = true;
-      const initRect = coinBtn.getBoundingClientRect();
-      circleTrace.lastAngle = Math.atan2(e.clientY - (initRect.top + initRect.height / 2), e.clientX - (initRect.left + initRect.width / 2));
 
       const rect = coinBtn.getBoundingClientRect();
-      const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-      const dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+      const ptrInfo = {
+        downAt: Date.now(),
+        rect,
+        dashTimer: null,
+        vaultSolved: false
+      };
+      activePointers.set(e.pointerId, ptrInfo);
+      haptic('light');
+
+      const dx = (e.clientX - (rect.left + rect.width / 2)) / Math.max(1, rect.width / 2);
+      const dy = (e.clientY - (rect.top + rect.height / 2)) / Math.max(1, rect.height / 2);
+
+      // Initialize Rim Circle Tracing only for single-finger touch
+      if (activePointers.size === 1) {
+        circleTrace.active = true;
+        circleTrace.pointerId = e.pointerId;
+        circleTrace.lastAngle = Math.atan2(e.clientY - (rect.top + rect.height / 2), e.clientX - (rect.left + rect.width / 2));
+      } else {
+        circleTrace.active = false;
+        circleTrace.pointerId = null;
+        circleTrace.lastAngle = null;
+      }
+
       coinBtn.style.transform = `rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg) scale(0.955)`;
 
-      // Secret Compass Direction Detection (Top -> Right -> Down -> Left -> Top)
-      if (Math.hypot(dx, dy) >= 0.35) {
+      // Secret Compass Direction Detection (only if not yet solved today)
+      if (!STATE.user?.vault?.solvedToday && Math.hypot(dx, dy) >= 0.35) {
         const dir = Math.abs(dy) > Math.abs(dx) ? (dy < 0 ? 'up' : 'down') : (dx > 0 ? 'right' : 'left');
         if (!STATE.compassSequence) STATE.compassSequence = [];
         clearTimeout(STATE.compassTimer);
@@ -3566,20 +4132,23 @@ window.addEventListener('DOMContentLoaded', async () => {
         ) {
           STATE.compassSequence = [];
           clearTimeout(STATE.compassTimer);
+          ptrInfo.vaultSolved = true;
+          clearMidAirMorse();
           (async () => {
             haptic('heavy');
             const airEl = document.getElementById('floatingMidAirMorse');
             if (airEl) {
               airEl.classList.add('solved');
               airEl.innerHTML = `<span class="midair-letter" style="font-size:22px;letter-spacing:1px;">🧭 VAULT UNLOCKED</span>`;
-              setTimeout(() => { airEl.innerHTML = ''; airEl.classList.remove('solved'); }, 2200);
+              clearTimeout(STATE.morseClearAirTimer);
+              STATE.morseClearAirTimer = setTimeout(() => { airEl.innerHTML = ''; airEl.classList.remove('solved'); }, 2200);
             }
             const res = await api('/api/hold/solve-compass', {
               method: 'POST',
               body: JSON.stringify({ username: STATE.username, sequence: expectedCompass })
             });
             if (res.ok && res.user) {
-              STATE.user = res.user;
+              mergeUserState(res.user);
               renderAll();
               showToast(res.message);
             } else if (res.error) {
@@ -3589,32 +4158,23 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
-      clearTimeout(STATE.dashFeedbackTimer);
-      STATE.dashFeedbackTimer = setTimeout(() => {
-        if (STATE.pointerDownTime > 0) {
+      ptrInfo.dashTimer = setTimeout(() => {
+        if (activePointers.has(e.pointerId)) {
           haptic('medium');
           coinBtn.style.transform = `rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg) scale(0.91)`;
         }
       }, 195);
     });
 
-    // ---- 3-CIRCLE SOLAR ECLIPSE RIM TRACE GESTURE ----
-    let circleTrace = {
-      active: false,
-      lastAngle: null,
-      accumulatedAngle: 0,
-      lastHalfStep: 0,
-      resetTimer: null
-    };
-
-    const handleTraceMove = (clientX, clientY) => {
-      if (!circleTrace.active) return;
-      const rect = coinBtn.getBoundingClientRect();
+    coinBtn.addEventListener('pointermove', (e) => {
+      if (!circleTrace.active || circleTrace.pointerId !== e.pointerId || activePointers.size !== 1) return;
+      const ptrInfo = activePointers.get(e.pointerId);
+      const rect = ptrInfo?.rect || coinBtn.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const px = clientX - cx;
-      const py = clientY - cy;
-      const dist = Math.hypot(px, py) / (rect.width / 2);
+      const px = e.clientX - cx;
+      const py = e.clientY - cy;
+      const dist = Math.hypot(px, py) / Math.max(1, rect.width / 2);
 
       // Check rim distance: outer rim area (dist >= 0.25)
       if (dist >= 0.25 && dist <= 2.2) {
@@ -3628,7 +4188,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           const turns = Math.abs(circleTrace.accumulatedAngle) / (2 * Math.PI);
 
           // Subtle dynamic 3D tilt tracking finger around rim
-          coinBtn.style.transform = `rotateX(${(-py / (rect.height / 2)) * 14}deg) rotateY(${(px / (rect.width / 2)) * 14}deg) scale(0.96)`;
+          coinBtn.style.transform = `rotateX(${(-py / Math.max(1, rect.height / 2)) * 14}deg) rotateY(${(px / Math.max(1, rect.width / 2)) * 14}deg) scale(0.96)`;
 
           // Haptic tick every half circle (180 deg)
           const currentHalf = Math.floor(turns * 2);
@@ -3640,32 +4200,31 @@ window.addEventListener('DOMContentLoaded', async () => {
           // Trigger Solar Eclipse Easter Egg on 3 full circles! (turns >= 2.85)
           if (turns >= 2.85) {
             circleTrace.active = false;
+            circleTrace.pointerId = null;
             circleTrace.accumulatedAngle = 0;
             circleTrace.lastHalfStep = 0;
             circleTrace.lastAngle = null;
-            STATE.pointerDownTime = 0; // prevent standard tap
+            if (ptrInfo?.dashTimer) clearTimeout(ptrInfo.dashTimer);
+            activePointers.delete(e.pointerId);
+            coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
             triggerSolarEclipseEasterEgg();
             return;
           }
         }
         circleTrace.lastAngle = curAngle;
       }
-    };
-
-    coinBtn.addEventListener('pointermove', (e) => {
-      handleTraceMove(e.clientX, e.clientY);
     });
 
-    coinBtn.addEventListener('touchmove', (e) => {
-      if (e.touches && e.touches[0]) {
-        handleTraceMove(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    }, { passive: true });
-
     const finishCoinPress = (e) => {
-      clearTimeout(STATE.dashFeedbackTimer);
-      circleTrace.active = false;
-      circleTrace.lastAngle = null;
+      const ptrInfo = activePointers.get(e.pointerId);
+      activePointers.delete(e.pointerId);
+      if (ptrInfo?.dashTimer) clearTimeout(ptrInfo.dashTimer);
+
+      if (circleTrace.pointerId === e.pointerId) {
+        circleTrace.active = false;
+        circleTrace.pointerId = null;
+        circleTrace.lastAngle = null;
+      }
 
       // Keep accumulatedAngle alive for 2.2s so multi-swipe circular tracing also works
       clearTimeout(circleTrace.resetTimer);
@@ -3674,15 +4233,16 @@ window.addEventListener('DOMContentLoaded', async () => {
         circleTrace.lastHalfStep = 0;
       }, 2200);
 
+      if (activePointers.size === 0) {
+        coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+      }
+
+      if (!ptrInfo) return;
+      const heldMs = Date.now() - ptrInfo.downAt;
       const isLargeTrace = Math.abs(circleTrace.accumulatedAngle) >= Math.PI;
-      coinBtn.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
 
-      if (!STATE.pointerDownTime) return;
-      const heldMs = Date.now() - STATE.pointerDownTime;
-      STATE.pointerDownTime = 0;
-
-      // If user was deliberately tracing circles, don't trigger regular tap
-      if (!isLargeTrace) {
+      // If user was deliberately tracing circles or solved vault or cancelled, don't trigger regular tap
+      if (!ptrInfo.vaultSolved && !isLargeTrace && e.type !== 'pointercancel') {
         handleCoinTap(e.clientX, e.clientY);
         recordCoinMorseSignal(heldMs >= 195 ? '-' : '.');
       }
@@ -3691,6 +4251,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     coinBtn.addEventListener('pointerup', finishCoinPress);
     coinBtn.addEventListener('pointercancel', finishCoinPress);
   }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) flushPendingTaps({ keepalive: true });
+  });
+  window.addEventListener('pagehide', () => {
+    flushPendingTaps({ keepalive: true });
+  });
 
   // Copy Referral Link / Username In-App (Never opens an external browser tab!)
   document.getElementById('btnCopyRefLink')?.addEventListener('click', async () => {
@@ -3712,16 +4279,26 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   await Promise.all([syncHoldUser(), loadLeaderboardData()]);
 
-  // Energy regen ticker
+  // Energy regen ticker (matches server regenRate = 3 + floor(energyLevel / 2) + (rechargingSpeedLevel - 1) * 2 per sec)
+  let lastEnergyTickAt = Date.now();
   setInterval(() => {
-    if (!STATE.user) return;
-    if (STATE.user.energy < STATE.user.maxEnergy) {
-      const speedBonus = ((STATE.user.rechargingSpeedLevel || 1) - 1) * 2;
-      STATE.user.energy = Math.min(STATE.user.maxEnergy, STATE.user.energy + 6 + speedBonus);
+    const now = Date.now();
+    const elapsedSec = Math.max(1, Math.floor((now - lastEnergyTickAt) / 1000));
+    lastEnergyTickAt = now;
+    const u = STATE.user;
+    if (!u || u.energy >= u.maxEnergy) return;
+
+    const ratePerSec = 3 + Math.floor((u.energyLevel || 1) / 2) + ((u.rechargingSpeedLevel || 1) - 1) * 2;
+    const prevEnergy = u.energy;
+    const nextEnergy = Math.min(u.maxEnergy, u.energy + ratePerSec * elapsedSec);
+    if (nextEnergy === prevEnergy) return;
+    u.energy = nextEnergy;
+
+    if (!STATE.activeSheet) {
       const eNow = document.getElementById('uiEnergyNow');
       const eFill = document.getElementById('uiEnergyBarFill');
-      if (eNow) eNow.textContent = fmtInt(STATE.user.energy);
-      if (eFill) eFill.style.width = `${Math.min(100, Math.round((STATE.user.energy / Math.max(1, STATE.user.maxEnergy)) * 100))}%`;
+      if (eNow) eNow.textContent = fmtInt(nextEnergy);
+      if (eFill) eFill.style.width = `${Math.min(100, Math.round((nextEnergy / Math.max(1, u.maxEnergy)) * 100))}%`;
     }
-  }, 2000);
+  }, 1000);
 });
