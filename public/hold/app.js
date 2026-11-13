@@ -2534,7 +2534,7 @@ function openTokenomicsModal() {
 
       <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:11px 12px;">
         <div style="display:flex;justify-content:space-between;font-weight:700;color:#fff;margin-bottom:6px;">
-          <span>⛏️ Mining Pool (45M $HOLD)</span>
+          <span>⛏️ Mining Pool (${(tk.miningCapTokens || 450_000) >= 1_000_000 ? `${Math.round((tk.miningCapTokens || 0) / 1_000_000)}M` : `${Math.round((tk.miningCapTokens || 450_000) / 1_000)}K`} $HOLD)</span>
           <span>${pct.toFixed(2)}%</span>
         </div>
         <div style="height:8px;border-radius:99px;background:rgba(255,255,255,0.08);overflow:hidden;">
@@ -2559,7 +2559,7 @@ function openTokenomicsModal() {
               <span style="width:8px;height:8px;border-radius:99px;background:${esc(a.color)};display:inline-block;"></span>
               <span>${esc(a.label)}</span>
             </span>
-            <b>${a.pct}% (${Math.round((a.tokens || 0) / 1_000_000)}M)</b>
+            <b>${a.pct}% (${(a.tokens || 0) >= 1_000_000 ? `${Math.round(a.tokens / 1_000_000)}M` : `${Math.round((a.tokens || 0) / 1_000)}K`})</b>
           </div>
         `).join('')}
       </div>
