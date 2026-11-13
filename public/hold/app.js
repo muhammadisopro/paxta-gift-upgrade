@@ -282,7 +282,54 @@ function triggerSolarEclipseEasterEgg() {
 
   haptic('heavy');
   const dateEl = document.getElementById('eclipseDateText');
-  if (dateEl) dateEl.textContent = '15 \u00b7 12 \u00b7 2026';
+  const finalDate = '15 \u00b7 12 \u00b7 2026';
+  if (dateEl) {
+    const glyphs = '0123456789ABCDEF#@%';
+    let step = 0;
+    const decodeTimer = setInterval(() => {
+      step++;
+      if (step >= 10) {
+        clearInterval(decodeTimer);
+        dateEl.textContent = finalDate;
+        return;
+      }
+      dateEl.textContent = finalDate.split('').map((ch, idx) => {
+        if (ch === ' ' || ch === '\u00b7') return ch;
+        if (idx < step * 1.4) return ch;
+        return glyphs[Math.floor(Math.random() * glyphs.length)];
+      }).join('');
+    }, 40);
+  }
+
+  // Interactive ARG signal decryption
+  const argSignals = [
+    { tag: 'FILE_01 // SIGNAL', text: '«Kuzatuvchilar allaqachon roʻyxatda. Faqat sabrlilar kalitni oladi.»' },
+    { tag: 'FILE_02 // 0x1512', text: '«15.12.2026 — Tarmoq darvozasi ochiladi. Birinchi toʻlqin: $HOLD.»' },
+    { tag: 'FILE_03 // KEY', text: '«Tangangiz — shunchaki balans emas, bu Genesis blokiga kirish chiptasi.»' },
+    { tag: 'FILE_04 // OMEGA', text: '«Shovqinsiz yigʻilgan kuch bir kunda hammani uygʻotadi. Sirni saqlang.»' }
+  ];
+  let sigIdx = -1;
+  const tagEl = document.getElementById('tgeCipherTag');
+  const txtEl = document.getElementById('tgeCipherText');
+  const cipherBox = document.getElementById('tgeCipherBtn');
+  const argCore = document.getElementById('tgeArgCore');
+  if (tagEl) tagEl.textContent = 'FILE_01 // LOCKED';
+  if (txtEl) txtEl.textContent = '0x48\u00b74F\u00b74C\u00b744 — Ochish uchun tangaga bosing';
+
+  const revealNextSignal = () => {
+    haptic('medium');
+    sigIdx = (sigIdx + 1) % argSignals.length;
+    const s = argSignals[sigIdx];
+    if (tagEl) tagEl.textContent = s.tag;
+    if (txtEl) txtEl.textContent = s.text;
+    if (cipherBox) {
+      cipherBox.classList.remove('is-decoded');
+      void cipherBox.offsetWidth;
+      cipherBox.classList.add('is-decoded');
+    }
+  };
+  if (argCore) argCore.onclick = revealNextSignal;
+  if (cipherBox) cipherBox.onclick = revealNextSignal;
 
   // Populate live TGE user allocation & pool progress
   const u = STATE.user;
